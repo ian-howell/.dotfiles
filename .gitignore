@@ -1,0 +1,9 @@
+# Machine specific for vim
+vim/backup/
+vim/undo/
+vim/swap/
+vim/.netrwhist
+vim/plugged/
+
+# Tags. Because for some reason I need that in my .dotfiles :eye-roll:
+tags

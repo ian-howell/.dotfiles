@@ -1,0 +1,12 @@
+[user]
+    name = Ian Howell
+    email = ih616h@att.com
+
+[core]
+    editor = vim
+
+[push]
+    default = matching
+
+[http]
+    proxy = https://one.proxy.att.com:8080
