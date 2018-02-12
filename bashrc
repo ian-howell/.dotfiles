@@ -268,13 +268,13 @@ elif [[ `hostid` = "c98468fb" ]]; then
     export TERM=xterm-256color
     export EDITOR='vim'
     export VISUAL='vim'
-    export JAVA_HOME=/opt/app/java/jdk/jdk180
+    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
     prepend PATH /opt/app/apache-maven-3.3.9/bin
     prepend PATH /opt/app/eclipse
     prepend PATH /opt/app/docker
     CDPATH=:$HOME/git:$HOME/git/auth:$HOME/git/inno:$HOME/git/cadi
-elif [[ -d /opt/app/java/jdk/jdk180 ]]; then
-    export JAVA_HOME=/opt/app/java/jdk/jdk180
+elif [[ -d /usr/lib/jvm/java-1.8.0-openjdk-amd64 ]]; then
+    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
 elif [[ -d /opt/app/java/jdk/jdk170 ]]; then
     export JAVA_HOME=/opt/app/java/jdk/jdk170
