@@ -88,15 +88,12 @@ function rempath ()
     IFS=${PIFS}
 }
 
-# TODO: ask about how the xtitle function works
 function xtitle ()
 {
     case $- in *i*)
         case $TERM in
             xterm | xterm-256color | rxvt | screen)
-                # not sure what this line does
-                # echo -ne "\033]30; $HOSTNAME \007\033]31; $PWD \007"
-                # put my hostname in the title bar
+                # put the arguments in the title bar
                 echo -ne "\033]0;$*\007" ;;
             *)  ;;
         esac
@@ -132,27 +129,30 @@ function fastprompt()
     history -a
     case $TERM in
         xterm | xterm-256color | rxvt | screen )
-
+            # begin building prompt
+            PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u\[$(tput sgr0)\]"  # bold green username
             case $HOSTNAME in
-                zld*) # dev machines
-                    PS1="\[$(tput setaf 2)\]\u@\h-> \[$(tput sgr0)\]"
+                zld*) # dev machines (green)
+                    PS1="$PS1@\[$(tput setaf 2)\]\h\[$(tput sgr0)\]"  # green hostname
                     ;;
-                zlt*) # test machines
-                    PS1="\[$(tput setaf 3)\]\u@\h-> \[$(tput sgr0)\]"
+                zlt*) # test machines (yellow)
+                    PS1="$PS1@\[$(tput setaf 3)\]\h\[$(tput sgr0)\]"  # yellow hostname
                     ;;
-                zlp* | *lpd*) # prod machines
-                    PS1="\[$(tput setaf 1)\]\u@\h-> \[$(tput sgr0)\]"
+                zlp* | *lpd*) # prod machines (red)
+                    PS1="$PS1@\[$(tput setaf 1)\]\h\[$(tput sgr0)\]"  # red hostname
                     ;;
                 mocdtl12jh6752) # my local machine
-                    PS1="\[$(tput setaf 6)\]\u@localhost-> \[$(tput sgr0)\]"
+                    PS1="$PS1@\[$(tput bold)\]\[$(tput setaf 4)\]localhost\[$(tput sgr0)\]"  # blue "localhost"
                     ;;
                 *)  # everything else
-                    PS1="\[$(tput setaf 6)\]\u@\h-> \[$(tput sgr0)\]"
+                    PS1="$PS1@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]"  # blue hostname
                     ;;
             esac
+            # finish building prompt
+            PS1="$PS1$ "  # literal "$ "
             ;;
         *)
-            PS1="\u@\h-> " ;;
+            PS1="\u@\h$ " ;;
     esac
 }
 
@@ -185,21 +185,6 @@ HISTSIZE=1000
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
-
-
-###############################################################################
-# prompt
-###############################################################################
-PS1="\[\e[01;32m\]\u\[\e[00m\]"      # green username
-PS1="$PS1:"                          # literal :
-PS1="$PS1\[\e[01;34m\]\w\[\e[00m\]"  # blue working directory
-PS1="$PS1\$ "                        # literal $
-# TITLE_BAR="\[\e]0;"                  # begin constructing the title bar
-# TITLE_BAR="$TITLE_BAR\u"             # username
-# TITLE_BAR="$TITLE_BAR: "             # literal :
-# TITLE_BAR="$TITLE_BAR\w"             # working directory
-# TITLE_BAR="$TITLE_BAR\a\]"           # end title bar
-# PS1="$TITLE_BAR$PS1"                 # prepend the title bar
 
 
 ###############################################################################
@@ -350,7 +335,7 @@ shopt -s globstar
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-xtitle $HOSTNAME
+xtitle $HOSTNAME: $PWD
 
 set -o notify           # Notify immediately if job changes state
 shopt -s checkjobs      # lists the status of any stopped and running jobs before exiting
