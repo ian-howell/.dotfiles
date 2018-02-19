@@ -217,6 +217,8 @@ PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 # add go path
 if [ -d /usr/local/go ]; then
     prepend PATH /usr/local/go/bin
+    export GOPATH=$HOME/workspaces/golang
+    prepend PATH $GOPATH/bin
 fi
 
 # TODO: ask about why the cygwin setup stuff is in an if/elif/else chain
@@ -234,9 +236,6 @@ elif [[ `hostid` = "c98468fb" ]]; then
     # exclusively as far as I can tell, to get around the "this machine's
     # fingerprint is unknown" message - which, will cause git to fail. Sigh.
     #
-
-    # setup the proxy
-    export http_proxy=http://one.proxy.att.com:8080
 
     # TODO: ask chris about his 'my_ssh'
     if [[ -d ~/bin ]]; then
@@ -349,29 +348,34 @@ if [ "$PS1" ]; then
 fi
 
 # home variables for various... things
-# TODO: ask about all the #####_HOME variables
+# TODO: ask about all the SWMCLI_HOME variables
 SWMCLI_HOME=/opt/app/aft/aftswmcli
 export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-PATH=$PATH:$SWMCLI_HOME/bin
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
+# SWMCLI_HOME=/opt/app/aft/aftswmcli
+# export SWMCLI_HOME
+# PATH=$PATH:$SWMCLI_HOME/bin
 
+# No idea where these are being set, so we'll just unset them here
+unset NO_PROXY
+unset https_proxy
+unset HTTPS_PROXY
+unset no_proxy

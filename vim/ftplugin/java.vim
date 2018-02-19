@@ -1,5 +1,8 @@
 " Turn tabs into... tabs
 setlocal noexpandtab
 
-" Create folds on syntax
-set foldmethod=syntax
+" Create folds on indent
+setlocal foldmethod=indent
+
+" Completion
+setlocal omnifunc=javacomplete#Complete

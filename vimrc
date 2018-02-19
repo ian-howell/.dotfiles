@@ -16,6 +16,13 @@ Plug 'romainl/vim-qf'
 
 Plug 'jsfaint/gen_tags.vim'
 
+Plug 'fatih/vim-go'
+Plug 'zchee/deoplete-go'
+
+if has('python3')
+    Plug 'artur-shaik/vim-javacomplete2'
+endif
+
 if v:version >= 800
     Plug 'skywind3000/asyncrun.vim'
 
@@ -45,11 +52,17 @@ colorscheme apprentice
 
 "===[ Search behaviour ]==="
 set incsearch                        "Lookahead as search pattern is specified
+"Pulled from :help 'incsearch' - highlight all matchs while searching
+augroup vimrc-incsearch-highlight
+    autocmd!
+    autocmd CmdlineEnter /,\? :set hlsearch
+    autocmd CmdlineLeave /,\? :set nohlsearch
+augroup END
 
 
 "===[ Tab behaviour ]==="
-set tabstop=4          "Tabs are equal to 2 spaces
-set shiftwidth=4       "Indent/outdent by 2 columns
+set tabstop=4          "Tabs are equal to 4 spaces
+set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth
 set smarttab           "Backspace deletes a shiftwidth's worth of spaces
 set expandtab          "Turns tabs into spaces
@@ -93,8 +106,10 @@ nnoremap <space>w <C-w>
 
 
 "===[ Miscellaneous key mappings ]==="
-inoremap jk <ESC>|              "Shortcut from insert to normal mode
-cnoremap jk <C-c>|              "Shortcut from command to normal mode
+"Shortcut from insert to normal mode
+inoremap jk <ESC>
+"Shortcut from command to normal mode
+cnoremap jk <C-c>
 "Because I'm apparently really bad at keyboards...
 inoremap Jk <ESC>
 cnoremap Jk <C-c>
@@ -103,7 +118,8 @@ cnoremap JK <C-c>
 inoremap jK <ESC>
 cnoremap jK <C-c>
 
-nnoremap <space>s :source ~/.vimrc<CR>|     "Quickly source vimrc
+"Quickly source vimrc
+nnoremap <space>s :source ~/.vimrc<CR>
 
 "Fast bracketing (repeatable)
 inoremap {{ {<CR>}<UP><END>
@@ -124,20 +140,14 @@ nnoremap <F1> <Esc>
 
 inoremap <buffer> </ </<C-x><C-o>|           "Auto-close html tags
 
-"Build or run a project
-function! Build()
-    if &filetype == "python"
-        :AsyncRun python3 %
-    elseif &filetype == "cpp" || &filetype == "c"
-        :AsyncRun -program=make
-    elseif &filetype == "tex"
-        :AsyncRun pdflatex -output-directory '%:h' '%'
-    endif
-endfunction
-nnoremap <F5> :call Build()<CR>
+nnoremap <F5> :call build#Build()<CR>
 
 "Remove all trailing whitespace from a file
 nnoremap <space>ws :%s/\s\+$//<CR>``
+
+"Sane paragraph boundaries
+nnoremap <silent> { :call ipmotion#MyPrevParagraph()<CR>
+nnoremap <silent> } :call ipmotion#MyNextParagraph()<CR>
 
 "fugitive.vim mappings
 nnoremap <space>gst :Gstatus<CR>
@@ -152,6 +162,17 @@ nnoremap <space>ged :Gedit<CR>
 xnoremap <space>do :diffget<CR>
 xnoremap <space>dp :diffput<CR>
 
+"Mappings to make the scrollwheel work as expected
+set mouse=a
+noremap <LeftMouse> <nop>
+noremap <RightMouse> <nop>
+noremap <2-LeftMouse> <nop>
+noremap <2-RightMouse> <nop>
+noremap <3-LeftMouse> <nop>
+noremap <3-RightMouse> <nop>
+noremap <space>w<LeftMouse> <LeftMouse>
+noremap <ScrollWheelUp> 2<C-Y>
+noremap <ScrollWheelDown> 2<C-E>
 
 "===[ Statusline ]==="
 "Always show the status line
@@ -175,8 +196,7 @@ hi User2 ctermbg=black
 set statusline=                 "Start empty
 set statusline+=%2*             "Change color
 set statusline+=%{Modified()}   "Mark whether the file is modified, unmodified, or unmobifiable
-set statusline+=%1*             "Change color
-set statusline+=\ ‹%f›        "File name
+set statusline+=\ ‹%f›          "File name
 set statusline+=%=              "Switch to the right side
 set statusline+=%2*             "Change color
 set statusline+=\ %3.c          "Current column
@@ -204,7 +224,9 @@ command! Wqa wqa
 
 
 "===[ Folds ]==="
-set foldmethod=indent            "Create folds on indentation
+" set foldmethod=indent            "Create folds on indentation
+set foldmethod=expr
+set foldexpr=folding#CustomFold(v:lnum)
 set foldlevel=999                "Start vim with all folds open
 
 
@@ -281,6 +303,10 @@ nmap <space>lt <Plug>qf_loc_stay_toggle
 " p - open entry in a preview window
 let g:qf_mapping_ack_style = 1
 
+"Automatically open the quickfix list
+"TODO: Fix this
+let g:qf_auto_open_quickfix = 1
+
 
 "===[ Skeleton files ]==="
 augroup skeletons
@@ -310,3 +336,5 @@ set wildignore+=%*
 "===[ Unsorted ]==="
 "Don't use swp files
 set noswapfile
+"Get out of visual mode faster
+set ttimeoutlen=0
