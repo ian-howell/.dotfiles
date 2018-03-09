@@ -20,10 +20,10 @@ alias ls='ls --color=auto -hl'
 alias lsa="ls -a"
 
 # List only directories in the current directory
-alias lsd="ls -l | grep ^d"
+alias lsd="ls -d */"
 
 # Count all the directories in the current directory
-alias countdir="ls -l | grep ^d | wc -l"
+alias countdir="ls -d */ | wc -l"
 
 # Safety first
 alias mv="mv -i"
@@ -53,9 +53,6 @@ alias :wqa=exit
 
 # Ignore binaries/directories
 alias grep="grep -IHdskip --color=auto"
-
-# Colorful trees
-alias treec="tree -C | less -R"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -169,6 +166,15 @@ alias sc='screen '
 alias sls='screen -ls'
 alias start_cassandra='xterm -hold -e $HOME/cassandra/bin/cassandra -f&'
 alias tf='tail -f'
-alias top='top -M -d 5 -c'
+# alias top='top -M -d 5 -c'
+alias top='top -d 5 -c'
 alias up='cd ..;pwd'
 alias ups='ps -ef'
+
+# curl through the proxy
+alias curlx="curl -x ih6q6h:8r^6QtXjWxK4@http://one.proxy.att.com:8080"
+
+# force tmux to use 256 colors (to make vim pretty)
+alias tmux="tmux -2"
+
+alias dmux="tmux new-session -d -s 'dev' 'vim'; tmux split-window -h; tmux -2 attach-session -d"

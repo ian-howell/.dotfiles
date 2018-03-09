@@ -35,3 +35,28 @@ function! folding#CustomFold(lnum)
         return '>' . next_indent
     endif
 endfunction
+
+
+function! folding#MyFoldText()
+    " clear fold from fillchars to set it up the way we want later
+    let &l:fillchars = substitute(&l:fillchars,',\?fold:.','','gi')
+    let l:numwidth = &numberwidth
+    if &fdm=='diff'
+        let l:linetext=''
+        let l:foldtext='---------- '.(v:foldend-v:foldstart+1).' lines the same ----------'
+        let l:align = winwidth(0)-&foldcolumn-(&nu ? Max(strlen(line('$'))+1, l:numwidth) : 0)
+        let l:align = (l:align / 2) + (strlen(l:foldtext)/2)
+        " note trailing space on next line
+        setlocal fillchars+=fold:\ 
+    else
+        let l:foldtext = ' '.(v:foldend-v:foldstart).' lines folded'.v:folddashes.'|'
+        let l:endofline = (&textwidth>0 ? &textwidth : 80)
+        let l:indent = repeat(' ', indent(v:foldstart))
+        " Probably need to check if expandtab is on here...
+        let l:linestart = v:foldlevel - 1
+        let l:linetext = l:indent.strpart(getline(v:foldstart),l:linestart,l:endofline-strlen(l:foldtext)-20)
+        let l:align = l:endofline-strlen(l:linetext)
+        setlocal fillchars+=fold:-
+    endif
+    return printf('%s%*s', l:linetext, l:align, l:foldtext)
+endfunction

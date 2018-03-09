@@ -1,4 +1,4 @@
-" Plugins
+"===[ Plugins
 call plug#begin()
 
 Plug 'romainl/apprentice'
@@ -19,17 +19,36 @@ Plug 'jsfaint/gen_tags.vim'
 Plug 'fatih/vim-go'
 Plug 'zchee/deoplete-go'
 
+Plug 'christoomey/vim-tmux-navigator'
+
 if has('python3')
-    Plug 'artur-shaik/vim-javacomplete2'
+    " Plug 'artur-shaik/vim-javacomplete2'
+    Plug 'shougo/deoplete.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#enable_ignore_case = 1
+    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#enable_fuzzy_completion = 1
+    let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+    let g:deoplete#omni#input_patterns.java = [
+                \'[^. \t0-9]\.\w*',
+                \'[^. \t0-9]\->\w*',
+                \'[^. \t0-9]\::\w*',
+                \'\s[A-Z][a-z]',
+                \'^\s*@[A-Z][a-z]'
+                \]
+    inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 endif
 
 if v:version >= 800
     Plug 'skywind3000/asyncrun.vim'
 
-    Plug 'w0rp/ale'
+    " Plug 'w0rp/ale'
     "Custom signs for gutter
-    let g:ale_sign_error = "✗"
-    let g:ale_sign_warning = "▲"
+    " let g:ale_sign_error = "✗"
+    " let g:ale_sign_warning = "▲"
 endif
 
 call plug#end()
@@ -39,18 +58,12 @@ filetype plugin indent on
 "For more matching. See :h matchit
 runtime macros/matchit.vim
 "End Plugins
-
-
-"===[ Sane backspace ]==="
-set backspace=indent,eol,start
-
-
-"===[ Colors ]==="
+"===]
+"===[ Colors
 syntax enable
 colorscheme apprentice
-
-
-"===[ Search behaviour ]==="
+"===]
+"===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
 "Pulled from :help 'incsearch' - highlight all matchs while searching
 augroup vimrc-incsearch-highlight
@@ -58,18 +71,16 @@ augroup vimrc-incsearch-highlight
     autocmd CmdlineEnter /,\? :set hlsearch
     autocmd CmdlineLeave /,\? :set nohlsearch
 augroup END
-
-
-"===[ Tab behaviour ]==="
+"===]
+"===[ Tab behaviour
 set tabstop=4          "Tabs are equal to 4 spaces
 set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth
 set smarttab           "Backspace deletes a shiftwidth's worth of spaces
 set expandtab          "Turns tabs into spaces
 set autoindent         "Keep the same indentation level when inserting a new line
-
-
-"===[ Line and column display settings ]==="
+"===]
+"===[ Line and column display settings
 "== Lines =="
 set nowrap             "Don't word wrap
 set relativenumber     "Give a relative number of lines from the cursor
@@ -95,21 +106,30 @@ augroup END
 "== Columns =="
 set sidescroll=1                           "Set horizontal scroll speed
 set colorcolumn=80
-
-
-"=== [ Windows and splitting ]==="
+set signcolumn=yes                           "Keep the sign column open at all times
+"===]
+"===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
 "Mapping for more convenient 'window mode'
 nnoremap <space>w <C-w>
 
-
-"===[ Miscellaneous key mappings ]==="
+nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
+"===]
+"===[ Miscellaneous key mappings
 "Shortcut from insert to normal mode
 inoremap jk <ESC>
+inoremap kj <ESC>
+inoremap j:k <ESC>
+inoremap k:j <ESC>
 "Shortcut from command to normal mode
 cnoremap jk <C-c>
+cnoremap kj <C-c>
 "Because I'm apparently really bad at keyboards...
 inoremap Jk <ESC>
 cnoremap Jk <C-c>
@@ -117,6 +137,12 @@ inoremap JK <ESC>
 cnoremap JK <C-c>
 inoremap jK <ESC>
 cnoremap jK <C-c>
+inoremap kJ <ESC>
+cnoremap kJ <C-c>
+inoremap KJ <ESC>
+cnoremap KJ <C-c>
+inoremap Kj <ESC>
+cnoremap Kj <C-c>
 
 "Quickly source vimrc
 nnoremap <space>s :source ~/.vimrc<CR>
@@ -146,8 +172,10 @@ nnoremap <F5> :call build#Build()<CR>
 nnoremap <space>ws :%s/\s\+$//<CR>``
 
 "Sane paragraph boundaries
-nnoremap <silent> { :call ipmotion#MyPrevParagraph()<CR>
-nnoremap <silent> } :call ipmotion#MyNextParagraph()<CR>
+nnoremap <silent> { :<C-u>call ipmotion#MyPrevParagraph()<CR>
+nnoremap <silent> } :<C-u>call ipmotion#MyNextParagraph()<CR>
+xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call ipmotion#MyPrevParagraph()<CR>
+xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call ipmotion#MyNextParagraph()<CR>
 
 "fugitive.vim mappings
 nnoremap <space>gst :Gstatus<CR>
@@ -162,19 +190,37 @@ nnoremap <space>ged :Gedit<CR>
 xnoremap <space>do :diffget<CR>
 xnoremap <space>dp :diffput<CR>
 
+"Turn the mouse on
+set mouse=n
 "Mappings to make the scrollwheel work as expected
-set mouse=a
+noremap <ScrollWheelUp> 2<C-Y>
+noremap <ScrollWheelDown> 2<C-E>
+noremap <C-ScrollWheelUp> 5zh
+noremap <C-ScrollWheelDown> 5zl
+"Unmap all the useless mouse actions
 noremap <LeftMouse> <nop>
 noremap <RightMouse> <nop>
 noremap <2-LeftMouse> <nop>
 noremap <2-RightMouse> <nop>
 noremap <3-LeftMouse> <nop>
 noremap <3-RightMouse> <nop>
+inoremap <LeftMouse> <nop>
+inoremap <RightMouse> <nop>
+inoremap <2-LeftMouse> <nop>
+inoremap <2-RightMouse> <nop>
+inoremap <3-LeftMouse> <nop>
+inoremap <3-RightMouse> <nop>
+"but we can use this for convenient window swapping
 noremap <space>w<LeftMouse> <LeftMouse>
-noremap <ScrollWheelUp> 2<C-Y>
-noremap <ScrollWheelDown> 2<C-E>
 
-"===[ Statusline ]==="
+"Tab complete with tab key
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+
+nnoremap <space>x :r !ascii -ts <c-r><c-w> \| cut -f2 -d'x' \| cut -f1 -d' ' \| tr -d '\n'<cr>
+"===]
+"===[ Statusline
 "Always show the status line
 set laststatus=2
 
@@ -187,13 +233,14 @@ set statusline+=%2*                        "Change color
 set statusline+=%{statusline#Modified()}   "Mark whether the file is modified, unmodified, or unmobifiable
 set statusline+=\ ‹%f›                     "File name
 set statusline+=%=                         "Switch to the right side
-set statusline+=%2*                        "Change color
 set statusline+=\ %3.c                     "Current column
 set statusline+=\ %P                       "Percentage through file
 set statusline+=\ %y                       "Filetype
 
-
-"===[ Fix misspellings on the fly ]==="
+"Finally, turn off the titlebar
+set notitle
+"===]
+"===[ Fix misspellings on the fly
 iabbrev          retrun           return
 iabbrev           pritn           print
 iabbrev         incldue           include
@@ -210,27 +257,25 @@ command! WQ wq
 command! Wq wq
 command! WQa wqa
 command! Wqa wqa
-
-
-"===[ Folds ]==="
-" set foldmethod=indent            "Create folds on indentation
-set foldmethod=expr
-set foldexpr=folding#CustomFold(v:lnum)
+"===]
+"===[ Folds
+set foldmethod=syntax            "Create folds on syntax
 set foldlevel=999                "Start vim with all folds open
-
-
-"===[ Show undesirable hidden characters ]==="
+set foldtext=folding#MyFoldText()
+"===]
+"===[ Show undesirable hidden characters
 "Show hidden characters
-if &modifiable
-  set list
-endif
+" if &modifiable
+"   set list
+" endif
+" Actually, don't
+set nolist
 "Set tabs to a straight line followed by blanks and trailing spaces to dots
 set listchars=tab:│\ ,trail:·
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
-
-
-"===[ Tags ]==="
+"===]
+"===[ Tags
 set tags=./tags;,tags;
 " Disable gtags support
 let g:loaded_gentags#gtags = 1
@@ -241,13 +286,11 @@ let g:gen_tags#use_cache_dir = 0
 nnoremap <space>tt :GenCtags<CR>
 nnoremap <space>tj :tjump /
 nnoremap <space>tp :ptjump /
-
-
+"===]
 "===[ Persistant Undos ]==="
 set undofile
 set undodir=$HOME/.vim/undo
-
-
+"===]
 "===[ File navigation ]==="
 "Allow changed buffers to be hidden
 set hidden
@@ -264,14 +307,12 @@ nnoremap <space>fv :vert sfind *
 nnoremap <space>bb :buffer *
 nnoremap <space>bs :sbuffer *
 nnoremap <space>bv :vert sbuffer *
-
-
+"===]
 "===[ Grep customization ]==="
 let &grepprg='grep -nrsHI --exclude=tags --exclude-dir=\*venv\* --exclude-dir=.git'
 nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
 nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword><CR>
-
-
+"===]
 "===[ Quickfix and Location window Shortcuts ]==="
 nmap <space>qn <Plug>qf_qf_next
 nmap <space>qp <Plug>qf_qf_previous
@@ -295,9 +336,8 @@ let g:qf_mapping_ack_style = 1
 "Automatically open the quickfix list
 "TODO: Fix this
 let g:qf_auto_open_quickfix = 1
-
-
-"===[ Skeleton files ]==="
+"===]
+"===[ Skeleton files
 augroup skeletons
   autocmd!
   autocmd BufNewFile main.* silent! execute '0r ~/.vim/skeletons/skeleton-main.' . expand("<afile>:e")
@@ -305,9 +345,8 @@ augroup skeletons
 
   autocmd BufNewFile * %substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge
 augroup END
-
-
-"===[ Wildmenu ]==="
+"===]
+"===[ Wildmenu
 set wildmenu
 set wildmode=full
 set wildignore+=*.o,*.so
@@ -320,10 +359,14 @@ set wildignore+=/home/**/*venv*/**
 set wildignore+=*.class
 set wildignore+=*.png,*.jpg,*.bmp,*.gif
 set wildignore+=%*
-
-
-"===[ Unsorted ]==="
+"===]
+"===[ Unsorted
+"Sane backspace
+set backspace=indent,eol,start
 "Don't use swp files
 set noswapfile
 "Get out of visual mode faster
 set ttimeoutlen=0
+set modelines=1
+"===]
+" vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

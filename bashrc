@@ -92,7 +92,7 @@ function xtitle ()
 {
     case $- in *i*)
         case $TERM in
-            xterm | xterm-256color | rxvt | screen)
+            xterm | *-256color | rxvt | screen)
                 # put the arguments in the title bar
                 echo -ne "\033]0;$*\007" ;;
             *)  ;;
@@ -128,7 +128,7 @@ function fastprompt()
 
     history -a
     case $TERM in
-        xterm | xterm-256color | rxvt | screen )
+        xterm | *-256color | rxvt | screen )
             # begin building prompt
             PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u\[$(tput sgr0)\]"  # bold green username
             case $HOSTNAME in
@@ -156,20 +156,80 @@ function fastprompt()
     esac
 }
 
+function cd_func()
+{
+    local x2 the_new_dir adir index
+    local -i cnt
+
+    if [[ $1 ==  "--" ]]; then
+        dirs -v
+        return 0
+    fi
+
+    the_new_dir=$1
+    [[ -z $1 ]] && the_new_dir=$HOME
+
+    if [[ ${the_new_dir:0:1} == '-' ]]; then
+        #
+        # Extract dir N from dirs
+        index=${the_new_dir:1}
+        [[ -z $index ]] && index=1
+        adir=$(dirs +$index)
+        [[ -z $adir ]] && return 1
+        the_new_dir=$adir
+    fi
+
+    #
+    # '~' has to be substituted by ${HOME}
+    [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
+
+    #
+    # Now change to the new dir and add to the top of the stack
+    pushd "${the_new_dir}" > /dev/null
+    [[ $? -ne 0 ]] && return 1
+    the_new_dir=$(pwd)
+
+    #
+    # Trim down everything beyond 11th entry
+    popd -n +11 2>/dev/null 1>/dev/null
+
+    #
+    # Remove any other occurence of this dir, skipping the top of the stack
+    for ((cnt=1; cnt <= 10; cnt++)); do
+        x2=$(dirs +${cnt} 2>/dev/null)
+        [[ $? -ne 0 ]] && return 0
+        [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
+        if [[ "${x2}" == "${the_new_dir}" ]]; then
+            popd -n +$cnt 2>/dev/null 1>/dev/null
+            cnt=cnt-1
+        fi
+    done
+
+    return 0
+}
+
 function cd()
 {
     case $TERM in
-        xterm | xterm-256color | rxvt)  # if we're using an X window
-            builtin cd "$@" && xtitle $HOSTNAME: $PWD ;;  # change the title bar
+        xterm | *-256color | rxvt)  # if we're using an X window
+            cd_func "$@" && xtitle $PWD ;;  # change the title bar
         *)
-            builtin cd "$@";;
+            cd_func "$@";;
     esac
 }
 
 # Generate a random password
 randpw(){ < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c${1:-32};echo;}
 
-todo(){ grep -Hnsr --color=always TODO $1 | cut -d':' -f-2,4- -s;}
+todo(){ grep -HInsr --color=always TODO $1 | cut -d':' -f-2,4- -s;}
+
+# Scrollable, colored grep
+lgrep() { grep -I $* --color=always | less -R; }
+
+
+# Colorful trees
+treec() { tree -C $* | less -R; }
+
 
 ###############################################################################
 # history
@@ -198,6 +258,15 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
+# colors for man
+export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
+export LESS_TERMCAP_md=$'\e[1;33m'     # begin blink
+export LESS_TERMCAP_so=$'\e[01;44;37m' # begin reverse video
+export LESS_TERMCAP_us=$'\e[01;37m'    # begin underline
+export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
+export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
+export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
+export MANPAGER='less -s -M +Gg'       # percentage into the document
 
 ###############################################################################
 # aliases
@@ -205,7 +274,7 @@ fi
 if [ -f ~/.sh_aliases ]; then
     source ~/.sh_aliases
 fi
-alias pwd='pwd;xtitle $HOSTNAME: $PWD'
+alias pwd='pwd;xtitle $PWD'
 
 
 ###############################################################################
@@ -249,14 +318,19 @@ elif [[ `hostid` = "c98468fb" ]]; then
         source ~/.grc/grc.bashrc
     fi
 
-    export TERM=xterm-256color
+    if [ "$TERM" != "tmux-256color" ]; then
+        export TERM=xterm-256color
+    fi
     export EDITOR='vim'
     export VISUAL='vim'
     export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+    export JUNIT_HOME=/usr/local/JUNIT
+    export CLASSPATH=$JUNIT_HOME/junit-4.10.jar:.
+
     prepend PATH /opt/app/apache-maven-3.3.9/bin
     prepend PATH /opt/app/eclipse
     prepend PATH /opt/app/docker
-    CDPATH=:$HOME/git:$HOME/git/auth:$HOME/git/inno:$HOME/git/cadi
+    CDPATH=.:$HOME/workspaces/osaaf:$HOME/workspaces/osaaf/auth:$HOME/workspaces/osaaf/inno:$HOME/workspaces/osaaf/cadi
 elif [[ -d /usr/lib/jvm/java-1.8.0-openjdk-amd64 ]]; then
     export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
@@ -331,15 +405,24 @@ set -o vi
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
 
+# extended globbing for things like !(dont_match_me)
+shopt -s extglob
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-xtitle $HOSTNAME: $PWD
+xtitle $PWD
 
 set -o notify           # Notify immediately if job changes state
 shopt -s checkjobs      # lists the status of any stopped and running jobs before exiting
 
 shopt -s no_empty_cmd_completion
+
+# light spellcheck on cd
+shopt -s cdspell
+
+# Prevent ctrl-d from exiting the shell
+set -o ignoreeof
 
 # This is kind of goofy. To check for interactive logins, you generally test the
 # value of PS1 -- therefore, I need to set this at the very end, just in case..

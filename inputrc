@@ -1,18 +1,25 @@
-$if mode=vi
-    # Show which mode I'm currently in
-    set show-mode-in-prompt on
+# Use vi
+set editing-mode vi
 
-    set keymap vi-command
-    # these are for vi-command mode
-    "gg": beginning-of-history
-    "G": end-of-history
+# Show which mode I'm currently in
+set show-mode-in-prompt on
 
-    set keymap vi-insert
-    # these are for vi-insert mode
-    "jk": vi-movement-mode
-    Control-l: clear-screen
-$endif
+set keymap vi-command
+# these are for vi-command mode
+"gg": beginning-of-history
+"G": end-of-history
+
+set keymap vi-insert
+# these are for vi-insert mode
+"jk": vi-movement-mode
+Control-l: clear-screen
 
 set completion-ignore-case on
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
+
+# sane tab completion
+TAB: menu-complete
+"\e[Z": menu-complete-backward
+set menu-complete-display-prefix on
+set show-all-if-ambiguous on
