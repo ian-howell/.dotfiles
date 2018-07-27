@@ -8,3 +8,6 @@ setlocal foldnestmax=2
 
 " Completion
 " setlocal omnifunc=javacomplete#Complete
+
+" Our java code is _disgusting_ to look at
+set nolist

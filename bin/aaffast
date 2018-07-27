@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+#
+# Created by Ian Howell on 02/14/18.
+# File name: restful_query.py
+
+import configparser
+import json
+import os
+import requests
+import sys
+
+from requests.auth import HTTPBasicAuth
+
+from subprocess import run
+
+def main():
+    if len(sys.argv) > 1:
+        print(restful_format(sys.argv[1]))
+    else:
+        api_request = input("Enter the api request> ")
+        print(restful_format(api_request))
+
+
+def restful_format(api_request):
+    # Set up configuration
+    config = configparser.ConfigParser()
+    config_file = os.path.expanduser('~/.private/my.ini')
+    config.read(config_file)
+
+    # Set up authentication
+    user = config['authentication']['user']
+    password = config['authentication']['password']
+    my_auth = HTTPBasicAuth(user, password)
+
+    # Set up the url (this uses the test machines)
+    url = "https://aafist.test.att.com:8095/proxy" + str(api_request)
+
+    # Set up proxies
+    my_proxy = {
+            'http': 'http://one.proxy.att.com:8080',
+            'https': 'https://one.proxy.att.com:8080'
+            }
+
+    # Make the request and return a prettified string :)
+    res = requests.get(url, auth=my_auth, proxies=my_proxy)
+    return json.dumps(json.loads(res.text), indent=2, sort_keys=True)
+
+
+if __name__ == "__main__":
+    main()

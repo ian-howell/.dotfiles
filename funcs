@@ -1,0 +1,89 @@
+# Generate a random password
+randpw(){ < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c${1:-32};echo;}
+
+# List all todos
+todo(){ grep -HInsr --color=always TODO $1 | cut -d':' -f-2,4- -s;}
+
+# Scrollable, colored grep
+lgrep() { grep -I $* --color=always | less -R; }
+
+# Colorful trees
+treec() { tree -C $* | less -R; }
+
+function xtitle ()
+{
+    case $- in *i*)
+        case $TERM in
+            xterm | *-256color | rxvt | screen)
+                # put the arguments in the title bar
+                echo -ne "\033]0;$*\007" ;;
+            *)  ;;
+        esac
+    esac
+}
+
+function fastprompt()
+{
+    # tput bold - Bold effect
+    # tput rev - Display inverse colors
+    # tput sgr0 - Reset everything
+    # tput setaf {CODE}- Set foreground color, see color {CODE} table below for more information.
+    # tput setab {CODE}- Set background color, see color {CODE} table below for more information.
+    #
+    # 0	Black
+    # 1	Red
+    # 2	Green
+    # 3	Yellow
+    # 4	Blue
+    # 5	Magenta
+    # 6	Cyan
+    # 7	White
+
+    LAST_MOD=`stat -c %Y ~/.bashrc`
+    if (( $LAST_MOD >  $BASHRC_MOD )); then
+        source ~/.bashrc
+        echo "bashrc reloaded"
+    fi
+    unset PROMPT_COMMAND
+    PROMPT_COMMAND=fastprompt
+
+    history -a
+    case $TERM in
+        xterm | *-256color | rxvt | screen )
+            # begin building prompt
+            PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u\[$(tput sgr0)\]"  # bold green username
+            case $HOSTNAME in
+                zld*) # dev machines (green)
+                    PS1="$PS1@\[$(tput setaf 2)\]\h\[$(tput sgr0)\]"  # green hostname
+                    ;;
+                zlt*) # test machines (yellow)
+                    PS1="$PS1@\[$(tput setaf 3)\]\h\[$(tput sgr0)\]"  # yellow hostname
+                    ;;
+                zlp* | *lpd*) # prod machines (red)
+                    PS1="$PS1@\[$(tput setaf 1)\]\h\[$(tput sgr0)\]"  # red hostname
+                    ;;
+                mocdtl12jh6752) # my local machine
+                    PS1="$PS1@\[$(tput bold)\]\[$(tput setaf 4)\]localhost\[$(tput sgr0)\]"  # blue "localhost"
+                    ;;
+                *)  # everything else
+                    PS1="$PS1@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]"  # blue hostname
+                    ;;
+            esac
+            # finish building prompt
+            PS1="$PS1\w$ "  # literal "$ "
+            ;;
+        *)
+            PS1="\u@\h$ " ;;
+    esac
+}
+
+function cd()
+{
+    case $TERM in
+        xterm | *-256color | rxvt)  # if we're using an X window
+            builtin cd "$@" && xtitle $PWD ;;  # change the title bar
+        *)
+            builtin cd "$@";;
+    esac
+}
+

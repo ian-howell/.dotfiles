@@ -9,12 +9,15 @@ alias gst="git status"
 alias gs="git status" # Because I constantly mistype this one
 alias glo="git log"
 alias glor="git log --color=always --oneline | head"
+# alias glog="git log --pretty=format:'%h : %s' --graph"
+# alias glog="git -c color.ui=auto log --graph --pretty=tformat:\"%C(yellow)%h%Creset}%Cgreen(%ar)%Creset}%C(bold blue)<%an>%Creset}%C(bold red)%d%Creset %s\" -100|  column -s '}' -t | less -R"
+alias glog="git -c color.ui=always log --graph --pretty=tformat:\"%C(yellow)%h%Creset}%Cgreen(%ar)%Creset}%C(bold blue)<%an>%Creset}%C(bold red)%d%Creset %s\" | awk 'BEGIN { FS = \"}\" } ; { printf \"%s\t\t%s\t%-40s%s\n\", \$1, \$2, \$3, \$4 }' | less -R"
 alias gbr="git branch"
 alias gdi="git diff"
 alias gca="git commit --amend --no-edit"
 
 # verbose ls with color
-alias ls='ls --color=auto -hl'
+# alias ls='ls --color=auto -hl'
 
 # Hidden files
 alias lsa="ls -a"
@@ -62,58 +65,8 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 alias trim="awk '{\$1=\$1};1;'"
 
 
-# tons of machine aliases
-#
-alias jg='ssh  -t -q jg screen -dR'
-alias dev='ssh  -t -q dev screen -dR'
-alias dev1='ssh  -t -q dev1 screen -dR'
-alias dev2='ssh -t -q dev2 screen -dR'
-alias perf1='ssh -t -q perf1 screen -dR'
-alias perf2='ssh -t -q perf2 screen -dR'
-alias perf3='ssh -t -q perf3 screen -dR'
-alias perf4='ssh -t -q perf4 screen -dR'
-alias perf5='ssh -t -q perf5 screen -dR'
-alias perf6='ssh -t -q perf6 screen -dR'
-alias test1='ssh -t -q test1 screen -dR'
-alias test2='ssh -t -q test2 screen -dR'
-alias test3='ssh -t -q test3 screen -dR'
-alias test4='ssh -t -q test4 screen -dR'
-alias test5='ssh -t -q test5 screen -dR'
-alias test6='ssh -t -q test6 screen -dR'
-
-alias ouat1='ssh -t -q uat1 screen -dR'
-alias ouat2='ssh -t -q uat2 screen -dR'
-alias ouat3='ssh -t -q uat3 screen -dR'
-alias ouat4='ssh -t -q uat4 screen -dR'
-alias ouat5='ssh -t -q uat5 screen -dR'
-alias ouat6='ssh -t -q uat6 screen -dR'
-
-alias ist1='ssh -t -q ist1 screen -dR'
-alias ist2='ssh -t -q ist2 screen -dR'
-alias ist3='ssh -t -q ist3 screen -dR'
-alias ist4='ssh -t -q ist4 screen -dR'
-alias ist5='ssh -t -q ist5 screen -dR'
-alias ist6='ssh -t -q ist6 screen -dR'
-alias ist7='ssh -t -q ist7 screen -dR'
-alias ist8='ssh -t -q ist8 screen -dR'
-alias ist9='ssh -t -q ist9 screen -dR'
-alias ist10='ssh -t -q ist10 screen -dR'
-alias ist11='ssh -t -q ist11 screen -dR'
-alias ist12='ssh -t -q ist12 screen -dR'
-alias ist13='ssh -t -q ist13 screen -dR'
-alias ist14='ssh -t -q ist14 screen -dR'
-alias ist15='ssh -t -q ist15 screen -dR'
-
+# Machine aliases. Full names are for easy copy pasta access
 # Prod
-alias op1='ssh -q -t zlp08846.vci.att.com screen -dR'
-alias p1='echo "Use p85, dummy"'
-alias p2='ssh -q -t zlp08847.vci.att.com screen -dR'
-alias p3='ssh -q -t zlp08848.vci.att.com screen -dR'
-alias p4='ssh -q -t zlp08849.vci.att.com screen -dR'
-alias p5='ssh -q -t zlp08850.vci.att.com screen -dR'
-alias p6='ssh -q -t zlp08851.vci.att.com screen -dR'
-alias p7='ssh -q -t zlp08853.vci.att.com screen -dR'
-alias p8='ssh -q -t zlp08854.vci.att.com screen -dR'
 alias p85='ssh -q -t zlp14185.vci.att.com screen -dR'
 alias p86='ssh -q -t zlp14186.vci.att.com screen -dR'
 alias p87='ssh -q -t zlp14187.vci.att.com screen -dR'
@@ -129,24 +82,143 @@ alias p96='ssh -q -t zlp14196.vci.att.com screen -dR'
 alias p97='ssh -q -t zlp14197.vci.att.com screen -dR'
 alias p98='ssh -q -t zlp14198.vci.att.com screen -dR'
 alias p99='ssh -q -t zlp14199.vci.att.com screen -dR'
+alias zlp14185='ssh -q -t zlp14185.vci.att.com screen -dR'
+alias zlp14186='ssh -q -t zlp14186.vci.att.com screen -dR'
+alias zlp14187='ssh -q -t zlp14187.vci.att.com screen -dR'
+alias zlp14188='ssh -q -t zlp14188.vci.att.com screen -dR'
+alias zlp14189='ssh -q -t zlp14189.vci.att.com screen -dR'
+alias zlp14190='ssh -q -t zlp14190.vci.att.com screen -dR'
+alias zlp14191='ssh -q -t zlp14191.vci.att.com screen -dR'
+alias zlp14192='ssh -q -t zlp14192.vci.att.com screen -dR'
+alias zlp14193='ssh -q -t zlp14193.vci.att.com screen -dR'
+alias zlp14194='ssh -q -t zlp14194.vci.att.com screen -dR'
+alias zlp14195='ssh -q -t zlp14195.vci.att.com screen -dR'
+alias zlp14196='ssh -q -t zlp14196.vci.att.com screen -dR'
+alias zlp14197='ssh -q -t zlp14197.vci.att.com screen -dR'
+alias zlp14198='ssh -q -t zlp14198.vci.att.com screen -dR'
+alias zlp14199='ssh -q -t zlp14199.vci.att.com screen -dR'
+alias zlp14185.vci.att.com='ssh -q -t zlp14185.vci.att.com screen -dR'
+alias zlp14186.vci.att.com='ssh -q -t zlp14186.vci.att.com screen -dR'
+alias zlp14187.vci.att.com='ssh -q -t zlp14187.vci.att.com screen -dR'
+alias zlp14188.vci.att.com='ssh -q -t zlp14188.vci.att.com screen -dR'
+alias zlp14189.vci.att.com='ssh -q -t zlp14189.vci.att.com screen -dR'
+alias zlp14190.vci.att.com='ssh -q -t zlp14190.vci.att.com screen -dR'
+alias zlp14191.vci.att.com='ssh -q -t zlp14191.vci.att.com screen -dR'
+alias zlp14192.vci.att.com='ssh -q -t zlp14192.vci.att.com screen -dR'
+alias zlp14193.vci.att.com='ssh -q -t zlp14193.vci.att.com screen -dR'
+alias zlp14194.vci.att.com='ssh -q -t zlp14194.vci.att.com screen -dR'
+alias zlp14195.vci.att.com='ssh -q -t zlp14195.vci.att.com screen -dR'
+alias zlp14196.vci.att.com='ssh -q -t zlp14196.vci.att.com screen -dR'
+alias zlp14197.vci.att.com='ssh -q -t zlp14197.vci.att.com screen -dR'
+alias zlp14198.vci.att.com='ssh -q -t zlp14198.vci.att.com screen -dR'
+alias zlp14199.vci.att.com='ssh -q -t zlp14199.vci.att.com screen -dR'
 
-# These are handy for logging into a machine name you've cut & pasted
-alias zlp08846.vci.att.com='ssh -q -t zlp08846.vci.att.com screen -dR'
-alias zlp08846='ssh -q -t zlp08846.vci.att.com screen -dR'
-alias zlp08847.vci.att.com='ssh -q -t zlp08847.vci.att.com screen -dR'
-alias zlp08847='ssh -q -t zlp08847.vci.att.com screen -dR'
-alias zlp08848.vci.att.com='ssh -q -t zlp08848.vci.att.com screen -dR'
-alias zlp08848='ssh -q -t zlp08848.vci.att.com screen -dR'
-alias zlp08849.vci.att.com='ssh -q -t zlp08849.vci.att.com screen -dR'
-alias zlp08849='ssh -q -t zlp08849.vci.att.com screen -dR'
-alias zlp08850.vci.att.com='ssh -q -t zlp08850.vci.att.com screen -dR'
-alias zlp08850='ssh -q -t zlp08850.vci.att.com screen -dR'
-alias zlp08851.vci.att.com='ssh -q -t zlp08851.vci.att.com screen -dR'
-alias zlp08851='ssh -q -t zlp08851.vci.att.com screen -dR'
-alias zlp08853.vci.att.com='ssh -q -t zlp08853.vci.att.com screen -dR'
-alias zlp08853='ssh -q -t zlp08853.vci.att.com screen -dR'
-alias zlp08854.vci.att.com='ssh -q -t zlp08854.vci.att.com screen -dR'
-alias zlp08854='ssh -q -t zlp08854.vci.att.com screen -dR'
+#IST
+alias ist62='ssh -q -t zlt10062.vci.att.com screen -dR'
+alias ist63='ssh -q -t zlt10063.vci.att.com screen -dR'
+alias ist64='ssh -q -t zlt10064.vci.att.com screen -dR'
+alias ist75='ssh -q -t zlt10075.vci.att.com screen -dR'
+alias ist76='ssh -q -t zlt10076.vci.att.com screen -dR'
+alias ist77='ssh -q -t zlt10077.vci.att.com screen -dR'
+alias ist74='ssh -q -t zlt10074.vci.att.com screen -dR'
+alias ist78='ssh -q -t zlt10078.vci.att.com screen -dR'
+alias ist79='ssh -q -t zlt10079.vci.att.com screen -dR'
+alias ist80='ssh -q -t zlt10080.vci.att.com screen -dR'
+alias ist81='ssh -q -t zlt10081.vci.att.com screen -dR'
+alias ist82='ssh -q -t zlt10082.vci.att.com screen -dR'
+alias ist87='ssh -q -t zlt10087.vci.att.com screen -dR'
+alias ist88='ssh -q -t zlt10088.vci.att.com screen -dR'
+alias ist89='ssh -q -t zlt10089.vci.att.com screen -dR'
+alias zlt10062='ssh -q -t zlt10062.vci.att.com screen -dR'
+alias zlt10063='ssh -q -t zlt10063.vci.att.com screen -dR'
+alias zlt10064='ssh -q -t zlt10064.vci.att.com screen -dR'
+alias zlt10075='ssh -q -t zlt10075.vci.att.com screen -dR'
+alias zlt10076='ssh -q -t zlt10076.vci.att.com screen -dR'
+alias zlt10077='ssh -q -t zlt10077.vci.att.com screen -dR'
+alias zlt10074='ssh -q -t zlt10074.vci.att.com screen -dR'
+alias zlt10078='ssh -q -t zlt10078.vci.att.com screen -dR'
+alias zlt10079='ssh -q -t zlt10079.vci.att.com screen -dR'
+alias zlt10080='ssh -q -t zlt10080.vci.att.com screen -dR'
+alias zlt10081='ssh -q -t zlt10081.vci.att.com screen -dR'
+alias zlt10082='ssh -q -t zlt10082.vci.att.com screen -dR'
+alias zlt10087='ssh -q -t zlt10087.vci.att.com screen -dR'
+alias zlt10088='ssh -q -t zlt10088.vci.att.com screen -dR'
+alias zlt10089='ssh -q -t zlt10089.vci.att.com screen -dR'
+alias zlt10062.vci.att.com='ssh -q -t zlt10062.vci.att.com screen -dR'
+alias zlt10063.vci.att.com='ssh -q -t zlt10063.vci.att.com screen -dR'
+alias zlt10064.vci.att.com='ssh -q -t zlt10064.vci.att.com screen -dR'
+alias zlt10075.vci.att.com='ssh -q -t zlt10075.vci.att.com screen -dR'
+alias zlt10076.vci.att.com='ssh -q -t zlt10076.vci.att.com screen -dR'
+alias zlt10077.vci.att.com='ssh -q -t zlt10077.vci.att.com screen -dR'
+alias zlt10074.vci.att.com='ssh -q -t zlt10074.vci.att.com screen -dR'
+alias zlt10078.vci.att.com='ssh -q -t zlt10078.vci.att.com screen -dR'
+alias zlt10079.vci.att.com='ssh -q -t zlt10079.vci.att.com screen -dR'
+alias zlt10080.vci.att.com='ssh -q -t zlt10080.vci.att.com screen -dR'
+alias zlt10081.vci.att.com='ssh -q -t zlt10081.vci.att.com screen -dR'
+alias zlt10082.vci.att.com='ssh -q -t zlt10082.vci.att.com screen -dR'
+alias zlt10087.vci.att.com='ssh -q -t zlt10087.vci.att.com screen -dR'
+alias zlt10088.vci.att.com='ssh -q -t zlt10088.vci.att.com screen -dR'
+alias zlt10089.vci.att.com='ssh -q -t zlt10089.vci.att.com screen -dR'
+
+#PERF
+alias perf59='ssh -q -t zlt10059.vci.att.com screen -dR'
+alias perf60='ssh -q -t zlt10060.vci.att.com screen -dR'
+alias perf61='ssh -q -t zlt10061.vci.att.com screen -dR'
+alias perf71='ssh -q -t zlt10071.vci.att.com screen -dR'
+alias perf72='ssh -q -t zlt10072.vci.att.com screen -dR'
+alias perf73='ssh -q -t zlt10073.vci.att.com screen -dR'
+alias zlt10059='ssh -q -t zlt10059.vci.att.com screen -dR'
+alias zlt10060='ssh -q -t zlt10060.vci.att.com screen -dR'
+alias zlt10061='ssh -q -t zlt10061.vci.att.com screen -dR'
+alias zlt10071='ssh -q -t zlt10071.vci.att.com screen -dR'
+alias zlt10072='ssh -q -t zlt10072.vci.att.com screen -dR'
+alias zlt10073='ssh -q -t zlt10073.vci.att.com screen -dR'
+alias zlt10059.vci.att.com='ssh -q -t zlt10059.vci.att.com screen -dR'
+alias zlt10060.vci.att.com='ssh -q -t zlt10060.vci.att.com screen -dR'
+alias zlt10061.vci.att.com='ssh -q -t zlt10061.vci.att.com screen -dR'
+alias zlt10071.vci.att.com='ssh -q -t zlt10071.vci.att.com screen -dR'
+alias zlt10072.vci.att.com='ssh -q -t zlt10072.vci.att.com screen -dR'
+alias zlt10073.vci.att.com='ssh -q -t zlt10073.vci.att.com screen -dR'
+
+#TEST
+alias t65='ssh -q -t zlt10065.vci.att.com screen -dR'
+alias t66='ssh -q -t zlt10066.vci.att.com screen -dR'
+alias t67='ssh -q -t zlt10067.vci.att.com screen -dR'
+alias t68='ssh -q -t zlt10068.vci.att.com screen -dR'
+alias t69='ssh -q -t zlt10069.vci.att.com screen -dR'
+alias t70='ssh -q -t zlt10070.vci.att.com screen -dR'
+alias zlt10065='ssh -q -t zlt10065.vci.att.com screen -dR'
+alias zlt10066='ssh -q -t zlt10066.vci.att.com screen -dR'
+alias zlt10067='ssh -q -t zlt10067.vci.att.com screen -dR'
+alias zlt10068='ssh -q -t zlt10068.vci.att.com screen -dR'
+alias zlt10069='ssh -q -t zlt10069.vci.att.com screen -dR'
+alias zlt10070='ssh -q -t zlt10070.vci.att.com screen -dR'
+alias zlt10065.vci.att.com='ssh -q -t zlt10065.vci.att.com screen -dR'
+alias zlt10066.vci.att.com='ssh -q -t zlt10066.vci.att.com screen -dR'
+alias zlt10067.vci.att.com='ssh -q -t zlt10067.vci.att.com screen -dR'
+alias zlt10068.vci.att.com='ssh -q -t zlt10068.vci.att.com screen -dR'
+alias zlt10069.vci.att.com='ssh -q -t zlt10069.vci.att.com screen -dR'
+alias zlt10070.vci.att.com='ssh -q -t zlt10070.vci.att.com screen -dR'
+
+#DEVL
+alias d16='ssh -q -t zld03316.vci.att.com screen -dR'
+alias d17='ssh -q -t zld03317.vci.att.com screen -dR'
+alias d18='ssh -q -t zld03318.vci.att.com screen -dR'
+alias d19='ssh -q -t zld03319.vci.att.com screen -dR'
+alias d20='ssh -q -t zld03320.vci.att.com screen -dR'
+alias d21='ssh -q -t zld03321.vci.att.com screen -dR'
+alias zld03316='ssh -q -t zld03316.vci.att.com screen -dR'
+alias zld03317='ssh -q -t zld03317.vci.att.com screen -dR'
+alias zld03318='ssh -q -t zld03318.vci.att.com screen -dR'
+alias zld03319='ssh -q -t zld03319.vci.att.com screen -dR'
+alias zld03320='ssh -q -t zld03320.vci.att.com screen -dR'
+alias zld03321='ssh -q -t zld03321.vci.att.com screen -dR'
+alias zld03316.vci.att.com='ssh -q -t zld03316.vci.att.com screen -dR'
+alias zld03317.vci.att.com='ssh -q -t zld03317.vci.att.com screen -dR'
+alias zld03318.vci.att.com='ssh -q -t zld03318.vci.att.com screen -dR'
+alias zld03319.vci.att.com='ssh -q -t zld03319.vci.att.com screen -dR'
+alias zld03320.vci.att.com='ssh -q -t zld03320.vci.att.com screen -dR'
+alias zld03321.vci.att.com='ssh -q -t zld03321.vci.att.com screen -dR'
 
 # convenience aliases from chris
 alias nobuff='stdbuf -i0 -o0 -e0'
@@ -172,9 +244,26 @@ alias up='cd ..;pwd'
 alias ups='ps -ef'
 
 # curl through the proxy
-alias curlx="curl -x ih6q6h:8r^6QtXjWxK4@http://one.proxy.att.com:8080"
+alias curlx="curl -x ih616h:8r^6QtXjWxK4@http://one.proxy.att.com:8080"
 
 # force tmux to use 256 colors (to make vim pretty)
 alias tmux="tmux -2"
 
-alias dmux="tmux new-session -d -s 'dev' 'vim'; tmux split-window -h; tmux -2 attach-session -d"
+alias caditool="java -jar /home/ih616h/onap/authz/auth/aaf_2.1.0-SNAPSHOT/lib/aaf-cadi-core-2.1.0-SNAPSHOT.jar"
+alias pprint="python -m json.tool"
+alias bdoc='sphinx-build -b html /home/ih616h/onap/authz/docs /home/ih616h/onap/html'
+alias aafcli='java -cp "/home/ih616h/onap/authz/auth/auth-cmd/target/aaf-auth-cmd-2.1.2-SNAPSHOT-full.jar" org.onap.aaf.auth.cmd.AAFcli'
+
+
+
+alias dcass='docker start aafcassandra && docker exec -it aafcassandra bash'
+
+alias attmvn="mvn -s /home/ih616h/.m2/settings.xml.att"
+alias onapmvn="mvn -s /home/ih616h/.m2/settings.xml.onap"
+
+alias dirs="dirs -lpv"
+
+alias zlt="ssh -t zlt10062.vci.att.com screen -dR"
+alias zlp="ssh -t zlp14185.vci.att.com screen -dR"
+
+alias get_suits="curl ftp://thprod37.sbc.com/suits.dat > suits.dat"

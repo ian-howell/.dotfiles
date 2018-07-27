@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <run_command>"
+    echo "Example: $0 python3 myprog.py"
+    exit
+fi
+
+if [ ! -f samples.zip ]; then
+    pre_url="https://open.kattis.com/problems/"
+    post_url="/file/statement/samples.zip"
+    problem_name=${PWD##*/}
+    samples_url=$pre_url$problem_name$post_url
+
+    curl -s -x ih6q6h:8r^6QtXjWxK4@http://one.proxy.att.com:8080 $samples_url > samples.zip
+
+    unzip -u -o -qq samples.zip
+fi
+
+for f in *.in; do
+    echo "--- Diffing $f and ${f/.in/.ans} ---"
+    # /usr/bin/time -f "TIME: %E" sdiff <($* < $f) ${f/in/ans}
+    /usr/bin/time -f "TIME: %E" $* < $f > my_output.txt
+    sdiff my_output.txt ${f/.in/.ans}
+    echo
+done
+rm my_output.txt

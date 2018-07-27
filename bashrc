@@ -88,74 +88,6 @@ function rempath ()
     IFS=${PIFS}
 }
 
-function xtitle ()
-{
-    case $- in *i*)
-        case $TERM in
-            xterm | *-256color | rxvt | screen)
-                # put the arguments in the title bar
-                echo -ne "\033]0;$*\007" ;;
-            *)  ;;
-        esac
-    esac
-}
-
-# TODO: ask about how the fastprompt function works
-function fastprompt()
-{
-    # tput bold - Bold effect
-    # tput rev - Display inverse colors
-    # tput sgr0 - Reset everything
-    # tput setaf {CODE}- Set foreground color, see color {CODE} table below for more information.
-    # tput setab {CODE}- Set background color, see color {CODE} table below for more information.
-    #
-    # 0	Black
-    # 1	Red
-    # 2	Green
-    # 3	Yellow
-    # 4	Blue
-    # 5	Magenta
-    # 6	Cyan
-    # 7	White
-
-    LAST_MOD=`stat -c %Y ~/.bashrc`
-    if (( $LAST_MOD >  $BASHRC_MOD )); then
-        source ~/.bashrc
-        echo "bashrc reloaded"
-    fi
-    unset PROMPT_COMMAND
-    PROMPT_COMMAND=fastprompt
-
-    history -a
-    case $TERM in
-        xterm | *-256color | rxvt | screen )
-            # begin building prompt
-            PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u\[$(tput sgr0)\]"  # bold green username
-            case $HOSTNAME in
-                zld*) # dev machines (green)
-                    PS1="$PS1@\[$(tput setaf 2)\]\h\[$(tput sgr0)\]"  # green hostname
-                    ;;
-                zlt*) # test machines (yellow)
-                    PS1="$PS1@\[$(tput setaf 3)\]\h\[$(tput sgr0)\]"  # yellow hostname
-                    ;;
-                zlp* | *lpd*) # prod machines (red)
-                    PS1="$PS1@\[$(tput setaf 1)\]\h\[$(tput sgr0)\]"  # red hostname
-                    ;;
-                mocdtl12jh6752) # my local machine
-                    PS1="$PS1@\[$(tput bold)\]\[$(tput setaf 4)\]localhost\[$(tput sgr0)\]"  # blue "localhost"
-                    ;;
-                *)  # everything else
-                    PS1="$PS1@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]"  # blue hostname
-                    ;;
-            esac
-            # finish building prompt
-            PS1="$PS1$ "  # literal "$ "
-            ;;
-        *)
-            PS1="\u@\h$ " ;;
-    esac
-}
-
 function cd_func()
 {
     local x2 the_new_dir adir index
@@ -208,28 +140,9 @@ function cd_func()
     return 0
 }
 
-function cd()
-{
-    case $TERM in
-        xterm | *-256color | rxvt)  # if we're using an X window
-            cd_func "$@" && xtitle $PWD ;;  # change the title bar
-        *)
-            cd_func "$@";;
-    esac
-}
-
-# Generate a random password
-randpw(){ < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c${1:-32};echo;}
-
-todo(){ grep -HInsr --color=always TODO $1 | cut -d':' -f-2,4- -s;}
-
-# Scrollable, colored grep
-lgrep() { grep -I $* --color=always | less -R; }
-
-
-# Colorful trees
-treec() { tree -C $* | less -R; }
-
+if [[ -f ~/.funcs ]]; then
+	source ~/.funcs
+fi
 
 ###############################################################################
 # history
@@ -239,9 +152,9 @@ HISTCONTROL=ignoreboth
 # append to the history file, don't overwrite it
 shopt -s histappend
 # max number of lines in the history file
-HISTFILESIZE=2000
+HISTFILESIZE=20000000
 # the number of commands to "remember"
-HISTSIZE=1000
+HISTSIZE=10000000
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
@@ -283,82 +196,24 @@ alias pwd='pwd;xtitle $PWD'
 # initialize PATH
 PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 
-# add go path
-if [ -d /usr/local/go ]; then
-    prepend PATH /usr/local/go/bin
-    export GOPATH=$HOME/workspaces/golang
-    prepend PATH $GOPATH/bin
+if [ "$TERM" != "tmux-256color" ]; then
+	export TERM=xterm-256color
 fi
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+export JUNIT_HOME=/usr/local/JUNIT
+export CLASSPATH=$JUNIT_HOME/junit-4.10.jar:.
 
-# TODO: ask about why the cygwin setup stuff is in an if/elif/else chain
-if [[ $OSTYPE = cygwin ]]; then
-    # setup maven and dircolors from cygwin
-    prepend PATH "/cygdrive/c/Program Files/apache-maven-3.2.1/bin/"
-    eval `dircolors --bourne-shell ~/.dircolors`
-elif [[ -d /c/apache-maven-3.2.3/bin ]]; then
-    # setup maven
-    prepend PATH /c/apache-maven-3.2.3/bin
-elif [[ `hostid` = "c98468fb" ]]; then
-    # This is goofy. GIT_SSH points to the command for ssh that git will use.
-    # You cannot include arguments to SSH via this variable; therefore, SOP
-    # is to write a script wrapper for the SSH command... this is done,
-    # exclusively as far as I can tell, to get around the "this machine's
-    # fingerprint is unknown" message - which, will cause git to fail. Sigh.
-    #
+prepend PATH /opt/app/apache-maven-3.3.9/bin
+prepend PATH /opt/app/eclipse
+prepend PATH /opt/app/docker
 
-    # TODO: ask chris about his 'my_ssh'
-    if [[ -d ~/bin ]]; then
-        if [[ -f ~/bin/my_ssh ]]; then
-            GIT_SSH='my_ssh'
-        fi
-    fi
+# add java home to PATh
+prepend PATH $JAVA_HOME/bin
+prepend PATH $JAVA_HOME/../bin
 
-    # TODO: ask about grc.bashrc
-    if [ -f ~/.grc/grc.bashrc ]; then
-        source ~/.grc/grc.bashrc
-    fi
-
-    if [ "$TERM" != "tmux-256color" ]; then
-        export TERM=xterm-256color
-    fi
-    export EDITOR='vim'
-    export VISUAL='vim'
-    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
-    export JUNIT_HOME=/usr/local/JUNIT
-    export CLASSPATH=$JUNIT_HOME/junit-4.10.jar:.
-
-    prepend PATH /opt/app/apache-maven-3.3.9/bin
-    prepend PATH /opt/app/eclipse
-    prepend PATH /opt/app/docker
-    CDPATH=.:$HOME/workspaces/osaaf:$HOME/workspaces/osaaf/auth:$HOME/workspaces/osaaf/inno:$HOME/workspaces/osaaf/cadi
-elif [[ -d /usr/lib/jvm/java-1.8.0-openjdk-amd64 ]]; then
-    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
-
-elif [[ -d /opt/app/java/jdk/jdk170 ]]; then
-    export JAVA_HOME=/opt/app/java/jdk/jdk170
-fi
-
-# TODO: ask about idea-IC
-if [[ -d /opt/app/idea-IC-172.4574.11/bin ]]; then
-    prepend PATH /opt/app/idea-IC-172.4574.11/bin
-fi
-
-# TODO: ask about maven versions
-if [[ -d $HOME/apache-maven-3.2.3 ]]; then
-    prepend PATH $HOME/apache-maven-3.2.3/bin
-fi
-
-if [ -d /opt/app/node-v4.4.5-linux-x64 ]; then
-    prepend PATH /opt/app/node-v4.4.5-linux-x64/bin
-fi
-
-# TODO: ask about aft and swm
-if [[ -d /opt/app/aft/aftswmcli/bin ]]; then
-    prepend PATH /opt/app/aft/aftswmcli/bin
-fi
-if [[ -d /opt/app/swm/scldlrm/bin ]]; then
-    prepend PATH /opt/app/swm/scldlrm/bin
-fi
+# add my own programs to the PATH
+prepend PATH $HOME/.local/bin
+prepend PATH $HOME/bin
 
 # setup cassandra
 if [[ -d /opt/app/cassandra/bin ]]; then
@@ -373,20 +228,9 @@ elif [[ -d $HOME/apache-cassandra-2.1.3 ]]; then
     prepend PATH $HOME/apache-cassandra-2.1.3/bin
 fi
 
-# add java home to PATh
-prepend PATH $JAVA_HOME/bin
-prepend PATH $JAVA_HOME/../bin
-
-# add my own programs to the PATH
-prepend PATH $HOME/.local/bin
-prepend PATH $HOME/bin
-
 export LD_LIBRARY_PATH
 export MANPATH
 export PATH
-
-PYTHONPATH=$HOME/aafpylib:$PYTHONPATH
-
 
 ###############################################################################
 # editor
@@ -430,35 +274,11 @@ if [ "$PS1" ]; then
     fastprompt
 fi
 
-# home variables for various... things
-# TODO: ask about all the SWMCLI_HOME variables
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-
 # No idea where these are being set, so we'll just unset them here
 unset NO_PROXY
 unset https_proxy
 unset HTTPS_PROXY
 unset no_proxy
+
+# My personal bin
+export PATH="/home/ih616h/bin:$PATH"

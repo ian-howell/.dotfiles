@@ -3,6 +3,10 @@ set editing-mode vi
 
 # Show which mode I'm currently in
 set show-mode-in-prompt on
+# set vi-ins-mode-string "INSERT"
+# set vi-cmd-mode-string "NORMAL"
+set vi-ins-mode-string "\1\e[1;96m\2(ins) \1\e[0m\2"
+set vi-cmd-mode-string "\1\e[1;95m\2(cmd) \1\e[0m\2"
 
 set keymap vi-command
 # these are for vi-command mode
@@ -14,12 +18,22 @@ set keymap vi-insert
 "jk": vi-movement-mode
 Control-l: clear-screen
 
-set completion-ignore-case on
-set show-all-if-ambiguous on
-set show-all-if-unmodified on
-
 # sane tab completion
+# Tab for forward-complete
 TAB: menu-complete
+# Shit-Tab for backward complete
 "\e[Z": menu-complete-backward
+# Show the common prefix before cycling through files
 set menu-complete-display-prefix on
-set show-all-if-ambiguous on
+# Ignore case when completing
+set completion-ignore-case on
+# underscores and dashes are matched to eachother
+set completion-map-case on
+
+# The following only works when showing a menu
+# Show the matching prefix in color
+set colored-completion-prefix on
+# Show filetype by color in completion
+set colored-stats on
+
+# set show-all-if-unmodified on

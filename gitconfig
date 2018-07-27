@@ -1,9 +1,10 @@
 [user]
-	name = Ian Howell (ih616h)
-	email = ih616h@us.att.com
+	name = IanHowell
+	email = ian.howell@att.com
 
 [core]
     editor = vim
+	excludesfile = /home/ih616h/.global_gitignore
 
 [push]
     default = matching

@@ -1,0 +1,7 @@
+fugitive/
+*.checkstyle
+
+run_batch
+aaflogin
+
+etc/
