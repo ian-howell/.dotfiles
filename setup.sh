@@ -7,6 +7,8 @@
 ARTIFACT_DIR=$HOME/setup_artifacts
 
 DOTFILES=$HOME/.dotfiles
+
+CURRENT_USER=$(who | awk '{print $1}')
 #===]
 #===[ Functions
 function build_vim ()
@@ -23,7 +25,7 @@ function build_vim ()
         fi
 
         # Vim exists, but is version 7.4 or lower. Remove it
-        apt-get remove vim vim-runtime gvim
+        apt-get -qq remove vim vim-runtime gvim
     fi
 
     VIM_ARTIFACTS=$ARTIFACT_DIR/vim_artifacts
@@ -58,8 +60,8 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 echo "Setting up essentials"
-apt-get -y update
-apt-get -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
+apt-get -qq -y update
+apt-get -qq -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
     libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
     libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
     python3-dev ruby-dev lua5.1 lua5.1-dev libperl-dev git curl make ctags
@@ -70,13 +72,24 @@ if [ ! -e $ARTIFACT_DIR ]; then
 fi
 cd $ARTIFACT_DIR
 
+# Set up vim
 build_vim
 
 # Get and configure Vim-Plug
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+curl -sfLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 vim +PlugInstall +qall
 cd $ARTIFACT_DIR
+
+# Set up zsh
+zsh_exists=$(command -v zsh)
+if [ -z "$zsh_exists" ]; then
+    apt-get -qq -y install zsh
+    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    bash_loc=$(which bash)
+    zsh_loc=$(which zsh)
+    sed -i -e "s,$HOME:$bash_loc,$HOME:$zsh_loc," /etc/passwd
+fi
 
 # Set up my dotfiles
 if [ ! -e $DOTFILES ]; then
@@ -84,5 +97,10 @@ if [ ! -e $DOTFILES ]; then
 fi
 cd $DOTFILES
 source setup_dotfiles.sh
+
+chown -f -R $CURRENT_USER:$CURRENT_USER $HOME/.*
+
+echo "========== COMLETE =========="
+echo "Artifacts from setup process are stored in $ARTIFACT_DIR."
 
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
