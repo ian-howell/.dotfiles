@@ -1,0 +1,55 @@
+set incsearch                        "Lookahead as search pattern is specified
+
+"Highlight the current line
+set cursorline
+set scrolloff=2
+
+"Quickly update to latest vrapperrc settings
+nnoremap <space>so :source ~/.vrapperrc<cr>
+
+"Shortcut from insert to normal mode
+inoremap jk <ESC>
+"inoremap kj <ESC>
+inoremap j: <ESC>
+inoremap k: <ESC>
+"Shortcut from command to normal mode
+cnoremap jk <ESC>
+cnoremap kj <ESC>
+"Because I'm apparently really bad at keyboards...
+inoremap Jk <ESC>
+cnoremap Jk <ESC>
+inoremap JK <ESC>
+cnoremap JK <ESC>
+inoremap jK <ESC>
+cnoremap jK <ESC>
+inoremap kJ <ESC>
+cnoremap kJ <ESC>
+inoremap KJ <ESC>
+cnoremap KJ <ESC>
+inoremap Kj <ESC>
+cnoremap Kj <ESC>
+
+"Fast toggle for maximize
+nnoremap <space>x :max<cr>
+
+"Fast bracketing (repeatable)
+"inoremap {{ {<CR>}<UP><END>
+"Fast bracketing (non-repeatable)
+inoremap {{ {<CR>}<ESC>kA
+
+"Yank to EOL like it should
+nnoremap Y y$
+
+"Remove all trailing whitespace from a file
+nnoremap <space>ws :%s/[\t ]+$//<cr>``zz
+
+"Recursively search current directory
+set path=**
+
+"Shortcut to find files
+nnoremap <space>ff :tabfind<space>
+
+nnoremap <c-h> :tabp<cr>
+nnoremap <c-l> :tabn<cr>
+
+set contentassistmode

@@ -1,26 +1,49 @@
+#===[ python
 # Use python3 by default
 alias python=python3
 alias pdb=pdb3
 # Because I suck at keyboards
 alias pyhton=python3
-
-# Git aliases
+#===]
+#===[ Git aliases
 alias gst="git status"
 alias gs="git status" # Because I constantly mistype this one
 alias glo="git log"
 alias glor="git log --color=always --oneline | head"
+alias glog="git -c color.ui=always log --graph --pretty=tformat:\"%C(yellow)%h%Creset}%Cgreen(%ar)%Creset}%C(bold blue)<%an>%Creset}%C(bold red)%d%Creset %s\" | awk 'BEGIN { FS = \"}\" } ; { printf \"%s\t\t%s\t%-40s%s\n\", \$1, \$2, \$3, \$4 }' | less -R"
 alias gbr="git branch"
 alias gdi="git diff"
 alias gca="git commit --amend --no-edit"
-
-# verbose ls with color
-alias ls='ls --color=auto -hl'
-
+#===]
+#===[ ls
 # Hidden files
 alias lsa="ls -a"
-
+# list style
+alias l='ls -l'
 # List only directories in the current directory
 alias lsd="ls -d */"
+# time order
+alias ls-ltr='ls -ltr'
+#===]
+#===[ vim
+alias vi="vim"
+alias cim="vim"
+
+alias :q=exit
+alias :wq=exit
+alias :qa=exit
+alias :wqa=exit
+#===]
+#===[ grep
+# Ignore binaries/directories
+alias grep="grep -IHdskip --color=auto"
+alias grpe='grep'
+#===]
+#===[ valgrind
+alias valrgind=valgrind
+alias valigrnd=valgrind
+alias val=valgrind
+#===]
 
 # Count all the directories in the current directory
 alias countdir="ls -d */ | wc -l"
@@ -29,30 +52,8 @@ alias countdir="ls -d */ | wc -l"
 alias mv="mv -i"
 alias cp="cp -i"
 
-# Easy shutdown
-alias die="sudo poweroff now"
-
-# Vim aliases
-alias vi="vim"
-alias cim="vim"
-alias jvim="$HOME/vim/src/vim"
-
-# More mistyping fixes
-alias valrgind=valgrind
-alias valigrnd=valgrind
-alias val=valgrind
-
 # Open in default without needing that dumb hyphen
 alias dopen="xdg-open"
-
-# Vim-like exit for bash
-alias :q=exit
-alias :wq=exit
-alias :qa=exit
-alias :wqa=exit
-
-# Ignore binaries/directories
-alias grep="grep -IHdskip --color=auto"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -61,120 +62,17 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # Shortcut to trim whitespace from output
 alias trim="awk '{\$1=\$1};1;'"
 
-
-# tons of machine aliases
-#
-alias jg='ssh  -t -q jg screen -dR'
-alias dev='ssh  -t -q dev screen -dR'
-alias dev1='ssh  -t -q dev1 screen -dR'
-alias dev2='ssh -t -q dev2 screen -dR'
-alias perf1='ssh -t -q perf1 screen -dR'
-alias perf2='ssh -t -q perf2 screen -dR'
-alias perf3='ssh -t -q perf3 screen -dR'
-alias perf4='ssh -t -q perf4 screen -dR'
-alias perf5='ssh -t -q perf5 screen -dR'
-alias perf6='ssh -t -q perf6 screen -dR'
-alias test1='ssh -t -q test1 screen -dR'
-alias test2='ssh -t -q test2 screen -dR'
-alias test3='ssh -t -q test3 screen -dR'
-alias test4='ssh -t -q test4 screen -dR'
-alias test5='ssh -t -q test5 screen -dR'
-alias test6='ssh -t -q test6 screen -dR'
-
-alias ouat1='ssh -t -q uat1 screen -dR'
-alias ouat2='ssh -t -q uat2 screen -dR'
-alias ouat3='ssh -t -q uat3 screen -dR'
-alias ouat4='ssh -t -q uat4 screen -dR'
-alias ouat5='ssh -t -q uat5 screen -dR'
-alias ouat6='ssh -t -q uat6 screen -dR'
-
-alias ist1='ssh -t -q ist1 screen -dR'
-alias ist2='ssh -t -q ist2 screen -dR'
-alias ist3='ssh -t -q ist3 screen -dR'
-alias ist4='ssh -t -q ist4 screen -dR'
-alias ist5='ssh -t -q ist5 screen -dR'
-alias ist6='ssh -t -q ist6 screen -dR'
-alias ist7='ssh -t -q ist7 screen -dR'
-alias ist8='ssh -t -q ist8 screen -dR'
-alias ist9='ssh -t -q ist9 screen -dR'
-alias ist10='ssh -t -q ist10 screen -dR'
-alias ist11='ssh -t -q ist11 screen -dR'
-alias ist12='ssh -t -q ist12 screen -dR'
-alias ist13='ssh -t -q ist13 screen -dR'
-alias ist14='ssh -t -q ist14 screen -dR'
-alias ist15='ssh -t -q ist15 screen -dR'
-
-# Prod
-alias op1='ssh -q -t zlp08846.vci.att.com screen -dR'
-alias p1='echo "Use p85, dummy"'
-alias p2='ssh -q -t zlp08847.vci.att.com screen -dR'
-alias p3='ssh -q -t zlp08848.vci.att.com screen -dR'
-alias p4='ssh -q -t zlp08849.vci.att.com screen -dR'
-alias p5='ssh -q -t zlp08850.vci.att.com screen -dR'
-alias p6='ssh -q -t zlp08851.vci.att.com screen -dR'
-alias p7='ssh -q -t zlp08853.vci.att.com screen -dR'
-alias p8='ssh -q -t zlp08854.vci.att.com screen -dR'
-alias p85='ssh -q -t zlp14185.vci.att.com screen -dR'
-alias p86='ssh -q -t zlp14186.vci.att.com screen -dR'
-alias p87='ssh -q -t zlp14187.vci.att.com screen -dR'
-alias p88='ssh -q -t zlp14188.vci.att.com screen -dR'
-alias p89='ssh -q -t zlp14189.vci.att.com screen -dR'
-alias p90='ssh -q -t zlp14190.vci.att.com screen -dR'
-alias p91='ssh -q -t zlp14191.vci.att.com screen -dR'
-alias p92='ssh -q -t zlp14192.vci.att.com screen -dR'
-alias p93='ssh -q -t zlp14193.vci.att.com screen -dR'
-alias p94='ssh -q -t zlp14194.vci.att.com screen -dR'
-alias p95='ssh -q -t zlp14195.vci.att.com screen -dR'
-alias p96='ssh -q -t zlp14196.vci.att.com screen -dR'
-alias p97='ssh -q -t zlp14197.vci.att.com screen -dR'
-alias p98='ssh -q -t zlp14198.vci.att.com screen -dR'
-alias p99='ssh -q -t zlp14199.vci.att.com screen -dR'
-
-# These are handy for logging into a machine name you've cut & pasted
-alias zlp08846.vci.att.com='ssh -q -t zlp08846.vci.att.com screen -dR'
-alias zlp08846='ssh -q -t zlp08846.vci.att.com screen -dR'
-alias zlp08847.vci.att.com='ssh -q -t zlp08847.vci.att.com screen -dR'
-alias zlp08847='ssh -q -t zlp08847.vci.att.com screen -dR'
-alias zlp08848.vci.att.com='ssh -q -t zlp08848.vci.att.com screen -dR'
-alias zlp08848='ssh -q -t zlp08848.vci.att.com screen -dR'
-alias zlp08849.vci.att.com='ssh -q -t zlp08849.vci.att.com screen -dR'
-alias zlp08849='ssh -q -t zlp08849.vci.att.com screen -dR'
-alias zlp08850.vci.att.com='ssh -q -t zlp08850.vci.att.com screen -dR'
-alias zlp08850='ssh -q -t zlp08850.vci.att.com screen -dR'
-alias zlp08851.vci.att.com='ssh -q -t zlp08851.vci.att.com screen -dR'
-alias zlp08851='ssh -q -t zlp08851.vci.att.com screen -dR'
-alias zlp08853.vci.att.com='ssh -q -t zlp08853.vci.att.com screen -dR'
-alias zlp08853='ssh -q -t zlp08853.vci.att.com screen -dR'
-alias zlp08854.vci.att.com='ssh -q -t zlp08854.vci.att.com screen -dR'
-alias zlp08854='ssh -q -t zlp08854.vci.att.com screen -dR'
-
-# convenience aliases from chris
-alias nobuff='stdbuf -i0 -o0 -e0'
-alias aaflogin='. /opt/app/aaf/authz-cmd/*/bin/aaflogin'
-alias grpe='grep'
 alias h='history'
 alias j='jobs -l'
-alias l='ls -l'
-alias ls-ltr='ls -ltr'
-alias lz='ls -lSr'
-alias m='more'
-alias mi='mvn install'
-alias mci='mvn clean install'
 alias path='echo -e ${PATH//:/\\n}'
-alias pwd='pwd;xtitle $HOSTNAME: $PWD'
-alias sc='screen '
-alias sls='screen -ls'
-alias start_cassandra='xterm -hold -e $HOME/cassandra/bin/cassandra -f&'
-alias tf='tail -f'
-# alias top='top -M -d 5 -c'
+alias pwd='pwd;xtitle $PWD'
 alias top='top -d 5 -c'
-alias up='cd ..;pwd'
-alias ups='ps -ef'
-
-# curl through the proxy
-alias curlx="curl -x ih6q6h:8r^6QtXjWxK4@http://one.proxy.att.com:8080"
 
 # force tmux to use 256 colors (to make vim pretty)
 alias tmux="tmux -2"
 
-alias dmux="tmux new-session -d -s 'dev' 'vim'; tmux split-window -h; tmux -2 attach-session -d"
+alias pprint="python -m json.tool"
+
+alias dirs="dirs -lpv"
+
+# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

@@ -22,7 +22,6 @@ Plug 'zchee/deoplete-go'
 Plug 'christoomey/vim-tmux-navigator'
 
 if has('python3')
-    " Plug 'artur-shaik/vim-javacomplete2'
     Plug 'shougo/deoplete.nvim'
     Plug 'roxma/nvim-yarp'
     Plug 'roxma/vim-hug-neovim-rpc'
@@ -45,10 +44,10 @@ endif
 if v:version >= 800
     Plug 'skywind3000/asyncrun.vim'
 
-    " Plug 'w0rp/ale'
+    Plug 'w0rp/ale'
     "Custom signs for gutter
-    " let g:ale_sign_error = "✗"
-    " let g:ale_sign_warning = "▲"
+    let g:ale_sign_error = "✗"
+    let g:ale_sign_warning = "▲"
 endif
 
 call plug#end()
@@ -78,6 +77,7 @@ set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth
 set smarttab           "Backspace deletes a shiftwidth's worth of spaces
 set expandtab          "Turns tabs into spaces
+" set noexpandtab        "Turns spaces into spaces
 set autoindent         "Keep the same indentation level when inserting a new line
 "===]
 "===[ Line and column display settings
@@ -124,12 +124,10 @@ nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
 "===[ Miscellaneous key mappings
 "Shortcut from insert to normal mode
 inoremap jk <ESC>
-inoremap kj <ESC>
-inoremap j:k <ESC>
-inoremap k:j <ESC>
+inoremap j: <ESC>
+inoremap k: <ESC>
 "Shortcut from command to normal mode
 cnoremap jk <C-c>
-cnoremap kj <C-c>
 "Because I'm apparently really bad at keyboards...
 inoremap Jk <ESC>
 cnoremap Jk <C-c>
@@ -137,12 +135,6 @@ inoremap JK <ESC>
 cnoremap JK <C-c>
 inoremap jK <ESC>
 cnoremap jK <C-c>
-inoremap kJ <ESC>
-cnoremap kJ <C-c>
-inoremap KJ <ESC>
-cnoremap KJ <C-c>
-inoremap Kj <ESC>
-cnoremap Kj <C-c>
 
 "Quickly source vimrc
 nnoremap <space>s :source ~/.vimrc<CR>
@@ -226,7 +218,7 @@ set laststatus=2
 
 "Setup custom colors
 hi User1 ctermbg=NONE cterm=bold
-hi User2 ctermbg=black
+hi User2 ctermbg=grey ctermfg=black
 
 set statusline=                            "Start empty
 set statusline+=%2*                        "Change color
@@ -265,11 +257,9 @@ set foldtext=folding#MyFoldText()
 "===]
 "===[ Show undesirable hidden characters
 "Show hidden characters
-" if &modifiable
-"   set list
-" endif
-" Actually, don't
-set nolist
+if &modifiable
+  set list
+endif
 "Set tabs to a straight line followed by blanks and trailing spaces to dots
 set listchars=tab:│\ ,trail:·
 "Remove the background highlighting from the above special characters
@@ -307,6 +297,17 @@ nnoremap <space>fv :vert sfind *
 nnoremap <space>bb :buffer *
 nnoremap <space>bs :sbuffer *
 nnoremap <space>bv :vert sbuffer *
+nnoremap <space>bn :bnext<cr>
+nnoremap <space>bp :bprevious<cr>
+nnoremap <space>bf :bfirst<cr>
+nnoremap <space>bl :blast<cr>
+"
+"Shortcut to find tabs
+nnoremap <space>tt :tabf *
+nnoremap <space>tn :tabnext<cr>
+nnoremap <space>tp :tabprevious<cr>
+nnoremap <space>tf :tabfirst<cr>
+nnoremap <space>tl :tablast<cr>
 "===]
 "===[ Grep customization ]==="
 let &grepprg='grep -nrsHI --exclude=tags --exclude-dir=\*venv\* --exclude-dir=.git'
@@ -358,6 +359,7 @@ set wildignore+=tags
 set wildignore+=/home/**/*venv*/**
 set wildignore+=*.class
 set wildignore+=*.png,*.jpg,*.bmp,*.gif
+set wildignore+=*.html  " Comment this out for html, obviously
 set wildignore+=%*
 "===]
 "===[ Unsorted

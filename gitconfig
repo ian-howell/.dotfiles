@@ -1,12 +1,10 @@
 [user]
-	name = Ian Howell (ih616h)
-	email = ih616h@us.att.com
+name = Ian Howell
+email = ian.howell0@gmail.com
 
 [core]
-    editor = vim
+editor = vim
+excludesfile = $HOME/.global_gitignore
 
 [push]
-    default = matching
-
-[http]
-    proxy = https://one.proxy.att.com:8080
+default = matching

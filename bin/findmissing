@@ -1,0 +1,10 @@
+#!/bin/bash 
+
+#           skip csv 'header' line            pull user           remove mechids        uppercase is invalid 
+for n in $(tail --lines +2 ~/user_role.csv | cut -f1 -d","  | grep -P "m[0-9]{5}" | grep -v -P "[A-Z]" | sed -e 's/@csp.att.com//' | sort -u) 
+do 
+	grep "^$n" /opt/app/aaf/data/suits.dat > /dev/null 
+	if [ $? -eq 1 ]; then 
+		echo $n 
+	fi 
+done

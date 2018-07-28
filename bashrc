@@ -8,10 +8,8 @@ esac
 # changed since I loaded it. Start by getting the modified ctime.
 BASHRC_MOD=`stat -c %Y ~/.bashrc`
 
-
-###############################################################################
-# convenience functions
-###############################################################################
+#===[ convenience functions
+    #===[ addpath
 # Add to the path variable named by $1 the component $2.  $3 must be
 # "append" or "prepend" to indicate where the component is added.
 function addpath ()
@@ -41,19 +39,22 @@ function addpath ()
         unset result value
     fi
 }
-
+    #===]
+    #===[ append
 # convenience routine which appends a string to a path.
 function append ()
 {
     addpath "$1" "$2" append
 }
-
+    #===]
+    #===[ prepend
 # convenience routine which prepends a string to a path.
 function prepend ()
 {
     addpath "$1" "$2" prepend
 }
-
+    #===]
+    #===[ rempath
 # Remove from the path variable named by $1 the component $2.
 function rempath ()
 {
@@ -87,169 +88,27 @@ function rempath ()
 
     IFS=${PIFS}
 }
+    #===]
+#===]
 
-function xtitle ()
-{
-    case $- in *i*)
-        case $TERM in
-            xterm | *-256color | rxvt | screen)
-                # put the arguments in the title bar
-                echo -ne "\033]0;$*\007" ;;
-            *)  ;;
-        esac
-    esac
-}
+if [[ -f ~/.funcs ]]; then
+	source ~/.funcs
+fi
 
-# TODO: ask about how the fastprompt function works
-function fastprompt()
-{
-    # tput bold - Bold effect
-    # tput rev - Display inverse colors
-    # tput sgr0 - Reset everything
-    # tput setaf {CODE}- Set foreground color, see color {CODE} table below for more information.
-    # tput setab {CODE}- Set background color, see color {CODE} table below for more information.
-    #
-    # 0	Black
-    # 1	Red
-    # 2	Green
-    # 3	Yellow
-    # 4	Blue
-    # 5	Magenta
-    # 6	Cyan
-    # 7	White
-
-    LAST_MOD=`stat -c %Y ~/.bashrc`
-    if (( $LAST_MOD >  $BASHRC_MOD )); then
-        source ~/.bashrc
-        echo "bashrc reloaded"
-    fi
-    unset PROMPT_COMMAND
-    PROMPT_COMMAND=fastprompt
-
-    history -a
-    case $TERM in
-        xterm | *-256color | rxvt | screen )
-            # begin building prompt
-            PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u\[$(tput sgr0)\]"  # bold green username
-            case $HOSTNAME in
-                zld*) # dev machines (green)
-                    PS1="$PS1@\[$(tput setaf 2)\]\h\[$(tput sgr0)\]"  # green hostname
-                    ;;
-                zlt*) # test machines (yellow)
-                    PS1="$PS1@\[$(tput setaf 3)\]\h\[$(tput sgr0)\]"  # yellow hostname
-                    ;;
-                zlp* | *lpd*) # prod machines (red)
-                    PS1="$PS1@\[$(tput setaf 1)\]\h\[$(tput sgr0)\]"  # red hostname
-                    ;;
-                mocdtl12jh6752) # my local machine
-                    PS1="$PS1@\[$(tput bold)\]\[$(tput setaf 4)\]localhost\[$(tput sgr0)\]"  # blue "localhost"
-                    ;;
-                *)  # everything else
-                    PS1="$PS1@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]"  # blue hostname
-                    ;;
-            esac
-            # finish building prompt
-            PS1="$PS1$ "  # literal "$ "
-            ;;
-        *)
-            PS1="\u@\h$ " ;;
-    esac
-}
-
-function cd_func()
-{
-    local x2 the_new_dir adir index
-    local -i cnt
-
-    if [[ $1 ==  "--" ]]; then
-        dirs -v
-        return 0
-    fi
-
-    the_new_dir=$1
-    [[ -z $1 ]] && the_new_dir=$HOME
-
-    if [[ ${the_new_dir:0:1} == '-' ]]; then
-        #
-        # Extract dir N from dirs
-        index=${the_new_dir:1}
-        [[ -z $index ]] && index=1
-        adir=$(dirs +$index)
-        [[ -z $adir ]] && return 1
-        the_new_dir=$adir
-    fi
-
-    #
-    # '~' has to be substituted by ${HOME}
-    [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
-
-    #
-    # Now change to the new dir and add to the top of the stack
-    pushd "${the_new_dir}" > /dev/null
-    [[ $? -ne 0 ]] && return 1
-    the_new_dir=$(pwd)
-
-    #
-    # Trim down everything beyond 11th entry
-    popd -n +11 2>/dev/null 1>/dev/null
-
-    #
-    # Remove any other occurence of this dir, skipping the top of the stack
-    for ((cnt=1; cnt <= 10; cnt++)); do
-        x2=$(dirs +${cnt} 2>/dev/null)
-        [[ $? -ne 0 ]] && return 0
-        [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
-        if [[ "${x2}" == "${the_new_dir}" ]]; then
-            popd -n +$cnt 2>/dev/null 1>/dev/null
-            cnt=cnt-1
-        fi
-    done
-
-    return 0
-}
-
-function cd()
-{
-    case $TERM in
-        xterm | *-256color | rxvt)  # if we're using an X window
-            cd_func "$@" && xtitle $PWD ;;  # change the title bar
-        *)
-            cd_func "$@";;
-    esac
-}
-
-# Generate a random password
-randpw(){ < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c${1:-32};echo;}
-
-todo(){ grep -HInsr --color=always TODO $1 | cut -d':' -f-2,4- -s;}
-
-# Scrollable, colored grep
-lgrep() { grep -I $* --color=always | less -R; }
-
-
-# Colorful trees
-treec() { tree -C $* | less -R; }
-
-
-###############################################################################
-# history
-###############################################################################
+#===[ history
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
 # append to the history file, don't overwrite it
 shopt -s histappend
 # max number of lines in the history file
-HISTFILESIZE=2000
+HISTFILESIZE=20000000
 # the number of commands to "remember"
-HISTSIZE=1000
+HISTSIZE=10000000
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
-
-
-###############################################################################
-# colors
-###############################################################################
+#===]
+#===[ colors
 # enable color support of ls and grep
 if [ -x /usr/bin/dircolors ]; then
     alias ls='ls --color=auto'
@@ -267,140 +126,34 @@ export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
 export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
-
-###############################################################################
-# aliases
-###############################################################################
+#===]
+#===[ aliases
 if [ -f ~/.sh_aliases ]; then
     source ~/.sh_aliases
 fi
-alias pwd='pwd;xtitle $PWD'
-
-
-###############################################################################
-# path
-###############################################################################
+#===]
+#===[ path
 # initialize PATH
 PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 
-# add go path
-if [ -d /usr/local/go ]; then
-    prepend PATH /usr/local/go/bin
-    export GOPATH=$HOME/workspaces/golang
-    prepend PATH $GOPATH/bin
+if [ "$TERM" != "tmux-256color" ]; then
+	export TERM=xterm-256color
 fi
-
-# TODO: ask about why the cygwin setup stuff is in an if/elif/else chain
-if [[ $OSTYPE = cygwin ]]; then
-    # setup maven and dircolors from cygwin
-    prepend PATH "/cygdrive/c/Program Files/apache-maven-3.2.1/bin/"
-    eval `dircolors --bourne-shell ~/.dircolors`
-elif [[ -d /c/apache-maven-3.2.3/bin ]]; then
-    # setup maven
-    prepend PATH /c/apache-maven-3.2.3/bin
-elif [[ `hostid` = "c98468fb" ]]; then
-    # This is goofy. GIT_SSH points to the command for ssh that git will use.
-    # You cannot include arguments to SSH via this variable; therefore, SOP
-    # is to write a script wrapper for the SSH command... this is done,
-    # exclusively as far as I can tell, to get around the "this machine's
-    # fingerprint is unknown" message - which, will cause git to fail. Sigh.
-    #
-
-    # TODO: ask chris about his 'my_ssh'
-    if [[ -d ~/bin ]]; then
-        if [[ -f ~/bin/my_ssh ]]; then
-            GIT_SSH='my_ssh'
-        fi
-    fi
-
-    # TODO: ask about grc.bashrc
-    if [ -f ~/.grc/grc.bashrc ]; then
-        source ~/.grc/grc.bashrc
-    fi
-
-    if [ "$TERM" != "tmux-256color" ]; then
-        export TERM=xterm-256color
-    fi
-    export EDITOR='vim'
-    export VISUAL='vim'
-    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
-    export JUNIT_HOME=/usr/local/JUNIT
-    export CLASSPATH=$JUNIT_HOME/junit-4.10.jar:.
-
-    prepend PATH /opt/app/apache-maven-3.3.9/bin
-    prepend PATH /opt/app/eclipse
-    prepend PATH /opt/app/docker
-    CDPATH=.:$HOME/workspaces/osaaf:$HOME/workspaces/osaaf/auth:$HOME/workspaces/osaaf/inno:$HOME/workspaces/osaaf/cadi
-elif [[ -d /usr/lib/jvm/java-1.8.0-openjdk-amd64 ]]; then
-    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
-
-elif [[ -d /opt/app/java/jdk/jdk170 ]]; then
-    export JAVA_HOME=/opt/app/java/jdk/jdk170
-fi
-
-# TODO: ask about idea-IC
-if [[ -d /opt/app/idea-IC-172.4574.11/bin ]]; then
-    prepend PATH /opt/app/idea-IC-172.4574.11/bin
-fi
-
-# TODO: ask about maven versions
-if [[ -d $HOME/apache-maven-3.2.3 ]]; then
-    prepend PATH $HOME/apache-maven-3.2.3/bin
-fi
-
-if [ -d /opt/app/node-v4.4.5-linux-x64 ]; then
-    prepend PATH /opt/app/node-v4.4.5-linux-x64/bin
-fi
-
-# TODO: ask about aft and swm
-if [[ -d /opt/app/aft/aftswmcli/bin ]]; then
-    prepend PATH /opt/app/aft/aftswmcli/bin
-fi
-if [[ -d /opt/app/swm/scldlrm/bin ]]; then
-    prepend PATH /opt/app/swm/scldlrm/bin
-fi
-
-# setup cassandra
-if [[ -d /opt/app/cassandra/bin ]]; then
-    export CASS_HOME=/opt/app/cassandra
-    prepend PATH /opt/app/cassandra/bin
-elif [[ -d /opt/app/cassandra/2.1.14/bin ]]; then
-    export CASS_HOME=/opt/app/cassandra/2.1.14
-    prepend PATH /opt/app/cassandra/2.1.14/bin
-elif [[ -d $HOME/cassandra ]]; then
-    prepend PATH $HOME/cassandra/bin
-elif [[ -d $HOME/apache-cassandra-2.1.3 ]]; then
-    prepend PATH $HOME/apache-cassandra-2.1.3/bin
-fi
-
-# add java home to PATh
-prepend PATH $JAVA_HOME/bin
-prepend PATH $JAVA_HOME/../bin
 
 # add my own programs to the PATH
 prepend PATH $HOME/.local/bin
 prepend PATH $HOME/bin
 
-export LD_LIBRARY_PATH
-export MANPATH
 export PATH
-
-PYTHONPATH=$HOME/aafpylib:$PYTHONPATH
-
-
-###############################################################################
-# editor
-###############################################################################
+#===]
+#===[ editor
 # use a *real* editor
 export VISUAL=vim
 export EDITOR="$VISUAL"
 # turn on vi-mode
 set -o vi
-
-
-###############################################################################
-# unsorted
-###############################################################################
+#===]
+#===[ unsorted
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
@@ -430,35 +183,10 @@ if [ "$PS1" ]; then
     fastprompt
 fi
 
-# home variables for various... things
-# TODO: ask about all the SWMCLI_HOME variables
-SWMCLI_HOME=/opt/app/aft/aftswmcli
-export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-# SWMCLI_HOME=/opt/app/aft/aftswmcli
-# export SWMCLI_HOME
-# PATH=$PATH:$SWMCLI_HOME/bin
-
 # No idea where these are being set, so we'll just unset them here
 unset NO_PROXY
 unset https_proxy
 unset HTTPS_PROXY
 unset no_proxy
+#===]
+# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

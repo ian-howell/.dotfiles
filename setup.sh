@@ -3,15 +3,53 @@
 # This script downloads and sets up an environment
 ############################
 
-########## Variables
-
+#===[ Variables
 ARTIFACT_DIR=$HOME/setup_artifacts
 
 DOTFILES=$HOME/.dotfiles
-VIM_ARTIFACTS=$ARTIFACT_DIR/vim_artifacts
-COMPIZ_CONFIG_DIR=$HOME/.config/compiz-1/compizconfig/
+#===]
+#===[ Functions
+function build_vim ()
+{
+    echo "Setting up Vim"
+    return
 
-##########
+    vim_exists=$(command -v vim)
+    if [ ! -z "$vim_exists" ]; then
+        vim_version=$(vim --version | head -n1 | cut -d' ' -f5 | cut -d'.' -f1)
+        if [ "$vim_version" -ge "8" ]; then
+            # Vim exists and is at least version 8
+            return
+        fi
+
+        # Vim exists, but is version 7.4 or lower. Remove it
+        apt-get remove vim vim-runtime gvim
+    fi
+
+    VIM_ARTIFACTS=$ARTIFACT_DIR/vim_artifacts
+
+    if [ ! -e $VIM_ARTIFACTS ]; then
+        mkdir $VIM_ARTIFACTS
+    fi
+    cd $VIM_ARTIFACTS
+    # Get vim source
+    if [ -e vim ]; then
+        rm -fr vim
+    fi
+    git clone https://github.com/vim/vim.git
+
+    # Build and configure
+    cd vim/src
+    make
+    make install
+
+    update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
+    update-alternatives --set editor /usr/bin/vim
+    update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
+    update-alternatives --set vi /usr/bin/vim
+
+}
+#===]
 
 # Check that we are root
 if [[ $EUID -ne 0 ]]; then
@@ -32,33 +70,7 @@ if [ ! -e $ARTIFACT_DIR ]; then
 fi
 cd $ARTIFACT_DIR
 
-echo "Setting up Vim"
-
-vim_exists=$(command -v vim)
-
-if [[ $vim_exists -eq 0 ]]; then
-    apt-get remove vim vim-runtime gvim
-fi
-
-if [ ! -e $VIM_ARTIFACTS ]; then
-    mkdir $VIM_ARTIFACTS
-fi
-cd $VIM_ARTIFACTS
-# Get vim source
-if [ -e vim ]; then
-    rm -fr vim
-fi
-git clone https://github.com/vim/vim.git
-
-# Build and configure
-cd vim/src
-make
-make install
-
-update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
-update-alternatives --set editor /usr/bin/vim
-update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
-update-alternatives --set vi /usr/bin/vim
+build_vim
 
 # Get and configure Vim-Plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -73,8 +85,4 @@ fi
 cd $DOTFILES
 source setup_dotfiles.sh
 
-# Get compiz
-echo "Getting Compiz"
-apt-get -y install compiz
-mkdir -p $COMPIZ_CONFIG_DIR
-cp $DOTFILES/compiz_profile.bak $COMPIZ_CONFIG_DIR/Default.ini
+# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

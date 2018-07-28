@@ -1,0 +1,107 @@
+#!/bin/bash
+
+PROD_MACHINES=(
+	zlp14185.vci.att.com
+	zlp14186.vci.att.com
+	zlp14187.vci.att.com
+	zlp14188.vci.att.com
+	zlp14189.vci.att.com
+	zlp14190.vci.att.com
+	zlp14191.vci.att.com
+	zlp14192.vci.att.com
+	zlp14193.vci.att.com
+	zlp14194.vci.att.com
+	zlp14195.vci.att.com
+	zlp14196.vci.att.com
+	zlp14197.vci.att.com
+	zlp14198.vci.att.com
+	zlp14199.vci.att.com
+)
+
+IST_MACHINES=(
+	zlt10062.vci.att.com
+	zlt10063.vci.att.com
+	zlt10064.vci.att.com
+	zlt10075.vci.att.com
+	zlt10076.vci.att.com
+	zlt10077.vci.att.com
+	zlt10074.vci.att.com
+	zlt10078.vci.att.com
+	zlt10079.vci.att.com
+	zlt10080.vci.att.com
+	zlt10081.vci.att.com
+	zlt10082.vci.att.com
+	zlt10087.vci.att.com
+	zlt10088.vci.att.com
+	zlt10089.vci.att.com
+)
+
+PERF_MACHINES=(
+	zlt10059.vci.att.com
+	zlt10060.vci.att.com
+	zlt10061.vci.att.com
+	zlt10071.vci.att.com
+	zlt10072.vci.att.com
+	zlt10073.vci.att.com
+)
+
+TEST_MACHINES=(
+	zlt10065.vci.att.com
+	zlt10066.vci.att.com
+	zlt10067.vci.att.com
+	zlt10068.vci.att.com
+	zlt10069.vci.att.com
+	zlt10070.vci.att.com
+)
+
+DEVL_MACHINES=(
+	zld03316.vci.att.com
+	zld03317.vci.att.com
+	zld03318.vci.att.com
+	zld03319.vci.att.com
+	zld03320.vci.att.com
+	zld03321.vci.att.com
+)
+
+ALL_MACHINES=(
+	${PROD_MACHINES[*]}
+	${IST_MACHINES[*]}
+	${PERF_MACHINES[*]}
+	${TEST_MACHINES[*]}
+	${DEVL_MACHINES[*]}
+)
+
+CQLSH_HOME=/tmp/.cassandra
+CQLSHRC=$CQLSH_HOME/cqlshrc
+FILES=(
+	$HOME/.bashrc
+	$HOME/.sh_aliases
+	$HOME/bin/.vimrc
+	$HOME/.inputrc
+	$HOME/.funcs
+	$CQLSH_HOME
+	$HOME/bin/findmissing
+)
+
+TEMPLATE=/tmp/cqlsh_TEMPLATE
+
+mkdir -p $CQLSH_HOME
+
+rm -f $TEMPLATE
+echo "[authentication]" >> $TEMPLATE
+echo "username = ih616h" >> $TEMPLATE
+echo "password = K14RV*cAsY2b" >> $TEMPLATE
+echo "keyspace = authz" >> $TEMPLATE
+echo >> $TEMPLATE
+echo "[connection]" >> $TEMPLATE
+
+for MACHINE in ${ALL_MACHINES[*]}
+do
+	echo "hostname = $MACHINE" > /tmp/machine_name
+	cat $TEMPLATE /tmp/machine_name > $CQLSHRC
+	rm -f /tmp/machine_name
+	scp -r ${FILES[*]} $MACHINE:~
+done
+
+rm -r $CQLSHRC
+rm -r $TEMPLATE
