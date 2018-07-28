@@ -139,8 +139,6 @@ PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 if [ "$TERM" != "tmux-256color" ]; then
 	export TERM=xterm-256color
 fi
-
-# add my own programs to the PATH
 prepend PATH $HOME/.local/bin
 prepend PATH $HOME/bin
 

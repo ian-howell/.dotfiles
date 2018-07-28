@@ -5,6 +5,3 @@ setlocal noexpandtab
 setlocal foldmethod=syntax
 " Only fold up methods
 setlocal foldnestmax=2
-
-" Completion
-" setlocal omnifunc=javacomplete#Complete
