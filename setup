@@ -96,7 +96,7 @@ if [ ! -e $DOTFILES ]; then
     git clone https://github.com/ian-howell/.dotfiles.git $DOTFILES
 fi
 cd $DOTFILES
-source setup_dotfiles.sh
+source link_dotfiles
 
 chown -f -R $CURRENT_USER:$CURRENT_USER $HOME/.*
 
