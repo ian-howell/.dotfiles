@@ -121,3 +121,10 @@ export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
 
+setopt PROMPT_SUBST
+RPROMPT="[%D{%F %T}]"
+TMOUT=1
+# This weirdness resets the prompt every second UNLESS on the completion-menu
+TRAPALRM() {
+    [ "$WIDGET" = "expand-or-complete" ] && [[ "$_lastcomp[insert]" =~ "^automenu$|^menu:" ]] || zle reset-prompt
+}
