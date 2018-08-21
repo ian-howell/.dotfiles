@@ -10,6 +10,8 @@ lgrep() { grep -I $* --color=always | less -R; }
 # Colorful trees
 treec() { tree -C $* | less -R; }
 
+getcol() { awk "{print $$1}" }
+
 function xtitle ()
 {
     case $- in *i*)
