@@ -23,8 +23,15 @@ Control-l: clear-screen
 TAB: menu-complete
 # Shit-Tab for backward complete
 "\e[Z": menu-complete-backward
+
+# To search through history using a prefix
+"\C-p":history-search-backward
+"\C-n":history-search-forward
+
 # Show the common prefix before cycling through files
 set menu-complete-display-prefix on
+set completion-prefix-display-length 3
+
 # Ignore case when completing
 set completion-ignore-case on
 # underscores and dashes are matched to eachother
@@ -35,3 +42,10 @@ set completion-map-case on
 set colored-completion-prefix on
 # Show filetype by color in completion
 set colored-stats on
+
+set mark-symlinked-directories on
+
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+
+set visible-stats on
