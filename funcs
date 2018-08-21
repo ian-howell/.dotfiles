@@ -12,6 +12,17 @@ treec() { tree -C $* | less -R; }
 
 getcol() { awk "{print $$1}" }
 
+function vpy ()
+{
+    if [ -z $1 ]; then
+        echo "Need to provide a venv"
+    elif [ "$1" = "ls" ]; then
+        \ls $HOME/.venvs
+    else
+        source $HOME/.venvs/$1/bin/activate
+    fi
+}
+
 function xtitle ()
 {
     case $- in *i*)
