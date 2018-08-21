@@ -128,3 +128,6 @@ TMOUT=1
 TRAPALRM() {
     [ "$WIDGET" = "expand-or-complete" ] && [[ "$_lastcomp[insert]" =~ "^automenu$|^menu:" ]] || zle reset-prompt
 }
+
+unsetopt share_history
+setopt no_share_history
