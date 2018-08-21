@@ -9,3 +9,7 @@ vim/plugin
 
 # Tags. Because for some reason I need that in my .dotfiles :eye-roll:
 tags
+
+# These files are specifically meant to be localized to the host
+local_gitconfig
+global_gitignore

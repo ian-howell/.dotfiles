@@ -1,10 +1,9 @@
-[user]
-name = Ian Howell
-email = ian.howell0@gmail.com
-
 [core]
-editor = vim
-excludesfile = $HOME/.global_gitignore
+    editor = vim
+    excludesfile = ~/.dotfiles/global_gitignore
 
 [push]
-default = matching
+    default = matching
+
+[include]
+    path = ~/.dotfiles/local_gitconfig
