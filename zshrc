@@ -102,16 +102,14 @@ bindkey -M viins 'jk' vi-cmd-mode
 export EDITOR='vim'
 export VISUAL='vim'
 
-if [[ -d ~/bin ]]; then
+if [[ -d $HOME/bin ]]; then
 	# My personal bin
-	export PATH="/home/ih616h/bin:$PATH"
+	export PATH="$HOME/bin:$PATH"
 fi
 
-if [[ -f ~/.funcs ]]; then
-	source ~/.funcs
+if [[ -f $HOME/.funcs ]]; then
+	source $HOME/.funcs
 fi
-
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
 # colors for man
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
@@ -123,11 +121,3 @@ export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
 
-# Setup java home
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
-# I'm not sure I like this - It uses up a lot of memory and prevents me from
-# using tmux
-# for JAR in `find /home/ih616h/.m2 -name "*.jar"`; do
-# 	CLASSPATH=$CLASSPATH:$JAR
-# done
-# export CLASSPATH
