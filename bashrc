@@ -172,9 +172,6 @@ shopt -s no_empty_cmd_completion
 # light spellcheck on cd
 shopt -s cdspell
 
-# Prevent ctrl-d from exiting the shell
-set -o ignoreeof
-
 # This is kind of goofy. To check for interactive logins, you generally test the
 # value of PS1 -- therefore, I need to set this at the very end, just in case..
 if [ "$PS1" ]; then
