@@ -292,15 +292,15 @@ nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
 nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword><CR>
 "===]
 "===[ Quickfix and Location window Shortcuts ]==="
-nmap <space>qn <Plug>qf_qf_next
-nmap <space>qp <Plug>qf_qf_previous
-nmap <space>qq <Plug>qf_qf_switch
-nmap <space>qt <Plug>qf_qf_stay_toggle
+nmap <space>qn <Plug>(qf_qf_next)
+nmap <space>qp <Plug>(qf_qf_previous)
+nmap <space>qq <Plug>(qf_qf_switch)
+nmap <space>qt <Plug>(qf_qf_toggle)
 
-nmap <space>ln <Plug>qf_loc_next
-nmap <space>lp <Plug>qf_loc_previous
-nmap <space>lq <Plug>qf_loc_switch
-nmap <space>lt <Plug>qf_loc_stay_toggle
+nmap <space>ln <Plug>(qf_loc_next)
+nmap <space>lp <Plug>(qf_loc_previous)
+nmap <space>lq <Plug>(qf_loc_switch)
+nmap <space>lt <Plug>(qf_loc_toggle)
 
 "The following setting provides these commands from the quickfix and location windows
 " s - open entry in a new horizontal window
