@@ -126,8 +126,14 @@ RPROMPT="[%D{%F %T}]"
 TMOUT=1
 # This weirdness resets the prompt every second UNLESS on the completion-menu
 TRAPALRM() {
-    [ "$WIDGET" = "expand-or-complete" ] && [[ "$_lastcomp[insert]" =~ "^automenu$|^menu:" ]] || zle reset-prompt
+    [[ "$WIDGET" = "expand-or-complete" || "$WIDGET" = "fzf-completion" ]] && [[ "$_lastcomp[insert]" =~ "^automenu$|^menu:" ]] || zle reset-prompt
 }
 
 unsetopt share_history
 setopt no_share_history
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPS="--extended"
+
+export FZF_DEFAULT_COMMAND="fd --type f"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
