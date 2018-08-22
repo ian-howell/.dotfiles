@@ -287,7 +287,7 @@ nnoremap <space>tf :tabfirst<cr>
 nnoremap <space>tl :tablast<cr>
 "===]
 "===[ Grep customization ]==="
-let &grepprg='grep -nrsHI --exclude=tags --exclude-dir=\*venv\* --exclude-dir=.git'
+let &grepprg='ag'
 nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
 nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword><CR>
 "===]
