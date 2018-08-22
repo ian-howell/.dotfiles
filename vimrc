@@ -16,30 +16,7 @@ Plug 'romainl/vim-qf'
 
 Plug 'jsfaint/gen_tags.vim'
 
-Plug 'fatih/vim-go'
-Plug 'zchee/deoplete-go'
-
 Plug 'christoomey/vim-tmux-navigator'
-
-if has('python3')
-    Plug 'shougo/deoplete.nvim'
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
-    let g:deoplete#enable_at_startup = 1
-    let g:deoplete#enable_ignore_case = 1
-    let g:deoplete#enable_smart_case = 1
-    let g:deoplete#enable_fuzzy_completion = 1
-    let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
-    let g:deoplete#omni#input_patterns.java = [
-                \'[^. \t0-9]\.\w*',
-                \'[^. \t0-9]\->\w*',
-                \'[^. \t0-9]\::\w*',
-                \'\s[A-Z][a-z]',
-                \'^\s*@[A-Z][a-z]'
-                \]
-    inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-endif
 
 if v:version >= 800
     Plug 'skywind3000/asyncrun.vim'
