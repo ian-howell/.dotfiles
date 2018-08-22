@@ -185,3 +185,5 @@ unset HTTPS_PROXY
 unset no_proxy
 #===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
