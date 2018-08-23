@@ -178,12 +178,8 @@ if [ "$PS1" ]; then
     fastprompt
 fi
 
-# No idea where these are being set, so we'll just unset them here
-unset NO_PROXY
-unset https_proxy
-unset HTTPS_PROXY
-unset no_proxy
-#===]
-# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
-
+# fzf settings
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+#===]
+
+# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
