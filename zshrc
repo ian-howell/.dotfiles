@@ -98,6 +98,9 @@ source ~/.sh_aliases
 # Use jk to get to cmd mode
 bindkey -M viins 'jk' vi-cmd-mode
 
+# zsh's backword menu complete is different from readline's for some reason
+bindkey '^[[Z' reverse-menu-complete
+
 # Setup default editor
 export EDITOR='vim'
 export VISUAL='vim'
