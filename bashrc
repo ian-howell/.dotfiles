@@ -182,4 +182,8 @@ fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 #===]
 
+if [[ -f $HOME/.local_bashrc ]]; then
+    source $HOME/.local_bashrc
+fi
+
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
