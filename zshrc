@@ -105,14 +105,11 @@ bindkey '^[[Z' reverse-menu-complete
 export EDITOR='vim'
 export VISUAL='vim'
 
-if [[ -d $HOME/bin ]]; then
-	# My personal bin
-	export PATH="$HOME/bin:$PATH"
-fi
+# My personal bin
+[[ -d $HOME/bin ]] && export PATH="$HOME/bin:$PATH"
 
-if [[ -f $HOME/.funcs ]]; then
-	source $HOME/.funcs
-fi
+# My custom functions
+[[ -f $HOME/.funcs ]] && source $HOME/.funcs
 
 # colors for man
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
@@ -140,3 +137,5 @@ export FZF_DEFAULT_OPS="--extended"
 
 export FZF_DEFAULT_COMMAND="fd --type f"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+[[ -f $HOME/.localrc ]] && source $HOME/.localrc
