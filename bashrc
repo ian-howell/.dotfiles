@@ -152,6 +152,13 @@ export EDITOR="$VISUAL"
 set -o vi
 #===]
 #===[ unsorted
+# Bash completion
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+. /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+. /etc/bash_completion
+fi
+
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
