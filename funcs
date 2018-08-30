@@ -63,6 +63,10 @@ function fastprompt()
     unset PROMPT_COMMAND
     PROMPT_COMMAND=fastprompt
 
+    if [ $VIRTUAL_ENV ]; then
+        return
+    fi
+
     history -a
     case $TERM in
         xterm | *-256color | rxvt | screen )
