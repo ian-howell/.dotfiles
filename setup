@@ -14,7 +14,6 @@ CURRENT_USER=$(who | awk '{print $1}')
 function build_vim ()
 {
     echo "Setting up Vim"
-    return
 
     vim_exists=$(command -v vim)
     if [ ! -z "$vim_exists" ]; then
