@@ -91,8 +91,8 @@ function rempath ()
     #===]
 #===]
 
-if [[ -f ~/.funcs ]]; then
-	source ~/.funcs
+if [[ -f ~/.dotfiles/funcs ]]; then
+	source ~/.dotfiles/funcs
 fi
 
 #===[ history

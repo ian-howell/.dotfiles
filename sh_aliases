@@ -1,9 +1,10 @@
 #===[ python
 # Use python3 by default
-alias python=python3
-alias pdb=pdb3
+# alias python=python3
+# alias pdb=pdb3
 # Because I suck at keyboards
-alias pyhton=python3
+alias pyhton=python2
+alias ut="python -m unittest"
 #===]
 #===[ Git aliases
 alias gst="git status"
