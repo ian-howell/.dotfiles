@@ -138,4 +138,4 @@ export FZF_DEFAULT_OPS="--extended"
 export FZF_DEFAULT_COMMAND="fd --type f"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-[[ -f $HOME/.localrc ]] && source $HOME/.localrc
+[[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc

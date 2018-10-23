@@ -189,6 +189,6 @@ fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 #===]
 
-[[ -f $HOME/.localrc ]] && source $HOME/.localrc
+[[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc
 
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
