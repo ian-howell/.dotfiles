@@ -29,7 +29,7 @@ alias :wqa=exit
 #===]
 #===[ grep
 # Ignore binaries/directories
-alias grep="grep -IHdskip --color=auto"
+alias grep="grep -Idskip --color=auto"
 alias grpe='grep'
 #===]
 #===[ valgrind
