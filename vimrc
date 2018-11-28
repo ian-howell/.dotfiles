@@ -27,6 +27,32 @@ if v:version >= 800
     let g:ale_sign_warning = "▲"
 endif
 
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+let g:deoplete#enable_at_startup = 1
+" Close the preview window after completion is done
+autocmd CompleteDone * silent! pclose!
+Plug 'zchee/deoplete-jedi'
+let g:python_host_prog = '$HOME/.venvs/neovim/bin/python'
+let g:deoplete#sources#jedi#show_docstring = 1
+
+" We're only going to use jedi-vim for navigation
+Plug 'davidhalter/jedi-vim'
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#completions_enabled = 0
+let g:jedi#goto_command = ",pg"
+let g:jedi#goto_assignments_command = ""
+let g:jedi#documentation_command = "K"
+let g:jedi#usages_command = ",pu"
+let g:jedi#completions_command = ""
+let g:jedi#rename_command = ",pr"
+
+" I want pymode, but only really for syntax highlighting and folding
+Plug 'python-mode/python-mode'
+let g:pymode_doc = 0
+let g:pymode_run = 0
+let g:pymode_breakpoint = 0
+let g:pymode_rope = 0
+
 call plug#end()
 
 "For filestype specific things (like syntax highlighting)
@@ -41,6 +67,9 @@ colorscheme apprentice
 "===]
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
+if has('nvim')
+    set inccommand=nosplit
+endif
 "Pulled from :help 'incsearch' - highlight all matchs while searching
 augroup vimrc-incsearch-highlight
     autocmd!
@@ -187,6 +216,8 @@ inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 
+" Fast access to asyncronous background jobs
+nnoremap <space>! :AsyncRun<space>
 nnoremap <space>x :r !ascii -ts <c-r><c-w> \| cut -f2 -d'x' \| cut -f1 -d' ' \| tr -d '\n'<cr>
 "===]
 "===[ Statusline
@@ -254,11 +285,11 @@ nnoremap <space>tt :GenCtags<CR>
 nnoremap <space>tj :tjump /
 nnoremap <space>tp :ptjump /
 "===]
-"===[ Persistant Undos ]==="
+"===[ Persistant Undos
 set undofile
 set undodir=$HOME/.vim/undo
 "===]
-"===[ File navigation ]==="
+"===[ File navigation
 "Allow changed buffers to be hidden
 set hidden
 
@@ -286,16 +317,19 @@ nnoremap <space>tp :tabprevious<cr>
 nnoremap <space>tf :tabfirst<cr>
 nnoremap <space>tl :tablast<cr>
 "===]
-"===[ Grep customization ]==="
+"===[ Grep customization
 let &grepprg='ag'
 nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
 nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword><CR>
 "===]
-"===[ Quickfix and Location window Shortcuts ]==="
+"===[ Quickfix and Location window Shortcuts
 nmap <space>qn <Plug>(qf_qf_next)
 nmap <space>qp <Plug>(qf_qf_previous)
 nmap <space>qq <Plug>(qf_qf_switch)
-nmap <space>qt <Plug>(qf_qf_toggle)
+" This doesn't quite work the way I like it
+" nmap <space>qt <Plug>(qf_qf_toggle)
+" Use my own instead
+nmap <silent> <space>qt :call quickfix#Toggle()<cr>
 
 nmap <space>ln <Plug>(qf_loc_next)
 nmap <space>lp <Plug>(qf_loc_previous)
@@ -311,18 +345,7 @@ nmap <space>lt <Plug>(qf_loc_toggle)
 " p - open entry in a preview window
 let g:qf_mapping_ack_style = 1
 
-"Automatically open the quickfix list
-"TODO: Fix this
-let g:qf_auto_open_quickfix = 1
-"===]
-"===[ Skeleton files
-augroup skeletons
-  autocmd!
-  autocmd BufNewFile main.* silent! execute '0r ~/.vim/skeletons/skeleton-main.' . expand("<afile>:e")
-  autocmd BufNewFile *.* silent! execute '0r ~/.vim/skeletons/skeleton.' . expand("<afile>:e")
-
-  autocmd BufNewFile * %substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge
-augroup END
+let g:qf_auto_open_quickfix = 0
 "===]
 "===[ Wildmenu
 set wildmenu
@@ -337,6 +360,7 @@ set wildignore+=/home/**/*venv*/**
 set wildignore+=*.class
 set wildignore+=*.png,*.jpg,*.bmp,*.gif
 set wildignore+=*.html  " Comment this out for html, obviously
+set wildignore+=*.doctree
 set wildignore+=%*
 "===]
 "===[ Unsorted

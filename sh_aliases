@@ -1,3 +1,7 @@
+#===[ python
+alias ut="python -m unittest"
+alias pprint="python -m json.tool"
+#===]
 #===[ Git aliases
 alias gst="git status"
 alias gs="git status" # Because I constantly mistype this one
@@ -13,10 +17,12 @@ alias gca="git commit --amend --no-edit"
 alias lsa="ls -a"
 # list style
 alias l='ls -l'
+# time order
+alias lstr='ls -ltr'
 # List only directories in the current directory
 alias lsd="ls -d */"
-# time order
-alias ls-ltr='ls -ltr'
+# Count all the directories in the current directory
+alias countdir="ls -d */ | wc -l"
 #===]
 #===[ vim
 alias vi="vim"
@@ -37,10 +43,7 @@ alias valrgind=valgrind
 alias valigrnd=valgrind
 alias val=valgrind
 #===]
-
-# Count all the directories in the current directory
-alias countdir="ls -d */ | wc -l"
-
+#===[ Miscellaneous
 # Safety first
 alias mv="mv -i"
 alias cp="cp -i"
@@ -48,24 +51,19 @@ alias cp="cp -i"
 # Open in default without needing that dumb hyphen
 alias dopen="xdg-open"
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Shortcut to trim whitespace from output
 alias trim="awk '{\$1=\$1};1;'"
+
+# force tmux to use 256 colors (to make vim pretty)
+alias tmux="tmux -2"
+
+# List all of the recently visited directories
+alias dirs="dirs -lpv"
 
 alias h='history'
 alias j='jobs -l'
 alias path='echo -e ${PATH//:/\\n}'
 alias pwd='pwd;xtitle $PWD'
 alias top='top -d 5 -c'
-
-# force tmux to use 256 colors (to make vim pretty)
-alias tmux="tmux -2"
-
-alias pprint="python -m json.tool"
-
-alias dirs="dirs -lpv"
-
+#===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

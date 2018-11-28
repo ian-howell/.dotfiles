@@ -11,7 +11,7 @@ if exists('g:loaded_ale')
   let g:ale_type_map = {'flake8': {'ES': 'WS', 'E': 'W'}}
 
   "Python linters
-  let g:ale_python_flake8_executable = 'python3'
+  let g:ale_python_flake8_executable = 'python'
   let g:ale_python_flake8_options = '-m flake8'
 
   "234 is the same color as the sign column's background

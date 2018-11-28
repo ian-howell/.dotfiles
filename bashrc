@@ -91,9 +91,7 @@ function rempath ()
     #===]
 #===]
 
-if [[ -f ~/.funcs ]]; then
-	source ~/.funcs
-fi
+[[ -f $HOME/.dotfiles/funcs ]] && source $HOME/.dotfiles/funcs
 
 #===[ history
 # don't put duplicate lines or lines starting with space in the history.
