@@ -68,5 +68,8 @@ alias top='top -d 5 -c'
 
 # Repeat last command as root
 alias s!="sudo \$(tail $HOME/.zsh_history -n2 | head -n1 | cut -f2 -d';')"
+
+# Kubernetes
+alias k8='kubectl'
 #===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

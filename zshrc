@@ -139,3 +139,6 @@ export FZF_DEFAULT_COMMAND="fd --type f"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 [[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc
+
+type helm > /dev/null && source <(helm completion zsh)
+type kubectl > /dev/null && source <(kubectl completion zsh)
