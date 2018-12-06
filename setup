@@ -112,7 +112,7 @@ source link_dotfiles
 
 chown -f -R $CURRENT_USER:$CURRENT_USER $HOME/.*
 
-echo "========== COMLETE =========="
+echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACT_DIR."
 
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
