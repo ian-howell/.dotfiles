@@ -27,12 +27,9 @@ if v:version >= 800
     let g:ale_sign_warning = "▲"
 endif
 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-let g:deoplete#enable_at_startup = 1
 " Close the preview window after completion is done
-autocmd CompleteDone * silent! pclose!
+" autocmd CompleteDone * silent! pclose!
 Plug 'zchee/deoplete-jedi'
-let g:python_host_prog = '$HOME/.venvs/neovim/bin/python'
 let g:deoplete#sources#jedi#show_docstring = 1
 
 " We're only going to use jedi-vim for navigation
