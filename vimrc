@@ -50,6 +50,8 @@ let g:pymode_run = 0
 let g:pymode_breakpoint = 0
 let g:pymode_rope = 0
 
+Plug 'fatih/vim-go'
+
 call plug#end()
 
 "For filestype specific things (like syntax highlighting)
