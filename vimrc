@@ -88,7 +88,6 @@ set autoindent         "Keep the same indentation level when inserting a new lin
 "===[ Line and column display settings
 "== Lines =="
 set nowrap             "Don't word wrap
-set relativenumber     "Give a relative number of lines from the cursor
 set number             "Show the cursor's current line
 set scrolloff=2        "Scroll when 2 lines from top/bottom
 
