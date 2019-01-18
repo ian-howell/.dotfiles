@@ -7,3 +7,6 @@
 
 [include]
     path = ~/.dotfiles/local_gitconfig
+[user]
+	email = ian.howell0@gmail.com
+	name = Ian Howell
