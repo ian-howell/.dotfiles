@@ -92,13 +92,6 @@ set nowrap             "Don't word wrap
 set number             "Show the cursor's current line
 set scrolloff=2        "Scroll when 2 lines from top/bottom
 
-"Only turn on relative numbers in the active window
-augroup active_relative_number
-    autocmd!
-    autocmd WinEnter * setlocal number relativenumber
-    autocmd WinLeave * setlocal norelativenumber
-augroup END
-
 "Highlight the current line
 set cursorline
 "Only highlight the active window
