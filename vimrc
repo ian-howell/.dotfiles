@@ -51,6 +51,7 @@ let g:pymode_breakpoint = 0
 let g:pymode_rope = 0
 
 Plug 'fatih/vim-go'
+nnoremap ,gc :GoCoverageToggle<cr>
 
 call plug#end()
 
