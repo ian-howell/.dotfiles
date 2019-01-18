@@ -329,6 +329,8 @@ nmap <space>qq <Plug>(qf_qf_switch)
 " nmap <space>qt <Plug>(qf_qf_toggle)
 " Use my own instead
 nmap <silent> <space>qt :call quickfix#Toggle()<cr>
+" Quickly close all quickfix and location lists
+nmap <silent> <space>qc :windo lclose \| cclose<cr>
 
 nmap <space>ln <Plug>(qf_loc_next)
 nmap <space>lp <Plug>(qf_loc_previous)
