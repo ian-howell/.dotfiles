@@ -301,13 +301,13 @@ nnoremap <space>fs :sfind *
 nnoremap <space>fv :vert sfind *
 
 "Shortcut to find buffers
-nnoremap <space>bb :buffer *
-nnoremap <space>bs :sbuffer *
-nnoremap <space>bv :vert sbuffer *
-nnoremap <space>bn :bnext<cr>
-nnoremap <space>bp :bprevious<cr>
-nnoremap <space>bf :bfirst<cr>
-nnoremap <space>bl :blast<cr>
+nnoremap <space>bb :ls<cr>:buffer *
+nnoremap <space>bs :ls<cr>:sbuffer *
+nnoremap <space>bv :ls<cr>:vert sbuffer *
+nnoremap <space>bn :ls<cr>:bnext<cr>
+nnoremap <space>bp :ls<cr>:bprevious<cr>
+nnoremap <space>bf :ls<cr>:bfirst<cr>
+nnoremap <space>bl :ls<cr>:blast<cr>
 "
 "Shortcut to find tabs
 nnoremap <space>tt :tabf *
