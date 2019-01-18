@@ -140,5 +140,15 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 [[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc
 
+fancy-ctrl-z () {
+  if [[ $#BUFFER -eq 0 ]]; then
+    fg
+  else
+    bg
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
+
 type helm > /dev/null && source <(helm completion zsh)
 type kubectl > /dev/null && source <(kubectl completion zsh)
