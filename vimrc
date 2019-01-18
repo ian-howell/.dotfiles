@@ -368,6 +368,10 @@ set backspace=indent,eol,start
 set noswapfile
 "Get out of visual mode faster
 set ttimeoutlen=0
+" Read from modelines for vim settings
 set modelines=1
+" Update faster. This is used for a handful of plugins (like git-gutter)
+set updatetime=750
+
 "===]
 " vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
