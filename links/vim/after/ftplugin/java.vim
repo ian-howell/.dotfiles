@@ -1,6 +1,3 @@
-" Turn tabs into... tabs
-setlocal noexpandtab
-
 " Create folds on syntax
 setlocal foldmethod=syntax
 " Only fold up methods

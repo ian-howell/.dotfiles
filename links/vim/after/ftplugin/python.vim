@@ -1,6 +1,3 @@
-set wildignore+=*.txt,*.rst,*.log
-set wildignore+=*.html,*.css,*.js
-
 " Add a breakpoint
 nnoremap ,pb maOimport pdb; pdb.set_trace()<ESC>`a
 
