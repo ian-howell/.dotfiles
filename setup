@@ -5,6 +5,7 @@
 set -x
 
 #===[ Variables
+MAIN_DIR=$HOME/.dotfiles
 ARTIFACT_DIR=$HOME/setup_artifacts
 #===]
 #===[ Functions
@@ -29,15 +30,14 @@ function build_vim ()
     if [ ! -e $VIM_ARTIFACTS ]; then
         mkdir $VIM_ARTIFACTS
     fi
-    cd $VIM_ARTIFACTS
     # Get vim source
     if [ -e vim ]; then
         rm -fr vim
     fi
-    git clone https://github.com/vim/vim.git
+    git clone https://github.com/vim/vim.git $VIM_ARTIFACTS
 
     # Build and configure
-    cd vim
+    cd $VIM_ARTIFACTS/vim
     ./configure --with-features=huge \
                 --enable-multibyte \
                 --enable-rubyinterp=yes \
@@ -56,6 +56,8 @@ function build_vim ()
     sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
     sudo update-alternatives --set vi /usr/bin/vim
 
+    # Return to the main directory
+    cd $MAIN_DIR
 }
 #===]
 
