@@ -101,10 +101,7 @@ source link_dotfiles
 # Set up vim
 build_vim
 
-# Get and configure Vim-Plug
-# This step _must_ come after linking dotfiles
-curl -sfLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+# Configure Vim-Plug. This step _must_ come after linking dotfiles
 vim +PlugInstall +qall
 
 echo "========== COMPLETE =========="
