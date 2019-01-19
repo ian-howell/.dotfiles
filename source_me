@@ -26,14 +26,9 @@ function build_vim ()
     fi
 
     VIM_ARTIFACTS=$ARTIFACTS_DIR/vim_artifacts
+    mkdir -p $VIM_ARTIFACTS
 
-    if [ ! -e $VIM_ARTIFACTS ]; then
-        mkdir -p $VIM_ARTIFACTS
-    fi
     # Get vim source
-    if [ -e vim ]; then
-        rm -fr vim
-    fi
     git clone https://github.com/vim/vim.git $VIM_ARTIFACTS/vim
 
     # Build and configure
