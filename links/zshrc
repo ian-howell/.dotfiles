@@ -1,3 +1,42 @@
+# WORK IN PROGRESS
+# # Turn on convenient colors
+# autoload -U colors && colors
+
+# # Allow proper substitution in the prompt
+# setopt PROMPT_SUBST
+
+# # Outputs current branch info in prompt format
+# function git_prompt_info() {
+#   local ref
+#   ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+#   ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
+#   local prefix suffix
+#   prefix="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+#   suffix="%{$reset_color%} "
+#   echo "$prefix${ref#refs/heads/}$(parse_git_dirty)$suffix"
+# }
+
+# # Checks if working tree is dirty
+# function parse_git_dirty() {
+#   local STATUS=''
+#   local -a FLAGS
+#   local dirty clean
+#   dirty="%{$fg[blue]%}) %{$fg[yellow]%}✗"
+#   clean="%{$fg[blue]%})"
+#   FLAGS=('--porcelain')
+#   FLAGS+='--ignore-submodules=dirty'
+#   STATUS=$(command git status ${FLAGS} 2> /dev/null | tail -n1)
+#   if [[ -n $STATUS ]]; then
+#     echo "$dirty"
+#   else
+#     echo "$clean"
+#   fi
+# }
+
+
+# ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+# PROMPT='${ret_status} %{$fg[cyan]%}%c%{$reset_color%} $(git_prompt_info)'
+
 export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="robbyrussell"
 plugins=(
