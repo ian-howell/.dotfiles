@@ -63,7 +63,11 @@ runtime macros/matchit.vim
 "===]
 "===[ Colors
 syntax enable
-colorscheme apprentice
+" This is such a hack: set the colorscheme to torte, then set it to apprentice.
+" If setting it to apprentice fails, it will do so quietly. This is import
+" when installing plugins with 'vim +PlugInstall +qall'
+colorscheme torte
+silent! colorscheme apprentice
 "===]
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
