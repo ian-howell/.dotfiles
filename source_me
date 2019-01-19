@@ -57,7 +57,7 @@ function build_vim ()
 #===]
 
 echo "Creating $ARTIFACTS_DIR"
-mkdir -p ARTIFACTS_DIR
+mkdir -p $ARTIFACTS_DIR
 
 echo "Setting up essentials"
 sudo apt-get -qq -y update
