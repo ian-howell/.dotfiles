@@ -6,7 +6,7 @@ set -x
 
 #===[ Variables
 MAIN_DIR=$HOME/.dotfiles
-ARTIFACT_DIR=$HOME/setup_artifacts
+ARTIFACTS_DIR=$HOME/setup_artifacts
 #===]
 #===[ Functions
 function build_vim ()
@@ -25,7 +25,7 @@ function build_vim ()
         sudo apt-get -qq remove vim vim-runtime gvim
     fi
 
-    VIM_ARTIFACTS=$ARTIFACT_DIR/vim_artifacts
+    VIM_ARTIFACTS=$ARTIFACTS_DIR/vim_artifacts
 
     if [ ! -e $VIM_ARTIFACTS ]; then
         mkdir -p $VIM_ARTIFACTS
@@ -34,7 +34,7 @@ function build_vim ()
     if [ -e vim ]; then
         rm -fr vim
     fi
-    git clone https://github.com/vim/vim.git $VIM_ARTIFACTS
+    git clone https://github.com/vim/vim.git $VIM_ARTIFACTS/vim
 
     # Build and configure
     cd $VIM_ARTIFACTS/vim
@@ -76,7 +76,7 @@ sudo apt-get -qq -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
 zsh_exists=$(command -v zsh)
 if [ -z "$zsh_exists" ]; then
     sudo apt-get -qq -y install zsh
-    sh -c install-oh-my-zsh.sh
+    sh -c $MAIN_DIR/install-oh-my-zsh.sh
     # It doesn't look like these are needed anymore - the zsh install handles it
     # bash_loc=$(which bash)
     # zsh_loc=$(which zsh)
@@ -88,9 +88,8 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install --key-bindings --completion --no-update-rc
 
 echo "Installing fd"
-wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd-musl_7.2.0_amd64.deb
-sudo dpkg -i fd-musl_7.2.0_amd64.deb
-mv fd-musl_7.2.0_amd64.deb $ARTIFACTS_DIR
+wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd-musl_7.2.0_amd64.deb -O $ARTIFACTS_DIR
+sudo dpkg -i $ARTIFACTS_DIR/fd-musl_7.2.0_amd64.deb
 
 echo "Remapping caps lock to ctrl"
 sudo sed -i '/XKBOPTIONS/c\\XKBOPTIONS="ctrl:nocaps"' /etc/default/keyboard
@@ -106,7 +105,7 @@ build_vim
 vim +PlugInstall +qall
 
 echo "========== COMPLETE =========="
-echo "Artifacts from setup process are stored in $ARTIFACT_DIR."
+echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
 
 set +x
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
