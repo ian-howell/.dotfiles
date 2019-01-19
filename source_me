@@ -4,100 +4,21 @@
 ############################
 set -x
 
-#===[ Variables
 MAIN_DIR=$HOME/.dotfiles
 ARTIFACTS_DIR=$HOME/setup_artifacts
-#===]
-#===[ Functions
-function build_vim ()
-{
-    echo "Setting up Vim"
-
-    vim_exists=$(command -v vim)
-    if [ ! -z "$vim_exists" ]; then
-        vim_version=$(vim --version | head -n1 | cut -d' ' -f5 | cut -d'.' -f1)
-        if [ "$vim_version" -ge "8" ]; then
-            # Vim exists and is at least version 8
-            return
-        fi
-
-        # Vim exists, but is version 7.4 or lower. Remove it
-        sudo apt-get -qq remove vim vim-runtime gvim
-    fi
-
-    VIM_ARTIFACTS=$ARTIFACTS_DIR/vim_artifacts
-    mkdir -p $VIM_ARTIFACTS
-
-    # Get vim source
-    git clone https://github.com/vim/vim.git $VIM_ARTIFACTS/vim
-
-    # Build and configure
-    cd $VIM_ARTIFACTS/vim
-    ./configure --with-features=huge \
-                --enable-multibyte \
-                --enable-rubyinterp=yes \
-                --enable-python3interp=yes \
-                --with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu \
-                --enable-perlinterp=yes \
-                --enable-luainterp=yes \
-                --enable-gui=gtk2 \
-                --enable-cscope \
-               --prefix=/usr/local
-    make VIMRUNTIMEDIR=/usr/local/share/vim/vim81
-    sudo make install
-
-    sudo update-alternatives --install /usr/bin/editor editor /usr/bin/vim 1
-    sudo update-alternatives --set editor /usr/bin/vim
-    sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
-    sudo update-alternatives --set vi /usr/bin/vim
-
-    # Return to the main directory
-    cd $MAIN_DIR
-}
-#===]
+SRC=$MAIN_DIR/src
 
 echo "Creating $ARTIFACTS_DIR"
 mkdir -p $ARTIFACTS_DIR
 
-echo "Setting up essentials"
-sudo apt-get -qq -y update
-sudo apt-get -qq -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
-    libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
-    libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
-    python3-dev ruby-dev lua5.1 lua5.1-dev libperl-dev git curl make ctags \
-    silversearcher-ag tree
-
-# Set up zsh
-zsh_exists=$(command -v zsh)
-if [ -z "$zsh_exists" ]; then
-    sudo apt-get -qq -y install zsh
-    sh -c $MAIN_DIR/install-oh-my-zsh.sh
-    # It doesn't look like these are needed anymore - the zsh install handles it
-    # bash_loc=$(which bash)
-    # zsh_loc=$(which zsh)
-    # sed -i -e "s,$HOME:$bash_loc,$HOME:$zsh_loc," /etc/passwd
-fi
-
-echo "Installing FZF"
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --key-bindings --completion --no-update-rc
-
-echo "Installing fd"
-wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd-musl_7.2.0_amd64.deb -O $ARTIFACTS_DIR/fd-musl_7.2.0_amd64.deb
-sudo dpkg -i $ARTIFACTS_DIR/fd-musl_7.2.0_amd64.deb
-
-echo "Remapping caps lock to ctrl"
-sudo sed -i '/XKBOPTIONS/c\\XKBOPTIONS="ctrl:nocaps"' /etc/default/keyboard
-sudo dpkg-reconfigure -f noninteractive keyboard-configuration
-
-# Set up my dotfiles
-source $MAIN_DIR/link_dotfiles
-
-# Set up vim
-build_vim
-
-# Configure Vim-Plug. This step _must_ come after linking dotfiles
-vim +PlugInstall +qall
+# Order is (somewhat) important
+source $SRC/essentials.sh
+source $SRC/zsh.sh
+source $SRC/fzf.sh
+source $SRC/fd.sh
+source $SRC/remap-capslock.sh
+source $SRC/link_dotfiles.sh
+source $SRC/vim.sh
 
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."

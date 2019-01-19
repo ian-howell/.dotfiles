@@ -1,11 +1,11 @@
 # Machine specific for vim
-vim/backup/
-vim/undo/
-vim/swap/
-vim/.netrwhist
-vim/plugged/
-vim/view/
-vim/plugin
+links/vim/backup/
+links/vim/undo/
+links/vim/swap/
+links/vim/.netrwhist
+links/vim/plugged/
+links/vim/view/
+links/vim/plugin
 
 # Tags. Because for some reason I need that in my .dotfiles :eye-roll:
 tags

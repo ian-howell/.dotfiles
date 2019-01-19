@@ -4,8 +4,9 @@
 ############################
 
 ########## Variables
+set -x
 
-dir=$HOME/.dotfiles                    # dotfiles directory
+links_dir=$HOME/.dotfiles/links                    # dotfiles directory
 olddir=$HOME/.backup_dotfiles          # old dotfiles backup directory
 files=(profile bashrc sh_aliases vim vimrc inputrc gitconfig funcs zshrc tmux.conf)    # list of files/folders to symlink in homedir
 ##########
@@ -26,7 +27,7 @@ for file in ${files[*]}; do
         mv -f $HOME/.$file $olddir
     fi
     echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file $HOME/.$file
+    ln -s $links_dir/$file $HOME/.$file
 done
 
 # Create the vim directories
@@ -34,3 +35,4 @@ echo "Creating vim undo directory ..."
 mkdir -p $HOME/.vim/undo
 
 echo "done"
+set +x
