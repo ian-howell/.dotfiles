@@ -19,5 +19,6 @@ sudo apt-get install -y
   silversearcher-ag \
   tmux \
   tree \
+  weechat \
   xclip
 set +x
