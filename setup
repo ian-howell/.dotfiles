@@ -2,6 +2,7 @@
 ############################
 # This script downloads and sets up an environment
 ############################
+set -x
 
 #===[ Variables
 ARTIFACT_DIR=$HOME/setup_artifacts
