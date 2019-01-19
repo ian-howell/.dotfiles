@@ -86,10 +86,6 @@ sudo sed -i '/XKBOPTIONS/c\\XKBOPTIONS="ctrl:nocaps"' /etc/default/keyboard
 sudo dpkg-reconfigure -f noninteractive keyboard-configuration
 
 # Set up my dotfiles
-if [ ! -e $DOTFILES ]; then
-    git clone https://github.com/ian-howell/.dotfiles.git $DOTFILES
-fi
-cd $DOTFILES
 source link_dotfiles
 
 # Set up vim
