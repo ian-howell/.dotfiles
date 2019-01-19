@@ -26,5 +26,6 @@ sudo apt-get -qq -y install \
   silversearcher-ag \
   tree \
   xclip \
-  tmux
+  tmux \
+  rxvt-unicode-256color
 set +x
