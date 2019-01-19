@@ -108,4 +108,5 @@ vim +PlugInstall +qall
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACT_DIR."
 
+set +x
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
