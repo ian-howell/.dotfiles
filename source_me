@@ -28,7 +28,7 @@ function build_vim ()
     VIM_ARTIFACTS=$ARTIFACT_DIR/vim_artifacts
 
     if [ ! -e $VIM_ARTIFACTS ]; then
-        mkdir $VIM_ARTIFACTS
+        mkdir -p $VIM_ARTIFACTS
     fi
     # Get vim source
     if [ -e vim ]; then
@@ -61,6 +61,9 @@ function build_vim ()
 }
 #===]
 
+echo "Creating $ARTIFACTS_DIR"
+mkdir -p ARTIFACTS_DIR
+
 echo "Setting up essentials"
 sudo apt-get -qq -y update
 sudo apt-get -qq -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
@@ -68,12 +71,6 @@ sudo apt-get -qq -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
     libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
     python3-dev ruby-dev lua5.1 lua5.1-dev libperl-dev git curl make ctags \
     silversearcher-ag tree
-
-# Create a directory to hold the artifacts from the setup process
-if [ ! -e $ARTIFACT_DIR ]; then
-    mkdir $ARTIFACT_DIR
-fi
-cd $ARTIFACT_DIR
 
 # Set up zsh
 zsh_exists=$(command -v zsh)
@@ -93,13 +90,14 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 echo "Installing fd"
 wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd-musl_7.2.0_amd64.deb
 sudo dpkg -i fd-musl_7.2.0_amd64.deb
+mv fd-musl_7.2.0_amd64.deb $ARTIFACTS_DIR
 
 echo "Remapping caps lock to ctrl"
 sudo sed -i '/XKBOPTIONS/c\\XKBOPTIONS="ctrl:nocaps"' /etc/default/keyboard
 sudo dpkg-reconfigure -f noninteractive keyboard-configuration
 
 # Set up my dotfiles
-source link_dotfiles
+source $MAIN_DIR/link_dotfiles
 
 # Set up vim
 build_vim
