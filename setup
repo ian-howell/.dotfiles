@@ -77,7 +77,7 @@ cd $ARTIFACT_DIR
 zsh_exists=$(command -v zsh)
 if [ -z "$zsh_exists" ]; then
     sudo apt-get -qq -y install zsh
-    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    sh install-oh-my-zsh.sh
     # It doesn't look like these are needed anymore - the zsh install handles it
     # bash_loc=$(which bash)
     # zsh_loc=$(which zsh)
