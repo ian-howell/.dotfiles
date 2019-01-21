@@ -53,6 +53,9 @@ let g:pymode_rope = 0
 Plug 'fatih/vim-go'
 nnoremap ,gc :GoCoverageToggle<cr>
 
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
 call plug#end()
 
 "For filestype specific things (like syntax highlighting)
@@ -293,26 +296,35 @@ set hidden
 "Recursively search current directory
 set path=.,,**
 
-"Shortcut to find files
-nnoremap <space>ff :find *
-nnoremap <space>fs :sfind *
-nnoremap <space>fv :vert sfind *
+"Trying out fzf
+if git#IsGitRepo()
+  let fzfSource = 'git ls-files'
+else
+  let fzfSource = 'fd .'
+endif
 
-"Shortcut to find buffers
-nnoremap <space>bb :ls<cr>:buffer *
-nnoremap <space>bs :ls<cr>:sbuffer *
-nnoremap <space>bv :ls<cr>:vert sbuffer *
-nnoremap <space>bn :ls<cr>:bnext<cr>
-nnoremap <space>bp :ls<cr>:bprevious<cr>
-nnoremap <space>bf :ls<cr>:bfirst<cr>
-nnoremap <space>bl :ls<cr>:blast<cr>
-"
-"Shortcut to find tabs
-nnoremap <space>tt :tabf *
-nnoremap <space>tn :tabnext<cr>
-nnoremap <space>tp :tabprevious<cr>
-nnoremap <space>tf :tabfirst<cr>
-nnoremap <space>tl :tablast<cr>
+""Shortcut to find files
+nnoremap <silent> <space>ff :call fzf#run({'source': fzfSource, 'sink': 'edit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>fv :call fzf#run({'source': fzfSource, 'sink': 'vsplit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>fs :call fzf#run({'source': fzfSource, 'sink': 'split', 'window': 'botright split'})<cr>
+
+""Shortcut to find buffers
+nnoremap <silent> <space>bb :call fzf#run({'source': map(range(1, bufnr('$')), 'bufname(v:val)'), 'sink': 'edit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>bs :call fzf#run({'source': map(range(1, bufnr('$')), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>bv :call fzf#run({'source': map(range(1, bufnr('$')), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>bn :bnext<cr>
+nnoremap <silent> <space>bp :bprevious<cr>
+nnoremap <silent> <space>bf :bfirst<cr>
+nnoremap <silent> <space>bl :blast<cr>
+
+" The following hides the statusline and allows jk to quit fzf
+augroup fzf
+  autocmd!
+  autocmd! FileType fzf
+  autocmd  FileType fzf set laststatus=0 noshowmode noruler
+    \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+  autocmd FileType fzf tnoremap <silent> jk <c-\><c-n>:q!<cr>
+augroup END
 "===]
 "===[ Grep customization
 let &grepprg='ag --vimgrep'
