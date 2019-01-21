@@ -214,6 +214,8 @@ inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 
 " Fast access to asyncronous background jobs
 nnoremap <space>! :AsyncRun<space>
+
+tnoremap jk <c-\><c-n>
 "===]
 "===[ Statusline
 "Always show the status line
