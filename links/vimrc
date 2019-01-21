@@ -314,7 +314,7 @@ nnoremap <space>tf :tabfirst<cr>
 nnoremap <space>tl :tablast<cr>
 "===]
 "===[ Grep customization
-let &grepprg='ag'
+let &grepprg='ag --vimgrep'
 nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
 nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword><CR>
 "===]
