@@ -24,5 +24,6 @@ sudo apt-get -qq -y install \
   make \
   ctags \
   silversearcher-ag \
-  tree
+  tree \
+  xclip
 set +x
