@@ -25,5 +25,6 @@ sudo apt-get -qq -y install \
   ctags \
   silversearcher-ag \
   tree \
-  xclip
+  xclip \
+  tmux
 set +x
