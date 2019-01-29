@@ -1,6 +1,6 @@
 [core]
     editor = vim
-    excludesfile = ~/.dotfiles/global_gitignore
+    excludesfile = ~/.dotfiles/links/global_gitignore
 
 [push]
     default = matching

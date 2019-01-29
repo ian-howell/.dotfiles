@@ -13,4 +13,3 @@ tags
 # These files are specifically meant to be localized to the host
 localrc
 local_gitconfig
-global_gitignore
