@@ -95,8 +95,10 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.sh_aliases
 
-# Use jk to get to cmd mode
-bindkey -M viins 'jk' vi-cmd-mode
+# Command mode indicator for vi-mode
+MODE_INDICATOR="%{$fg_bold[magenta]%}(cmd)%{$reset_color%}"
+# Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
+export KEYTIMEOUT=1
 
 # zsh's backword menu complete is different from readline's for some reason
 bindkey '^[[Z' reverse-menu-complete
@@ -122,15 +124,9 @@ export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
 
 setopt PROMPT_SUBST
-RPROMPT="[%D{%F %T}]"
-TMOUT=1
-# This weirdness resets the prompt every second UNLESS on the completion-menu
-TRAPALRM() {
-    [[ "$WIDGET" = "expand-or-complete" || "$WIDGET" = "fzf-completion" ]] && [[ "$_lastcomp[insert]" =~ "^automenu$|^menu:" ]] || zle reset-prompt
-}
-
 unsetopt share_history
 setopt no_share_history
+
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPS="--extended"
