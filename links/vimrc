@@ -296,17 +296,15 @@ set hidden
 "Recursively search current directory
 set path=.,,**
 
-"Trying out fzf
-if git#IsGitRepo()
-  let fzfSource = 'git ls-files'
-else
-  let fzfSource = 'fd .'
-endif
+""Shortcut to find files in git repo
+nnoremap <silent> <space>ff :call fzf#run({'source': 'git ls-files', 'sink': 'edit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>fv :call fzf#run({'source': 'git ls-files', 'sink': 'vsplit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>fs :call fzf#run({'source': 'git ls-files', 'sink': 'split', 'window': 'botright split'})<cr>
 
-""Shortcut to find files
-nnoremap <silent> <space>ff :call fzf#run({'source': fzfSource, 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fv :call fzf#run({'source': fzfSource, 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fs :call fzf#run({'source': fzfSource, 'sink': 'split', 'window': 'botright split'})<cr>
+""Shortcut to find all files
+nnoremap <silent> <space>Ff :call fzf#run({'source': 'fd .', 'sink': 'edit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>Fv :call fzf#run({'source': 'fd .', 'sink': 'vsplit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>Fs :call fzf#run({'source': 'fd .', 'sink': 'split', 'window': 'botright split'})<cr>
 
 ""Shortcut to find buffers
 nnoremap <silent> <space>bb :call fzf#run({'source': map(range(1, bufnr('$')), 'bufname(v:val)'), 'sink': 'edit', 'window': 'botright split'})<cr>
