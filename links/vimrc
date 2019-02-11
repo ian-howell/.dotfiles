@@ -127,20 +127,6 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
 "===]
 "===[ Miscellaneous key mappings
-"Shortcut from insert to normal mode
-inoremap jk <ESC>
-inoremap j: <ESC>
-inoremap k: <ESC>
-"Shortcut from command to normal mode
-cnoremap jk <C-c>
-"Because I'm apparently really bad at keyboards...
-inoremap Jk <ESC>
-cnoremap Jk <C-c>
-inoremap JK <ESC>
-cnoremap JK <C-c>
-inoremap jK <ESC>
-cnoremap jK <C-c>
-
 "Quickly source vimrc
 nnoremap <space>s :source ~/.vimrc<CR>
 
@@ -217,8 +203,6 @@ inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 
 " Fast access to asyncronous background jobs
 nnoremap <space>! :AsyncRun<space>
-
-tnoremap jk <c-\><c-n>
 "===]
 "===[ Statusline
 "Always show the status line
@@ -315,13 +299,12 @@ nnoremap <silent> <space>bp :bprevious<cr>
 nnoremap <silent> <space>bf :bfirst<cr>
 nnoremap <silent> <space>bl :blast<cr>
 
-" The following hides the statusline and allows jk to quit fzf
+" The following hides the statusline
 augroup fzf
   autocmd!
   autocmd! FileType fzf
   autocmd  FileType fzf set laststatus=0 noshowmode noruler
     \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
-  autocmd FileType fzf tnoremap <silent> jk <c-\><c-n>:q!<cr>
 augroup END
 "===]
 "===[ Grep customization
