@@ -1,3 +1,4 @@
+set tabstop=4
 set noexpandtab
 
 " vim-go messes with 'errorformat', preventing AsyncRun from populating
