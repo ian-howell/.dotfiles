@@ -112,6 +112,9 @@ augroup END
 set sidescroll=1                           "Set horizontal scroll speed
 set colorcolumn=80
 set signcolumn=yes                           "Keep the sign column open at all times
+"Mappings for horizontal scrolling
+nnoremap <Right> 5zl
+nnoremap <Left> 5zh
 "===]
 "===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
