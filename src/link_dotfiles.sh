@@ -9,7 +9,7 @@ set -x
 links_dir=$HOME/.dotfiles/links                    # dotfiles directory
 olddir=$HOME/.backup_dotfiles          # old dotfiles backup directory
 #TODO: This is really just all of the files in ~/.dotfiles/links
-files=(profile bashrc sh_aliases vim vimrc inputrc gitconfig funcs zshrc tmux.conf)    # list of files/folders to symlink in homedir
+files=(profile bashrc sh_aliases vim vimrc inputrc gitconfig funcs zshrc tmux.conf Xresources)    # list of files/folders to symlink in homedir
 ##########
 
 # create dotfiles_old in homedir
