@@ -174,6 +174,7 @@ export VISUAL='vim'
 # My custom functions
 [[ -f $HOME/.funcs ]] && source $HOME/.funcs
 
+#===[ Pagers
 # colors for man
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
 export LESS_TERMCAP_md=$'\e[1;33m'     # begin blink
@@ -183,6 +184,11 @@ export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
 export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
+
+# TODO: what are these?
+# export PAGER='less'
+# export LESS='-R'
+#===]
 
 unsetopt share_history
 setopt no_share_history
@@ -203,6 +209,9 @@ fancy-ctrl-z () {
 }
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
+
+# recognize comments
+setopt interactivecomments
 
 type helm > /dev/null && source <(helm completion zsh)
 type kubectl > /dev/null && source <(kubectl completion zsh)
