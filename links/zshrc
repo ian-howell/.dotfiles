@@ -259,4 +259,4 @@ function spectrum_bls() {
   done
 }
 #===]
-# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
+# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]:ts=2:sw=2
