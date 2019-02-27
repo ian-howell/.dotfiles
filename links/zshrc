@@ -4,10 +4,6 @@ autoload -U colors && colors
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
 
-# Save the history
-SAVEHIST=1000000
-HISTFILE=$HOME/.zsh_history
-
 #===[ Functions
 # Outputs current branch info in prompt format
 function git_prompt_info() {
@@ -151,6 +147,21 @@ zstyle '*' single-ignored show
 
 # zsh's backword menu complete is different from readline's for some reason
 bindkey '^[[Z' reverse-menu-complete
+#===]
+#===[ History
+# TODO: clean this up too
+# History file configuration
+[ -z "$HISTFILE" ] && HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=10000
+
+## History command configuration
+setopt extended_history       # record timestamp of command in HISTFILE
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+setopt hist_verify            # show command with history expansion to user before running it
+setopt inc_append_history     # add commands to HISTFILE in order of execution
 #===]
 
 # Setup default editor
