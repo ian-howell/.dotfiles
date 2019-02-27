@@ -1,8 +1,8 @@
 !===[ Colors and Tranparency
 URxvt.termName: screen-256color
-URxvt.transparent: true
-URxvt.shading: 50
-URxvt.tintColor: #262626
+! NOTE: this requires additional setup with the composition manager (compiz... for now)
+URxvt.depth: 32
+URxvt.backgroud: rgba:0000/0000/0200/c800
 
 ! Apprentice colors (credit romainl)
 URxvt.foreground: #BCBCBC
