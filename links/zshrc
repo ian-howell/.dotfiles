@@ -89,6 +89,11 @@ bindkey '^e' end-of-line
 export KEYTIMEOUT=1
 #===]
 
+# add custom completionos to the function path
+fpath=($ZSH/functions $ZSH/completions $fpath)
+# load stock functions
+autoload -U compaudit compinit
+
 source ~/.sh_aliases
 
 # zsh's backword menu complete is different from readline's for some reason
