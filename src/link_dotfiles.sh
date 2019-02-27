@@ -4,7 +4,7 @@
 ############################
 
 ########## Variables
-#set -x
+set -x
 
 links_dir=$HOME/.dotfiles/links                    # dotfiles directory
 olddir=$HOME/.backup_dotfiles          # old dotfiles backup directory
@@ -19,8 +19,8 @@ mkdir -p $olddir
 # directory, then create symlinks from $HOME to any files in the
 # $links_dir directory
 echo "Moving any existing dotfiles from $HOME to $olddir"
-for path in $links_dir/*; do
-    file=$(basename $path)
+for path_to_dotfile in $links_dir/*; do
+    file=$(basename $path_to_dotfile)
     if [ -h $HOME/.$file ]; then
         rm $HOME/.$file
     elif [ -e $HOME/.$file ]; then
