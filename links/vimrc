@@ -112,6 +112,7 @@ augroup END
 set sidescroll=1                           "Set horizontal scroll speed
 set colorcolumn=80
 set signcolumn=yes                           "Keep the sign column open at all times
+set nostartofline                            "Prevent the cursor fom changing columns when jumping
 "===]
 "===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
