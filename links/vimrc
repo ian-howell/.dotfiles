@@ -281,17 +281,18 @@ set hidden
 "Recursively search current directory
 set path=.,,**
 
-""Shortcut to find files in git repo
-nnoremap <silent> <space>ff :call fzf#run({'source': 'git ls-files', 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fv :call fzf#run({'source': 'git ls-files', 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fs :call fzf#run({'source': 'git ls-files', 'sink': 'split', 'window': 'botright split'})<cr>
+if git#IsGitRepo()
+  let fzfSource = 'git ls-files -co --exclude-standard'
+else
+  let fzfSource = 'fd . --type f --type l'
+endif
 
-""Shortcut to find all files
-nnoremap <silent> <space>Ff :call fzf#run({'source': 'fd . --type f --type l', 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>Fv :call fzf#run({'source': 'fd . --type f --type l', 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>Fs :call fzf#run({'source': 'fd . --type f --type l', 'sink': 'split', 'window': 'botright split'})<cr>
+" So this is smart - f* will use git files if in a git repo, and fd files otherwise
+nnoremap <silent> <space>ff :call fzf#run({'source': fzfSource, 'sink': 'edit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>fv :call fzf#run({'source': fzfSource, 'sink': 'vsplit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>fs :call fzf#run({'source': fzfSource, 'sink': 'split', 'window': 'botright split'})<cr>
 
-""Shortcut to find buffers
+" Shortcut to find buffers
 nnoremap <silent> <space>bb :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': 'botright split'})<cr>
 nnoremap <silent> <space>bs :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': 'botright split'})<cr>
 nnoremap <silent> <space>bv :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': 'botright split'})<cr>
