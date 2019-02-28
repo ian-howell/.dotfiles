@@ -287,9 +287,9 @@ nnoremap <silent> <space>fv :call fzf#run({'source': 'git ls-files', 'sink': 'vs
 nnoremap <silent> <space>fs :call fzf#run({'source': 'git ls-files', 'sink': 'split', 'window': 'botright split'})<cr>
 
 ""Shortcut to find all files
-nnoremap <silent> <space>Ff :call fzf#run({'source': 'fd .', 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>Fv :call fzf#run({'source': 'fd .', 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>Fs :call fzf#run({'source': 'fd .', 'sink': 'split', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>Ff :call fzf#run({'source': 'fd . --type f --type l', 'sink': 'edit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>Fv :call fzf#run({'source': 'fd . --type f --type l', 'sink': 'vsplit', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>Fs :call fzf#run({'source': 'fd . --type f --type l', 'sink': 'split', 'window': 'botright split'})<cr>
 
 ""Shortcut to find buffers
 nnoremap <silent> <space>bb :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': 'botright split'})<cr>
