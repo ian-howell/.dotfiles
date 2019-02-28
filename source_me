@@ -19,6 +19,7 @@ source $SRC/fd.sh
 source $SRC/remap-capslock.sh
 source $SRC/link_dotfiles.sh
 source $SRC/vim.sh
+source $SRC/set-theme.sh
 
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
