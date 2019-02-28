@@ -7,6 +7,7 @@ set -x
 MAIN_DIR=$HOME/.dotfiles
 ARTIFACTS_DIR=$HOME/setup_artifacts
 SRC=$MAIN_DIR/src
+BG_DIR=$MAIN_DIR/bg_images
 
 echo "Creating $ARTIFACTS_DIR"
 mkdir -p $ARTIFACTS_DIR
@@ -20,6 +21,7 @@ source $SRC/remap-capslock.sh
 source $SRC/link_dotfiles.sh
 source $SRC/vim.sh
 source $SRC/set-theme.sh
+source $SRC/set-bg.sh
 
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
