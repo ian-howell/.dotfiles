@@ -18,7 +18,8 @@ function git_prompt_info() {
   ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
   ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
   local prefix suffix
-  prefix="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+  # prefix="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+  prefix="%{$fg_bold[magenta]%}"
   suffix="%{$reset_color%} "
   echo "$prefix${ref#refs/heads/}$(parse_git_dirty)$suffix"
 }
@@ -28,15 +29,32 @@ function parse_git_dirty() {
   local STATUS=''
   local -a FLAGS
   local dirty clean
-  dirty="%{$fg[blue]%}) %{$fg[yellow]%}✗"
-  clean="%{$fg[blue]%})"
+  dirty=" %{$fg[red]%}✗"
+  clean=" %{$fg_bold[green]%}✓"
+  staging=" %{$fg[yellow]%}★"
   FLAGS=('--porcelain')
   FLAGS+='--ignore-submodules=dirty'
-  STATUS=$(command git status ${FLAGS} 2> /dev/null | tail -n1)
-  if [[ -n $STATUS ]]; then
-    echo "$dirty"
+  STATUS=$(command git status ${FLAGS} 2> /dev/null)
+
+  UNTRACKED=$(command git status ${FLAGS} 2> /dev/null | grep "^??")
+  INDEX_CHANGED=$(command git status ${FLAGS} 2> /dev/null | grep "^[^ ?].")
+  WORKINGTREE_CHANGED=$(command git status ${FLAGS} 2> /dev/null | grep "^.[^ ?]")
+  let "val = 0"
+  if [[ -n $UNTRACKED ]]; then
+    let "val = $val | 4"
+  fi
+  if [[ -n $INDEX_CHANGED ]]; then
+    let "val = $val | 2"
+  fi
+  if [[ -n $WORKINGTREE_CHANGED ]]; then
+    let "val = $val | 1"
+  fi
+  if [[ $val -eq 0 ]]; then
+    echo " %{$fg_bold[green]%}$val"
+  elif [[ "(( $val % 2 ))" -eq 0 ]]; then
+    echo " %{$fg_bold[yellow]%}$val"
   else
-    echo "$clean"
+    echo " %{$fg_bold[red]%}$val"
   fi
 }
 
