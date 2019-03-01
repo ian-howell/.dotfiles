@@ -10,7 +10,7 @@ sudo apt-get -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
                 ruby-dev lua5.1 lua5.1-dev libperl-dev
 
 # These are my programs
-sudo apt-get install -y
+sudo apt-get install -y \
   ctags \
   curl \
   git \
