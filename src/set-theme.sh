@@ -67,58 +67,20 @@ if which "$DCONF" > /dev/null 2>&1; then
         dset use-theme-colors "false"
         dset use-theme-background "false"
 
+        #update plugins
+        BASE_KEY_NEW=/org/compiz/profiles/unity/plugins
+
+        PROFILE_KEY="$BASE_KEY_NEW/grid"
+        dset put-center-key "'Disabled'"
+
+        PROFILE_KEY="$BASE_KEY_NEW/obs"
+        dset opacity-matches "['class=Gnome-terminal']"
+        dset opacity-values "[90, 0]"
+
         unset PROFILE_NAME
         unset PROFILE_SLUG
         unset DCONF
         unset UUIDGEN
-        exit 0
+        return
     fi
 fi
-
-# Fallback for Gnome 2 and early Gnome 3
-[[ -z "$GCONFTOOL" ]] && GCONFTOOL=gconftool
-[[ -z "$BASE_KEY" ]] && BASE_KEY=/apps/gnome-terminal/profiles
-
-PROFILE_KEY="$BASE_KEY/$PROFILE_SLUG"
-
-gset() {
-    local type="$1"; shift
-    local key="$1"; shift
-    local val="$1"; shift
-
-    "$GCONFTOOL" --set --type "$type" "$PROFILE_KEY/$key" -- "$val"
-}
-
-# Because gconftool doesn't have "append"
-glist_append() {
-    local type="$1"; shift
-    local key="$1"; shift
-    local val="$1"; shift
-
-    local entries="$(
-        {
-            "$GCONFTOOL" --get "$key" | tr -d '[]' | tr , "\n" | fgrep -v "$val"
-            echo "$val"
-        } | head -c-1 | tr "\n" ,
-    )"
-
-    "$GCONFTOOL" --set --type list --list-type $type "$key" "[$entries]"
-}
-
-# Append the Base16 profile to the profile list
-glist_append string /apps/gnome-terminal/global/profile_list "$PROFILE_SLUG"
-
-gset string visible_name "$PROFILE_NAME"
-gset string palette "#282a2e:#a54242:#8c9440:#de935f:#5f819d:#85678f:#5e8d87:#707880:#373b41:#cc6666:#b5bd68:#f0c674:#81a2be:#b294bb:#8abeb7:#c5c8c6"
-gset string background_color "#1d1f21"
-gset string foreground_color "#c5c8c6"
-gset string bold_color "#c5c8c6"
-gset bool   bold_color_same_as_fg "true"
-gset bool   use_theme_colors "false"
-gset bool   use_theme_background "false"
-
-unset PROFILE_NAME
-unset PROFILE_SLUG
-unset DCONF
-unset UUIDGEN
-set +x

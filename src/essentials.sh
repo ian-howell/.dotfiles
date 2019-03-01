@@ -11,6 +11,8 @@ sudo apt-get -y install libncurses5-dev libgnome2-dev libgnomeui-dev \
 
 # These are my programs
 sudo apt-get install -y \
+  compiz-plugins \
+  compizconfig-settings-manager \
   ctags \
   curl \
   git \
