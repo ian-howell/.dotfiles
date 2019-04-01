@@ -129,7 +129,7 @@ nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
 "===]
 "===[ Miscellaneous key mappings
 "Quickly source vimrc
-nnoremap <space>s :source ~/.vimrc<CR>
+nnoremap <silent> <space>s :source ~/.vimrc<CR>
 
 "Fast bracketing (repeatable)
 inoremap {{ {<CR>}<UP><END>
