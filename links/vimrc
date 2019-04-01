@@ -43,9 +43,7 @@ silent! colorscheme apprentice
 "===]
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
-if has('nvim')
-    set inccommand=nosplit
-endif
+
 "Pulled from :help 'incsearch' - highlight all matchs while searching
 augroup vimrc-incsearch-highlight
     autocmd!
@@ -59,17 +57,15 @@ set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth
 set smarttab           "Backspace deletes a shiftwidth's worth of spaces
 set expandtab          "Turns tabs into spaces
-" set noexpandtab        "Turns spaces into spaces
 set autoindent         "Keep the same indentation level when inserting a new line
 "===]
 "===[ Line and column display settings
 "== Lines =="
 set nowrap             "Don't word wrap
 set number             "Show the cursor's current line
-set scrolloff=2        "Scroll when 2 lines from top/bottom
 
 "Highlight the current line
-set cursorline
+setlocal cursorline
 "Only highlight the active window
 augroup highlight_follows_focus
     autocmd!
@@ -78,8 +74,8 @@ augroup highlight_follows_focus
 augroup END
 
 "== Columns =="
-set sidescroll=1                           "Set horizontal scroll speed
-set colorcolumn=80
+set sidescroll=1                             "Set horizontal scroll speed
+set colorcolumn=80                           "color line 80
 set signcolumn=yes                           "Keep the sign column open at all times
 set nostartofline                            "Prevent the cursor fom changing columns when jumping
 "===]
@@ -87,14 +83,12 @@ set nostartofline                            "Prevent the cursor fom changing co
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
-"Mapping for more convenient 'window mode'
-nnoremap <space>w <C-w>
-
-nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
-nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
+" These mappings will be overwritten by tmux-navigator if it exists
+nnoremap <silent> <c-h> <c-w><c-h>
+nnoremap <silent> <c-j> <c-w><c-j>
+nnoremap <silent> <c-k> <c-w><c-k>
+nnoremap <silent> <c-l> <c-w><c-l>
+nnoremap <silent> <c-\> <c-w><c-\>
 "===]
 "===[ Miscellaneous key mappings
 "Quickly source vimrc
@@ -113,14 +107,6 @@ nnoremap <space>p "+p
 nnoremap <space>P "+P
 xnoremap <space>p "+p
 
-"Disable help screen on F1
-inoremap <F1> <ESC>
-nnoremap <F1> <Esc>
-
-inoremap <buffer> </ </<C-x><C-o>|           "Auto-close html tags
-
-nnoremap <F5> :call build#Build()<CR>
-
 "Remove all trailing whitespace from a file
 nnoremap <silent> <space>ws :call whitespace#StripTrailingWhiteSpace()<CR>
 
@@ -130,18 +116,9 @@ nnoremap <silent> } :<C-u>call ipmotion#MyNextParagraph()<CR>
 xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call ipmotion#MyPrevParagraph()<CR>
 xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call ipmotion#MyNextParagraph()<CR>
 
-"fugitive.vim mappings
-nnoremap <space>gst :Gstatus<CR>
-nnoremap <space>glo :Glog -10<CR>
-nnoremap <space>gdi :Gvdiff<CR>
-nnoremap <space>gad :Gwrite<CR>
-nnoremap <space>gre :Gread<CR>
-nnoremap <space>gco :Gcommit<CR>
-nnoremap <space>ged :Gedit<CR>
-
 "Mappings for working with diffs in visual mode
-xnoremap <space>do :diffget<CR>
-xnoremap <space>dp :diffput<CR>
+xnoremap <silent> <space>do :diffget<CR>
+xnoremap <silent> <space>dp :diffput<CR>
 
 "Turn the mouse on
 set mouse=n
@@ -153,26 +130,13 @@ noremap <C-ScrollWheelDown> 5zl
 "Unmap all the useless mouse actions
 noremap <LeftMouse> <nop>
 noremap <RightMouse> <nop>
-noremap <2-LeftMouse> <nop>
-noremap <2-RightMouse> <nop>
-noremap <3-LeftMouse> <nop>
-noremap <3-RightMouse> <nop>
-inoremap <LeftMouse> <nop>
-inoremap <RightMouse> <nop>
-inoremap <2-LeftMouse> <nop>
-inoremap <2-RightMouse> <nop>
-inoremap <3-LeftMouse> <nop>
-inoremap <3-RightMouse> <nop>
 "but we can use this for convenient window swapping
-noremap <space>w<LeftMouse> <LeftMouse>
+noremap <C-LeftMouse> <LeftMouse>
 
 "Tab complete with tab key
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
-
-" Fast access to asyncronous background jobs
-nnoremap <space>! :AsyncRun<space>
 "===]
 "===[ Statusline
 "Always show the status line
@@ -233,13 +197,6 @@ highlight clear SpecialKey
 "===]
 "===[ Tags
 set tags=./tags;,tags;
-" Disable gtags support
-let g:loaded_gentags#gtags = 1
-" Generate tags automatically (if using git)
-let g:gen_tags#ctags_auto_gen = 1
-" Use git/tags_dir if using git
-let g:gen_tags#use_cache_dir = 1
-nnoremap <space>tt :GenCtags<CR>
 nnoremap <space>tj :tjump /
 nnoremap <space>tp :ptjump /
 "===]
@@ -254,40 +211,24 @@ set hidden
 "Recursively search current directory
 set path=.,,**
 
-if git#IsGitRepo()
-  let fzfSource = 'git ls-files -co --exclude-standard'
-else
-  let fzfSource = 'fd . --type f --type l'
-endif
-
-" So this is smart - f* will use git files if in a git repo, and fd files otherwise
-nnoremap <silent> <space>ff :call fzf#run({'source': fzfSource, 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fv :call fzf#run({'source': fzfSource, 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fs :call fzf#run({'source': fzfSource, 'sink': 'split', 'window': 'botright split'})<cr>
-
+"These mappings will be overwritten by fzf.vim if it exists
+nnoremap <space>ff :find<space>
+nnoremap <space>fv :vert sfind<space>
+nnoremap <space>fs :sfind<space>
 " Shortcut to find buffers
-nnoremap <silent> <space>bb :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>bs :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>bv :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': 'botright split'})<cr>
+nnoremap <space>bb :buffer<space>
+nnoremap <space>bs :vert sbuffer<space>
+nnoremap <space>bv :sbuffer<space>
+
 nnoremap <silent> <space>bn :bnext<cr>
 nnoremap <silent> <space>bp :bprevious<cr>
 nnoremap <silent> <space>bf :bfirst<cr>
 nnoremap <silent> <space>bl :blast<cr>
-
-" TODO: Implement fzf.vim's Ag function
-
-" The following hides the statusline
-augroup fzf
-  autocmd!
-  autocmd! FileType fzf
-  autocmd  FileType fzf set laststatus=0 noshowmode noruler
-    \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
-augroup END
 "===]
 "===[ Grep customization
-let &grepprg='ag --vimgrep'
-nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
-nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword><CR>
+if executable('ag')
+  let &grepprg='ag --vimgrep'
+endif
 "===]
 "===[ Quickfix and Location window Shortcuts
 nmap <space>qn <Plug>(qf_qf_next)
