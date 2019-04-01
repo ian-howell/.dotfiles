@@ -153,7 +153,7 @@ inoremap <buffer> </ </<C-x><C-o>|           "Auto-close html tags
 nnoremap <F5> :call build#Build()<CR>
 
 "Remove all trailing whitespace from a file
-nnoremap <space>ws :%s/\s\+$//<CR>``
+nnoremap <silent> <space>ws :call whitespace#StripTrailingWhiteSpace()<CR>
 
 "Sane paragraph boundaries
 nnoremap <silent> { :<C-u>call ipmotion#MyPrevParagraph()<CR>
