@@ -52,7 +52,6 @@ augroup vimrc-incsearch-highlight
 augroup END
 "===]
 "===[ Tab behaviour
-set tabstop=4          "Tabs are equal to 4 spaces
 set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth
 set smarttab           "Backspace deletes a shiftwidth's worth of spaces

@@ -1,4 +1,3 @@
-set tabstop=2
 set shiftwidth=2
 
 " So this is a bit weird - I want to unmap {{ for yaml files, but the unmap
