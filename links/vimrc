@@ -269,7 +269,7 @@ let g:loaded_gentags#gtags = 1
 " Generate tags automatically (if using git)
 let g:gen_tags#ctags_auto_gen = 1
 " Use git/tags_dir if using git
-let g:gen_tags#use_cache_dir = 0
+let g:gen_tags#use_cache_dir = 1
 nnoremap <space>tt :GenCtags<CR>
 nnoremap <space>tj :tjump /
 nnoremap <space>tp :ptjump /
