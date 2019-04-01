@@ -69,9 +69,23 @@ alias top='top -d 5 -c'
 # Repeat last command as root
 alias s!="sudo \$(tail $HOME/.zsh_history -n2 | head -n1 | cut -f2 -d';')"
 
-# Kubernetes
-alias k8='kubectl'
 # Docker - This may eventually warrant its own section
 alias dkps="docker ps -a --format \"table {{.Command}}\t{{.Status}}\t{{.Names}}\""
+#===]
+#===[ Kubernetes
+alias k='kubectl'
+
+alias kg='kubectl get'
+alias kgpo='kubectl get pods'
+alias kga='kubectl get all'
+alias kgaa='kubectl get all --all-namespaces'
+
+alias ka='kubectl apply -f'
+alias krm='kubectl delete'
+
+alias klo='kubectl logs'
+alias klof='kubectl logs -f'
+
+alias kd='kubectl describe'
 #===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
