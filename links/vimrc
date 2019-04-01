@@ -1,60 +1,29 @@
 "===[ Plugins
 call plug#begin()
 
+" Colorschemes
 Plug 'romainl/apprentice'
 
+" Things that should be built in
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
 Plug 'einfachtoll/didyoumean'
 Plug 'wellle/targets.vim'
 
+" Git
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
-Plug 'romainl/vim-qf'
-
-Plug 'jsfaint/gen_tags.vim'
-
-Plug 'christoomey/vim-tmux-navigator'
-
-if v:version >= 800
-    Plug 'skywind3000/asyncrun.vim'
-
-    Plug 'w0rp/ale'
-    "Custom signs for gutter
-    let g:ale_sign_error = "✗"
-    let g:ale_sign_warning = "▲"
-endif
-
-" Close the preview window after completion is done
-" autocmd CompleteDone * silent! pclose!
-Plug 'zchee/deoplete-jedi'
-let g:deoplete#sources#jedi#show_docstring = 1
-
-" We're only going to use jedi-vim for navigation
-Plug 'davidhalter/jedi-vim'
-let g:jedi#auto_vim_configuration = 0
-let g:jedi#completions_enabled = 0
-let g:jedi#goto_command = ",pg"
-let g:jedi#goto_assignments_command = ""
-let g:jedi#documentation_command = "K"
-let g:jedi#usages_command = ",pu"
-let g:jedi#completions_command = ""
-let g:jedi#rename_command = ",pr"
-
-" I want pymode, but only really for syntax highlighting and folding
-Plug 'python-mode/python-mode'
-let g:pymode_doc = 0
-let g:pymode_run = 0
-let g:pymode_breakpoint = 0
-let g:pymode_rope = 0
-
-Plug 'fatih/vim-go'
-nnoremap ,gc :GoCoverageToggle<cr>
-
+" Assorted
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'skywind3000/asyncrun.vim'
+Plug 'romainl/vim-qf'
+Plug 'w0rp/ale'
+
+" Language specific. I imagine this section will be pretty fluid
+Plug 'fatih/vim-go'
 
 call plug#end()
 
@@ -304,6 +273,8 @@ nnoremap <silent> <space>bn :bnext<cr>
 nnoremap <silent> <space>bp :bprevious<cr>
 nnoremap <silent> <space>bf :bfirst<cr>
 nnoremap <silent> <space>bl :blast<cr>
+
+" TODO: Implement fzf.vim's Ag function
 
 " The following hides the statusline
 augroup fzf
