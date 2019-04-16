@@ -3,4 +3,4 @@ if !(exists("g:loaded_targets") || &cp || v:version < 700)
 endif
 
 xmap ia Ia
-nmap ia Ia
+omap ia Ia
