@@ -233,6 +233,12 @@ fancy-ctrl-z () {
     bg
   fi
 }
+
+ix() {
+  # examples: ix < file; command | ix
+  curl -n -F 'f:1=<-' http://ix.io;
+}
+
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
