@@ -223,6 +223,8 @@ nnoremap <silent> <space>bn :bnext<cr>
 nnoremap <silent> <space>bp :bprevious<cr>
 nnoremap <silent> <space>bf :bfirst<cr>
 nnoremap <silent> <space>bl :blast<cr>
+
+nmap <silent> <space>be <Plug>EditAllBuffersAndComeBackWithoutLosingHighlighting
 "===]
 "===[ Grep customization
 if executable('ag')
