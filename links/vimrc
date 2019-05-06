@@ -91,7 +91,7 @@ nnoremap <silent> <c-\> <c-w><c-\>
 "===]
 "===[ Miscellaneous key mappings
 "Quickly source vimrc
-nnoremap <silent> <space>s :source ~/.vimrc<CR>
+nnoremap <silent> <space>s :source $MYVIMRC<CR>
 
 "Fast bracketing (repeatable)
 inoremap {{ {<CR>}<UP><END>
