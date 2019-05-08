@@ -239,6 +239,10 @@ ix() {
   curl -n -F 'f:1=<-' http://ix.io;
 }
 
+agc() {
+  ag --color --group "$@" | less -R;
+}
+
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
