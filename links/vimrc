@@ -224,7 +224,8 @@ nnoremap <silent> <space>bp :bprevious<cr>
 nnoremap <silent> <space>bf :bfirst<cr>
 nnoremap <silent> <space>bl :blast<cr>
 
-nmap <silent> <space>be <Plug>EditAllBuffersAndComeBackWithoutLosingHighlighting
+"This does bufdo e without losing highlighting
+nnoremap <silent> <space>be :call buffers#EditWithoutLosingSyntax()<cr>
 "===]
 "===[ Grep customization
 if executable('ag')
