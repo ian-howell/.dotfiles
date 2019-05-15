@@ -1,5 +1,5 @@
 " Add a breakpoint
-nnoremap ,pb maOimport pdb; pdb.set_trace()<ESC>`a
+nnoremap <buffer> ,pb maOimport pdb; pdb.set_trace()<ESC>`a
 
-set foldmethod=indent
-set foldnestmax=2
+setlocal foldmethod=indent
+setlocal foldnestmax=2
