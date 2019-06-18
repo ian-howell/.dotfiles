@@ -103,13 +103,9 @@ inoremap {{ {<CR>}<UP><END>
 
 "Yank to EOL like it should
 nnoremap Y y$
-"Copy to system clipboard
-nnoremap <space>y "+y
-xnoremap <space>y "+y
-"Paste from system clipboard
-nnoremap <space>p "+p
-nnoremap <space>P "+P
-xnoremap <space>p "+p
+
+"Easier access to system clipboard (highly opinionated)
+map <space>' "+
 
 "Remove all trailing whitespace from a file
 nnoremap <silent> <space>ws :call whitespace#StripTrailingWhiteSpace()<CR>
