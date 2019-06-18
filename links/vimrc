@@ -133,10 +133,6 @@ noremap <RightMouse> <nop>
 "but we can use this for convenient window swapping
 noremap <C-LeftMouse> <LeftMouse>
 
-"Tab complete with tab key
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 "===]
 "===[ Statusline
 "Always show the status line
