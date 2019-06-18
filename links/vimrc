@@ -93,6 +93,11 @@ nnoremap <silent> <c-\> <c-w><c-\>
 "Quickly source vimrc
 nnoremap <silent> <space>s :source $MYVIMRC<CR>
 
+"Turn off the help on F1. The first is for normal-ish modes, while the second
+"is for intert-ish modes
+noremap <f1> <nop>
+noremap! <f1> <nop>
+
 "Fast bracketing (repeatable)
 inoremap {{ {<CR>}<UP><END>
 
