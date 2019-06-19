@@ -63,7 +63,6 @@ alias dirs="dirs -lpv"
 alias h='history'
 alias j='jobs -l'
 alias path='echo -e ${PATH//:/\\n}'
-alias pwd='pwd;xtitle $PWD'
 alias top='top -d 5 -c'
 
 # Repeat last command as root
