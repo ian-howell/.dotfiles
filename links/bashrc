@@ -1,7 +1,7 @@
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-    *) return;;
+  *i*) ;;
+  *) return;;
 esac
 
 # My custom functions
@@ -23,10 +23,10 @@ shopt -s checkwinsize
 #===[ colors
 # enable color support of ls and grep
 if [ -x /usr/bin/dircolors ]; then
-    alias ls='ls --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+  alias ls='ls --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
 fi
 
 # colors for man
@@ -40,16 +40,14 @@ export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
 #===]
 #===[ aliases
-if [ -f ~/.sh_aliases ]; then
-    source ~/.sh_aliases
-fi
+[[ -f "$HOME/.sh_aliases" ]] && source "$HOME/.sh_aliases"
 #===]
 #===[ path
 # initialize PATH
 PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 
 if [ "$TERM" != "tmux-256color" ]; then
-	export TERM=xterm-256color
+  export TERM=xterm-256color
 fi
 prepend "$HOME/.local/bin"
 prepend "$HOME/bin"
@@ -66,9 +64,9 @@ set -o vi
 #===[ unsorted
 # Bash completion
 if [ -f /usr/share/bash-completion/bash_completion ]; then
-. /usr/share/bash-completion/bash_completion
+  . /usr/share/bash-completion/bash_completion
 elif [ -f /etc/bash_completion ]; then
-. /etc/bash_completion
+  . /etc/bash_completion
 fi
 
 # If set, the pattern "**" used in a pathname expansion context will
@@ -81,8 +79,6 @@ shopt -s extglob
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-xtitle $PWD
-
 set -o notify           # Notify immediately if job changes state
 shopt -s checkjobs      # lists the status of any stopped and running jobs before exiting
 
@@ -91,16 +87,10 @@ shopt -s no_empty_cmd_completion
 # light spellcheck on cd
 shopt -s cdspell
 
-# This is kind of goofy. To check for interactive logins, you generally test the
-# value of PS1 -- therefore, I need to set this at the very end, just in case..
-if [ "$PS1" ]; then
-    fastprompt
-fi
-
 # fzf settings
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+[ -f "$HOME/.fzf.bash" ] && source "$HOME/.fzf.bash"
 #===]
 
-[[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc
+[[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
 
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

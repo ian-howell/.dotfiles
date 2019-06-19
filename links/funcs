@@ -1,18 +1,18 @@
 #!/bash
 # Generate a random password
 randpw() {
-    < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
-    echo
+  < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
+  echo
 }
 
 # List all todos
 todo() {
-    grep --color=always -HInsr "TODO" ./* | awk '{printf $1; for (i=2; i <= NF; i++) printf FS$i; print NL }'
+  grep --color=always -HInsr "TODO" ./* | awk '{printf $1; for (i=2; i <= NF; i++) printf FS$i; print NL }'
 }
 
 # Scrollable, colored grep
 grepc() {
-    grep -I "$*" --color=always | less -R
+  grep -I "$*" --color=always | less -R
 }
 
 # Scrollable, colored ag
@@ -22,18 +22,18 @@ agc() {
 
 # Colorful trees
 treec() {
-    tree -C "$@" | less -R
+  tree -C "$@" | less -R
 }
 
 # Fast access to virtual python environments
 vpy() {
-    if [ -z "$1" ]; then
-        echo "Need to provide a venv"
-    elif [ "$1" = "ls" ]; then
-        ls "$HOME/.venvs"
-    else
-        source "$HOME/.venvs/$1/bin/activate"
-    fi
+  if [ -z "$1" ]; then
+    echo "Need to provide a venv"
+  elif [ "$1" = "ls" ]; then
+    ls "$HOME/.venvs"
+  else
+    source "$HOME/.venvs/$1/bin/activate"
+  fi
 }
 
 # Paste to ix.io
@@ -44,22 +44,22 @@ ix() {
 
 # convenience routine which appends a string to a path.
 append() {
-    if (( $# != 1 )); then
-        printf "Usage: %s <absolute_path>\n" "$0"
-        printf "EXAMPLE: %s %s/bin\n" "$0" "$HOME"
-        return
-    fi
-    addpath "$1" append
+  if (( $# != 1 )); then
+    printf "Usage: %s <absolute_path>\n" "$0"
+    printf "EXAMPLE: %s %s/bin\n" "$0" "$HOME"
+    return
+  fi
+  addpath "$1" append
 }
 
 # convenience routine which prepends a string to a path.
 prepend() {
-    if (( $# != 1 )); then
-        printf "Usage: %s <absolute_path>\n" "$0"
-        printf "EXAMPLE: %s %s/bin\n" "$0" "$HOME"
-        return
-    fi
-    addpath "$1" prepend
+  if (( $# != 1 )); then
+    printf "Usage: %s <absolute_path>\n" "$0"
+    printf "EXAMPLE: %s %s/bin\n" "$0" "$HOME"
+    return
+  fi
+  addpath "$1" prepend
 }
 
 #===[ addpath
@@ -67,33 +67,33 @@ prepend() {
 # where the component is added.
 addpath()
 {
-    # Don't add directory if it doesn't exist...
-    if [ ! -d "$1" ]; then
-        echo "$1 is not a directory"
-        return
-    fi
+  # Don't add directory if it doesn't exist...
+  if [ ! -d "$1" ]; then
+    echo "$1 is not a directory"
+    return
+  fi
 
-    value="$PATH"
-    case "$value" in
-        *:"$1":*|*:"$1"|"$1":*|"$1")  # if the directory is already in the path
-            result="$value"  # use the old path
-            ;;
-        "")  # if the path is empty
-            result="$1"  # use the directory (as the first item)
-            ;;
-        *)  #otherwise...
-            case "$2" in
-                p*)  # if it looks like "prepend"
-                    result="$1:$value"  # add the directory to the front
-                    ;;
-                *)  # otherwise
-                    result="$value:$1"  # add the directory to the back
-                    ;;
-            esac
-    esac
+  value="$PATH"
+  case "$value" in
+    *:"$1":*|*:"$1"|"$1":*|"$1")  # if the directory is already in the path
+      result="$value"  # use the old path
+      ;;
+    "")  # if the path is empty
+      result="$1"  # use the directory (as the first item)
+      ;;
+    *)  #otherwise...
+      case "$2" in
+        p*)  # if it looks like "prepend"
+          result="$1:$value"  # add the directory to the front
+          ;;
+        *)  # otherwise
+          result="$value:$1"  # add the directory to the back
+          ;;
+      esac
+  esac
 
-    export PATH="$result"
-    unset result value
+  export PATH="$result"
+  unset result value
 }
 #===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

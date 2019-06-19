@@ -195,10 +195,10 @@ export EDITOR='vim'
 export VISUAL='vim'
 
 # My personal bin
-[[ -d $HOME/bin ]] && export PATH="$HOME/bin:$PATH"
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
 
 # My custom functions
-[[ -f $HOME/.funcs ]] && source $HOME/.funcs
+[[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
 
 #===[ Pagers
 # colors for man
@@ -224,7 +224,7 @@ export FZF_DEFAULT_OPS="--extended"
 export FZF_DEFAULT_COMMAND="fd --type f --type l"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-[[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc
+[[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
 
 fancy-ctrl-z() {
   if [[ $#BUFFER -eq 0 ]]; then
