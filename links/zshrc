@@ -226,21 +226,12 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 [[ -f "$HOME/.dotfiles/localrc" ]] && source $HOME/.dotfiles/localrc
 
-fancy-ctrl-z () {
+fancy-ctrl-z() {
   if [[ $#BUFFER -eq 0 ]]; then
     fg
   else
     bg
   fi
-}
-
-ix() {
-  # examples: ix < file; command | ix
-  curl -n -F 'f:1=<-' http://ix.io;
-}
-
-agc() {
-  ag --color --group "$@" | less -R;
 }
 
 zle -N fancy-ctrl-z

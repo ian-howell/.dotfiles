@@ -4,94 +4,8 @@ case $- in
     *) return;;
 esac
 
-# I want to automatically re-source my bashrc if the file has been
-# changed since I loaded it. Start by getting the modified ctime.
-BASHRC_MOD=`stat -c %Y ~/.bashrc`
-
-#===[ convenience functions
-    #===[ addpath
-# Add to the path variable named by $1 the component $2.  $3 must be
-# "append" or "prepend" to indicate where the component is added.
-function addpath ()
-{
-    # Don't add directory if it doesn't exist...
-    if [ -d "$2" ]; then
-        eval value=\"\$$1\"
-        case "$value" in
-            *:$2:*|*:$2|$2:*|$2)  # if the directory is already in the path
-                result="$value"  # use the old path
-                ;;
-            "")  # if the path is empty
-                result="$2"  # use the directory (as the first item)
-                ;;
-            *)  #otherwise...
-                case "$3" in
-                    p*)  # if it looks like "prepend"
-                        result="$2:${value}"  # add the directory to the front
-                        ;;
-                    *)  # otherwise
-                        result="${value}:$2"  # add the directory to the back
-                        ;;
-                esac
-        esac
-
-        export "$1"="$result"
-        unset result value
-    fi
-}
-    #===]
-    #===[ append
-# convenience routine which appends a string to a path.
-function append ()
-{
-    addpath "$1" "$2" append
-}
-    #===]
-    #===[ prepend
-# convenience routine which prepends a string to a path.
-function prepend ()
-{
-    addpath "$1" "$2" prepend
-}
-    #===]
-    #===[ rempath
-# Remove from the path variable named by $1 the component $2.
-function rempath ()
-{
-    # Process:
-    # 1. Create a new variable for the path (starts as empty string)
-    # 2. Walk through the current path one directory at a time
-    # 3. Add the directory to the new path UNLESS it is $2
-    # 4. Repeat 2 and 3 until all directories have been checked
-    # 5. Overwrite the old path
-
-    eval dirs=\"\$$1\"
-
-    # split on colons
-    PIFS=${IFS}
-    IFS=:
-
-    for dir in ${dirs}; do
-        if [ ! -z "${dir}" ]; then  # if the string isn't null
-            if [ ${dir} != "$2" ]; then  # if the directory is _not_ the one we want to remove
-                if [ -z "${result}" ]; then  # if the current result _is_ null
-                    result=${dir}  # start the result with this directory
-                else
-                    result=${result}:${dir}  # append this directory to the result
-                fi
-            fi
-        fi
-    done
-
-    export "$1"="$result"
-    unset dir dirs result
-
-    IFS=${PIFS}
-}
-    #===]
-#===]
-
-[[ -f $HOME/.dotfiles/funcs ]] && source $HOME/.dotfiles/funcs
+# My custom functions
+[[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
 
 #===[ history
 # don't put duplicate lines or lines starting with space in the history.
@@ -137,8 +51,8 @@ PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 if [ "$TERM" != "tmux-256color" ]; then
 	export TERM=xterm-256color
 fi
-prepend PATH $HOME/.local/bin
-prepend PATH $HOME/bin
+prepend "$HOME/.local/bin"
+prepend "$HOME/bin"
 
 export PATH
 #===]

@@ -1,98 +1,99 @@
+#!/bash
 # Generate a random password
-randpw(){ < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c${1:-32};echo;}
+randpw() {
+    < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
+    echo
+}
 
 # List all todos
-todo(){ grep -HInsr --color=always TODO $1 | cut -d':' -f-2,4- -s;}
+todo() {
+    grep --color=always -HInsr "TODO" ./* | awk '{printf $1; for (i=2; i <= NF; i++) printf FS$i; print NL }'
+}
 
 # Scrollable, colored grep
-lgrep() { grep -I $* --color=always | less -R; }
+grepc() {
+    grep -I "$*" --color=always | less -R
+}
+
+# Scrollable, colored ag
+agc() {
+  ag --color --group "$*" | less -R;
+}
 
 # Colorful trees
-treec() { tree -C $* | less -R; }
-
-function getcol()
-{
-    awk "{print $$1}"
+treec() {
+    tree -C "$@" | less -R
 }
 
-function vpy ()
-{
-    if [ -z $1 ]; then
+# Fast access to virtual python environments
+vpy() {
+    if [ -z "$1" ]; then
         echo "Need to provide a venv"
     elif [ "$1" = "ls" ]; then
-        \ls $HOME/.venvs
+        ls "$HOME/.venvs"
     else
-        source $HOME/.venvs/$1/bin/activate
+        source "$HOME/.venvs/$1/bin/activate"
     fi
 }
 
-function xtitle ()
-{
-    case $- in *i*)
-        case $TERM in
-            xterm | *-256color | rxvt | screen)
-                # put the arguments in the title bar
-                echo -ne "\033]0;$*\007" ;;
-            *)  ;;
-        esac
-    esac
+# Paste to ix.io
+ix() {
+  # examples: ix < file; command | ix
+  curl -n -F 'f:1=<-' http://ix.io;
 }
 
-function fastprompt()
-{
-    # tput bold - Bold effect
-    # tput rev - Display inverse colors
-    # tput sgr0 - Reset everything
-    # tput setaf {CODE}- Set foreground color, see color {CODE} table below for more information.
-    # tput setab {CODE}- Set background color, see color {CODE} table below for more information.
-    #
-    # 0	Black
-    # 1	Red
-    # 2	Green
-    # 3	Yellow
-    # 4	Blue
-    # 5	Magenta
-    # 6	Cyan
-    # 7	White
-
-    LAST_MOD=`stat -c %Y ~/.bashrc`
-    if (( $LAST_MOD >  $BASHRC_MOD )); then
-        source ~/.bashrc
-        echo "bashrc reloaded"
+# convenience routine which appends a string to a path.
+append() {
+    if (( $# != 1 )); then
+        printf "Usage: %s <absolute_path>\n" "$0"
+        printf "EXAMPLE: %s %s/bin\n" "$0" "$HOME"
+        return
     fi
-    unset PROMPT_COMMAND
-    PROMPT_COMMAND=fastprompt
+    addpath "$1" append
+}
 
-    if [ $VIRTUAL_ENV ]; then
+# convenience routine which prepends a string to a path.
+prepend() {
+    if (( $# != 1 )); then
+        printf "Usage: %s <absolute_path>\n" "$0"
+        printf "EXAMPLE: %s %s/bin\n" "$0" "$HOME"
+        return
+    fi
+    addpath "$1" prepend
+}
+
+#===[ addpath
+# Add $1 to the PATH variable.  $2 must be "append" or "prepend" to indicate
+# where the component is added.
+addpath()
+{
+    # Don't add directory if it doesn't exist...
+    if [ ! -d "$1" ]; then
+        echo "$1 is not a directory"
         return
     fi
 
-    history -a
-    case $TERM in
-        xterm | *-256color | rxvt | screen )
-            # begin building prompt
-            PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u\[$(tput sgr0)\]"  # bold green username
-            case $HOSTNAME in
-                *)  # everything else
-                    # PS1="$PS1@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]"  # blue hostname
-                    PS1="$PS1@\[$(tput bold)\]\[$(tput setaf 4)\]localhost\[$(tput sgr0)\]"  # blue "localhost"
+    value="$PATH"
+    case "$value" in
+        *:"$1":*|*:"$1"|"$1":*|"$1")  # if the directory is already in the path
+            result="$value"  # use the old path
+            ;;
+        "")  # if the path is empty
+            result="$1"  # use the directory (as the first item)
+            ;;
+        *)  #otherwise...
+            case "$2" in
+                p*)  # if it looks like "prepend"
+                    result="$1:$value"  # add the directory to the front
+                    ;;
+                *)  # otherwise
+                    result="$value:$1"  # add the directory to the back
                     ;;
             esac
-            # finish building prompt
-            PS1="$PS1\w$ "  # literal "$ "
-            ;;
-        *)
-            PS1="\u@\h$ " ;;
     esac
-}
 
-function cd()
-{
-    case $TERM in
-        xterm | *-256color | rxvt)  # if we're using an X window
-            builtin cd "$@" && xtitle $PWD ;;  # change the title bar
-        *)
-            builtin cd "$@";;
-    esac
+    export PATH="$result"
+    unset result value
 }
-
+#===]
+# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
