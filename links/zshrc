@@ -221,8 +221,9 @@ setopt no_share_history
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPS="--extended"
-export FZF_DEFAULT_COMMAND="fd --type f --type l"
+export FZF_DEFAULT_COMMAND="fd --type f --type l --exclude='*vendor/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '*/gocode/pkg*' -o -path '*/go/pkg*' -o -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune -o -type d -print 2> /dev/null"
 
 [[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
 
