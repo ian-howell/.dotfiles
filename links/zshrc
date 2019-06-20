@@ -1,16 +1,13 @@
+#===[ Colors
 # Turn on convenient colors
 autoload -U colors && colors
 
-#===[ Colors for ls
+# ls colors
 if [[ -z "$LS_COLORS" ]]; then
   (( $+commands[dircolors] )) && eval "$(dircolors -b)"
 fi
 ls --color -d . &>/dev/null && alias ls='ls --color=tty' || { ls -G . &>/dev/null && alias ls='ls -G' }
 #===]
-
-# Allow proper substitution in the prompt
-setopt PROMPT_SUBST
-
 #===[ Functions
 # Outputs current branch info in prompt format
 function git_prompt_info() {
@@ -109,6 +106,8 @@ bindkey '^e' end-of-line
 # make mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
 #===]
+#===[ Completion
+# TODO: clean this up
 
 # add custom completionos to the function path
 # TODO: create a 'completions' directory
@@ -116,10 +115,6 @@ fpath=($ZSH/completions $fpath)
 # load stock functions
 autoload -U compaudit compinit
 
-source ~/.sh_aliases
-
-#===[ Completion
-# TODO: clean this up
 # fixme - the load process here seems a bit bizarre
 zmodload -i zsh/complist
 
@@ -173,6 +168,11 @@ zstyle '*' single-ignored show
 
 # zsh's backword menu complete is different from readline's for some reason
 bindkey '^[[Z' reverse-menu-complete
+
+# TODO: move these completions to a completions file
+# TODO: remove this sed command once the helm completion command is fixed
+type helm > /dev/null && source <(helm completion zsh | sed -E 's/\["(.+)"\]/\[\1\]/g')
+type kubectl > /dev/null && source <(kubectl completion zsh)
 #===]
 #===[ History
 # TODO: clean this up too
@@ -189,14 +189,6 @@ setopt hist_ignore_space      # ignore commands that start with space
 setopt hist_verify            # show command with history expansion to user before running it
 setopt inc_append_history     # add commands to HISTFILE in order of execution
 #===]
-
-# Setup default editor
-export EDITOR='vim'
-export VISUAL='vim'
-
-# My custom functions
-[[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
-
 #===[ Pagers
 # colors for man
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
@@ -212,37 +204,13 @@ export MANPAGER='less -s -M +Gg'       # percentage into the document
 # export PAGER='less'
 # export LESS='-R'
 #===]
-
-unsetopt share_history
-setopt no_share_history
-
+#===[ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPS="--extended"
 export FZF_DEFAULT_COMMAND="fd --type f --type l --exclude='*vendor/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '*/gocode/pkg*' -o -path '*/go/pkg*' -o -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune -o -type d -print 2> /dev/null"
-
-[[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
-
-fancy-ctrl-z() {
-  if [[ $#BUFFER -eq 0 ]]; then
-    fg
-  else
-    bg
-  fi
-}
-
-zle -N fancy-ctrl-z
-bindkey '^Z' fancy-ctrl-z
-
-# recognize comments
-setopt interactivecomments
-
-# TODO: move these completions to a completions file
-# TODO: remove this sed command once the helm completion command is fixed
-type helm > /dev/null && source <(helm completion zsh | sed -E 's/\["(.+)"\]/\[\1\]/g')
-type kubectl > /dev/null && source <(kubectl completion zsh)
-
+#===]
 #===[ Path extensions
 # prepend and append will add $1 to the PATH variable, given that $1 is not already in the PATH
 # My personal bin
@@ -283,5 +251,41 @@ function spectrum_bls() {
     print -P -- "$code: %{$BG[$code]%}$ZSH_SPECTRUM_TEXT%{$reset_color%}"
   done
 }
+#===]
+#===[ Unsorted
+# Allow proper substitution in the prompt
+setopt PROMPT_SUBST
+
+# Source my aliases
+[[ -f "$HOME/.sh_aliases" ]] && source "$HOME/.sh_aliases"
+
+# My custom functions
+[[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
+
+# This stuff is (supposedly :eye_roll:) command across different shells 
+[[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
+
+# Setup default editor
+export EDITOR='vim'
+export VISUAL='vim'
+
+# Don't share a history between shells. That's weird.
+unsetopt share_history
+setopt no_share_history
+
+# recognize that comments are comments
+setopt interactivecomments
+
+# This... almost works. ctrl-z does backgrounding AND foregrounding. It could
+# use seom work though
+fancy-ctrl-z() {
+  if [[ $#BUFFER -eq 0 ]]; then
+    fg
+  else
+    bg
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
 #===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]:ts=2:sw=2
