@@ -194,9 +194,6 @@ setopt inc_append_history     # add commands to HISTFILE in order of execution
 export EDITOR='vim'
 export VISUAL='vim'
 
-# My personal bin
-[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
-
 # My custom functions
 [[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
 
@@ -246,6 +243,13 @@ setopt interactivecomments
 type helm > /dev/null && source <(helm completion zsh | sed -E 's/\["(.+)"\]/\[\1\]/g')
 type kubectl > /dev/null && source <(kubectl completion zsh)
 
+#===[ Path extensions
+# prepend and append will add $1 to the PATH variable, given that $1 is not already in the PATH
+# My personal bin
+[[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
+# Java, if I have it
+[[ -d "/usr/local/bin/jre1.8.0_211/bin" ]] && append "/usr/local/bin/jre1.8.0_211/bin"
+#===]
 #===[ Spectrum
 # This is just for fun
 typeset -AHg FX FG BG
