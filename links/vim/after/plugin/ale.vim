@@ -2,11 +2,13 @@ if !(exists('g:loaded_ale'))
   finish
 endif
 
-"Slow down ALE
-let g:ale_lint_delay = 800
-
 "Always show the gutter
 let g:ale_sign_column_always = 1
+
+"Stop linting 'on the fly' in insert mode
+let g:ale_lint_on_text_changed = 'normal'
+"I'd rather lint when we leave insert mode
+let g:ale_lint_on_insert_leave = 1
 
 "Custom signs for gutter
 let g:ale_sign_error = "✗"
