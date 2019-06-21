@@ -1,6 +1,7 @@
 export GOPATH="$HOME/gocode"
 export GOBIN="$GOPATH/bin"
 export GOROOT="/usr/local/go"
+export GO111MODULE=on
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 export PATH="$GOBIN:$PATH"
