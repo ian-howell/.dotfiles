@@ -1,3 +1,16 @@
+#===[ Things that need to be sourced
+# IMPORTANT: This section needs to remain at the top. Some of the other things
+# in this file will depend on it.
+
+# Source my aliases
+[[ -f "$HOME/.sh_aliases" ]] && source "$HOME/.sh_aliases"
+
+# My custom functions
+[[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
+
+# This stuff is (supposedly :eye_roll:) command across different shells
+[[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
+#===]
 #===[ Colors
 # Turn on convenient colors
 autoload -U colors && colors
@@ -255,15 +268,6 @@ function spectrum_bls() {
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
-
-# Source my aliases
-[[ -f "$HOME/.sh_aliases" ]] && source "$HOME/.sh_aliases"
-
-# My custom functions
-[[ -f "$HOME/.funcs" ]] && source "$HOME/.funcs"
-
-# This stuff is (supposedly :eye_roll:) command across different shells 
-[[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
 
 # Setup default editor
 export EDITOR='vim'
