@@ -186,6 +186,7 @@ bindkey '^[[Z' reverse-menu-complete
 # TODO: remove this sed command once the helm completion command is fixed
 type helm > /dev/null && source <(helm completion zsh | sed -E 's/\["(.+)"\]/\[\1\]/g')
 type kubectl > /dev/null && source <(kubectl completion zsh)
+type airshipctl > /dev/null && source <(airshipctl completion zsh)
 #===]
 #===[ History
 # TODO: clean this up too
