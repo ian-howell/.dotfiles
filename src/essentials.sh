@@ -22,5 +22,7 @@ sudo apt-get install -y \
   tmux \
   tree \
   weechat \
-  xclip
+  xclip \
+  shellcheck \
+  ;
 set +x
