@@ -42,6 +42,14 @@ ix() {
   curl -n -F 'f:1=<-' http://ix.io;
 }
 
+# Setup local branches to track all remote branches
+# Note: This will not overwrite any local branch. This means that if there is a
+# name collision between a local branch and a remote branch, this command will
+# fail for that branch
+gpa() {
+  git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done
+}
+
 # convenience routine which appends a string to a path.
 append() {
   if (( $# != 1 )); then
