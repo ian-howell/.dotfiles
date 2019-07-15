@@ -165,6 +165,7 @@ iabbrev         incldue           include
 iabbrev         inculde           include
 iabbrev         inlcude           include
 iabbrev              ;t           't
+iabbrev            ymal           yaml
 
 command! W w
 command! Q q
