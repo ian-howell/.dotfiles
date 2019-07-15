@@ -12,17 +12,17 @@ todo() {
 
 # Scrollable, colored grep
 grepc() {
-  grep -I "$*" --color=always | less -R
+  grep -I "$*" --color=always | less -R --quit-if-one-screen
 }
 
 # Scrollable, colored ag
 agc() {
-  ag --color --group "$*" | less -R;
+  ag --color --group "$*" | less -R --quit-if-one-screen
 }
 
 # Colorful trees
 treec() {
-  tree -C "$@" | less -R
+  tree -C "$@" | less -R --quit-if-one-screen
 }
 
 # Fast access to virtual python environments
@@ -58,6 +58,11 @@ tmp() {
     suffix="-$1"
   fi
   cd "$(mktemp -d --suffix="$suffix")"
+}
+
+# Like more, but side by side files
+smore() {
+  pr -m -T -s\| -W"$COLUMNS" "$@" | less -R --quit-if-one-screen
 }
 
 # convenience routine which appends a string to a path.

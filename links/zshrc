@@ -212,11 +212,8 @@ export LESS_TERMCAP_us=$'\e[01;37m'    # begin underline
 export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
 export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
-export MANPAGER='less -s -M +Gg'       # percentage into the document
 
-# TODO: what are these?
-# export PAGER='less'
-# export LESS='-R'
+export MANPAGER='less -s -M +Gg'       # percentage into the document
 #===]
 #===[ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
