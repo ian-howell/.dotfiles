@@ -17,6 +17,7 @@ source $SRC/essentials.sh
 source $SRC/zsh.sh
 source $SRC/fzf.sh
 source $SRC/fd.sh
+source $SRC/less.sh
 source $SRC/remap-capslock.sh
 source $SRC/link_dotfiles.sh
 source $SRC/vim.sh
