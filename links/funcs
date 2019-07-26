@@ -12,12 +12,12 @@ todo() {
 
 # Scrollable, colored grep
 grepc() {
-  grep -I "$*" --color=always | less -R --quit-if-one-screen
+  grep -I "$@" --color=always | less -R --quit-if-one-screen
 }
 
 # Scrollable, colored ag
 agc() {
-  ag --color --group "$*" | less -R --quit-if-one-screen
+  ag --color --group "$@" | less -R --quit-if-one-screen
 }
 
 # Colorful trees
