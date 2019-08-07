@@ -10,3 +10,5 @@
 [user]
 	email = ian.howell0@gmail.com
 	name = Ian Howell
+[diff]
+	algorithm = histogram
