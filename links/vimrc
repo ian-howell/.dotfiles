@@ -129,6 +129,8 @@ noremap <RightMouse> <nop>
 "but we can use this for convenient window swapping
 noremap <C-LeftMouse> <LeftMouse>
 
+"select newly pasted text
+nnoremap gV `[v`]
 "===]
 "===[ Statusline
 "Always show the status line
