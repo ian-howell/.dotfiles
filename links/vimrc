@@ -116,10 +116,6 @@ nnoremap <silent> } :<C-u>call ipmotion#MyNextParagraph()<CR>
 xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call ipmotion#MyPrevParagraph()<CR>
 xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call ipmotion#MyNextParagraph()<CR>
 
-"Mappings for working with diffs in visual mode
-xnoremap <silent> <space>do :diffget<CR>
-xnoremap <silent> <space>dp :diffput<CR>
-
 "Turn the mouse on
 set mouse=n
 "Mappings to make the scrollwheel work as expected
@@ -272,6 +268,13 @@ set wildignore+=*.png,*.jpg,*.bmp,*.gif
 set wildignore+=*.html  " Comment this out for html, obviously
 set wildignore+=*.doctree
 set wildignore+=%*
+"===]
+"===[ Diffs
+set diffopt+=algorithm:histogram,indent-heuristic
+
+"Mappings for working with diffs in visual mode
+xnoremap <silent> <space>do :diffget<CR>
+xnoremap <silent> <space>dp :diffput<CR>
 "===]
 "===[ Unsorted
 "Sane backspace
