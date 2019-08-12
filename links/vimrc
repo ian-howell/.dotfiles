@@ -159,6 +159,10 @@ set notitle
 "===[ Fix misspellings on the fly
 iabbrev          retrun           return
 iabbrev           pritn           print
+iabbrev         printf9           printf(
+iabbrev        fprintf9           fprintf(
+iabbrev         Printf9           Printf(
+iabbrev        Fprintf9           Fprintf(
 iabbrev         incldue           include
 iabbrev         inculde           include
 iabbrev         inlcude           include
