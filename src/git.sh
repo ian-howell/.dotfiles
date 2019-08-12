@@ -1,0 +1,52 @@
+#!/bin/bash
+set -x
+
+echo "Getting latest version of git"
+
+ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
+
+build_git()
+{
+  git_exists=$(command -v vim)
+  if [ ! -z "$git_exists" ]; then
+    # git exists. Remove it
+    sudo apt-get -qq remove git git-man
+  fi
+
+  GIT_ARTIFACTS=$ARTIFACTS_DIR/git_artifacts
+  mkdir -p "$GIT_ARTIFACTS"
+  cd "$GIT_ARTIFACTS"
+
+  # Dependencies
+  sudo apt-get install dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
+    gettext libz-dev libssl-dev
+
+  # Docs, infos, etc
+  sudo apt-get install asciidoc xmlto docbook2x install-info
+
+  # Download, configure, build, and install
+  release=$(curl -s https://github.com/git/git/releases | \
+    awk 'BEGIN {FS="/"} /\/git\/git\/releases\/tag\// {print $6}' | \
+    sort -r | \
+    head -n1 | \
+    cut -f1 -d\"
+  )
+  dirname="git-$release"
+  mkdir -p "$dirname"
+  tarfile="$dirname.tar.gz"
+  curl -L "https://github.com/git/git/archive/$release.tar.gz" -o "$tarfile"
+  tar -zxf "$tarfile" -C "$dirname" --strip-components 1
+  cd "$dirname"
+  make configure
+  ./configure --prefix=/usr
+  make all doc info
+  sudo make install install-doc install-html install-info
+}
+
+# Use a subshell so that we don't need to remember where we started
+(
+  build_git
+  git --version
+)
+
+set +x
