@@ -310,5 +310,13 @@ set updatetime=750
 set lazyredraw
 " Sharing is caring - romainl: https://gist.github.com/romainl/1cad2606f7b00088dda3bb511af50d53
 command! -range=% IX  <line1>,<line2>w !curl -F 'f:1=<-' ix.io | tr -d '\n' | xclip -i -selection clipboard
+" Clipboard hacks - By default, vim clears out the system and X clipboards
+" upon closing. This fixes that
+augroup clipboard-retention
+  autocmd!
+  autocmd VimLeave * call system("xclip -i -selection primary", getreg('*'))
+  autocmd VimLeave * call system("xclip -i -selection clipboard", getreg('+'))
+augroup END
+
 "===]
 " vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
