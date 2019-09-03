@@ -17,3 +17,10 @@ let g:ale_sign_warning = "▲"
 "234 is the same color as the sign column's background
 highlight ALEErrorSign ctermbg=234 ctermfg=red
 highlight ALEWarningSign ctermbg=234 ctermfg=yellow
+
+"Turn flake8 errors into warnings
+let g:ale_type_map = {'flake8': {'ES': 'WS', 'E': 'W'}}
+
+" let ale know that we're using python3
+let g:ale_python_flake8_executable = 'python3'
+let g:ale_python_flake8_options = '-m flake8'
