@@ -65,6 +65,18 @@ smore() {
   pr -m -T -s\| -W"$COLUMNS" "$@" | less -R --quit-if-one-screen
 }
 
+# Takes a list of files/directories "foo", and creates copies called "foo.bak"
+bak() {
+  for item in "$@"; do
+    if [[ -e "$item" ]]; then
+      printf "copying %s to %s.bak\n" "$item" "$item"
+      cp -r "$item" "$item.bak"
+    else
+      printf "warning: file or directory \"%s\" could not be found - skipping\n" "$item"
+    fi
+  done
+}
+
 # convenience routine which appends a string to a path.
 append() {
   if (( $# != 1 )); then
