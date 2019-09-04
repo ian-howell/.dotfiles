@@ -182,11 +182,15 @@ zstyle '*' single-ignored show
 # zsh's backword menu complete is different from readline's for some reason
 bindkey '^[[Z' reverse-menu-complete
 
-# TODO: move these completions to a completions file
-# TODO: remove this sed command once the helm completion command is fixed
-type helm > /dev/null && source <(helm completion zsh | sed -E 's/\["(.+)"\]/\[\1\]/g')
-type kubectl > /dev/null && source <(kubectl completion zsh)
-type airshipctl > /dev/null && source <(airshipctl completion zsh)
+# NOTE: These tools don't create "good" zsh completions. Each tool will need to
+# migrate to a new version of Cobra, and then you'll need to drop the
+# completion file into zsh's completion path
+# NOTE: This sed command will be required until you've updated to helm 2.14+
+alias ac="\
+  source <(helm completion zsh | sed -E 's/\[\"(.+)\"\]/\[\1\]/g'); \
+  source <(kubectl completion zsh); \
+  source <(airshipctl completion zsh)
+"
 #===]
 #===[ History
 # TODO: clean this up too
