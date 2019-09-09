@@ -49,8 +49,11 @@ PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
 if [ "$TERM" != "tmux-256color" ]; then
   export TERM=xterm-256color
 fi
-prepend "$HOME/.local/bin"
-prepend "$HOME/bin"
+
+# prepend and append will add $1 to the PATH variable, given that $1 is not already in the PATH
+# My personal bins
+[[ -d "$HOME/.dotfiles/links/bin" ]] && prepend "$HOME/.dotfiles/links/bin"
+[[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
 
 export PATH
 #===]

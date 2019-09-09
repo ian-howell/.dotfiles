@@ -228,7 +228,8 @@ export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '
 #===]
 #===[ Path extensions
 # prepend and append will add $1 to the PATH variable, given that $1 is not already in the PATH
-# My personal bin
+# My personal bins
+[[ -d "$HOME/.dotfiles/links/bin" ]] && prepend "$HOME/.dotfiles/links/bin"
 [[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
 # Java, if I have it
 [[ -d "/usr/local/bin/jre1.8.0_211/bin" ]] && append "/usr/local/bin/jre1.8.0_211/bin"
