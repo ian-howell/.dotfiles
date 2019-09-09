@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+usage() {
+    printf "usage: git odiff <commit> [options...]\n\n"
+    printf "prints the changes made in <commit>\n"
+    printf "for options, see 'git diff'\n"
+}
+
+main() {
+  oldcommit="$1^"
+  newcommit="$1"
+  shift
+  git diff "$oldcommit" "$newcommit" "$@"
+}
+
+arg=HEAD
+
+if (( $# >= 1 )); then
+  if [[ "$1" = "-h" ]]; then
+    usage
+    exit 0
+  fi
+  arg="$1"
+  shift
+fi
+
+main "$arg" "$@"

@@ -10,6 +10,7 @@ alias glor="git log --color=always --oneline | head"
 alias glog="git -c color.ui=always log --graph --pretty=tformat:\"%C(yellow)%h%Creset}%Cgreen(%ar)%Creset}%C(bold blue)<%an>%Creset}%C(bold red)%d%Creset %s\" | awk 'BEGIN { FS = \"}\" } ; { printf \"%s\t\t%s\t%-40s%s\n\", \$1, \$2, \$3, \$4 }' | less -R"
 alias gbr="git branch"
 alias gdi="git diff"
+alias gdo="git odiff"
 alias gca="git commit --amend --no-edit"
 #===]
 #===[ ls
