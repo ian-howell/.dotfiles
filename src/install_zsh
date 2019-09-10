@@ -1,4 +1,6 @@
+#!/bin/bash
 set -x
+
 install_zsh() {
   zsh_exists=$(command -v zsh)
   if [ -z "$zsh_exists" ]; then
@@ -20,5 +22,9 @@ install_zsh() {
   fi
   echo 'zsh installed :)'
 }
-install_zsh
+
+(
+  install_zsh
+)
+
 set +x

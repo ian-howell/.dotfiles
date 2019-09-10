@@ -1,11 +1,10 @@
 #!/bin/bash
+set -x
 ############################
 # This script creates symlinks from the home directory to any desired dotfiles in $HOME/.dotfiles
 ############################
 
 ########## Variables
-set -x
-
 links_dir=$HOME/.dotfiles/links                    # dotfiles directory
 olddir=$HOME/.backup_dotfiles          # old dotfiles backup directory
 ##########
@@ -35,4 +34,5 @@ echo "Creating vim undo directory ..."
 mkdir -p $HOME/.vim/undo 2> /dev/null
 
 echo "done"
+
 set +x

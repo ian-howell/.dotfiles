@@ -5,7 +5,7 @@ echo "Setting up Vim"
 
 ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
-build_vim()
+install_vim()
 {
   vim_exists=$(command -v vim)
   if [ ! -z "$vim_exists" ]; then
@@ -38,12 +38,13 @@ build_vim()
   sudo update-alternatives --set editor /usr/bin/vim
   sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
   sudo update-alternatives --set vi /usr/bin/vim
+
+  vim +PlugInstall +qall
 }
 
 # Use a subshell so that we don't need to remember where we started
 (
-  build_vim
-  vim +PlugInstall +qall
+  install_vim
 )
 
 set +x
