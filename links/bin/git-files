@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+usage() {
+    printf "usage: git files [ref]\n\n"
+    printf "If [ref] is provided, list all files that differ from [ref].\n"
+    printf "If [ref] is not provided, list all files that differ from master.\n"
+}
+
+if [[ "$1" = "-h" ]]; then
+  usage
+  exit 0
+fi
+
+ref="${1:-master}"
+git diff --name-only "$(git merge-base HEAD "$ref")"
