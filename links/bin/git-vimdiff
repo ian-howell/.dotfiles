@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+die() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+usage() {
+  printf "usage: git vimdiff [-r|--ref=<ref>] [files]\n\n"
+  printf "If [ref] is provided, diff against <ref>, otherwise diff against master\n"
+  printf "If any [files] are provided, only diff those files, otherwise all changed files are used.\n"
+}
+
+ref=master
+
+while :; do
+  case $1 in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -r|--ref)
+      if [ "$2" ]; then
+        ref="$2"
+        shift
+      else
+        die 'ERROR: "--ref" requires a non-empty option argument'
+      fi
+      ;;
+    --ref=?*)
+      ref=${1#*=}
+      ;;
+    --ref=)
+      die 'ERROR: "--ref" requires a non-empty option argument'
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -?*)
+      printf 'WARN: Unknown option (ignored): %s\n' "$1" >&2
+      ;;
+    *)
+      break
+  esac
+  shift
+done
+
+# IFS=$'\n' read -a files <<< "$(git files)"
+files=($(git diff --name-only "$(git merge-base HEAD "$ref")"))
+if (( $# >= 1 )); then
+  files=()
+  IFS=  read -a files <<< $@
+fi
+
+if [[ "$(git cat-file -t "$ref" 2>/dev/null)" != "commit" ]]; then
+  die "ERROR: $ref is not a valid commit"
+fi
+
+# The following assumes that both vim-fugitive and vim-git-gutter are installed
+# note that I'm using this hacky :q<cr>:q<cr> because :tabclose can't close the last tabpage
+vim -p "${files[@]}" \
+  +"tabdo Gvdiff $ref | norm gg" \
+  +"let g:gitgutter_diff_base = '$ref'" \
+  +"nnoremap <space>n :tabnext<cr>" \
+  +"nnoremap <space>p :tabprevious<cr>" \
+  +"nnoremap <space>x :q<cr>:q<cr>"

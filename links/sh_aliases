@@ -11,6 +11,7 @@ alias glog="git -c color.ui=always log --graph --pretty=tformat:\"%C(yellow)%h%C
 alias gbr="git branch"
 alias gdi="git diff"
 alias gdo="git odiff"
+alias gdv="git vimdiff"
 alias gca="git commit --amend --no-edit"
 #===]
 #===[ ls

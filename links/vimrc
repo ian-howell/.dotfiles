@@ -320,6 +320,8 @@ augroup clipboard-retention
   autocmd VimLeave * call system("xclip -i -selection primary", getreg('*'))
   autocmd VimLeave * call system("xclip -i -selection clipboard", getreg('+'))
 augroup END
+" Allow tons of tabs. This is useful for git-vimdiff
+set tabpagemax=99
 
 "===]
 " vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
