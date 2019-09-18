@@ -294,6 +294,9 @@ set wildignore+=%*
 "===[ Diffs
 set diffopt+=algorithm:histogram,indent-heuristic
 
+"Remove the dashes from DiffDelete. Mind the trailing space
+set fillchars+=diff:\ 
+
 "Mappings for working with diffs in visual mode
 xnoremap <silent> <space>do :diffget<CR>
 xnoremap <silent> <space>dp :diffput<CR>
