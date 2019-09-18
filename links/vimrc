@@ -2,7 +2,7 @@
 call plug#begin()
 
 " Colorschemes
-Plug 'romainl/apprentice'
+Plug 'ian-howell/Apprentice'
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
