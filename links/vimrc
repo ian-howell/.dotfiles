@@ -245,7 +245,7 @@ augroup END
 "===]
 "===[ Grep customization
 if executable('ag')
-  let &grepprg='ag --vimgrep'
+  let &grepprg='ag'
 endif
 "===]
 "===[ Quickfix and Location window Shortcuts
