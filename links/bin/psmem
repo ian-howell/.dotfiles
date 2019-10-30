@@ -1,0 +1,32 @@
+#!/bin/bash
+
+printf "%-10s%-15s%-15s%s\n" "PID" "OWNER" "MEMORY" "COMMAND"
+
+get_all_processes() {
+  rawin=$(ps -o pid,user,command hax | awk '{print $1 ":" $2 ":" $3}')
+  print_rows "$rawin"
+}
+
+get_process() {
+  rawin=$(ps -o pid,user,command hax | awk "/$1/{print \$1 \":\" \$2 \":\" \$3}")
+  print_rows "$rawin"
+}
+
+print_rows() {
+  total=0
+  for row in $1; do
+    pid=$(echo "$row" | cut -f1 -d:)
+    user=$(echo "$row" | cut -f2 -d:)
+    comm=$(echo "$row" | cut -f3 -d:)
+    mem=$(pmap "$pid" | awk '/^ total/ {print $2}' | cut -f1 -d'K')
+    printf "%-10s%-15s%-15s%s\n" "$pid" "$user" "$mem" "$comm"
+    (( total += mem ))
+  done
+  printf "\ntotal memory usage: %dK\n" "$total"
+}
+
+if (( $# == 1 )); then
+  get_process "$1"
+else
+  get_all_processes
+fi
