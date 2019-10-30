@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+usage() {
+    printf "usage: git odiff <commit> [options...]\n\n"
+    printf "prints the changes made in <commit>\n"
+    printf "for options, see 'git diff'\n"
+}
+
+if [[ "$1" = "-h" ]]; then
+  usage
+  exit 0
+fi
+
+git review -d "$(git log | awk '/^    Change-Id: / {print $2}' | head -n1)"
