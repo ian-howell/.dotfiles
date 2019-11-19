@@ -1,4 +1,15 @@
 #!/bash
+
+# Opposite of cd. Giving an argument jumps up that many directories
+bd() {
+  iter="${1:-1}"
+  while [[ "$iter" -gt 0 ]]
+  do
+      (( iter = iter - 1 ))
+      cd ..
+  done
+}
+
 # Generate a random password
 randpw() {
   < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
