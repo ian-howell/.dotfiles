@@ -124,7 +124,7 @@ export KEYTIMEOUT=1
 
 # add custom completionos to the function path
 # TODO: create a 'completions' directory
-fpath=($ZSH/completions $fpath)
+fpath=($HOME/.dotfiles/links/completions $fpath)
 # load stock functions
 autoload -U compaudit compinit
 
@@ -294,5 +294,10 @@ fancy-ctrl-z() {
 }
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
+#===]
+#===[ Plugins
+# Fish-like autosuggestions
+[[ -s "$HOME/.dotfiles/links/zsh/zsh-autosuggestions.zsh" ]] && source "$HOME/.dotfiles/links/zsh/zsh-autosuggestions.zsh"
+[[ -s "$HOME/.dotfiles/links/zsh/almostontop.plugin.zsh" ]] && source "$HOME/.dotfiles/links/zsh/almostontop.plugin.zsh"
 #===]
 # vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]:ts=2:sw=2
