@@ -134,6 +134,9 @@ noremap <C-LeftMouse> <LeftMouse>
 
 "select newly pasted text
 nnoremap gV `[v`]
+
+"omg I hate Ex mode
+nnoremap Q <nop>
 "===]
 "===[ Statusline
 "Always show the status line
