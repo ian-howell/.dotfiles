@@ -329,5 +329,6 @@ augroup END
 " Allow tons of tabs. This is useful for git-vimdiff
 set tabpagemax=99
 
+set completeopt=menu
 "===]
 " vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
