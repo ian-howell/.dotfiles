@@ -1,10 +1,9 @@
-export GOPATH="$HOME/gocode"
-export GOBIN="$GOPATH/bin"
-export GOROOT="/usr/local/go"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
-export PATH="$GOBIN:$PATH"
-export PATH="$GOROOT/bin:$PATH"
+# Add go to the environment
+export GOROOT="/usr/local/go"
+export PATH=$GOROOT/bin:$PATH
+export PATH=$PATH:$HOME/go/bin
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
