@@ -18,9 +18,37 @@ let g:ale_sign_warning = "▲"
 highlight ALEErrorSign ctermbg=234 ctermfg=red
 highlight ALEWarningSign ctermbg=234 ctermfg=yellow
 
-"Turn flake8 errors into warnings
-let g:ale_type_map = {'flake8': {'ES': 'WS', 'E': 'W'}}
+" Show balloons on hover
+let g:ale_set_balloons = 1
+
+set omnifunc=ale#completion#OmniFunc
+
+let g:ale_linters = {
+      \ 'go': [
+        \ 'golangci-lint',
+        \ 'go build',
+        \ 'gopls',
+        \],
+      \}
+
+" Turn linting errors into warnings
+let g:ale_type_map = {
+      \ 'flake8': {'ES': 'WS', 'E': 'W'},
+      \ 'golangci-lint': {'ES': 'WS', 'E': 'W'},
+      \}
 
 " let ale know that we're using python3
 let g:ale_python_flake8_executable = 'python3'
 let g:ale_python_flake8_options = '-m flake8'
+
+" I'm making a point of white-listing linters
+let g:ale_go_golangci_lint_options = '--disable-all
+      \ --enable deadcode
+      \ --enable errcheck
+      \ --enable gosimple
+      \ --enable govet
+      \ --enable ineffassign
+      \ --enable staticcheck
+      \ --enable typecheck
+      \ --enable unused
+      \ --enable varcheck'
