@@ -7,7 +7,7 @@ ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
 build_git()
 {
-  git_exists=$(command -v vim)
+  git_exists=$(command -v git)
   if [ ! -z "$git_exists" ]; then
     # git exists. Remove it
     sudo apt-get -qq remove git git-man
