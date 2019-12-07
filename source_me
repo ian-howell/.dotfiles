@@ -4,27 +4,23 @@
 ############################
 set -x
 
-MAIN_DIR="$HOME/.dotfiles"
-ARTIFACTS_DIR="$HOME/setup_artifacts"
-SRC="$MAIN_DIR/src"
-BG_DIR="$MAIN_DIR/bg_images"
+export ARTIFACTS_DIR="$HOME/setup_artifacts"
 
 echo "Creating $ARTIFACTS_DIR"
 mkdir -p "$ARTIFACTS_DIR"
 
 # Order is (somewhat) important
-source "$SRC/install_essentials"
-source "$SRC/install_git"
-source "$SRC/install_zsh"
-source "$SRC/install_fzf"
-source "$SRC/install_fd"
-source "$SRC/install_less"
-source "$SRC/remap_capslock"
-source "$SRC/link_dotfiles"
-source "$SRC/install_flake8"
-source "$SRC/install_vim"
-source "$SRC/set_theme"
-source "$SRC/set_bg"
+bash src/install_essentials
+# This has *probably* already been run
+#bash "src/install_git"
+bash src/install_zsh
+bash src/install_fzf
+bash src/install_fd
+bash src/install_less
+bash src/remap_capslock
+bash src/link_dotfiles
+bash src/install_vim
+bash src/set_theme
 
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
