@@ -1,0 +1,45 @@
+#!/bin/bash
+set -x
+
+echo "Getting latest version of go"
+
+ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
+
+build_go() {
+  # Remove any old installations
+  if [[ -d /usr/local/go ]]; then
+    sudo rm -r /usr/local/go
+  fi
+
+  GO_ARTIFACTS=$ARTIFACTS_DIR/go_artifacts
+  mkdir -p "$GO_ARTIFACTS"
+
+  # Find the url to the latest release
+  release_url=$(curl -s https://golang.org/dl/ | grep linux-amd64 | head -n1 | cut -f4 -d'"')
+  tarball="$GO_ARTIFACTS/${release_url##*/}"
+
+  # Download and install
+  curl -sL "$release_url" --output "$tarball"
+  sudo tar -C /usr/local -xzf "$tarball"
+}
+
+download_golangci_lint() {
+  download_url=https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
+  version=v1.21.0
+
+  if ! curl -sfL "$download_url" | sh -s -- -b "$(go env GOPATH)/bin" "$version"; then
+    printf "Something went wrong while installing golangci-lint\n" 1>&2
+    exit 1
+  fi
+}
+
+download_gopls() {
+  GO111MODULE=on go get golang.org/x/tools/gopls@latest
+}
+
+build_go
+download_golangci_lint
+download_gopls
+go version
+
+set +x
