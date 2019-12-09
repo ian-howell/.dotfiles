@@ -8,9 +8,12 @@ function! go#GoImports()
     " Save the buffer to file
     write
 
-    " First, check if there are any issues
-    if (system('goimports -d ' . expand('%')) == "")
-        " If not, unrecord this action and stop
+    " Update the file. This can't be async - I don't want to make any more
+    " actions until the file is rewritten
+    " The '-w' flag makes goimports overwrite the file if there were issues
+    " The '-d' flag causes goimports to output if there were issues
+    if (system('goimports -d -w ' . expand('%')) == "")
+        " If no issues, unrecord this action and stop
         undojoin
         return
     endif
@@ -18,18 +21,11 @@ function! go#GoImports()
     " Save the current view
     let l:winview = winsaveview()
 
-    " Update the file. Use AsyncRun if possible
-    if exists('g:asyncrun_support')
-        AsyncRun goimports -w %
-    else
-        silent !goimports -w %
-        silent redraw!
-    endif
-
     " Update the buffer from the file
     edit
 
     " Restore the view
     call winrestview(l:winview)
+
 endfunction
 
