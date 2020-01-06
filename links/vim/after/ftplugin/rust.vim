@@ -1,1 +1,1 @@
-nnoremap <silent> <buffer> ,rf :call rust#RustFormat()<cr>
+nnoremap <silent> <buffer> ,rf :call fmt#Format('rustfmt', '-l')<cr>

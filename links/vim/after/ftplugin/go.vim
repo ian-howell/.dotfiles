@@ -1,7 +1,7 @@
 setlocal noexpandtab
 setlocal shiftwidth=8
 
-nnoremap <silent> <buffer> ,gi :call go#GoImports()<cr>
+nnoremap <silent> <buffer> ,gi :call fmt#Format('goimports', '-d -w')<cr>
 
 if exists('g:loaded_ale')
   nnoremap <silent> <buffer> gd :ALEGoToDefinition<cr>
