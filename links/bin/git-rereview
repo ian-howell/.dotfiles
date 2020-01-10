@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-git review -d "$(git branch --show-current | cut -f3 -d'/')"
+change_number=$(git log | grep "^    Change-Id: " | head -n1 | cut -d' ' -f6)
+git review -d "$change_number"
