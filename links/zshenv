@@ -1,0 +1,3 @@
+# Don't run compinit from the global file
+# We're going to run it manually in my personal zshrc, and we don't want to run it twice
+skip_global_compinit=1

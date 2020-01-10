@@ -123,10 +123,10 @@ export KEYTIMEOUT=1
 # TODO: clean this up
 
 # add custom completionos to the function path
-# TODO: create a 'completions' directory
 fpath=($HOME/.dotfiles/links/completions $fpath)
 # load stock functions
-autoload -U compaudit compinit
+autoload -U compinit
+compinit
 
 # fixme - the load process here seems a bit bizarre
 zmodload -i zsh/complist
