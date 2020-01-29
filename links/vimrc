@@ -63,13 +63,16 @@ set autoindent         "Keep the same indentation level when inserting a new lin
 set nowrap             "Don't word wrap
 set number             "Show the cursor's current line
 
-"Highlight the current line
+"Highlight the current line and column
 set cursorline
+set cursorcolumn
 "Only highlight the active window
 augroup highlight_follows_focus
     autocmd!
     autocmd WinEnter * setlocal cursorline
+    autocmd WinEnter * setlocal cursorcolumn
     autocmd WinLeave * setlocal nocursorline
+    autocmd WinLeave * setlocal nocursorcolumn
 augroup END
 
 "== Columns =="
