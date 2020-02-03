@@ -103,6 +103,8 @@ bindkey -M vicmd 'q' edit-command-line
 # allow ctrl-p, ctrl-n for navigate history (standard behaviour)
 bindkey '^P' up-history
 bindkey '^N' down-history
+bindkey -M vicmd '^P' up-history
+bindkey -M vicmd '^N' down-history
 
 # allow ctrl-h, ctrl-w, ctrl-? for char and word deletion (standard behaviour)
 bindkey '^?' backward-delete-char
@@ -111,10 +113,19 @@ bindkey '^w' backward-kill-word
 
 # allow ctrl-r to perform backward search in history
 bindkey '^r' history-incremental-search-backward
+bindkey -M vicmd '^r' history-incremental-search-backward
 
 # allow ctrl-a and ctrl-e to move to beginning/end of line
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
+bindkey -M vicmd '^a' beginning-of-line
+bindkey -M vicmd '^e' end-of-line
+# The following "fixes" the behavior of the home and end keys to work like ctrl-a and ctrl-e
+bindkey -M vicmd "^[[H" beginning-of-line
+bindkey -M vicmd "^[[F" end-of-line
+
+# If I hit colon while in command mode, I almost definitely want to go to insert mdoe first
+bindkey -M vicmd -s ':' 'i:'
 
 # make mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
