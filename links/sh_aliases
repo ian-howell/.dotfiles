@@ -74,6 +74,9 @@ alias s!="sudo \$(tail $HOME/.zsh_history -n2 | head -n1 | cut -f2 -d';')"
 alias dkps="docker ps -a --format \"table {{.Command}}\t{{.Status}}\t{{.Names}}\""
 
 alias kustomzie=kustomize
+
+# A faster watch
+alias poll="watch -n0.1"
 #===]
 #===[ Kubernetes
 alias k='kubectl'
