@@ -110,8 +110,11 @@ bindkey -M vicmd '^N' down-history
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 bindkey '^w' backward-kill-word
+bindkey -M vicmd '^?' backward-delete-char
+bindkey -M vicmd '^h' backward-delete-char
+bindkey -M vicmd '^w' backward-kill-word
 
-# allow ctrl-r to perform backward search in history
+# allow ctrl-r to perform backward search in history - this is overwritten later if fzf exists
 bindkey '^r' history-incremental-search-backward
 bindkey -M vicmd '^r' history-incremental-search-backward
 
@@ -120,12 +123,22 @@ bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
 bindkey -M vicmd '^a' beginning-of-line
 bindkey -M vicmd '^e' end-of-line
-# The following "fixes" the behavior of the home and end keys to work like ctrl-a and ctrl-e
+# The following "fixes" the behavior of the home, end, and delete keys
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "^[[3~" delete-char
 bindkey -M vicmd "^[[H" beginning-of-line
 bindkey -M vicmd "^[[F" end-of-line
+bindkey -M vicmd "^[[3~" delete-char
+
+# same as above, but using the keycodes for tmux
+bindkey "^[[1~" beginning-of-line
+bindkey "^[[4~" end-of-line
+bindkey -M vicmd "^[[1~" beginning-of-line
+bindkey -M vicmd "^[[4~" end-of-line
 
 # If I hit colon while in command mode, I almost definitely want to go to insert mdoe first
-bindkey -M vicmd -s ':' 'i:'
+bindkey -M vicmd -s ':' 'cc:'
 
 # make mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
