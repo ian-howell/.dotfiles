@@ -10,4 +10,6 @@
 	name = Ian Howell
 [diff]
 	algorithm = histogram
+[commit]
+	verbose = true
 # vim:noet:sw=8:cms=#\ %s
