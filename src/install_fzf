@@ -2,34 +2,7 @@
 set -x
 
 echo "Installing FZF"
-
-ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
-
-install_fzf() {
-  FZF_ARTIFACTS=$ARTIFACTS_DIR/fzf_artifacts
-  mkdir -p "$FZF_ARTIFACTS"
-  cd "$FZF_ARTIFACTS"
-
-  release=$(curl -s https://github.com/junegunn/fzf-bin/releases | \
-    awk 'BEGIN {FS="/"} /\junegunn\/fzf-bin\/releases\/download\// {print $6}' | \
-    sort -ru | \
-    head -n1
-  )
-
-  dirname="fzf-$release"
-  mkdir -p "$dirname"
-  tarfile="$dirname-linux_amd64.tgz"
-
-  curl -L "https://github.com/junegunn/fzf-bin/releases/download/$release/$tarfile" -o "$tarfile"
-  tar -zxf "$tarfile"
-  mv fzf ~/bin
-
-  # Get the tmux alias as well
-  curl -L "https://raw.githubusercontent.com/junegunn/fzf/$release/bin/fzf-tmux" -o fzf-tmux
-  chmod 755 fzf-tmux
-  mv fzf-tmux ~/bin
-}
-
-install_fzf
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --key-bindings --completion --no-update-rc
 
 set +x

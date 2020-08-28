@@ -255,12 +255,7 @@ export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
 #===]
 #===[ fzf
-# Auto-completion
-[[ -f "$HOME/.fzf/completion.zsh" ]] && [[ $- == *i* ]] && source "$HOME/.fzf/completion.zsh" 2> /dev/null
-
-# Key bindings
-[[ -f "$HOME/.fzf/key-bindings.zsh" ]] && source "$HOME/.fzf/key-bindings.zsh"
-
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPS="--extended"
 export FZF_DEFAULT_COMMAND="fd --type f --type l --exclude='*vendor/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

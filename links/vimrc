@@ -16,7 +16,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
 " Assorted
-Plug 'junegunn/fzf', { 'do': 'find -not -regex \"\./plugin.*\" -not -regex \"\./\.git.*\" -delete'}
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 " Prefix all of the fzf commands to make them easier to 'browse'
 let g:fzf_command_prefix = "Fzf"
