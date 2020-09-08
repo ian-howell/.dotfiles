@@ -13,7 +13,7 @@
 import sys
 
 mickey_group = {"MICKEY", "KELLY", "ZAC", "ANTHONY"}
-pam_group = {"PAM", "JENNA", "ANDREW"}
+pam_group = {"PAM", "PAMELA", "JENNA", "ANDREW"}
 ian_group = {"IAN", "JAMI"}
 
 
@@ -33,7 +33,7 @@ def get_data_from_stdin():
             }
     while i < len(lines):
         line = lines[i]
-        if line == "9 devices\n":
+        if line == "10 devices\n":
             saving = True
             results['monthly'] = parse_money(lines[i+1])
         if saving:
