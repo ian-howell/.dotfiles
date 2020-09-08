@@ -54,7 +54,7 @@ def parse_money(money_str):
 
 def print_report(report):
     total = report['monthly']
-    for group_name in report:
+    for group_name in sorted(report):
         if not group_name.endswith('group'):
             continue
         group = report[group_name]
@@ -63,7 +63,7 @@ def print_report(report):
         total += group_total
 
         print("==============={: ^10}===============".format(group_owner))
-        for person in group:
+        for person in sorted(group):
             name = person.split()[0].title()
             print("{: <30} {:>.2f}".format(name, group[person]))
         if group_owner == 'Ian':
