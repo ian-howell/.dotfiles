@@ -16,7 +16,6 @@ bash src/install_essentials
 bash src/install_zsh
 bash src/install_fzf
 bash src/install_fd
-bash src/install_less
 bash src/remap_capslock
 bash src/link_dotfiles
 bash src/install_vim
