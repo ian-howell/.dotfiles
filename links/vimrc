@@ -85,7 +85,7 @@ augroup END
 
 "== Columns =="
 set sidescroll=1                             "Set horizontal scroll speed
-set colorcolumn=80                           "color line 80
+set colorcolumn=110                          "color line 110
 set signcolumn=yes                           "Keep the sign column open at all times
 set nostartofline                            "Prevent the cursor fom changing columns when jumping
 "===]
