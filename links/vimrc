@@ -111,6 +111,8 @@ noremap! <f1> <nop>
 
 "Fast bracketing (repeatable)
 inoremap {{ {<CR>}<UP><END>
+inoremap (( (<CR>)<UP><END>
+inoremap [[ [<CR>]<UP><END>
 
 "Yank to EOL like it should
 nnoremap Y y$
