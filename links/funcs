@@ -1,5 +1,13 @@
 #!/bash
 
+pycalc() {
+  python3 << EOF
+from math import *
+from datetime import *
+print($*)
+EOF
+}
+
 # Opposite of cd. Giving an argument jumps up that many directories
 bd() {
   iter="${1:-1}"
