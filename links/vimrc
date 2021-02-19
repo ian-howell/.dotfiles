@@ -23,11 +23,15 @@ let g:fzf_command_prefix = "Fzf"
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'romainl/vim-qf'
-Plug 'dense-analysis/ale'
 
 Plug 'fatih/vim-go'
 let g:go_fmt_autosave = 0
 let g:go_mod_fmt_autosave = 0
+
+" Use my version of ale until https://github.com/dense-analysis/ale/pull/2925
+" is merged
+" Plug 'dense-analysis/ale'
+Plug 'ian-howell/ale'
 
 call plug#end()
 

@@ -18,8 +18,9 @@ let g:ale_sign_warning = "▲"
 highlight ALEErrorSign ctermbg=234 ctermfg=red
 highlight ALEWarningSign ctermbg=234 ctermfg=yellow
 
-" Show balloons on hover
-let g:ale_set_balloons = 1
+" Show popups on hover
+let g:ale_set_popups = 1
+let g:ale_hover_to_popup = 1
 
 set omnifunc=ale#completion#OmniFunc
 
@@ -41,14 +42,17 @@ let g:ale_type_map = {
 let g:ale_python_flake8_executable = 'python3'
 let g:ale_python_flake8_options = '-m flake8'
 
-" I'm making a point of white-listing linters
-let g:ale_go_golangci_lint_options = '--disable-all
-      \ --enable deadcode
-      \ --enable errcheck
-      \ --enable gosimple
-      \ --enable govet
-      \ --enable ineffassign
-      \ --enable staticcheck
-      \ --enable typecheck
-      \ --enable unused
-      \ --enable varcheck'
+let g:ale_go_golangci_lint_package = 1
+let g:ale_go_golangci_lint_options = '--config ~/.golangci.yaml'
+
+" " I'm making a point of white-listing linters
+" let g:ale_go_golangci_lint_options = '--disable-all
+"       \ --enable deadcode
+"       \ --enable errcheck
+"       \ --enable gosimple
+"       \ --enable govet
+"       \ --enable ineffassign
+"       \ --enable staticcheck
+"       \ --enable typecheck
+"       \ --enable unused
+"       \ --enable varcheck'
