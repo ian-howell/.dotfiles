@@ -15,6 +15,7 @@ alias gdv="git vimdiff"
 alias gca="git commit --amend --no-edit"
 alias grd="git review -d"
 alias gbd="git branch --merged | egrep -v \"(^\*|master|dev)\" | xargs git branch -d"
+alias gfr="git fetch && git rebase"
 #===]
 #===[ ls
 # Hidden files
