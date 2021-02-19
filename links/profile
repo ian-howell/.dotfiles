@@ -3,7 +3,7 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # Add go to the environment
 export GOROOT="/usr/local/go"
 export PATH=$GOROOT/bin:$PATH
-export PATH=$PATH:$HOME/go/bin
+export PATH=$HOME/go/bin:$PATH
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
