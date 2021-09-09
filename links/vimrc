@@ -157,9 +157,6 @@ set statusline=                            "Start empty
 set statusline+=%2*                        "Change color
 set statusline+=%{statusline#Modified()}   "Mark whether the file is modified, unmodified, or unmobifiable
 set statusline+=\ ‹%f›                     "File name
-set statusline+=%3*                        "Change color
-set statusline+=%{statusline#GitBranch()}  "Git branch
-set statusline+=%2*                        "Change color
 set statusline+=%=                         "Switch to the right side
 set statusline+=\ %3.c                     "Current column
 set statusline+=\ %P                       "Percentage through file
