@@ -83,6 +83,9 @@ alias kustomzie=kustomize
 
 # A faster watch
 alias poll="watch -n0.1"
+
+# Check internet speed
+alias checkspeed="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -"
 #===]
 #===[ Kubernetes
 alias k='kubectl'
