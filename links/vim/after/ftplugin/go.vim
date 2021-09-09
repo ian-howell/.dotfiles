@@ -6,8 +6,8 @@ nnoremap <silent> <buffer> ,gi :call fmt#Format('goimports', '-d -w')<cr>
 if exists('g:loaded_ale')
   nnoremap <silent> <buffer> gd :ALEGoToDefinition<cr>
   nnoremap <silent> <buffer> <c-]> :ALEGoToDefinition<cr>
-  nnoremap <silent> <buffer> ,gdv :ALEGoToDefinitionInVSplit<cr>
-  nnoremap <silent> <buffer> ,gds :ALEGoToDefinitionInSplit<cr>
+  nnoremap <silent> <buffer> ,gdv :vsplit<cr>:ALEGoToDefinition<cr>
+  nnoremap <silent> <buffer> ,gds :split<cr>:ALEGoToDefinition<cr>
 
   nnoremap <silent> <buffer> ,gf :ALEFindReferences<cr>
 
