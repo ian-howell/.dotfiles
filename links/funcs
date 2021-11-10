@@ -105,6 +105,19 @@ bak() {
   done
 }
 
+# Wraps an interactive shell with readline. Requires rlwrap
+rl() {
+  if ! command -v rlwrap; then
+    printf "Couldn't find rlwrap, please install it\n"
+  fi
+  if (( $# != 1 )); then
+    printf "Usage: %s <wrapped_application>\n" "$0"
+    printf "EXAMPLE: %s python\n" "$0"
+    return
+  fi
+  rlwrap --remember --complete-filenames "$1"
+}
+
 # convenience routine which appends a string to a path.
 append() {
   if (( $# != 1 )); then
