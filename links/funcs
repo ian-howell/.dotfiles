@@ -39,6 +39,15 @@ agc() {
   ag --color --group "$@" | less -R --quit-if-one-screen
 }
 
+count() {
+  ag "$@" -c | awk '
+    BEGIN {sum = 0; FS=":"}
+      {printf "%-10d %s\n", $2, $1}
+      {sum = sum + $2}
+    END {printf "--------------------------------------------------------------------------------\n%-10d Total\n", sum}
+    '
+}
+
 # Colorful trees
 treec() {
   tree -C "$@" | less -R --quit-if-one-screen
