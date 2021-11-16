@@ -3,6 +3,7 @@ call plug#begin()
 
 " Colorschemes
 Plug 'ian-howell/Apprentice'
+Plug 'blueyed/vim-diminactive'
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
