@@ -9,7 +9,6 @@ Plug 'blueyed/vim-diminactive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
-Plug 'einfachtoll/didyoumean'
 Plug 'wellle/targets.vim'
 
 " Git
