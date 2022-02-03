@@ -340,5 +340,8 @@ nmap <silent><space>gbl :call setbufvar(winbufnr(popup_atcursor(split(system("gi
 set completeopt=menu
 
 nmap <silent><space>d2u :%!dos2unix<CR>
+
+" Don't mess with the EOL characters at the end of a file
+set nofixendofline
 "===]
 " vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
