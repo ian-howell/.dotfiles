@@ -8,22 +8,25 @@ ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 install_vim()
 {
   vim_exists=$(command -v vim)
-  if [ ! -z "$vim_exists" ]; then
+  if [ -n "$vim_exists" ]; then
       # Vim exists. Remove it
       sudo apt-get -qq remove vim vim-runtime gvim
   fi
 
+  # Install required X libraries - these are needed for clipboard support
+  sudo apt-get install libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
+
   # Download, configure, build, and install
-  release=$(curl -s https://github.com/vim/vim/releases| \
-    awk 'BEGIN {FS="/"} /\/vim\/vim\/archive\/.*tar.*/ {print $5}' | \
+  tag=$(curl -s https://github.com/vim/vim/tags| \
+    awk 'BEGIN {FS="/"} /\/vim\/vim\/archive\/.*tar.*/ {print $7}' | \
     sort -r | \
     head -n1 | \
     cut -f1 -d\"
   )
   dirname="$ARTIFACTS_DIR/vim"
   mkdir -p "$dirname"
-  tarfile="$dirname/$release"
-  curl -L "https://github.com/vim/vim/archive/$release" -o "$tarfile"
+  tarfile="$dirname/$tag"
+  curl -L "https://github.com/vim/vim/archive/$tag" -o "$tarfile"
   tar -zxf "$tarfile" -C "$dirname" --strip-components 1
   cd "$dirname" || (echo "Couldn't cd to directory [$dirname]"; exit)
 
@@ -31,11 +34,11 @@ install_vim()
               --enable-multibyte \
               --enable-rubyinterp=yes \
               --enable-python3interp=yes \
-              --with-python3-config-dir=/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu \
               --enable-perlinterp=yes \
               --enable-luainterp=yes \
-              --enable-gui=gtk2 \
               --enable-cscope \
+              --with-x=yes \
+              --disable-gui \
               --prefix=/usr/local
   sudo make install
 
