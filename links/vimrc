@@ -337,7 +337,7 @@ set tabpagemax=99
 " Popup the latest git commit for the current line
 nmap <silent><space>gbl :call setbufvar(winbufnr(popup_atcursor(split(system("git log -n 1 -L " . line(".") . ",+1:" . expand("%:p")), "\n"), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
-set completeopt=menu
+set completeopt=menu,menuone,popup
 
 nmap <silent><space>d2u :%!dos2unix<CR>
 

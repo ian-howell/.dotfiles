@@ -19,8 +19,10 @@ highlight ALEErrorSign ctermbg=234 ctermfg=red
 highlight ALEWarningSign ctermbg=234 ctermfg=yellow
 
 " Show popups on hover
-let g:ale_set_popups = 1
-let g:ale_hover_to_popup = 1
+let g:ale_floating_preview = 1
+" Since vim's default uses nice unicode characters when possible, you can trick
+" ale into using that default with
+let g:ale_floating_window_border = repeat([''], 6)
 
 set omnifunc=ale#completion#OmniFunc
 
