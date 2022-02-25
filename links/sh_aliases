@@ -46,6 +46,12 @@ alias viewyaml="view +set\ ft=yaml -"
 alias grep="grep -Idskip --color=auto"
 alias grpe='grep'
 #===]
+#===[ tmux
+# force tmux to use 256 colors (to make vim pretty)
+alias tmux="tmux -2"
+
+alias tmss="tmux switch-client -t"
+#===]
 #===[ valgrind
 alias valrgind=valgrind
 alias valigrnd=valgrind
@@ -61,9 +67,6 @@ alias dopen="xdg-open"
 
 # Shortcut to trim whitespace from output
 alias trim="awk '{\$1=\$1};1;'"
-
-# force tmux to use 256 colors (to make vim pretty)
-alias tmux="tmux -2"
 
 # List all of the recently visited directories
 alias dirs="dirs -lpv"
