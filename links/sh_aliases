@@ -50,6 +50,9 @@ alias grpe='grep'
 # force tmux to use 256 colors (to make vim pretty)
 alias tmux="tmux -2"
 
+# attach to a tmux session
+alias tmas="tmux attach-session -t"
+# attach to a different tmux session (while already in a tmux session)
 alias tmss="tmux switch-client -t"
 #===]
 #===[ valgrind
