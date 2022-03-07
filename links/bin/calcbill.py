@@ -27,14 +27,11 @@ def get_data_from_stdin():
             "mickey_group": {},
             "pam_group": {},
             "ian_group": {},
-            "monthly": 0,
             }
     for i, line in enumerate(lines):
         # explicitly passing a space forces the resulting list to have len >= 1
         name = line.split(" ", 1)[0]
-        if name == "AT&T":
-            results['monthly'] = parse_money(lines[i+1])
-        elif name in mickey_group:
+        if name in mickey_group:
             results["mickey_group"][line] = parse_money(lines[i+1])
         elif name in pam_group:
             results["pam_group"][line] = parse_money(lines[i+1])
@@ -48,10 +45,8 @@ def parse_money(money_str):
 
 
 def print_report(report):
-    total = report['monthly']
+    total = 0
     for group_name in sorted(report):
-        if group_name == 'monthly':
-            continue
         group = report[group_name]
         # strip off the string "_group" from the group name and capitalize the group owner name
         group_owner = group_name[:-len('_group')].title()
@@ -62,9 +57,6 @@ def print_report(report):
         for person in sorted(group):
             name = person.split()[0].title()
             print("{: <30} {:>.2f}".format(name, group[person]))
-        if group_owner == 'Ian':
-            print("{: <30} {:>.2f}".format("Month charge", report['monthly']))
-            group_total += report['monthly']
         print('-' * 40)
         print("{: <30} {:>.2f}".format("Total", group_total))
         print()
