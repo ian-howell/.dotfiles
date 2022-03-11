@@ -13,8 +13,11 @@ install_vim()
       sudo apt-get -qq remove vim vim-runtime gvim
   fi
 
+  # Install make, gcc, and curses. These are dependencies
+  sudo apt-get install -y make gcc libncurses5-dev
+
   # Install required X libraries - these are needed for clipboard support
-  sudo apt-get install libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
+  sudo apt-get install -y libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
 
   # Download, configure, build, and install
   tag=$(curl -s https://github.com/vim/vim/tags| \
