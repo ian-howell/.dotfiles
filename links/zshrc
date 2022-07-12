@@ -268,6 +268,11 @@ export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '
 [[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
 # Java, if I have it
 [[ -d "/usr/local/bin/jre1.8.0_211/bin" ]] && append "/usr/local/bin/jre1.8.0_211/bin"
+
+# Add go to the environment
+export GOROOT="/usr/local/go"
+export PATH=$GOROOT/bin:$PATH
+export PATH=$HOME/go/bin:$PATH
 #===]
 #===[ Spectrum
 # This is just for fun
