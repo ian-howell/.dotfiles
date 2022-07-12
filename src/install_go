@@ -15,7 +15,7 @@ build_go() {
   mkdir -p "$GO_ARTIFACTS"
 
   # Find the url to the latest release
-  release_url=$(curl -s https://golang.org/dl/ | grep linux-amd64 | head -n1 | cut -f4 -d'"')
+  release_url=https://go.dev$(curl -sL https://golang.org/dl/ | grep linux-amd64 | head -n1 | cut -f4 -d'"')
   tarball="$GO_ARTIFACTS/${release_url##*/}"
 
   # Download and install
@@ -27,7 +27,7 @@ download_golangci_lint() {
   download_url=https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
   version=v1.21.0
 
-  if ! curl -sfL "$download_url" | sh -s -- -b "$(go env GOPATH)/bin" "$version"; then
+  if ! curl -sL "$download_url" | sh -s -- -b "$(go env GOPATH)/bin" "$version"; then
     printf "Something went wrong while installing golangci-lint\n" 1>&2
     exit 1
   fi
