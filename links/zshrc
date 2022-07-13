@@ -151,88 +151,47 @@ bindkey -M vicmd -s ':' 'cc:'
 export KEYTIMEOUT=1
 #===]
 #===[ Completion
-# TODO: clean this up
-
-# add custom completions to the function path
-fpath=($HOME/.completions $fpath)
-# load stock functions
+# Turn on completion
 autoload -U compinit
 compinit
 
-# fixme - the load process here seems a bit bizarre
-zmodload -i zsh/complist
+# Set up some default completers. These are executed in order when the TAB key
+# is hit. If a completer fails, it attempts to use the next completer
+# * _extensions matches globs
+# * _complete matches exactly
+# * _approximate will match strings that are are close (different chacters, missing or extra characters, swapped characters)
+zstyle ':completion:*' completer _extensions _complete _approximate
 
-WORDCHARS=''
+# Cache completions to speed up future completions
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.zsh/zcompcache"
 
-unsetopt menu_complete   # do not autoselect the first completion entry
-unsetopt flowcontrol
-setopt auto_menu         # show completion menu on successive tab press
-setopt complete_in_word
-setopt always_to_end
+# Use a menu for selection
+zstyle ':completion:*' menu select
 
-# should this be in keybindings?
-bindkey -M menuselect '^o' accept-and-infer-next-history
-zstyle ':completion:*:*:*:*:*' menu select
-
-# partial-word and substring completion
-HYPHEN_INSENSITIVE=true
-if [[ "$HYPHEN_INSENSITIVE" = true ]]; then
-  zstyle ':completion:*' matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|=*' 'l:|=* r:|=*'
-else
-  zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
-fi
-unset HYPHEN_INSENSITIVE
-
-# Complete . and .. special directories
-zstyle ':completion:*' special-dirs true
-
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
-
-# disable named-directories autocompletion
-zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
-
-# Use caching so that commands like apt and dpkg complete are useable
-zstyle ':completion::complete:*' use-cache 1
-zstyle ':completion::complete:*' cache-path $ZSH_CACHE_DIR
-
-# Don't complete uninteresting users
-zstyle ':completion:*:*:*:users' ignored-patterns \
-        adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
-        clamav daemon dbus distcache dnsmasq dovecot fax ftp games gdm \
-        gkrellmd gopher hacluster haldaemon halt hsqldb ident junkbust kdm \
-        ldap lp mail mailman mailnull man messagebus  mldonkey mysql nagios \
-        named netdump news nfsnobody nobody nscd ntp nut nx obsrun openvpn \
-        operator pcap polkitd postfix postgres privoxy pulse pvm quagga radvd \
-        rpc rpcuser rpm rtkit scard shutdown squid sshd statd svn sync tftp \
-        usbmux uucp vcsa wwwrun xfs '_*'
-
-# ... unless we really want to.
-zstyle '*' single-ignored show
-
-# zsh's backword menu complete is different from readline's for some reason
+# zsh's menu completion uses c-n and TAB for forward, and c-p for backward. The following adds SHIFT-TAB for backward
 bindkey '^[[Z' reverse-menu-complete
 
-ac() {
-  mkdir -p ~/.completions
-  if type "argo" > /dev/null; then
-    argo completion zsh > ~/.completions/_argo
-  fi
-  if type "airshipctl" > /dev/null; then
-    source <(airshipctl completion zsh)
-  fi
-  if type "helm" > /dev/null; then
-    source <(helm completion zsh)
-  fi
-  if type "kind" > /dev/null; then
-    kind completion zsh > ~/.completions/_kind
-  fi
-  if type "kubectl" > /dev/null; then
-    kubectl completion zsh > ~/.completions/_kubectl
-  fi
-  compinit
-}
+# The following "format" lines set up "headers" for each completion "sub-section"
+# * Add a description to the thing that was completed (e.g. file vs command vs arg etc)
+#   The group-order is needed to group together matches under their respective
+#   headers (when there's more than one matched group). Note that the order is
+#   specific; we should match aliases prior to matching non-aliases
+zstyle ':completion:*:*:*:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*:*:-command-:*:*' group-order alias builtins functions commands
+# * Show the completions that were caught by the _approximate completor
+zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
+# * Show an error if there are no matches
+zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
 
+# This makes files' and directories' colors match the output of ls
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+# Add custom completions to the function path
+fpath=($HOME/.zsh/completions $fpath)
+# but it doesn't appear to work though, so resort to resin...
+[ $(command -v kubectl) ] && source <(kubectl completion zsh)
+[ $(command -v helm) ] && source <(helm completion zsh)
 #===]
 #===[ History
 # TODO: clean this up too
