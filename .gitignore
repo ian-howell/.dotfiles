@@ -9,6 +9,11 @@ links/vim/view/
 # Tags. Because for some reason I need that in my .dotfiles :eye-roll:
 tags
 
+# zsh completion cache. It has to go somewhere, might as well be here
+links/zsh/zcompcache/
+# zsh custom completion funcs. For example, _kubectl. I don't think I want the completions in the repo though...
+links/zsh/completions/
+
 # These files are specifically meant to be localized to the host
 localrc
 local_gitconfig
