@@ -29,7 +29,7 @@ function git_prompt_info() {
   ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
   local prefix suffix
   # prefix="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
-  prefix="%{$fg_bold[magenta]%}"
+  prefix="%{$fg_bold[blue]%}"
   suffix="%{$reset_color%} "
   echo "$prefix${ref#refs/heads/}$(parse_git_dirty)$suffix"
 }
@@ -68,35 +68,42 @@ function parse_git_dirty() {
   fi
 }
 
-function vi_mode_prompt_info() {
-  local mode_indicator="%{$fg_bold[magenta]%}(cmd)%{$reset_color%}"
-  echo "${${KEYMAP/vicmd/$mode_indicator}/(main|viins)/}"
-}
 #===]
 #===[ Prompt
-ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
-PROMPT='${ret_status} %{$fg[cyan]%}%c%{$reset_color%} $(git_prompt_info)'
-RPS1='$(vi_mode_prompt_info)'
-#===]
-#===[ Vim
-# Updates editor information when the keymap changes.
-function zle-keymap-select() {
+function set_prompt() {
+  # KEYMAP contains the currently selected keymap e.g. "main", "viins", "vicmd", etc
+  # "main" is just an alias for "viins"
+  case ${KEYMAP} in
+    main|viins) mode_indication_color="%{$fg_bold[cyan]%}" ;;
+    *)   mode_indication_color="%{$fg_bold[magenta]%}" ;;
+  esac
+  directory="%{$mode_indication_color%}%c%{$reset_color%}"
+  ret_status="%(?:%{$fg_bold[green]%}✓:%{$fg_bold[red]%}✗)%{$reset_color%}"
+  PROMPT="$ret_status $directory $(git_prompt_info)"
   zle reset-prompt
-  zle -R
 }
 
+function zle-line-init zle-keymap-select {
+  # zle-line-init and zle-keymap-select are user-defined functions which recieve special treatment when defined as widgets:
+  # * zle-line-init is called when the shell first starts (oversimplified, but whatever)
+  # * zle-keymap-select is called when the value of ${KEYMAP} changes
+  set_prompt
+}
+# zle -N defines a function as a "widget"
+zle -N zle-keymap-select
+zle -N zle-line-init
+#===]
+#===[ Vim
 # Ensure that the prompt is redrawn when the terminal size changes.
 TRAPWINCH() {
   zle && { zle -R; zle reset-prompt }
 }
 
-zle -N zle-keymap-select
-zle -N edit-command-line
-
 # turn on vi-mode
 bindkey -v
 
 # allow v to edit the command line (standard behaviour)
+zle -N edit-command-line
 autoload -Uz edit-command-line
 bindkey -M vicmd 'q' edit-command-line
 
