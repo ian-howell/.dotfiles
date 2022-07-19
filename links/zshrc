@@ -187,6 +187,9 @@ zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
 # This makes files' and directories' colors match the output of ls
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
+# This is for makefile targets. For whatever reason it doesn't work by default
+zstyle ':completion:*:*:make:*' tag-order 'targets'
+
 # Add custom completions to the function path
 fpath=($HOME/.zsh/completions $fpath)
 # but it doesn't appear to work though, so resort to resin...
