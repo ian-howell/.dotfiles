@@ -118,6 +118,18 @@ rl() {
   rlwrap --remember --complete-filenames "$1"
 }
 
+stealth-toggle() {
+  if [[ -f ~/.zsh_history.bak ]]; then
+    echo "STEALTH => NORMAL"
+    grep -v "stealth-toggle" ~/.zsh_history.bak > ~/.zsh_history
+    # Use a backslash here so that it doesn't use my alias
+    \mv ~/.zsh_history.bak "$(mktemp)"
+  else
+    echo "NORMAL => STEALTH"
+    mv ~/.zsh_history ~/.zsh_history.bak
+  fi
+}
+
 # convenience routine which appends a string to a path.
 append() {
   if (( $# != 1 )); then
