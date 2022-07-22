@@ -303,6 +303,14 @@ fancy-ctrl-z() {
 }
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
+
+# When hitting ctrl-w in insert mode, include the slash character (/) as a word separator
+my-backward-delete-word() {
+    local WORDCHARS=${WORDCHARS/\//}
+    zle backward-delete-word
+}
+zle -N my-backward-delete-word
+bindkey '^W' my-backward-delete-word
 #===]
 #===[ Plugins
 # Fish-like autosuggestions
