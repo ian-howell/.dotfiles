@@ -24,10 +24,7 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'romainl/vim-qf'
 Plug 'dense-analysis/ale'
-
 Plug 'fatih/vim-go'
-let g:go_fmt_autosave = 0
-let g:go_mod_fmt_autosave = 0
 
 call plug#end()
 
@@ -124,6 +121,12 @@ nnoremap <silent> { :<C-u>call ipmotion#MyPrevParagraph()<CR>
 nnoremap <silent> } :<C-u>call ipmotion#MyNextParagraph()<CR>
 xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call ipmotion#MyPrevParagraph()<CR>
 xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call ipmotion#MyNextParagraph()<CR>
+
+" Jump between function definitions. Taken from :help section
+map [[ ?{<CR>w99[{
+map ][ /}<CR>b99]}
+map ]] j0[[%/{<CR>
+map [] k$][%?}<CR>
 
 "Turn the mouse on
 set mouse=n
