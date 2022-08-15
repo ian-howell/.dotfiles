@@ -1,7 +1,7 @@
 #===[ python
 alias ut="python -m unittest"
 alias pprint="python -m json.tool"
-#===]
+
 #===[ Git aliases
 alias gst="git status"
 alias gs="git status" # Because I constantly mistype this one
@@ -16,7 +16,7 @@ alias gca="git commit --amend --no-edit"
 alias grd="git review -d"
 alias gbd="git branch --merged | egrep -v \"(^\*|master|dev)\" | xargs git branch -d"
 alias gfr="git fetch && git rebase"
-#===]
+
 #===[ ls
 # Hidden files
 alias lsa="ls -a"
@@ -28,7 +28,7 @@ alias lstr='ls -ltr'
 alias lsd="ls -d */"
 # Count all the directories in the current directory
 alias countdir="ls -d */ | wc -l"
-#===]
+
 #===[ vim
 alias vi="vim"
 alias cim="vim"
@@ -40,12 +40,12 @@ alias :wqa=exit
 
 # view, but with forced yaml syntax
 alias viewyaml="view +set\ ft=yaml -"
-#===]
+
 #===[ grep
 # Ignore binaries/directories
 alias grep="grep -Idskip --color=auto"
 alias grpe='grep'
-#===]
+
 #===[ tmux
 # force tmux to use 256 colors (to make vim pretty)
 alias tmux="tmux -2"
@@ -54,12 +54,12 @@ alias tmux="tmux -2"
 alias tmas="tmux attach-session -t"
 # attach to a different tmux session (while already in a tmux session)
 alias tmss="tmux switch-client -t"
-#===]
+
 #===[ valgrind
 alias valrgind=valgrind
 alias valigrnd=valgrind
 alias val=valgrind
-#===]
+
 #===[ Miscellaneous
 # Safety first
 alias mv="mv -i"
@@ -90,7 +90,7 @@ alias poll="watch -n0.1"
 
 # Check internet speed
 alias checkspeed="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -"
-#===]
+
 #===[ Kubernetes
 alias k='kubectl'
 
@@ -109,5 +109,3 @@ alias kd='kubectl describe'
 
 alias kustomzie="kustomize"
 alias kustom="kustomize"
-#===]
-# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

@@ -24,13 +24,12 @@ URxvt.color14:    #5FAFAF
 URxvt.color7:     #6C6C6C
 URxvt.color15:    #FFFFFF
 
-!===]
 !===[ Font
 URxvt.font: xft:UbuntuMono-R:size=12
 URxvt.boldFont: xft:UbuntuMono-B:size=12
 URxvt.italicFont: xft:UbuntuMono-RI:size=12
 URxvt.boldItalicFont: xft:UbuntuMono-BI:size=12
-!===]
+
 !===[ Scrolling
 URxvt.scrollstyle: plain
 URxvt.thickness: 5
@@ -40,9 +39,7 @@ URxvt.scrollBar_floating: true
 URxvt.scrollTtyOutput: false
 URxvt.scrollTtyKeypress: true
 URxvt.saveLines: 2048
-!===]
+
 !===[ Unsorted
 URxvt.cursorBlink: true
 URxvt.cursorColor2: #262626
-!===]
-! vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]:commentstring=!%s
