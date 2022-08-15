@@ -97,7 +97,7 @@ nnoremap <silent> <c-\> <c-w><c-\>
 nnoremap <silent> <space>s :source $MYVIMRC<CR>
 
 "Turn off the help on F1. The first is for normal-ish modes, while the second
-"is for intert-ish modes
+"is for insert-ish modes
 noremap <f1> <nop>
 noremap! <f1> <nop>
 
