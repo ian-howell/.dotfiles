@@ -19,7 +19,7 @@ HISTSIZE=10000000
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
-#===]
+
 #===[ colors
 # enable color support of ls and grep
 if [ -x /usr/bin/dircolors ]; then
@@ -38,10 +38,10 @@ export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
 export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 export MANPAGER='less -s -M +Gg'       # percentage into the document
-#===]
+
 #===[ aliases
 [[ -f "$HOME/.sh_aliases" ]] && source "$HOME/.sh_aliases"
-#===]
+
 #===[ path
 # initialize PATH
 PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin:/sbin
@@ -56,14 +56,14 @@ fi
 [[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
 
 export PATH
-#===]
+
 #===[ editor
 # use a *real* editor
 export VISUAL=vim
 export EDITOR="$VISUAL"
 # turn on vi-mode
 set -o vi
-#===]
+
 #===[ unsorted
 # Bash completion
 if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -92,8 +92,6 @@ shopt -s cdspell
 
 # fzf settings
 [ -f "$HOME/.fzf.bash" ] && source "$HOME/.fzf.bash"
-#===]
+
 
 [[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
-
-# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]

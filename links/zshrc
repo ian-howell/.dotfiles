@@ -10,7 +10,7 @@
 
 # This stuff is (supposedly :eye_roll:) command across different shells
 [[ -f "$HOME/.dotfiles/localrc" ]] && source "$HOME/.dotfiles/localrc"
-#===]
+
 #===[ Colors
 # Turn on convenient colors
 autoload -U colors && colors
@@ -20,7 +20,7 @@ if [[ -z "$LS_COLORS" ]]; then
   (( $+commands[dircolors] )) && eval "$(dircolors -b)"
 fi
 ls --color -d . &>/dev/null && alias ls='ls --color=tty' || { ls -G . &>/dev/null && alias ls='ls -G' }
-#===]
+
 #===[ Functions
 # Outputs current branch info in prompt format
 function git_prompt_info() {
@@ -68,7 +68,7 @@ function parse_git_dirty() {
   fi
 }
 
-#===]
+
 #===[ Prompt
 function set_prompt() {
   # KEYMAP contains the currently selected keymap e.g. "main", "viins", "vicmd", etc
@@ -92,7 +92,7 @@ function zle-line-init zle-keymap-select {
 # zle -N defines a function as a "widget"
 zle -N zle-keymap-select
 zle -N zle-line-init
-#===]
+
 #===[ Vim
 # Ensure that the prompt is redrawn when the terminal size changes.
 TRAPWINCH() {
@@ -149,7 +149,7 @@ bindkey -M vicmd -s ':' 'cc:'
 
 # make mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
-#===]
+
 #===[ Completion
 # Turn on completion
 autoload -U compinit
@@ -195,7 +195,7 @@ fpath=($HOME/.zsh/completions $fpath)
 # but it doesn't appear to work though, so resort to resin...
 [ $(command -v kubectl) ] && source <(kubectl completion zsh)
 [ $(command -v helm) ] && source <(helm completion zsh)
-#===]
+
 #===[ History
 # TODO: clean this up too
 # History file configuration
@@ -210,7 +210,7 @@ setopt hist_ignore_dups       # ignore duplicated commands history list
 setopt hist_ignore_space      # ignore commands that start with space
 setopt hist_verify            # show command with history expansion to user before running it
 setopt inc_append_history     # add commands to HISTFILE in order of execution
-#===]
+
 #===[ Pagers
 # colors for man
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
@@ -222,14 +222,14 @@ export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
 
 export MANPAGER='less -s -M +Gg'       # percentage into the document
-#===]
+
 #===[ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPS="--extended"
 export FZF_DEFAULT_COMMAND="fd --type f --type l --exclude='*vendor/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '*/gocode/pkg*' -o -path '*/go/pkg*' -o -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune -o -type d -print 2> /dev/null"
-#===]
+
 #===[ Path extensions
 # prepend and append will add $1 to the PATH variable, given that $1 is not already in the PATH
 # My personal bins
@@ -242,7 +242,7 @@ export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '
 export GOROOT="/usr/local/go"
 export PATH=$GOROOT/bin:$PATH
 export PATH=$HOME/go/bin:$PATH
-#===]
+
 #===[ Spectrum
 # This is just for fun
 typeset -AHg FX FG BG
@@ -276,7 +276,7 @@ function spectrum_bls() {
     print -P -- "$code: %{$BG[$code]%}$ZSH_SPECTRUM_TEXT%{$reset_color%}"
   done
 }
-#===]
+
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
@@ -311,10 +311,9 @@ my-backward-delete-word() {
 }
 zle -N my-backward-delete-word
 bindkey '^W' my-backward-delete-word
-#===]
+
 #===[ Plugins
 # Fish-like autosuggestions
 [[ -s "$HOME/.dotfiles/links/zsh/zsh-autosuggestions.zsh" ]] && source "$HOME/.dotfiles/links/zsh/zsh-autosuggestions.zsh"
 [[ -s "$HOME/.dotfiles/links/zsh/almostontop.plugin.zsh" ]] && source "$HOME/.dotfiles/links/zsh/almostontop.plugin.zsh"
-#===]
-# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]:ts=2:sw=2
+

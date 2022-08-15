@@ -32,8 +32,7 @@ call plug#end()
 filetype plugin indent on
 "For more matching. See :h matchit
 runtime macros/matchit.vim
-"End Plugins
-"===]
+
 "===[ Colors
 syntax enable
 " This is such a hack: set the colorscheme to torte, then set it to apprentice.
@@ -41,7 +40,7 @@ syntax enable
 " when installing plugins with 'vim +PlugInstall +qall'
 colorscheme torte
 silent! colorscheme apprentice
-"===]
+
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
 
@@ -51,14 +50,14 @@ augroup vimrc-incsearch-highlight
     autocmd CmdlineEnter /,\? :set hlsearch
     autocmd CmdlineLeave /,\? :set nohlsearch
 augroup END
-"===]
+
 "===[ Tab behaviour
 set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth
 set smarttab           "Backspace deletes a shiftwidth's worth of spaces
 set expandtab          "Turns tabs into spaces
 set autoindent         "Keep the same indentation level when inserting a new line
-"===]
+
 "===[ Line and column display settings
 "== Lines =="
 set nowrap             "Don't word wrap
@@ -81,7 +80,7 @@ set sidescroll=1                             "Set horizontal scroll speed
 set colorcolumn=110                          "color line 110
 set signcolumn=yes                           "Keep the sign column open at all times
 set nostartofline                            "Prevent the cursor fom changing columns when jumping
-"===]
+
 "===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
@@ -92,7 +91,7 @@ nnoremap <silent> <c-j> <c-w><c-j>
 nnoremap <silent> <c-k> <c-w><c-k>
 nnoremap <silent> <c-l> <c-w><c-l>
 nnoremap <silent> <c-\> <c-w><c-\>
-"===]
+
 "===[ Miscellaneous key mappings
 "Quickly source vimrc
 nnoremap <silent> <space>s :source $MYVIMRC<CR>
@@ -146,7 +145,7 @@ nnoremap gV `[v`]
 
 "omg I hate Ex mode
 nnoremap Q <nop>
-"===]
+
 "===[ Statusline
 "Always show the status line
 set laststatus=2
@@ -167,7 +166,7 @@ set statusline+=\ %y                       "Filetype
 
 "Finally, turn off the titlebar
 set notitle
-"===]
+
 "===[ Fix misspellings on the fly
 iabbrev          retrun           return
 iabbrev           pritn           print
@@ -192,12 +191,12 @@ command! WQ wq
 command! Wq wq
 command! WQa wqa
 command! Wqa wqa
-"===]
+
 "===[ Folds
 set foldmethod=syntax            "Create folds on syntax
 set foldlevel=999                "Start vim with all folds open
 set foldtext=folding#MyFoldText()
-"===]
+
 "===[ Show undesirable hidden characters
 "Show hidden characters
 if &modifiable
@@ -207,16 +206,16 @@ endif
 set listchars=tab:│\ ,trail:·
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
-"===]
+
 "===[ Tags
 set tags=./tags;,tags;
 nnoremap <space>tj :tjump /
 nnoremap <space>tp :ptjump /
-"===]
+
 "===[ Persistant Undos
 set undofile
 set undodir=$HOME/.vim/undo
-"===]
+
 "===[ File navigation
 "Allow changed buffers to be hidden
 set hidden
@@ -253,12 +252,12 @@ augroup vimStartup
     \ | endif
 
 augroup END
-"===]
+
 "===[ Grep customization
 if executable('ag')
   let &grepprg='ag'
 endif
-"===]
+
 "===[ Quickfix and Location window Shortcuts
 nmap <space>qn <Plug>(qf_qf_next)
 nmap <space>qp <Plug>(qf_qf_previous)
@@ -285,7 +284,7 @@ nmap <space>lt <Plug>(qf_loc_toggle)
 let g:qf_mapping_ack_style = 1
 
 let g:qf_auto_open_quickfix = 0
-"===]
+
 "===[ Wildmenu
 set wildmenu
 set wildmode=full
@@ -301,7 +300,7 @@ set wildignore+=*.png,*.jpg,*.bmp,*.gif
 set wildignore+=*.html  " Comment this out for html, obviously
 set wildignore+=*.doctree
 set wildignore+=%*
-"===]
+
 "===[ Diffs
 set diffopt+=algorithm:histogram,indent-heuristic
 
@@ -311,7 +310,7 @@ set fillchars+=diff:\
 "Mappings for working with diffs in visual mode
 xnoremap <silent> <space>do :diffget<CR>
 xnoremap <silent> <space>dp :diffput<CR>
-"===]
+
 "===[ Unsorted
 "Sane backspace
 set backspace=indent,eol,start
@@ -319,8 +318,6 @@ set backspace=indent,eol,start
 set noswapfile
 "Get out of visual mode faster
 set ttimeoutlen=0
-" Read from modelines for vim settings
-set modelines=1
 " Update faster. This is used for a handful of plugins (like git-gutter)
 set updatetime=750
 " Only redraw the screen when needed - this works for macros and mappings
@@ -344,5 +341,3 @@ set completeopt=menu,menuone,popup
 
 " Don't mess with the EOL characters at the end of a file
 set nofixendofline
-"===]
-" vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
