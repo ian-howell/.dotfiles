@@ -2,14 +2,6 @@ setlocal noexpandtab
 setlocal shiftwidth=8
 
 nnoremap <silent> <buffer> ,gi :call fmt#Format('goimports', '-d -w')<cr>
-
-if exists('g:loaded_ale')
-  nnoremap <silent> <buffer> gd :ALEGoToDefinition<cr>
-  nnoremap <silent> <buffer> <c-]> :ALEGoToDefinition<cr>
-  nnoremap <silent> <buffer> ,gdv :vsplit<cr>:ALEGoToDefinition<cr>
-  nnoremap <silent> <buffer> ,gds :split<cr>:ALEGoToDefinition<cr>
-
-  nnoremap <silent> <buffer> ,gf :ALEFindReferences<cr>
-
-  nnoremap <silent> <buffer> K :ALEHover<cr>
-endif
+nnoremap <silent> <buffer> ,gdv :vsplit<cr>:GoDef<cr>
+nnoremap <silent> <buffer> ,gds :split<cr>:GoDef<cr>
+let g:go_doc_popup_window = 1
