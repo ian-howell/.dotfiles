@@ -19,7 +19,6 @@ bash src/install_fd
 bash src/remap_capslock
 bash src/link_dotfiles
 bash src/install_vim
-bash src/set_theme
 
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
