@@ -25,16 +25,16 @@ build_git()
   sudo apt-get -y install asciidoc xmlto docbook2x install-info
 
   # Download, configure, build, and install
-  release=$(curl -s https://github.com/git/git/releases | \
-    awk 'BEGIN {FS="/"} /\/git\/git\/releases\/tag\// {print $6}' | \
+  tag=$(curl -s https://github.com/git/git/tags| \
+    awk 'BEGIN {FS="/"} /\/git\/git\/archive\/.*tar.*/ {print $7}' | \
     sort -r | \
     head -n1 | \
     cut -f1 -d\"
   )
-  dirname="git-$release"
+  dirname="git-$tag"
   mkdir -p "$dirname"
-  tarfile="$dirname.tar.gz"
-  curl -L "https://github.com/git/git/archive/$release.tar.gz" -o "$tarfile"
+  tarfile="$dirname/$tag"
+  curl -L "https://github.com/git/git/archive/refs/tags/$tag" -o "$tarfile"
   tar -zxf "$tarfile" -C "$dirname" --strip-components 1
   cd "$dirname"
   make configure
@@ -44,9 +44,6 @@ build_git()
 }
 
 # Use a subshell so that we don't need to remember where we started
-(
-  build_git
-  git --version
-)
+(build_git; git --version)
 
 set +x
