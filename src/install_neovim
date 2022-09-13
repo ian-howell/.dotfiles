@@ -1,0 +1,24 @@
+#!/bin/bash
+set -x
+
+echo "Setting up Neovim"
+
+ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
+
+install_dependencies() {
+  sudo apt-get install ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
+}
+
+install_neovim() {
+  install_dependencies
+  cd "$ARTIFACTS_DIR" || return
+  git clone https://github.com/neovim/neovim
+  cd neovim || return
+  make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=$HOME/bin/neovim"
+  make install
+}
+
+# Use a subshell so that we don't need to remember where we started
+(install_neovim)
+
+set +x
