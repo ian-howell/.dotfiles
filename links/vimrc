@@ -78,6 +78,7 @@ augroup END
 "== Columns =="
 set sidescroll=1                             "Set horizontal scroll speed
 set colorcolumn=110                          "color line 110
+set textwidth=110                            "gq will wrap text at 110, same as colorcolumn
 set signcolumn=yes                           "Keep the sign column open at all times
 set nostartofline                            "Prevent the cursor fom changing columns when jumping
 
