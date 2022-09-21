@@ -1,3 +1,4 @@
+#!/usr/bin/zsh
 #===[ Things that need to be sourced
 # IMPORTANT: This section needs to remain at the top. Some of the other things
 # in this file will depend on it.
