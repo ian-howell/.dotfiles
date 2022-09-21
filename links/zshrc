@@ -228,8 +228,6 @@ export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '
 # My personal bins
 [[ -d "$HOME/.dotfiles/links/bin" ]] && prepend "$HOME/.dotfiles/links/bin"
 [[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
-# Java, if I have it
-[[ -d "/usr/local/bin/jre1.8.0_211/bin" ]] && append "/usr/local/bin/jre1.8.0_211/bin"
 
 # Add go to the environment
 export GOROOT="/usr/local/go"
