@@ -12,7 +12,6 @@ funcs:.funcs
 gitconfig:.gitconfig
 global_gitignore:.global_gitignore
 inputrc:.inputrc
-nvim:.config/nvim
 profile:.profile
 sh_aliases:.sh_aliases
 tmux.conf:.tmux.conf
