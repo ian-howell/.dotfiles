@@ -157,40 +157,27 @@ fpath=($HOME/.zsh/completions $fpath)
 autoload -U compinit
 compinit
 
-# Set up some default completers. These are executed in order when the TAB key
-# is hit. If a completer fails, it attempts to use the next completer
-# * _extensions matches globs
-# * _complete matches exactly
-# * _approximate will match strings that are are close (different chacters, missing or extra characters, swapped characters)
-zstyle ':completion:*' completer _extensions _complete _approximate
+# Use fzf for tab completion
+# NOTE: This MUST be sourced before autosuggestions (which is near the bottom of this file at time of writing)
+if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
+    source "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh"
 
-# Cache completions to speed up future completions
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$HOME/.zsh/zcompcache"
+    # set list-colors to enable filename colorizing
+    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-# Use a menu for selection
-zstyle ':completion:*' menu select
+    # preview directory's content with ls when completing cd
+    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
 
-# zsh's menu completion uses c-n and TAB for forward, and c-p for backward. The following adds SHIFT-TAB for backward
-bindkey '^[[Z' reverse-menu-complete
+    # magic previews for files and directories
+    zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+    export LESSOPEN='|$HOME/.dotfiles/links/.lessfilter %s'
 
-# The following "format" lines set up "headers" for each completion "sub-section"
-# * Add a description to the thing that was completed (e.g. file vs command vs arg etc)
-#   The group-order is needed to group together matches under their respective
-#   headers (when there's more than one matched group). Note that the order is
-#   specific; we should match aliases prior to matching non-aliases
-zstyle ':completion:*:*:*:*:descriptions' format '%F{green}-- %d --%f'
-zstyle ':completion:*:*:-command-:*:*' group-order alias builtins functions commands
-# * Show the completions that were caught by the _approximate completor
-zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
-# * Show an error if there are no matches
-zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+    # show environment variable contents
+    zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
+fi
 
-# This makes files' and directories' colors match the output of ls
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-
-# This is for makefile targets. For whatever reason it doesn't work by default
-zstyle ':completion:*:*:make:*' tag-order 'targets'
+# Case insensitive
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 #===[ History
 # TODO: clean this up too
