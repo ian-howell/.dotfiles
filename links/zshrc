@@ -175,6 +175,15 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
 
     # show environment variable contents
     zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
+
+    # set descriptions format to enable group support
+    zstyle ':completion:*:descriptions' format '[%d]'
+
+    # switch group using `^n` and `^p`
+    zstyle ':fzf-tab:*' switch-group ctrl-n ctrl-p
+
+    # Hide the annoying '.' prefix
+    zstyle ':fzf-tab:*' prefix ''
 fi
 
 # Case insensitive
