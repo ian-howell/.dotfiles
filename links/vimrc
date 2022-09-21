@@ -25,6 +25,9 @@ Plug 'skywind3000/asyncrun.vim'
 Plug 'romainl/vim-qf'
 Plug 'dense-analysis/ale'
 Plug 'fatih/vim-go'
+" This is broken for some reason and causes vim to hang on save...
+let g:go_fmt_autosave = 0
+let g:go_imports_autosave = 0
 
 call plug#end()
 
