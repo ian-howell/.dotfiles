@@ -50,18 +50,18 @@ else
 endif
 
 " So this is smart - f* will use git files if in a git repo, and fd files otherwise
-nnoremap <silent> <space>ff :call fzf#run({'source': fzfSource, 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fv :call fzf#run({'source': fzfSource, 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>fs :call fzf#run({'source': fzfSource, 'sink': 'split', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>ff :call fzf#run({'source': fzfSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}})<cr>
+nnoremap <silent> <space>fv :call fzf#run({'source': fzfSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}})<cr>
+nnoremap <silent> <space>fs :call fzf#run({'source': fzfSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}})<cr>
 
-nnoremap <silent> <space>FF :call fzf#run({'source': allSource, 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>FV :call fzf#run({'source': allSource, 'sink': 'vsplit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>FS :call fzf#run({'source': allSource, 'sink': 'split', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>FF :call fzf#run({'source': allSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}})<cr>
+nnoremap <silent> <space>FV :call fzf#run({'source': allSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}})<cr>
+nnoremap <silent> <space>FS :call fzf#run({'source': allSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}})<cr>
 
 " Shortcut to find buffers
-nnoremap <silent> <space>bb :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>bs :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': 'botright split'})<cr>
-nnoremap <silent> <space>bv :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': 'botright split'})<cr>
+nnoremap <silent> <space>bb :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}})<cr>
+nnoremap <silent> <space>bs :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': {'width': 0.9, 'height': 0.6}})<cr>
+nnoremap <silent> <space>bv :call fzf#run({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': {'width': 0.9, 'height': 0.6}})<cr>
 
 " Git shortcuts
 nnoremap <space>gcc :FzfCommits<cr>
@@ -77,11 +77,3 @@ nnoremap q/ :call fzf#vim#search_history()<cr>
 nnoremap <space>ll :FzfLines<cr>
 nnoremap <space>lb :FzfBLines<cr>
 nnoremap <space>: :FzfCommands<cr>
-
-" The following hides the statusline
-augroup fzf
-  autocmd!
-  autocmd! FileType fzf
-  autocmd  FileType fzf set laststatus=0 noshowmode noruler
-    \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
-augroup END
