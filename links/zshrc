@@ -69,6 +69,11 @@ function parse_git_dirty() {
   fi
 }
 
+function ssh_prompt_info() {
+  if [[ -n $SSH_CLIENT ]]; then
+    echo " %{$fg_bold[red]%}SSH"
+  fi
+}
 
 #===[ Prompt
 function set_prompt() {
@@ -78,9 +83,9 @@ function set_prompt() {
     main|viins) mode_indication_color="%{$fg_bold[cyan]%}" ;;
     *)   mode_indication_color="%{$fg_bold[magenta]%}" ;;
   esac
-  directory="%{$mode_indication_color%}%c%{$reset_color%}"
+  directory=" %{$mode_indication_color%}%c%{$reset_color%}"
   ret_status="%(?:%{$fg_bold[green]%}✓:%{$fg_bold[red]%}✗)%{$reset_color%}"
-  PROMPT="$ret_status $directory $(git_prompt_info)"
+  PROMPT="$ret_status$(ssh_prompt_info)$directory $(git_prompt_info)"
   zle reset-prompt
 }
 
