@@ -4,5 +4,5 @@ endif
 
 " Fast access to asyncronous background jobs
 nnoremap <space>! :AsyncRun<space>
-nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep<space>
-nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep <cword> -ws<CR>
+nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep --ignore-dir "vendor"<space>
+nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep --ignore-dir "vendor" <cword> -ws<CR>
