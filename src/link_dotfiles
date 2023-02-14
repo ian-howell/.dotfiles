@@ -15,7 +15,6 @@ inputrc:.inputrc
 profile:.profile
 sh_aliases:.sh_aliases
 tmux.conf:.tmux.conf
-tmux_plugins:.tmux_plugins
 vim:.vim
 vimrc:.vimrc
 zsh:.zsh
