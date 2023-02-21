@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Verify that the current ordering is correct. Note that this AWK program came from chatGPT
+if ! tmux list-windows | awk '{if ($0 !~ "^" NR ":") {exit 1}} END {if (NR != FNR) {exit 1}}'; then
+  printf "Windows are not in order. Reorder them with \`tmux move-window -r\`\n" 1>&2
+  exit 1
+fi
+
+current_window=$(tmux list-windows | grep "\*" | cut -d: -f1)
+target_window=$1
+
+# Put our current window into a "holding cell"
+tmux move-window -t 0
+
+if (( current_window > target_window )); then
+  # Shift the "middle" windows right
+  while (( current_window > target_window )); do
+    tmux move-window -s "$((current_window - 1))" -t "$current_window"
+    (( current_window -= 1 ))
+  done
+else
+  # Shift the "middle" windows right
+  while (( current_window < target_window )); do
+    tmux move-window -s "$((current_window + 1))" -t "$current_window"
+    (( current_window += 1 ))
+  done
+fi
+
+# Move our window from its "holding cell" to the target location
+tmux move-window -s 0 -t "$target_window"
