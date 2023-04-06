@@ -257,7 +257,7 @@ export PATH=$GOROOT/bin:$PATH
 export PATH=$HOME/go/bin:$PATH
 export PATH=$HOME/notes/vm-scripts:$PATH
 
-source "$HOME/notes/vm-scripts/env.sh"
+source "$HOME/notes/vm-scripts/environment"
 
 
 #===[ Unsorted
