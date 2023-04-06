@@ -47,6 +47,8 @@ let g:ale_python_flake8_options = '-m flake8'
 let g:ale_go_golangci_lint_package = 1
 let g:ale_go_golangci_lint_options = '--config ~/.golangci.yaml'
 
+let g:ale_sh_shellcheck_exclusions = 'SC1090'
+
 " " I'm making a point of white-listing linters
 " let g:ale_go_golangci_lint_options = '--disable-all
 "       \ --enable deadcode
