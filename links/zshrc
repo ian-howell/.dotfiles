@@ -280,6 +280,7 @@ zle -N my-backward-delete-word
 bindkey '^W' my-backward-delete-word
 
 export GOPRIVATE=dev.azure.com,github.com/microsoft,msazure.visualstudio.com/msazure,dev.azure.com/msazure,dev.azure.com/mariner-org,dev.azure.com/msazuredev
+export HELM_EXPERIMENTAL_OCI=1
 
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
