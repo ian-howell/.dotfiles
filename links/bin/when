@@ -1,54 +1,26 @@
 #!/usr/bin/env python3
 
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import sys
-import os
 
-"""
-If `when` is run with no arguments, it will simply calculate the number of days between today and a hardcoded
-target date.
+def main(args):
+    if len(args) != 2:
+        print(f"Usage: {args[0]} dd/mm/yyyy")
+        return
 
-However if `when` is run with an argument (e.g. `when 1/15/2002`), `when` will read its own source code and
-replace the hardcoded target date with the given date.
-"""
-
-if len(sys.argv) > 1:
-    target_date_str = sys.argv[1]
-    target_date = datetime.strptime(target_date_str, '%m/%d/%Y')
-    target_month = target_date.month
-    target_day = target_date.day
-    target_year = target_date.year
-
-    lines = []
-    filepath = os.path.join(os.path.expanduser("~"), ".dotfiles/links/bin/when")
-    with open(filepath) as f:
-        for line in f.readlines():
-            if line.startswith('    month'):
-                lines.append(f'    month = {target_month}\n')
-            elif line.startswith('    day'):
-                lines.append(f'    day = {target_day}\n')
-            elif line.startswith('    year'):
-                lines.append(f'    year = {target_year}\n')
-            else:
-                lines.append(line)
-    with open(filepath, 'w') as f:
-        f.write(''.join(lines))
-
-else:
-    month = 5
-    day = 15
-    year = 2023
-    target_day = date(month=month, day=day, year=year)
-    current_day = date.today()
-    num_days = (target_day - current_day).days
+    target_date = datetime.strptime(args[1], '%m/%d/%Y')
+    current_date = datetime.today()
+    num_days = (target_date - current_date).days
     print(num_days)
 
     num_weekdays = 0
-    while current_day < target_day:
-        if current_day.weekday() < 5: # Monday is 0 and Sunday is 6
+    while current_date < target_date:
+        if current_date.weekday() < 5: # Monday is 0 and Sunday is 6
             num_weekdays += 1
-        current_day += timedelta(days=1)
+        current_date += timedelta(days=1)
 
     print(num_weekdays)
+
+
+main(sys.argv)
