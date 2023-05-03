@@ -323,6 +323,7 @@ add_key_to_ssh_agent() {
 add_key_to_ssh_agent
 
 export GOPRIVATE=dev.azure.com,github.com/microsoft,msazure.visualstudio.com/msazure,dev.azure.com/msazure,dev.azure.com/mariner-org,dev.azure.com/msazuredev
+export HELM_EXPERIMENTAL_OCI=1
 
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
