@@ -11,9 +11,11 @@ def main(args):
 
     target_date = datetime.strptime(args[1], '%m/%d/%Y')
     current_date = datetime.today()
-    num_days = (target_date - current_date).days
+    num_days = (target_date - current_date).days + 1
     print(num_days)
 
+    current_date += timedelta(days=1)
+    target_date += timedelta(days=1)
     num_weekdays = 0
     while current_date < target_date:
         if current_date.weekday() < 5: # Monday is 0 and Sunday is 6
