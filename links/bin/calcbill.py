@@ -16,26 +16,35 @@ pam_group = {"PAM", "PAMELA", "JENNA", "ANDREW"}
 ian_group = {"IAN", "JAMI"}
 
 
-def main():
-    data = get_data_from_stdin()
+def main(args):
+    debug_log = lambda x: None
+    if len(args) == 2 and args[1] == "--debug":
+        debug_log = lambda msg: print(f"DEBUG: {msg}")
+    data = get_data_from_stdin(debug_log=debug_log)
     print_report(data)
 
 
-def get_data_from_stdin():
-    lines = sys.stdin.readlines()
+def get_data_from_stdin(debug_log=lambda: None):
+    # line length limiter is "mostly arbitrary". This should filter out empty lines and lines that only have
+    # white space, but should retain the valuable lines with real data
+    lines = [line for line in sys.stdin.readlines() if len(line) >= 3]
     results = {
             "mickey_group": {},
             "pam_group": {},
             "ian_group": {},
             }
     for i, line in enumerate(lines):
+        debug_log(f"{i=} {line=}")
         # explicitly passing a space forces the resulting list to have len >= 1
         name = line.split(" ", 1)[0]
         if name in mickey_group:
+            debug_log(f"matched 'mickey_group', parsing {lines[i+1]=}")
             results["mickey_group"][line] = parse_money(lines[i+1])
         elif name in pam_group:
+            debug_log(f"matched 'pam_group', parsing {lines[i+1]=}")
             results["pam_group"][line] = parse_money(lines[i+1])
         elif name in ian_group:
+            debug_log(f"matched 'ian_group', parsing {lines[i+1]=}")
             results["ian_group"][line] = parse_money(lines[i+1])
     return results
 
@@ -74,4 +83,4 @@ def total_for_group(group):
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
