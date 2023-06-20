@@ -51,6 +51,13 @@ syntax enable
 colorscheme torte
 silent! colorscheme apprentice
 
+"Show all non-printable characters. Note the the ^M seen here is a newline literal, and it is followed
+"immediately by a tab literal
+highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
+augroup vimrc-show-non-printable-characters
+  autocmd BufEnter * match NonPrintableCharacters /[^!-~ 	]/
+augroup END
+
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
 
@@ -126,6 +133,8 @@ map <space>' "+
 
 "Remove all trailing whitespace from a file
 nnoremap <silent> <space>ws :call whitespace#StripTrailingWhiteSpace()<CR>
+"Remove all non-printable characters from a file
+nnoremap  <space>np :%s/[^!-~ \n\t]//g<CR>
 
 "Sane paragraph boundaries
 nnoremap <silent> { :<C-u>call ipmotion#MyPrevParagraph()<CR>
@@ -317,7 +326,7 @@ set wildignore+=%*
 set diffopt+=algorithm:histogram,indent-heuristic
 
 "Remove the dashes from DiffDelete. Mind the trailing space
-set fillchars+=diff:\ 
+set fillchars+=diff:\
 
 "Mappings for working with diffs in visual mode
 xnoremap <silent> <space>do :diffget<CR>
