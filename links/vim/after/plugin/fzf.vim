@@ -50,18 +50,18 @@ else
 endif
 
 " So this is smart - f* will use git files if in a git repo, and fd files otherwise
-nnoremap <silent> <space>ff :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
-nnoremap <silent> <space>fv :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
-nnoremap <silent> <space>fs :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
+nnoremap <silent> <space>ff :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>fv :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>fs :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
 
-nnoremap <silent> <space>FF :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
-nnoremap <silent> <space>FV :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
-nnoremap <silent> <space>FS :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
+nnoremap <silent> <space>FF :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>FV :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>FS :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
 
 " Shortcut to find buffers
-nnoremap <silent> <space>bb :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
-nnoremap <silent> <space>bs :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
-nnoremap <silent> <space>bv :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': {'width': 0.9, 'height': 0.6}}))<cr>
+nnoremap <silent> <space>bb :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>bs :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'sbuffer', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>bv :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'vert sbuffer', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
 
 " Git shortcuts
 nnoremap <space>gcc :FzfCommits<cr>
