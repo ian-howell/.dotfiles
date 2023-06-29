@@ -308,7 +308,8 @@ let g:qf_auto_open_quickfix = 0
 
 "===[ Wildmenu
 set wildmenu
-set wildmode=full
+set wildmode=longest:full,full
+set wildoptions=fuzzy,pum
 set wildignore+=*.o,*.so
 set wildignore+=*.d
 set wildignore+=*.aux,*.out,*.pdf
