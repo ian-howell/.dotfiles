@@ -239,10 +239,9 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 export GOROOT="/usr/local/go"
 export PATH=$GOROOT/bin:$PATH
 export PATH=$HOME/go/bin:$PATH
-export PATH=$HOME/notes/vm-scripts:$PATH
 
-source "$HOME/notes/vm-scripts/environment"
-
+export PATH=$HOME/notes/scripts:$PATH
+source "$HOME/notes/scripts/environment"
 
 #===[ Unsorted
 # Allow proper substitution in the prompt
