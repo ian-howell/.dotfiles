@@ -10,10 +10,10 @@ delcommand FzfColors
 delcommand FzfFiles
 delcommand FzfFiletypes
 delcommand FzfGitFiles
-delcommand FzfGFiles
+" delcommand FzfGFiles
 delcommand FzfHelptags
 delcommand FzfLocate
-delcommand FzfMaps
+" delcommand FzfMaps
 delcommand FzfMarks
 delcommand FzfRg
 delcommand FzfSnippets
