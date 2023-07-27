@@ -23,6 +23,8 @@ let g:fzf_command_prefix = "Fzf"
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'dense-analysis/ale'
+let g:ale_yaml_yamllint_options = '-d relaxed'
+
 Plug 'fatih/vim-go'
 " This is broken for some reason and causes vim to hang on save...
 let g:go_fmt_autosave = 0
