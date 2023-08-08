@@ -16,6 +16,7 @@ alias gca="git commit --amend --no-edit"
 alias grd="git review -d"
 alias gbd="git branch --merged | egrep -v \"(^\*|master|dev)\" | xargs git branch -d"
 alias gfr="git fetch && git rebase"
+alias gph="git push origin HEAD"
 
 #===[ ls
 # Hidden files
