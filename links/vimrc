@@ -95,12 +95,14 @@ augroup highlight_follows_focus
 augroup END
 
 "== Columns =="
-set sidescroll=1                             "Set horizontal scroll speed
-set colorcolumn=110                          "color line 110
-set textwidth=110                            "gq will wrap text at 110, same as colorcolumn
-set formatoptions=crql                       "use sane values for when to wrap text
-set signcolumn=yes                           "Keep the sign column open at all times
-set nostartofline                            "Prevent the cursor fom changing columns when jumping
+set sidescroll=1            "Set horizontal scroll speed
+set colorcolumn=110         "color line 110
+set textwidth=110           "gq will wrap text at 110, same as colorcolumn
+set formatoptions=cqlMj     "In order: wrap comments automatically, allow 'gq' to work on comments,
+                            "don't break long lines in insert mode, don't insert space when 'J'oining,
+                            "remove comment leaders when 'J'oining lines
+set signcolumn=yes          "Keep the sign column open at all times
+set nostartofline           "Prevent the cursor fom changing columns when jumping
 
 "===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
