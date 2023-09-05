@@ -63,12 +63,14 @@ augroup END
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
 
-"Pulled from :help 'incsearch' - highlight all matchs while searching
+"Pulled from :help 'incsearch' - highlight all matches while searching
 augroup vimrc-incsearch-highlight
     autocmd!
     autocmd CmdlineEnter /,\? :set hlsearch
     autocmd CmdlineLeave /,\? :set nohlsearch
 augroup END
+
+nnoremap <space>hl :set hlsearch! hlsearch?<cr>
 
 "===[ Tab behaviour
 set shiftwidth=4       "Indent/outdent by 4 columns
