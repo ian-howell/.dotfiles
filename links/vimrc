@@ -143,6 +143,9 @@ nnoremap <silent> <c-k> <c-w><c-k>
 nnoremap <silent> <c-l> <c-w><c-l>
 nnoremap <silent> <c-\> <c-w><c-\>
 
+" Zoom in on a specific window, tmux-style
+nnoremap <c-w>z ma:tabedit %<cr>`a
+
 "===[ Miscellaneous key mappings
 "Quickly source vimrc
 nnoremap <silent> <space>s :source $MYVIMRC<CR>
