@@ -123,7 +123,9 @@ augroup highlight_follows_focus
 augroup END
 
 "== Columns =="
-set sidescroll=1            "Set horizontal scroll speed
+" sidescroll has some sort of issue with ALE, in which a line with an error or warning fails to render when
+" scrolling. I'm leaving it commented out here so I don't accidentally turn it back on in the future
+" set sidescroll=1            "Set horizontal scroll speed
 set colorcolumn=110         "color line 110
 set textwidth=110           "gq will wrap text at 110, same as colorcolumn
 set formatoptions=cqlMj     "In order: wrap comments automatically, allow 'gq' to work on comments,
