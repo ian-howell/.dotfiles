@@ -9,6 +9,9 @@ export ARTIFACTS_DIR="$HOME/setup_artifacts"
 echo "Creating $ARTIFACTS_DIR"
 mkdir -p "$ARTIFACTS_DIR"
 
+# Prevent apt from bothering me about restarting daemons
+sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+
 # Order is (somewhat) important
 bash src/install_essentials
 # This has *probably* already been run
