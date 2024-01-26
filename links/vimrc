@@ -38,6 +38,13 @@ nnoremap <space>q/ :Cfilter //<Left>
 nnoremap <space>q! :Cfilter! //<Left>
 nnoremap <space>qx :Cfilter! /mock\\|test/<cr>
 
+
+Plug 'github/copilot.vim'
+imap <silent><script><expr> <C-E> copilot#Accept("\<CR>")
+let g:copilot_no_tab_map = v:true
+imap <silent><script><expr> <C-J> copilot#Next()
+imap <silent><script><expr> <C-K> copilot#Previous()
+
 call plug#end()
 
 "For filestype specific things (like syntax highlighting)
