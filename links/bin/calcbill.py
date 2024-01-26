@@ -38,14 +38,14 @@ def get_data_from_stdin(debug_log=lambda: None):
         # explicitly passing a space forces the resulting list to have len >= 1
         name = line.split(" ", 1)[0]
         if name in mickey_group:
-            debug_log(f"matched 'mickey_group', parsing {lines[i+1]=}")
-            results["mickey_group"][line] = parse_money(lines[i+1])
+            debug_log(f"matched 'mickey_group', parsing {lines[i+2]=}")
+            results["mickey_group"][line] = parse_money(lines[i+2])
         elif name in pam_group:
-            debug_log(f"matched 'pam_group', parsing {lines[i+1]=}")
-            results["pam_group"][line] = parse_money(lines[i+1])
+            debug_log(f"matched 'pam_group', parsing {lines[i+2]=}")
+            results["pam_group"][line] = parse_money(lines[i+2])
         elif name in ian_group:
-            debug_log(f"matched 'ian_group', parsing {lines[i+1]=}")
-            results["ian_group"][line] = parse_money(lines[i+1])
+            debug_log(f"matched 'ian_group', parsing {lines[i+2]=}")
+            results["ian_group"][line] = parse_money(lines[i+2])
     return results
 
 
