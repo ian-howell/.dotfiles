@@ -19,7 +19,6 @@ bash src/install_essentials
 bash src/install_zsh
 bash src/install_fzf
 bash src/install_fd
-bash src/remap_capslock
 bash src/install_node
 bash src/install_diff_so_fancy
 bash src/link_dotfiles
