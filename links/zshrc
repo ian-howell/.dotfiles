@@ -250,6 +250,7 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 # My personal bins
 [[ -d "$HOME/.dotfiles/links/bin" ]] && prepend "$HOME/.dotfiles/links/bin"
 [[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
+[[ -d "$HOME/nc/devbox" ]] && prepend "$HOME/nc/devbox"
 
 # Add go to the environment
 export GOROOT="/usr/local/go"
