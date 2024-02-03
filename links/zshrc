@@ -97,6 +97,9 @@ setopt interactivecomments
 # Set up zoxide
 eval "$(zoxide init --cmd cd zsh)"
 
+#===[ Work-related things
+source $HOME/.dotfiles/links/zsh/microsoft.zsh
+
 #===[ Plugins
 source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
 # Fish-like autosuggestions
