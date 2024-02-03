@@ -256,9 +256,6 @@ export GOROOT="/usr/local/go"
 export PATH=$GOROOT/bin:$PATH
 export PATH=$HOME/go/bin:$PATH
 
-export PATH=$HOME/notes/scripts:$PATH
-source "$HOME/notes/scripts/environment"
-
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
@@ -298,8 +295,13 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+
+#===[ Work-related things
 export GOPRIVATE=dev.azure.com,github.com/microsoft,msazure.visualstudio.com/msazure,dev.azure.com/msazure,dev.azure.com/mariner-org,dev.azure.com/msazuredev
 export HELM_EXPERIMENTAL_OCI=1
+
+export PATH=$HOME/notes/scripts:$PATH
+source "$HOME/notes/scripts/environment"
 
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
