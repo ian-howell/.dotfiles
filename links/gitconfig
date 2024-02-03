@@ -46,3 +46,30 @@
     whitespace = red reverse
 [alias]
     clean-branches = clean-branches
+
+
+; Only work stuff goes below this line
+[credential]
+    ; helper = /usr/local/bin/git-credential-manager
+    ; Use the windows helper
+    helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe
+    azreposCredentialType = oauth
+    ; This one doesn't seem to work
+    msauthflow = devicecode
+    useHttpPath = true
+[url "https://dev.azure.com/mariner-org/ECF/_git/cluster-api-provider-kubevirt"]
+    insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt
+    insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt.git
+[url "https://"]
+    ; These prevent go from hanging. You should have the following settings to force interactivity
+    ; export GCM_INTERACTIVE=auto
+    ; export GIT_TERMINAL_PROMPT=1
+    insteadOf = git://
+    insteadOf = ssh://
+    insteadOf = git+ssh://
+[credential "azrepos:org/msazuredev"]
+    username = ianhowell@microsoft.com
+    azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+[credential "azrepos:org/mariner-org"]
+    azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+    username = ianhowell@microsoft.com

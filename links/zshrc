@@ -97,6 +97,9 @@ eval "$(zoxide init --cmd cd zsh)"
 
 source "$HOME/.dotfiles/links/zsh/prompt.zsh"
 
+#===[ Work-related things
+source $HOME/.dotfiles/links/zsh/microsoft.zsh
+
 #===[ Plugins
 source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
 # Fish-like autosuggestions
