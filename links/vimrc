@@ -185,8 +185,8 @@ map ][ /}<CR>b99]}
 map ]] j0[[%/{<CR>
 map [] k$][%?}<CR>
 
-"Turn the mouse on
-set mouse=n
+"Make sure the mouse is off, even in gui environments
+set mouse=
 "Mappings to make the scrollwheel work as expected
 noremap <ScrollWheelUp> 2<C-Y>
 noremap <ScrollWheelDown> 2<C-E>
