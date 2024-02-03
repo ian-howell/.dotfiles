@@ -173,7 +173,7 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
     # preview directory's content with ls when completing cd
-    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
+    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always ${(Q)realpath}'
 
     # magic previews for files and directories
     zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
