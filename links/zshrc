@@ -69,9 +69,10 @@ function parse_git_dirty() {
   fi
 }
 
+# If we're in an SSH session, show the hostname in the prompt
 function ssh_prompt_info() {
   if [[ -n $SSH_CLIENT ]]; then
-    echo " %{$fg_bold[red]%}SSH"
+      echo " %{$fg_bold[red]%}SSH(%m)%{$reset_color%}"
   fi
 }
 
