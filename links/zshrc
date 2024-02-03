@@ -169,6 +169,10 @@ compinit
 if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     source "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh"
 
+    # Try this again when https://github.com/Aloxaf/fzf-tab/issues/410 has a resolution
+    # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+    # zstyle ':fzf-tab:*' popup-pad 80 0
+
     # set list-colors to enable filename colorizing
     zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
