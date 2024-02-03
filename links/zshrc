@@ -240,9 +240,6 @@ export GOROOT="/usr/local/go"
 export PATH=$GOROOT/bin:$PATH
 export PATH=$HOME/go/bin:$PATH
 
-export PATH=$HOME/notes/scripts:$PATH
-source "$HOME/notes/scripts/environment"
-
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
@@ -278,8 +275,12 @@ my-backward-delete-word() {
 zle -N my-backward-delete-word
 bindkey '^W' my-backward-delete-word
 
+#===[ Work-related things
 export GOPRIVATE=dev.azure.com,github.com/microsoft,msazure.visualstudio.com/msazure,dev.azure.com/msazure,dev.azure.com/mariner-org,dev.azure.com/msazuredev
 export HELM_EXPERIMENTAL_OCI=1
+
+export PATH=$HOME/notes/scripts:$PATH
+source "$HOME/notes/scripts/environment"
 
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
