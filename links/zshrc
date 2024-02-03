@@ -322,6 +322,8 @@ add_key_to_ssh_agent() {
 }
 add_key_to_ssh_agent
 
+export GOPRIVATE=dev.azure.com,github.com/microsoft,msazure.visualstudio.com/msazure,dev.azure.com/msazure,dev.azure.com/mariner-org,dev.azure.com/msazuredev
+
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
 # Fish-like autosuggestions
