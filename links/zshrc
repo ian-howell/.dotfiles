@@ -190,6 +190,8 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
 
     # Hide the annoying '.' prefix
     zstyle ':fzf-tab:*' prefix ''
+
+    zstyle ':fzf-tab:*' accept-line enter
 fi
 
 # Case insensitive
