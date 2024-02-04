@@ -46,6 +46,11 @@ agc() {
   ag --color --group "$@" | less -R --quit-if-one-screen
 }
 
+# Scrollable, colored jq
+jqc() {
+  jq -C "$@" | less -R --quit-if-one-screen
+}
+
 count() {
   ag "$@" -c | awk '
     BEGIN {sum = 0; FS=":"}
