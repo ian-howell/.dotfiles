@@ -17,6 +17,7 @@ alias gdv="git vimdiff"
 alias gca="git commit --amend --no-edit"
 alias gph="git push origin HEAD"
 alias gfr="git fetch && git rebase"
+alias gs-="git switch -"
 
 #===[ ls
 # Hidden files
