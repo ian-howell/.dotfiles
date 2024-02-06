@@ -181,6 +181,8 @@ nnoremap Y y$
 map <space>' "+
 "Since the above seems to be so flaky and system-dependent, here's another quick trick for pasting
 nnoremap <silent> <space>pp :set paste!<CR>:set paste?<CR>
+"But I don't want to get stuck in paste mode; that's annoying
+autocmd InsertLeave * set nopaste
 
 "Remove all trailing whitespace from a file
 nnoremap <silent> <space>ws :call whitespace#StripTrailingWhiteSpace()<CR>
