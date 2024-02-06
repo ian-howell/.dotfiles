@@ -14,4 +14,3 @@
 	verbose = true
 [init]
 	defaultBranch = main
-# vim:noet:sw=8:cms=#\ %s
