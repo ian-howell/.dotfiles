@@ -38,12 +38,14 @@ nnoremap <space>q/ :Cfilter //<Left>
 nnoremap <space>q! :Cfilter! //<Left>
 nnoremap <space>qx :Cfilter! /mock\\|test/<cr>
 
-
 Plug 'github/copilot.vim'
+" The following 2 lines need to stay together; Combinded, they replace 'Tab' with <c-e> to accept a suggestion
 imap <silent><script><expr> <C-E> copilot#Accept("\<CR>")
 let g:copilot_no_tab_map = v:true
-imap <silent><script><expr> <C-J> copilot#Next()
-imap <silent><script><expr> <C-K> copilot#Previous()
+
+imap <C-J> <Plug>(copilot-next)
+imap <C-K> <Plug>(copilot-previous)
+imap <C-L> <Plug>(copilot-accept-word)
 
 call plug#end()
 
