@@ -20,6 +20,7 @@ alias gfr="git fetch && git rebase"
 alias gs-="git switch -"
 alias grm="git rebase main"
 alias grc="git rebase --continue"
+alias gcm="git commit -m"
 
 #===[ ls
 # Hidden files
