@@ -47,6 +47,9 @@ imap <C-J> <Plug>(copilot-next)
 imap <C-K> <Plug>(copilot-previous)
 imap <C-L> <Plug>(copilot-accept-word)
 
+" Enable copilot for all filetypes
+let b:copilot_enabled = v:true
+
 call plug#end()
 
 "For filestype specific things (like syntax highlighting)
