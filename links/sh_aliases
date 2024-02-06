@@ -19,6 +19,7 @@ alias gph="git push origin HEAD"
 alias gfr="git fetch && git rebase"
 alias gs-="git switch -"
 alias grm="git rebase main"
+alias grc="git rebase --continue"
 
 #===[ ls
 # Hidden files
