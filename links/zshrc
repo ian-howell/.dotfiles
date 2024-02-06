@@ -195,7 +195,9 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     # Hide the annoying '.' prefix
     zstyle ':fzf-tab:*' prefix ''
 
-    zstyle ':fzf-tab:*' accept-line enter
+    # If I hit enter while completing a cd, I want to cd immediately into the directory
+    # On the other hand, if I hit '/', I want to complete the directory name and continue fzf-ing
+    zstyle ':fzf-tab:complete:cd:*' accept-line enter
 fi
 
 # Case insensitive
