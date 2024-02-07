@@ -21,6 +21,7 @@ alias gs-="git switch -"
 alias grm="git rebase main"
 alias grc="git rebase --continue"
 alias gcm="git commit -m"
+alias gdm="git diff main"
 
 #===[ ls
 # Hidden files
