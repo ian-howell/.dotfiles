@@ -180,7 +180,7 @@ nnoremap Y y$
 "Easier access to system clipboard (highly opinionated)
 map <space>' "+
 "Since the above seems to be so flaky and system-dependent, here's another quick trick for pasting
-nnoremap <silent> <space>pp :set paste!<CR>:set paste?<CR>
+nnoremap <silent> <space>pp :set paste<CR>i
 "But I don't want to get stuck in paste mode; that's annoying
 autocmd InsertLeave * set nopaste
 
