@@ -1,0 +1,17 @@
+#!/bin/bash
+for branch in $(git for-each-ref --format='%(refname:short)' refs/heads | grep -vE "^\*|main|master|dev"); do
+  # Find the common ancestor of main and the branch
+  merge_base=$(git merge-base main "$branch")
+  # Get the latest commit on main
+  latest_main=$(git rev-parse main)
+  if [ "$merge_base" != "$latest_main" ]; then
+    # Safety first
+    read -p "Delete branch $branch? [y/N] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+      git branch -D "$branch"
+    fi
+  fi
+done
+
