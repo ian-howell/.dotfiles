@@ -1,34 +1,34 @@
 [core]
-	editor = vim
-	excludesfile = ~/.dotfiles/links/global_gitignore
-	pager = diff-so-fancy | less --tabs=4 -RF
+    editor = vim
+    excludesfile = ~/.dotfiles/links/global_gitignore
+    pager = diff-so-fancy | less --tabs=4 -RF
 [push]
-	default = matching
+    default = matching
 [include]
-	path = ~/.dotfiles/local_gitconfig
+    path = ~/.dotfiles/local_gitconfig
 [user]
-	email = ian.howell0@gmail.com
-	name = Ian Howell
+    email = ian.howell0@gmail.com
+    name = Ian Howell
 [diff]
-	algorithm = histogram
+    algorithm = histogram
 [commit]
-	verbose = true
+    verbose = true
 [init]
-	defaultBranch = main
+    defaultBranch = main
 [interactive]
-	diffFilter = diff-so-fancy --patch
+    diffFilter = diff-so-fancy --patch
 [color]
-	ui = true
+    ui = true
 [color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red bold 52
-	newNormal = green bold
-	newHighlight = green bold 22
+    oldNormal = red bold
+    oldHighlight = red bold 52
+    newNormal = green bold
+    newHighlight = green bold 22
 [color "diff"]
-	meta = 11
-	frag = magenta bold
-	func = 146 bold
-	commit = yellow bold
-	old = red bold
-	new = green bold
-	whitespace = red reverse
+    meta = 11
+    frag = magenta bold
+    func = 146 bold
+    commit = yellow bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
