@@ -161,6 +161,13 @@ rl() {
   rlwrap --remember --complete-filenames "$1"
 }
 
+stopwatch() {
+  date1=$(date +%s)
+  while true; do
+    echo -ne "$(date -u -d @$(( $(date +%s) - date1 )) +%H:%M:%S)\r"
+  done
+}
+
 stealth-toggle() {
   if [[ -f ~/.zsh_history.bak ]]; then
     echo "STEALTH => NORMAL"
