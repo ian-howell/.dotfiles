@@ -154,9 +154,6 @@ bindkey -M vicmd "^[[4~" end-of-line
 # If I hit colon while in command mode, I almost definitely want to go to insert mdoe first
 bindkey -M vicmd -s ':' 'cc:'
 
-# make mode transitions faster (KEYTIMEOUT is in hundredths of a second)
-export KEYTIMEOUT=1
-
 #===[ Completion
 # Add custom completions to the function path
 fpath=($HOME/.zsh/completions $fpath)
