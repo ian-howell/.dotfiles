@@ -235,6 +235,10 @@ export MANPAGER='less -s -M +Gg'       # percentage into the document
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse" # Note to self: --border doesn't play nicely with fzf-atb
 export FZF_DEFAULT_COMMAND="fd --type f --type l --exclude='*vendor/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# Preview file content using bat (https://github.com/sharkdp/bat)
+export FZF_CTRL_T_OPTS="
+  --preview 'bat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '*/gocode/pkg*' -o -path '*/go/pkg*' -o -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune -o -type d -print 2> /dev/null"
 
 #===[ Path extensions
