@@ -25,6 +25,29 @@ bd() {
   done
 }
 
+# cdf - cd into the directory of the selected file
+cdf() {
+   local file
+   local dir
+   file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir" || return
+}
+
+# cd to a parent directory
+cdr() {
+  local dirs=()
+  get_parent_dirs() {
+    if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
+    if [[ "${1}" == '/' ]]; then
+      for _dir in "${dirs[@]}"; do echo "$_dir"; done
+    else
+      get_parent_dirs "$(dirname "$1")"
+    fi
+  }
+  local DIR
+  DIR=$(get_parent_dirs "$(realpath "${1:-$PWD}")" | fzf --tac)
+  cd "$DIR" || return
+}
+
 # Generate a random password
 randpw() {
   < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
