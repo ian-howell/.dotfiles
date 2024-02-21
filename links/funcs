@@ -48,6 +48,14 @@ cdr() {
   cd "$DIR" || return
 }
 
+gsb() {
+  local branches branch
+  branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
+  branch=$(echo "$branches" |
+           fzf -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
+  git checkout "$(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")"
+}
+
 # Generate a random password
 randpw() {
   < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
