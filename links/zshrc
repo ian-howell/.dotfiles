@@ -240,6 +240,8 @@ export FZF_CTRL_T_OPTS="
   --preview 'bat -n --color=always {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '*/gocode/pkg*' -o -path '*/go/pkg*' -o -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune -o -type d -print 2> /dev/null"
+# Print tree structure in the preview window
+export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 
 #===[ Path extensions
 # prepend and append will add $1 to the PATH variable, given that $1 is not already in the PATH
