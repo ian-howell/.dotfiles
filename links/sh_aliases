@@ -5,7 +5,6 @@ alias pprint="python -m json.tool"
 #===[ Git aliases
 alias g=git
 alias gst="git status"
-alias gs="git status" # Because I constantly mistype this one
 alias gls="git ls-files -o --exclude-standard; git ls-files -m" # list untracked and modified files
 alias glsm="git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main" # list untracked and modified files, but only those that are different from main
 alias glo="git log"
@@ -19,6 +18,8 @@ alias gdv="git vimdiff"
 alias gca="git commit --amend --no-edit"
 alias gph="git push origin HEAD"
 alias gfr="git fetch && git rebase"
+alias gs="git switch"
+alias gsm="git switch main"
 alias gs-="git switch -"
 alias grm="git rebase main"
 alias grc="git rebase --continue"
