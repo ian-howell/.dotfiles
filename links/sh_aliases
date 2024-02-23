@@ -3,27 +3,62 @@ alias ut="python -m unittest"
 alias pprint="python -m json.tool"
 
 #===[ Git aliases
-alias g=git
-alias gst="git status"
-alias gls="git ls-files -o --exclude-standard; git ls-files -m" # list untracked and modified files
-alias glsm="git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main" # list untracked and modified files, but only those that are different from main
-alias glo="git log"
-alias glor="git log --color=always --oneline | head"
-alias glog="git -c color.ui=always log --graph --pretty=tformat:\"%C(yellow)%h%Creset}%Cgreen(%ar)%Creset}%C(bold blue)<%an>%Creset}%C(bold red)%d%Creset %s\" | awk 'BEGIN { FS = \"}\" } ; { printf \"%s\t\t%s\t%-40s%s\n\", \$1, \$2, \$3, \$4 }' | less -R"
-alias gbr="git branch"
-alias gdi="git diff"
+# This is my most used git command
+alias g="git status"
+
+# Add commands
+alias ga="git add"
+alias gaa="git add -A"
+
+# File listing commands
+alias gf="git ls-files -o --exclude-standard; git ls-files -m" # list untracked and modified files
+alias gfm="git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main" # list untracked and modified files, but only those that are different from main
+
+# Log commands
+alias gl="git log"
+alias glo="git log --color=always --oneline | head"
+
+# Branch commands
+alias gb="git branch"
+alias gbs="git switch"
+alias gbsm="git switch main"
+alias gbs-="git switch -"
+
+# Stash commands
+alias gs="git stash"
+alias gsu="git stash -u"
+alias gsa="git stash --all"
+alias gsp="git stash pop"
+alias gsl="git stash list"
+
+# Diff commands
+alias gd="git diff"
 alias gdm='git diff $(git merge-base main HEAD)' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
 alias gdo="git odiff"
 alias gdv="git vimdiff"
+
+# Commit commands
+alias gc="git commit"
 alias gca="git commit --amend --no-edit"
+alias gcae="git commit --amend"
+alias gcm="git commit -m"
+
+# Push commands
+alias gp="git push"
+alias gpf="git push --force-with-lease"
 alias gph="git push origin HEAD"
-alias gfr="git fetch && git rebase"
-alias gs="git switch"
-alias gsm="git switch main"
-alias gs-="git switch -"
+alias gphf="git push origin HEAD --force-with-lease"
+
+# Pull (get) commands
+alias gg="git fetch"
+alias ggm="git fetch && git merge"
+alias ggr="git fetch && git rebase"
+
+# Rebase commands
+alias gr="git rebase"
 alias grm="git rebase main"
 alias grc="git rebase --continue"
-alias gcm="git commit -m"
+alias grs="git rebase --skip"
 
 #===[ ls
 # Hidden files
