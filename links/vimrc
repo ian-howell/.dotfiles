@@ -279,7 +279,8 @@ if &modifiable
   set list
 endif
 "Set tabs to a straight line followed by blanks and trailing spaces to dots
-set listchars=tab:│\ ,trail:·
+set listchars=tab:│\ ,lead:·,trail:·
+
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
 
