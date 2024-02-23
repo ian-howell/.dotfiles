@@ -120,6 +120,7 @@ set autoindent         "Keep the same indentation level when inserting a new lin
 "===[ Line and column display settings
 "== Lines =="
 set nowrap             "Don't word wrap
+set breakindent        "However, if I *do* turn on wrap, I'd like to keep the same level of indentation
 set number             "Show the cursor's current line
 
 "Highlight the current line and column
