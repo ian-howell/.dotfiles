@@ -278,8 +278,21 @@ set foldtext=folding#MyFoldText()
 if &modifiable
   set list
 endif
-"Set tabs to a straight line followed by blanks and trailing spaces to dots
-set listchars=tab:│\ ,lead:·,trail:·
+
+set listchars=tab:│\ ,trail:·
+let g:my_listchars_toggle = 0
+function! s:ToggleListChars()
+  if g:my_listchars_toggle == 0
+    " Note: There is a trailing space here
+    set listchars=tab:\ \ 
+    let g:my_listchars_toggle = 1
+  else
+    "Set tabs to a straight line followed by blanks and trailing spaces to dots
+    set listchars=tab:│\ ,trail:·
+    let g:my_listchars_toggle = 0
+  endif
+endfunction
+command! TLC call s:ToggleListChars()
 
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
