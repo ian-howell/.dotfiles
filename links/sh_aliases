@@ -11,8 +11,8 @@ alias ga="git add"
 alias gaa="git add -A"
 
 # File listing commands
-alias gf="git ls-files -o --exclude-standard; git ls-files -m" # list untracked and modified files
-alias gfm="git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main" # list untracked and modified files, but only those that are different from main
+alias gf="(git ls-files -o --exclude-standard; git ls-files -m) | uniq" # list untracked and modified files
+alias gfm="(git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main) | uniq" # list untracked and modified files, but only those that are different from main
 
 # Log commands
 alias gl="git log"
