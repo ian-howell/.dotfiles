@@ -10,6 +10,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
 Plug 'wellle/targets.vim'
+Plug 'wellle/context.vim'
 
 " Git
 Plug 'tpope/vim-fugitive'
