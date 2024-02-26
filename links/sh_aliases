@@ -9,6 +9,7 @@ alias g="git status"
 # Add commands
 alias ga="git add"
 alias gaa="git add -A"
+alias gap="git add -p"
 
 # File listing commands
 alias gf="(git ls-files -o --exclude-standard; git ls-files -m) | uniq" # list untracked and modified files
