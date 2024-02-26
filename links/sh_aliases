@@ -13,6 +13,7 @@ alias gap="git add -p"
 
 # Branch commands
 alias gb="git branch"
+alias gbc="git switch -c"
 alias gbs-="git switch -"
 alias gbs="git switch"
 alias gbsm="git switch main"
