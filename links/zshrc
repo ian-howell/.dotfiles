@@ -191,8 +191,8 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     # set descriptions format to enable group support
     zstyle ':completion:*:descriptions' format '[%d]'
 
-    # switch group using `^n` and `^p`
-    zstyle ':fzf-tab:*' switch-group ctrl-n ctrl-p
+    # switch group using `^h` and `^l`
+    zstyle ':fzf-tab:*' switch-group ctrl-h ctrl-l
 
     # Hide the annoying '.' prefix
     zstyle ':fzf-tab:*' prefix ''
