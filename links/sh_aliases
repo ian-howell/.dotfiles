@@ -32,8 +32,8 @@ alias gsp="git stash pop"
 alias gsl="git stash list"
 
 # Diff commands
-alias gd="git diff"
-alias gdm='git diff $(git merge-base main HEAD)' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
+alias gd="git diff --color=always | less -R --quit-if-one-screen --no-init"
+alias gdm='git diff $(git merge-base main HEAD) --color=always | less -R --quit-if-one-screen --no-init' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
 alias gdo="git odiff"
 alias gdv="git vimdiff"
 
