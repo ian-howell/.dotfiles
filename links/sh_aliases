@@ -61,6 +61,11 @@ alias gsl="git stash list"
 alias gsp="git stash pop"
 alias gsu="git stash -u"
 
+# Restore (undo) commands
+alias gu="git restore"
+alias gup="git restore -p"
+alias gus="git restore --staged"
+
 #===[ ls
 # Hidden files
 alias lsa="ls -a"
