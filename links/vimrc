@@ -279,20 +279,19 @@ if &modifiable
   set list
 endif
 
-set listchars=tab:│\ ,trail:·
+set listchars=tab:\ \ ,trail:·
+
 let g:my_listchars_toggle = 0
-function! s:ToggleListChars()
-  if g:my_listchars_toggle == 0
-    " Note: There is a trailing space here
-    set listchars=tab:\ \ 
-    let g:my_listchars_toggle = 1
+function! s:ToggleIndentationLines()
+  if g:my_listchars_toggle == 1
+    set listchars=tab:\ \ ,trail:·
   else
     "Set tabs to a straight line followed by blanks and trailing spaces to dots
     set listchars=tab:│\ ,trail:·
-    let g:my_listchars_toggle = 0
   endif
+  let g:my_listchars_toggle = !g:my_listchars_toggle
 endfunction
-command! TLC call s:ToggleListChars()
+command! TIL call s:ToggleIndentationLines()
 
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
