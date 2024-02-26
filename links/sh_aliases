@@ -11,32 +11,11 @@ alias ga="git add"
 alias gaa="git add -A"
 alias gap="git add -p"
 
-# File listing commands
-alias gf="(git ls-files -o --exclude-standard; git ls-files -m) | uniq" # list untracked and modified files
-alias gfm="(git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main) | uniq" # list untracked and modified files, but only those that are different from main
-
-# Log commands
-alias gl="git log"
-alias glo="git log --color=always --oneline | head"
-
 # Branch commands
 alias gb="git branch"
+alias gbs-="git switch -"
 alias gbs="git switch"
 alias gbsm="git switch main"
-alias gbs-="git switch -"
-
-# Stash commands
-alias gs="git stash"
-alias gsu="git stash -u"
-alias gsa="git stash --all"
-alias gsp="git stash pop"
-alias gsl="git stash list"
-
-# Diff commands
-alias gd="git diff --color=always | less -R --quit-if-one-screen --no-init"
-alias gdm='git diff $(git merge-base main HEAD) --color=always | less -R --quit-if-one-screen --no-init' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
-alias gdo="git odiff"
-alias gdv="git vimdiff"
 
 # Commit commands
 alias gc="git commit"
@@ -44,22 +23,43 @@ alias gca="git commit --amend --no-edit"
 alias gcae="git commit --amend"
 alias gcm="git commit -m"
 
-# Push commands
-alias gp="git push"
-alias gpf="git push --force-with-lease"
-alias gph="git push origin HEAD"
-alias gphf="git push origin HEAD --force-with-lease"
+# Diff commands
+alias gd="git diff --color=always | less -R --quit-if-one-screen --no-init"
+alias gdm='git diff $(git merge-base main HEAD) --color=always | less -R --quit-if-one-screen --no-init' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
+alias gdo="git odiff"
+alias gdv="git vimdiff"
+
+# File listing commands
+alias gf="(git ls-files -o --exclude-standard; git ls-files -m) | uniq" # list untracked and modified files
+alias gfm="(git ls-files -o --exclude-standard; git diff --name-only --diff-filter=d main) | uniq" # list untracked and modified files, but only those that are different from main
 
 # Pull (get) commands
 alias gg="git fetch"
 alias ggm="git fetch && git merge"
 alias ggr="git fetch && git rebase"
 
+# Log commands
+alias gl="git log"
+alias glo="git log --color=always --oneline | head"
+
+# Push commands
+alias gp="git push"
+alias gpf="git push --force-with-lease"
+alias gph="git push origin HEAD"
+alias gphf="git push origin HEAD --force-with-lease"
+
 # Rebase commands
 alias gr="git rebase"
-alias grm="git rebase main"
 alias grc="git rebase --continue"
+alias grm="git rebase main"
 alias grs="git rebase --skip"
+
+# Stash commands
+alias gs="git stash"
+alias gsa="git stash --all"
+alias gsl="git stash list"
+alias gsp="git stash pop"
+alias gsu="git stash -u"
 
 #===[ ls
 # Hidden files
