@@ -327,6 +327,8 @@ source "$HOME/notes/scripts/environment"
 
 [[ -d "$HOME/nc-devbox" ]] && prepend "$HOME/nc-devbox"
 
+export ALIAS=ianhowell
+
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
 # Fish-like autosuggestions
