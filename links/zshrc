@@ -304,6 +304,8 @@ export HELM_EXPERIMENTAL_OCI=1
 export PATH=$HOME/notes/scripts:$PATH
 source "$HOME/notes/scripts/environment"
 
+export ALIAS=ianhowell
+
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
 # Fish-like autosuggestions
