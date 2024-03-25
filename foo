@@ -1,5 +1,0 @@
-" The following makes it so that tabs show up as spaces. Note that we need to escape the spaces
-set listchars=tab:\ \ ,trail:·
-" The following line does the same as the above, but doesn't require the escapes
-set 
-
