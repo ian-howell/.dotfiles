@@ -11,12 +11,17 @@ let g:ale_lint_on_text_changed = 'normal'
 let g:ale_lint_on_insert_leave = 1
 
 "Custom signs for gutter
+" TODO: Figure these out
+" let g:ale_sign_error = "❌"
+" let g:ale_sign_warning = "⚠️"
+" let g:ale_sign_info = "ℹ️"
 let g:ale_sign_error = "✗"
-let g:ale_sign_warning = "▲"
+let g:ale_sign_warning = "∆"
+let g:ale_sign_info = "ⅰ"
 
-"234 is the same color as the sign column's background
-highlight ALEErrorSign ctermbg=234 ctermfg=red
-highlight ALEWarningSign ctermbg=234 ctermfg=yellow
+highlight ALEErrorSign ctermfg=red
+highlight ALEWarningSign ctermfg=yellow
+highlight ALEInfoSign ctermfg=cyan
 
 " Show popups on hover
 let g:ale_floating_preview = 1
