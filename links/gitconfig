@@ -38,8 +38,7 @@
 
 # Only work stuff goes below this line
 [credential]
-    helper = store --file ~/.git-credentials
-[url "ssh://ssh.dev.azure.com/v3/mariner-org/ECF/"]
-    insteadOf = https://dev.azure.com/mariner-org/ECF/
-[url "ssh://ssh.dev.azure.com/v3/msazuredev/AzureForOperatorsIndustry/"]
-    insteadOf = https://dev.azure.com/msazuredev/AzureForOperatorsIndustry/_git/
+    helper = /usr/local/bin/git-credential-manager
+    azreposCredentialType = oauth
+[credential "https://dev.azure.com"]
+    useHttpPath = true

@@ -1,0 +1,16 @@
+#!/bin/bash
+set -x
+
+echo "Installing fd"
+
+ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
+
+install_gcm() {
+  wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.deb \
+    -O "$ARTIFACTS_DIR/gcm-linux_amd64.2.4.1.deb"
+  sudo dpkg -i "$ARTIFACTS_DIR/gcm-linux_amd64.2.4.1.deb"
+}
+
+install_gcm
+
+set +x
