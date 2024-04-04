@@ -222,6 +222,9 @@ nnoremap gV `[v`]
 "omg I hate Ex mode
 nnoremap Q <nop>
 
+"insert a seperator line
+nnoremap <space>= 110i=<esc>
+
 "===[ Statusline
 "Always show the status line
 set laststatus=2
