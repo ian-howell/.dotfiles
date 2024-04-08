@@ -25,9 +25,13 @@ alias gcae="git commit --amend"
 alias gcm="git commit -m"
 
 # Diff commands
-alias gd="git diff --color=always | less -R --quit-if-one-screen --no-init"
+gd() {
+  git diff --color=always "$@" | less -R --quit-if-one-screen --no-init
+}
 alias gdn="git diff --name-only"
-alias gdm='git diff $(git merge-base main HEAD) --color=always | less -R --quit-if-one-screen --no-init' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
+gdm() {
+  git diff $(git merge-base main HEAD) --color=always "$@" | less -R --quit-if-one-screen --no-init
+}
 alias gdmn='git diff --name-only $(git merge-base main HEAD)' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
 alias gdo="git odiff"
 alias gdv="git vimdiff"
@@ -43,7 +47,9 @@ alias ggr="git fetch; git rebase"
 
 # Log commands
 alias gl="git log"
-alias glo="git log --color=always --oneline | head"
+glo() {
+  git log --color=always --oneline "$@" | head
+}
 
 # Push commands
 alias gp="git push"
