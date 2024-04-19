@@ -45,10 +45,8 @@
     clean-branches = clean-branches
 
 
-# Only work stuff goes below this line
+; Only work stuff goes below this line
 [credential]
-    helper = store --file ~/.git-credentials
-[url "ssh://ssh.dev.azure.com/v3/mariner-org/ECF/"]
-    insteadOf = https://dev.azure.com/mariner-org/ECF/
-[url "ssh://ssh.dev.azure.com/v3/msazuredev/AzureForOperatorsIndustry/"]
-    insteadOf = https://dev.azure.com/msazuredev/AzureForOperatorsIndustry/_git/
+    helper = /usr/local/bin/git-credential-manager
+    useHttpPath = true
+    credentialStore = plaintext

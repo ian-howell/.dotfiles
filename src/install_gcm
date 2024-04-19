@@ -1,0 +1,8 @@
+install_gcm() {
+  gcm_version="2.4.1"
+  sudo curl -sLo gcm.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v$gcm_version/gcm-linux_amd64.$gcm_version.tar.gz
+  sudo tar -C /usr/local/bin -xzf gcm.tar.gz
+  sudo rm gcm.tar.gz
+}
+
+install_gcm
