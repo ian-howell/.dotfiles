@@ -1,30 +1,26 @@
 #!/bin/bash
-set -x
 
 install_zsh() {
-  zsh_exists=$(command -v zsh)
-  if [ -z "$zsh_exists" ]; then
-      sudo apt-get -qq -y install zsh
+  # If the user's shell is already zsh, do nothing.
+  if grep -q "^$USER:.*zsh" /etc/passwd; then
+    echo "zsh already installed :)"
+    return
   fi
 
-  # If this user's login shell is not already "zsh", attempt to switch.
-  TEST_CURRENT_SHELL=$(basename "$SHELL")
-  if [ "$TEST_CURRENT_SHELL" != "zsh" ]; then
-    if hash chsh >/dev/null 2>&1; then
-      echo "Time to change your default shell to zsh!"
-      chsh -s $(grep /zsh$ /etc/shells | tail -1)
-    else
-      # This is a hack...
-      bash_loc=$(which bash)
-      zsh_loc=$(which zsh)
-      sudo sed -i -e "s,$HOME:$bash_loc,$HOME:$zsh_loc," /etc/passwd
-    fi
-  fi
-  echo 'zsh installed :)'
+  echo "Installing zsh..."
+  sudo apt-get -qq -y install zsh
+
+  # This sed trick prevents `chsh` from asking for a password.
+  sudo sed -i.original -e 's/auth\(.*\)pam_shells.so$/# auth\1pam_shells.so/' /etc/pam.d/chsh
+  cleanup() {
+    sudo mv /etc/pam.d/chsh.original /etc/pam.d/chsh
+  }
+  trap cleanup EXIT
+
+  sudo chsh -s "$(command -v zsh)" "$USER"
+
+  echo "Finished installing zsh :)"
+  echo "You may need to log out and back in for the changes to take effect..."
 }
 
-(
-  install_zsh
-)
-
-set +x
+install_zsh
