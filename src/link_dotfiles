@@ -20,6 +20,7 @@ vimrc:.vimrc
 zsh:.zsh
 zshenv:.zshenv
 zshrc:.zshrc
+git-hook-post-commit:.dotfiles/.git/hooks/post-commit
 "
 
 for link in $links; do
