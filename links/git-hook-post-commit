@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$(git branch --show-current)" != "main" ]; then
+  exit
+fi
+
+original_stash_size=$(git stash list | wc -l)
+new_stash_size=$original_stash_size
+
+cleanup() {
+  if (( new_stash_size > original_stash_size )); then
+    git stash pop -q
+  fi
+  git switch main -q
+}
+trap cleanup EXIT
+
+# stash changes before switching
+git stash -a -q 2>/dev/null
+new_stash_size=$(git stash list | wc -l)
+
+git switch work-stuff -q
+git rebase main -q
