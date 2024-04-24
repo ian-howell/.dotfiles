@@ -1,0 +1,39 @@
+#!/bin/bash
+set -x
+
+# This script is runs after a commit is "replaced" by a new commit, as in the case of a git commit --amend or
+# a git rebase -i
+
+if [ "$(git branch --show-current)" != "main" ]; then
+  exit
+fi
+
+echo "+============== POST-REWRITE HOOK ==============+"
+echo "|                                               |"
+echo "| Don't forget to rebase work-stuff onto main!! |"
+echo "|                                               |"
+echo "+===============================================+"
+
+# TODO: There's a bit more work to do here
+
+# original_stash_size=$(git stash list | wc -l)
+# new_stash_size=$original_stash_size
+
+# cleanup() {
+#   if (( new_stash_size > original_stash_size )); then
+#     git stash pop -q
+#   fi
+#   git switch main -q
+# }
+# trap cleanup EXIT
+
+# # stash changes before switching
+# git stash -a -q 2>/dev/null
+# new_stash_size=$(git stash list | wc -l)
+
+# git switch work-stuff -q
+# git status
+
+# shared_commit=$(git merge-base main work-stuff)
+# git rebase --onto main "$shared_commit" work-stuff -q
+# git switch main -q
