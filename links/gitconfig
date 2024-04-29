@@ -46,16 +46,21 @@
 
 
 ; Only work stuff goes below this line
-[url "https://dev.azure.com/mariner-org/ECF/_git/cluster-api-provider-kubevirt"]
-	insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt.git
 [credential]
-	helper = /usr/local/bin/git-credential-manager
-	credentialStore = cache
-	helper-cache = 3600
-	azreposCredentialType = oauth
-	msauthflow = devicecode
-	useHttpPath = true
-	provider = azure-repos
+    helper = /usr/local/bin/git-credential-manager
+    azreposCredentialType = oauth
+    msauthflow = devicecode
+    useHttpPath = true
+[url "https://dev.azure.com/mariner-org/ECF/_git/cluster-api-provider-kubevirt"]
+    insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt
+    insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt.git
+[url "https://"]
+    insteadOf = git://
+    insteadOf = ssh://
+    insteadOf = git+ssh://
 [credential "azrepos:org/msazuredev"]
-	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
-	username = ianhowell@microsoft.com
+    username = ianhowell@microsoft.com
+    azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+[credential "azrepos:org/mariner-org"]
+    azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+    username = ianhowell@microsoft.com
