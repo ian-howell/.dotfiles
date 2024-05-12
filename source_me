@@ -25,6 +25,8 @@ bash src/install_diff_so_fancy
 bash src/link_dotfiles
 bash src/install_vim
 
+git submodule update --init --recursive
+
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
 
