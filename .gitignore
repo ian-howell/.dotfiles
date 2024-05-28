@@ -1,10 +1,16 @@
 # Machine specific for vim
+# TODO: fix this list
 links/vim/backup/
-links/vim/undo/
 links/vim/swap/
 links/vim/.netrwhist
 links/vim/plugged/
 links/vim/view/
+
+# Ignore everything in the undo directory
+links/vim/undo/*
+# But not the placeholder file
+!links/vim/undo/placeholder
+
 
 # Tags. Because for some reason I need that in my .dotfiles :eye-roll:
 tags
