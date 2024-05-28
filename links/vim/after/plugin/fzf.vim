@@ -2,24 +2,6 @@ if !exists('g:loaded_fzf')
   finish
 endif
 
-" Remove all the cruft
-delcommand FZF
-delcommand FzfBTags
-delcommand FzfBuffers
-delcommand FzfColors
-delcommand FzfFiles
-delcommand FzfFiletypes
-delcommand FzfGitFiles
-" delcommand FzfGFiles
-delcommand FzfHelptags
-delcommand FzfLocate
-" delcommand FzfMaps
-delcommand FzfMarks
-delcommand FzfRg
-delcommand FzfSnippets
-delcommand FzfTags
-delcommand FzfWindows
-
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
   \ 'bg':      ['bg', 'Normal'],
