@@ -283,6 +283,8 @@ export PATH=$HOME/notes/scripts:$PATH
 source "$HOME/notes/scripts/environment"
 
 [[ -d "$HOME/nc-devbox" ]] && prepend "$HOME/nc-devbox"
+# SKIP_CHECKS is used to skip the rg and vm existence checks in the devbox scripts
+export SKIP_CHECKS=1
 
 export ALIAS=ianhowell
 
