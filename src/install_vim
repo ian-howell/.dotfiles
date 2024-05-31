@@ -14,10 +14,10 @@ install_vim()
   fi
 
   # Install make, gcc, and curses. These are dependencies
-  sudo apt-get install -y make gcc libncurses5-dev
+  sudo apt-get install -y -q make gcc libncurses5-dev
 
   # Install required X libraries - these are needed for clipboard support
-  sudo apt-get install -y libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
+  sudo apt-get install -y -q libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
 
   # Download, configure, build, and install
   tag=$(curl -s https://github.com/vim/vim/tags| \
@@ -43,7 +43,7 @@ install_vim()
               --with-x=yes \
               --disable-gui \
               --prefix=/usr/local
-  sudo make install
+  sudo make install >/dev/null
 
   vim +PlugInstall +qall
 }
