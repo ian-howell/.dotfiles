@@ -18,11 +18,11 @@ build_git()
   cd "$GIT_ARTIFACTS"
 
   # Dependencies
-  sudo apt-get -y install dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
+  sudo apt-get -y -q install dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
     gettext libz-dev libssl-dev
 
   # Docs, infos, etc
-  sudo apt-get -y install asciidoc xmlto docbook2x install-info
+  sudo apt-get -y -q install asciidoc xmlto docbook2x install-info
 
   # Download, configure, build, and install
   tag=$(curl -s https://github.com/git/git/tags| \
