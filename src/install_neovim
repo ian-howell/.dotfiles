@@ -6,7 +6,7 @@ echo "Setting up Neovim"
 ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
 install_dependencies() {
-  sudo apt-get install ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
+  sudo apt-get install -q ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
 }
 
 install_neovim() {
