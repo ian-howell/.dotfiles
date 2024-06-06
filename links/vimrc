@@ -225,6 +225,12 @@ nnoremap Q <nop>
 "insert a seperator line
 nnoremap <space>= 110i=<esc>
 
+"this mapping is typically used to run a formatter followed by saving the file. It should be overridden in
+"links/vim/after/ftplugin/<file format>.vim
+"Unfortunately, it has engrained itself into my muscle memory, which is quite annoying when editing a file
+"that doesn't override it. For that reason, I'm setting its default behavior to simply save the file
+nnoremap ,gi :w<cr>
+
 "===[ Statusline
 "Always show the status line
 set laststatus=2
