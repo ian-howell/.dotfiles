@@ -63,11 +63,10 @@ syntax enable
 colorscheme torte
 silent! colorscheme apprentice
 
-"Show all non-printable characters. Note the the ^M seen here is a newline literal, and it is followed
-"immediately by a tab literal
+"Show all non-printable characters (ascii index <= 32)
 highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
 augroup vimrc-show-non-printable-characters
-  autocmd BufEnter * match NonPrintableCharacters /[^!-~ 	]/
+  autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
 augroup END
 
 "===[ Search behaviour
