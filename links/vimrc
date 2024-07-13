@@ -7,7 +7,8 @@ Plug 'blueyed/vim-diminactive'
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
+" This isn't working with vim-go
+" Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
 Plug 'wellle/targets.vim'
 Plug 'wellle/context.vim'
