@@ -28,10 +28,6 @@ let g:ale_yaml_yamllint_options = '-d relaxed'
 
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
-" This is broken for some reason and causes vim to hang on save...
-let g:go_fmt_autosave = 0
-let g:go_imports_autosave = 0
-
 " I need to revisit whether I need vim-qf anymore now that cfilter exists, but I have a retro in 5 minutes, so
 " that'll be future Ian's problem
 Plug 'romainl/vim-qf'
@@ -226,11 +222,6 @@ nnoremap Q <nop>
 "insert a seperator line
 nnoremap <space>= 110i=<esc>
 
-"this mapping is typically used to run a formatter followed by saving the file. It should be overridden in
-"links/vim/after/ftplugin/<file format>.vim
-"Unfortunately, it has engrained itself into my muscle memory, which is quite annoying when editing a file
-"that doesn't override it. For that reason, I'm setting its default behavior to simply save the file
-nnoremap ,gi :w<cr>
 
 "===[ Statusline
 "Always show the status line
