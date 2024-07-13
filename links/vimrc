@@ -222,8 +222,6 @@ nnoremap Q <nop>
 "insert a seperator line
 nnoremap <space>= 110i=<esc>
 
-"command-line mode is strictly greater when using vi keys
-nnoremap : :<c-f><esc>o
 
 "===[ Statusline
 "Always show the status line
