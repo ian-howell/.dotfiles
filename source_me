@@ -26,6 +26,9 @@ bash src/install_vim
 
 git submodule update --init --recursive
 
+# Clone some additional work stuff
+git clone git@github.com:ian-howell/work-notes "$HOME/notes"
+
 echo "========== COMPLETE =========="
 echo "Artifacts from setup process are stored in $ARTIFACTS_DIR."
 
