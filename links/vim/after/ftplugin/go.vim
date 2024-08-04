@@ -1,8 +1,9 @@
 setlocal noexpandtab
 setlocal shiftwidth=8
 
-nnoremap <silent> <buffer> gdv :vsplit<cr>:GoDef<cr>
-nnoremap <silent> <buffer> gds :split<cr>:GoDef<cr>
+nnoremap <silent> <buffer> ,gdd :GoDef<cr>
+nnoremap <silent> <buffer> ,gdv :vs <bar> :GoDef<cr>
+nnoremap <silent> <buffer> ,gds :sp <bar> :GoDef<cr>
 
 nnoremap <buffer> ,gi :GoImplements<cr>
 nnoremap <buffer> ,gR :GoReferrers<cr>
