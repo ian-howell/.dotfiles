@@ -137,8 +137,8 @@ augroup END
 " sidescroll has some sort of issue with ALE, in which a line with an error or warning fails to render when
 " scrolling. I'm leaving it commented out here so I don't accidentally turn it back on in the future
 " set sidescroll=1            "Set horizontal scroll speed
-set colorcolumn=110         "color line 110
-set textwidth=110           "gq will wrap text at 110, same as colorcolumn
+set colorcolumn=80          "color line 80
+set textwidth=80            "gq will wrap text at 80, same as colorcolumn
 set formatoptions=cqlMj     "In order: wrap comments automatically, allow 'gq' to work on comments,
                             "don't break long lines in insert mode, don't insert space when 'J'oining,
                             "remove comment leaders when 'J'oining lines
@@ -220,7 +220,7 @@ nnoremap gV `[v`]
 nnoremap Q <nop>
 
 "insert a seperator line
-nnoremap <space>= 110i=<esc>
+nnoremap <space>= 80i=<esc>
 
 
 "===[ Statusline
