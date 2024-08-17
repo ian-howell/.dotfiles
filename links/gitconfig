@@ -52,14 +52,14 @@
 [credential]
     ; helper = /usr/local/bin/git-credential-manager
     ; Use the windows helper
-    helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe
-    azreposCredentialType = oauth
+	helper = /usr/local/bin/git-credential-manager
+	azreposCredentialType = oauth
     ; This one doesn't seem to work
-    msauthflow = devicecode
-    useHttpPath = true
+	msauthflow = devicecode
+	useHttpPath = true
 [url "https://dev.azure.com/mariner-org/ECF/_git/cluster-api-provider-kubevirt"]
-    insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt
-    insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt.git
+	insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt
+	insteadOf = https://dev.azure.com/mariner-org/ECF/cluster-api-provider-kubevirt
 [url "https://"]
     ; These prevent go from hanging. You should have the following settings to force interactivity
     ; export GCM_INTERACTIVE=auto
@@ -68,7 +68,7 @@
     insteadOf = ssh://
     insteadOf = git+ssh://
 [credential "azrepos:org/msazuredev"]
-    username = ianhowell@microsoft.com
+	username = ianhowell@microsoft.com
     azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
 [credential "azrepos:org/mariner-org"]
     azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
