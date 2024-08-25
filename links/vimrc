@@ -37,6 +37,8 @@ nnoremap <space>q/ :Cfilter //<Left>
 nnoremap <space>q! :Cfilter! //<Left>
 nnoremap <space>qx :Cfilter! /mock\\|test/<cr>
 
+nnoremap - z20<cr>
+
 Plug 'github/copilot.vim'
 " The following 2 lines need to stay together; Combinded, they replace 'Tab' with <c-e> to accept a suggestion
 imap <silent><script><expr> <C-E> copilot#Accept("\<CR>")
