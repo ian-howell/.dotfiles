@@ -25,14 +25,12 @@ alias gcae="git commit --amend"
 alias gcm="git commit -m"
 
 # Diff commands
-gd() {
-  git diff --color=always "$@" | less -R --quit-if-one-screen --no-init
-}
+alias gd="git diff"
+alias gds="git diff --staged"
 alias gdn="git diff --name-only"
-gdm() {
-  git diff $(git merge-base main HEAD) --color=always "$@" | less -R --quit-if-one-screen --no-init
-}
-alias gdmn='git diff --name-only $(git merge-base main HEAD)' # SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
+# SINGLE QUOTES ARE IMPORTANT HERE! Otherwise, the merge-base command is run when my startup scripts are run
+alias gdm='git diff $(git merge-base main HEAD)'
+alias gdmn='git diff --name-only $(git merge-base main HEAD)'
 alias gdo="git odiff"
 alias gdv="git vimdiff"
 

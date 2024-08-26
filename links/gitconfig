@@ -1,7 +1,7 @@
 [core]
     editor = vim
     excludesfile = ~/.dotfiles/links/global_gitignore
-    pager = diff-so-fancy | less --tabs=4 -RF
+    pager = delta
 [push]
     default = matching
 [include]
@@ -11,12 +11,21 @@
     name = Ian Howell
 [diff]
     algorithm = histogram
+    colorMoved = default
 [commit]
     verbose = true
 [init]
     defaultBranch = main
 [interactive]
-    diffFilter = diff-so-fancy --patch
+    diffFilter = delta --color-only --features=interactive
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    side-by-side = true
+    line-numbers = true
+[delta "interactive"]
+    keep-plus-minus-markers = false
+[merge]
+    conflictstyle = diff3
 [color]
     ui = true
 [color "diff-highlight"]
