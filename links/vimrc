@@ -25,7 +25,8 @@ let g:fzf_command_prefix = "Fzf"
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'dense-analysis/ale'
-let g:ale_yaml_yamllint_options = '-d relaxed'
+" I don't really care to lint yaml
+let g:ale_linters_ignore = {'yaml': ['yamllint']}
 
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
