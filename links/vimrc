@@ -29,6 +29,8 @@ Plug 'dense-analysis/ale'
 let g:ale_linters_ignore = {'yaml': ['yamllint']}
 
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+let g:go_auto_sameids = 1
+let g:go_fmt_fail_silently = 1
 
 " I need to revisit whether I need vim-qf anymore now that cfilter exists, but I have a retro in 5 minutes, so
 " that'll be future Ian's problem
