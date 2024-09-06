@@ -165,12 +165,6 @@ fpath=($HOME/.zsh/completions $fpath)
 autoload -U compinit
 compinit
 
-# Make all kubectl completion fzf
-command -v fzf >/dev/null 2>&1 && command -v kubectl >/dev/null 2>&1 && { 
-	source <(kubectl completion zsh | sed 's#${requestComp} 2>/dev/null#${requestComp} 2>/dev/null | head -n -1 | fzf  --multi=0 #g')
-}
-
-
 # Use fzf for tab completion
 # NOTE: This MUST be sourced before autosuggestions (which is near the bottom of this file at time of writing)
 if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
