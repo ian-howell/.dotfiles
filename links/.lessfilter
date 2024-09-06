@@ -1,8 +1,0 @@
-mime=$(file -bL --mime-type "$1")
-category=${mime%%/*}
-if [ -d "$1" ]; then
-    ls -hl --color=always "$1"
-elif [ "$category" = text ]; then
-    bat --color=always "$1"
-fi
-

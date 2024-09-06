@@ -186,24 +186,10 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always ${(Q)realpath}'
 
     # magic previews for files and directories
-    zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
-    export LESSOPEN='|$HOME/.dotfiles/links/.lessfilter %s'
+    zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat --color=always ${(Q)realpath}'
 
     # show environment variable contents
     zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
-
-    # set descriptions format to enable group support
-    zstyle ':completion:*:descriptions' format '[%d]'
-
-    # switch group using `^h` and `^l`
-    zstyle ':fzf-tab:*' switch-group ctrl-h ctrl-l
-
-    # Hide the annoying '.' prefix
-    zstyle ':fzf-tab:*' prefix ''
-
-    # If I hit enter while completing a cd, I want to cd immediately into the directory
-    # On the other hand, if I hit '/', I want to complete the directory name and continue fzf-ing
-    zstyle ':fzf-tab:complete:cd:*' accept-line enter
 fi
 
 # Case insensitive
