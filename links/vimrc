@@ -327,6 +327,7 @@ nnoremap <silent> <space>bf :bfirst<cr>
 nnoremap <silent> <space>bl :blast<cr>
 
 "This does bufdo e without losing highlighting
+"TODO: This is slow af. Use asyncrun
 nnoremap <silent> <space>be :call buffers#EditWithoutLosingSyntax()<cr>
 
 augroup vimStartup
