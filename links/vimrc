@@ -273,6 +273,10 @@ command! Wq wq
 command! WQa wqa
 command! Wqa wqa
 
+"===[ Folds
+set foldmethod=syntax            "Create folds on syntax
+set foldlevel=999                "Start vim with all folds open
+
 "===[ Show undesirable hidden characters
 "Show hidden characters
 if &modifiable
