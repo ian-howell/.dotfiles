@@ -20,6 +20,9 @@ Plug 'airblade/vim-gitgutter'
 " Assorted
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+
+Plug 'jabirali/vim-tmux-yank'
+
 " Prefix all of the fzf commands to make them easier to 'browse'
 let g:fzf_command_prefix = "Fzf"
 Plug 'christoomey/vim-tmux-navigator'
