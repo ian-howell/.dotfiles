@@ -45,9 +45,7 @@ alias ggr="git fetch; git rebase"
 
 # Log commands
 alias gl="git log"
-glo() {
-  git log --color=always --oneline "$@" | head
-}
+alias glo="git log --color=always --oneline --decorate --max-count=10"
 
 # Push commands
 alias gp="git push"
