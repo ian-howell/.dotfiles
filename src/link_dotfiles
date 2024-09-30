@@ -12,7 +12,7 @@ funcs:.funcs
 gitconfig:.gitconfig
 global_gitignore:.global_gitignore
 inputrc:.inputrc
-profile:.profile
+zprofile:.zprofile
 sh_aliases:.sh_aliases
 tmux.conf:.tmux.conf
 vim:.vim
