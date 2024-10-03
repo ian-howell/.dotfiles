@@ -126,6 +126,9 @@ alias dopen="xdg-open"
 # Shortcut to trim whitespace from output
 alias trim="awk '{\$1=\$1};1;'"
 
+# This is the same as uniq, but it works on streaming data
+alias uniqstream="awk '!seen[\$0]++'"
+
 # List all of the recently visited directories
 alias dirs="dirs -lpv"
 
