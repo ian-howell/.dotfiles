@@ -234,17 +234,12 @@ nnoremap <space>= 80i=<esc>
 "Always show the status line
 set laststatus=2
 
-"Setup custom colors
-hi User1 ctermbg=NONE cterm=bold
-hi User2 ctermbg=grey ctermfg=black
-hi User3 ctermbg=grey ctermfg=52 cterm=bold
-
 set statusline=                            "Start empty
-set statusline+=%2*                        "Change color
-set statusline+=%{statusline#Modified()}   "Mark whether the file is modified, unmodified, or unmobifiable
+set statusline+=%{statusline#Modified()}   "Mark whether the file is modified, unmodified, or unmodifiable
 set statusline+=\ ‹%f›                     "File name
 set statusline+=%=                         "Switch to the right side
-set statusline+=\ %3.c                     "Current column
+set statusline+=\ L%l                      "Current line
+set statusline+=\ C%c                      "Current column
 set statusline+=\ %P                       "Percentage through file
 set statusline+=\ %y                       "Filetype
 
