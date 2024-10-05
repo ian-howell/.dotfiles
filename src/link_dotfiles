@@ -15,6 +15,7 @@ inputrc:.inputrc
 zprofile:.zprofile
 sh_aliases:.sh_aliases
 tmux:.config/tmux
+kitty:.config/kitty
 vim:.vim
 vimrc:.vimrc
 zsh:.zsh
