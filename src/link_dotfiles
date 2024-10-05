@@ -14,7 +14,7 @@ global_gitignore:.global_gitignore
 inputrc:.inputrc
 zprofile:.zprofile
 sh_aliases:.sh_aliases
-tmux.conf:.tmux.conf
+tmux:.config/tmux
 vim:.vim
 vimrc:.vimrc
 zsh:.zsh
