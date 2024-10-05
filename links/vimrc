@@ -3,7 +3,6 @@ call plug#begin()
 
 " Colorschemes
 Plug 'ian-howell/Apprentice'
-Plug 'blueyed/vim-diminactive'
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
@@ -131,14 +130,35 @@ set number             "Show the cursor's current line
 "Highlight the current line and column
 set cursorline
 set cursorcolumn
-"Only highlight the active window
+
+" Background colors for active vs inactive windows
+" Note that "black" means the same as "transparent"
+hi ActiveWindow ctermbg=236
+hi link Normal ActiveWindow
+hi InactiveWindow ctermbg=black
+hi CursorColumn ctermbg=237
+
+" Change highlight group of active/inactive windows
+function! HandleFocusEnter()
+  setlocal cursorline
+  setlocal cursorcolumn
+  setlocal winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
+endfunction
+
+" Change highlight group of active/inactive windows
+function! HandleFocusLeave()
+  setlocal nocursorline
+  setlocal nocursorcolumn
+  setlocal winhighlight=Normal:InactiveWindow,NormalNC:InactiveWindow
+endfunction
+
+""Only highlight the active window
 augroup highlight_follows_focus
-    autocmd!
-    autocmd WinEnter * setlocal cursorline
-    autocmd WinEnter * setlocal cursorcolumn
-    autocmd WinLeave * setlocal nocursorline
-    autocmd WinLeave * setlocal nocursorcolumn
+  autocmd!
+  autocmd WinEnter,FocusGained * call HandleFocusEnter()
+  autocmd WinLeave,FocusLost * call HandleFocusLeave()
 augroup END
+
 
 "== Columns =="
 " sidescroll has some sort of issue with ALE, in which a line with an error or warning fails to render when
@@ -430,7 +450,8 @@ set tabpagemax=99
 " Popup the latest git commit for the current line
 nmap <silent><space>gbl :call setbufvar(winbufnr(popup_atcursor(split(system("git log -n 1 -L " . line(".") . ",+1:" . expand("%:p")), "\n"), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
-set completeopt=menu,menuone,popup
+" TODO: This is a vim setting - figure out the neovim equivalent
+" set completeopt=menu,menuone,popup
 
 " Don't mess with the EOL characters at the end of a file
 set nofixendofline
