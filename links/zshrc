@@ -242,8 +242,8 @@ export PATH=$HOME/go/bin:$PATH
 setopt PROMPT_SUBST
 
 # Setup default editor
-export EDITOR='vim'
-export VISUAL='vim'
+export EDITOR='nvim'
+export VISUAL='nvim'
 
 # Don't share a history between shells. That's weird.
 unsetopt share_history
