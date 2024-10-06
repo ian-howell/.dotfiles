@@ -1,3 +1,9 @@
+"===[ Helper functions
+function IsGitRepo()
+  silent let root = system('git rev-parse')
+  return !v:shell_error
+endfunction
+
 "===[ Plugins
 call plug#begin()
 
@@ -208,12 +214,6 @@ call plug#end()
 
 "For more matching. See :h matchit
 runtime macros/matchit.vim
-
-"===[ Helper functions
-function IsGitRepo()
-  silent let root = system('git rev-parse')
-  return !v:shell_error
-endfunction
 
 "===[ Colors
 syntax enable
