@@ -20,13 +20,12 @@ let g:fzf_colors =
 let gitSource = 'bash -c '.shellescape('comm -3 <(git ls-files --other --exclude-standard --cached | sort) <(git ls-files --deleted --exclude-standard | sort)')
 let fileSource = 'fd . --type f --type l'
 let allSource = fileSource . ' --hidden --no-ignore'
-if git#IsGitRepo()
+if IsGitRepo()
   " This is madness...
   " The comm command will list all the files tracked by git, excluding any deleted files.
   " However, fzf insists on using sh rather than bash, and the 'command <(other_command)' syntax (Process Substitution)
   " is not POSIX compliant, and doesn't work in sh. So this command will tell sh to run the 'comm' command using bash
   let fzfSource = gitSource
-
 else
   let fzfSource = fileSource
 endif
