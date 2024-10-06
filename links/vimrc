@@ -329,13 +329,6 @@ set nostartofline           "Prevent the cursor fom changing columns when jumpin
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
-" These mappings will be overwritten by tmux-navigator if it exists
-nnoremap <silent> <c-h> <c-w><c-h>
-nnoremap <silent> <c-j> <c-w><c-j>
-nnoremap <silent> <c-k> <c-w><c-k>
-nnoremap <silent> <c-l> <c-w><c-l>
-nnoremap <silent> <c-\> <c-w><c-\>
-
 " Zoom in on a specific window, tmux-style
 nnoremap <c-w>z ma:tabedit %<cr>`a
 
@@ -534,15 +527,6 @@ set hidden
 
 "Recursively search current directory
 set path=.,,**
-
-"These mappings will be overwritten by fzf.vim if it exists
-nnoremap <space>ff :find<space>
-nnoremap <space>fv :vert sfind<space>
-nnoremap <space>fs :sfind<space>
-" Shortcut to find buffers
-nnoremap <space>bb :buffer<space>
-nnoremap <space>bs :vert sbuffer<space>
-nnoremap <space>bv :sbuffer<space>
 
 nnoremap <silent> <space>bn :bnext<cr>
 nnoremap <silent> <space>bp :bprevious<cr>
