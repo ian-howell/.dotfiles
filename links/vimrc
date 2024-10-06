@@ -57,9 +57,6 @@ let b:copilot_enabled = v:true
 
 call plug#end()
 
-
-"For filestype specific things (like syntax highlighting)
-filetype plugin indent on
 "For more matching. See :h matchit
 runtime macros/matchit.vim
 
