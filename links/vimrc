@@ -57,10 +57,17 @@ let b:copilot_enabled = v:true
 
 call plug#end()
 
+
 "For filestype specific things (like syntax highlighting)
 filetype plugin indent on
 "For more matching. See :h matchit
 runtime macros/matchit.vim
+
+"===[ Helper functions
+function IsGitRepo()
+  silent let root = system('git rev-parse')
+  return !v:shell_error
+endfunction
 
 "===[ Colors
 syntax enable
@@ -89,7 +96,7 @@ augroup END
 nnoremap <space>hl :set hlsearch! hlsearch?<cr>
 
 " Defines an operator that will search for the specified text.
-function! SetSearch( type )
+function SetSearch( type )
   let saveZ = @z
 
   if a:type == 'line'
@@ -139,14 +146,14 @@ hi InactiveWindow ctermbg=black
 hi CursorColumn ctermbg=237
 
 " Change highlight group of active/inactive windows
-function! HandleFocusEnter()
+function HandleFocusEnter()
   setlocal cursorline
   setlocal cursorcolumn
   setlocal winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
 endfunction
 
 " Change highlight group of active/inactive windows
-function! HandleFocusLeave()
+function HandleFocusLeave()
   setlocal nocursorline
   setlocal nocursorcolumn
   setlocal winhighlight=Normal:InactiveWindow,NormalNC:InactiveWindow
@@ -210,16 +217,39 @@ nnoremap <silent> <space>pp :set paste<CR>i
 "But I don't want to get stuck in paste mode; that's annoying
 autocmd InsertLeave * set nopaste
 
-"Remove all trailing whitespace from a file
-nnoremap <silent> <space>ws :call whitespace#StripTrailingWhiteSpace()<CR>
+"Remove all trailing blankspaces from a file
+function StripTrailingBlankSpaces()
+  let l:winview = winsaveview()
+  silent! %s/\(\s\|\)\+$//e
+  call winrestview(l:winview)
+endfunction
+nnoremap <silent> <space>ws :call StripTrailingBlankSpaces()<CR>
 "Remove all non-printable characters from a file
 nnoremap  <space>np :%s/[^!-~ \n\t]//g<CR>
 
 "Sane paragraph boundaries
-nnoremap <silent> { :<C-u>call ipmotion#MyPrevParagraph()<CR>
-nnoremap <silent> } :<C-u>call ipmotion#MyNextParagraph()<CR>
-xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call ipmotion#MyPrevParagraph()<CR>
-xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call ipmotion#MyNextParagraph()<CR>
+"TODO: Decide if this is necessary
+function NextParagraph()
+  let myline = search('^\s*$', 'W')
+  if myline <= 0
+    execute 'normal! G$'
+  else
+    execute 'normal! '.myline.'G0'
+  endif
+endfunction
+
+function PrevParagraph()
+  let myline = search('^\s*$', 'bW')
+  if myline <= 0
+    execute 'normal! gg0'
+  else
+    execute 'normal! '.myline.'G0'
+  endif
+endfunction
+nnoremap <silent> { :<C-u>call PrevParagraph()<CR>
+nnoremap <silent> } :<C-u>call NextParagraph()<CR>
+xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call PrevParagraph()<CR>
+xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call NextParagraph()<CR>
 
 " Jump between function definitions. Taken from :help section
 map [[ ?{<CR>w99[{
@@ -251,11 +281,36 @@ nnoremap <space>= 80i=<esc>
 
 
 "===[ Statusline
+
+"Custom modified flag
+function FileModified()
+  if &modified
+    return "  ∆ "
+  elseif !&modifiable
+    return "  ✗ "
+  else
+    return "    "
+  endif
+endfunction
+
+" TODO: This isn't used, but it's kinda neat. Let's work it in somehow
+"Custom git branch flag
+function GitBranch()
+  if !IsGitRepo() || !&modifiable
+    return ""
+  endif
+  let branch = FugitiveHead()
+  if len(branch)
+    return " «" . branch . "»"
+  endif
+  return " «detached HEAD»"
+endfunction
+
 "Always show the status line
 set laststatus=2
 
 set statusline=                            "Start empty
-set statusline+=%{statusline#Modified()}   "Mark whether the file is modified, unmodified, or unmodifiable
+set statusline+=%{FileModified()}   "Mark whether the file is modified, unmodified, or unmodifiable
 set statusline+=\ ‹%f›                     "File name
 set statusline+=%=                         "Switch to the right side
 set statusline+=\ L%l                      "Current line
@@ -304,7 +359,7 @@ endif
 set listchars=tab:\ \ ,trail:·
 
 let g:my_listchars_toggle = 0
-function! s:ToggleIndentationLines()
+function s:ToggleIndentationLines()
   if g:my_listchars_toggle == 1
     set listchars=tab:\ \ ,trail:·
   else
@@ -313,7 +368,7 @@ function! s:ToggleIndentationLines()
   endif
   let g:my_listchars_toggle = !g:my_listchars_toggle
 endfunction
-command! TIL call s:ToggleIndentationLines()
+command TIL call s:ToggleIndentationLines()
 
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
@@ -350,7 +405,13 @@ nnoremap <silent> <space>bl :blast<cr>
 
 "This does bufdo e without losing highlighting
 "TODO: This is slow af. Use asyncrun
-nnoremap <silent> <space>be :call buffers#EditWithoutLosingSyntax()<cr>
+"TODO: actually, we're using neovim now. We probably don't need this at all
+function EditWithoutLosingSyntax()
+    let this_buffer = bufnr("%")
+    bufdo set eventignore= | if &buftype != "nofile" && expand("%") != '' | edit | endif
+    execute "b" . this_buffer
+endfunction
+nnoremap <silent> <space>be :call EditWithoutLosingSyntax()<cr>
 
 augroup vimStartup
   autocmd!
@@ -374,12 +435,34 @@ endif
 nmap <space>qn <Plug>(qf_qf_next)
 nmap <space>qp <Plug>(qf_qf_previous)
 nmap <space>qq <Plug>(qf_qf_switch)
+
 " This doesn't quite work the way I like it
 " nmap <space>qt <Plug>(qf_qf_toggle)
 " Use my own instead
-nmap <silent> <space>qt :call quickfix#Toggle()<cr>
+" TODO: I think this can be simplified? Look into getqflist()
+function ToggleQuickfix()
+  for i in range(1, winnr('$'))
+    let bnum = winbufnr(i)
+    if getbufvar(bnum, '&buftype') == 'quickfix'
+      cclose
+      return
+    endif
+  endfor
+  botright copen
+endfunction
+nmap <silent> <space>qt :call ToggleQuickfix()<cr>
+
 " Quickly close all quickfix and location lists
-nmap <silent> <space>qc :windo lclose \| cclose \| call buffers#Pclose()<cr>
+" TODO: I think this might be overkill?
+function Pclose()
+  for i in range(1, winnr('$'))
+    let bnum = winbufnr(i)
+    if getbufvar(bnum, '&buftype') == 'nofile'
+      execute "bdelete" . bnum
+    endif
+  endfor
+endfunction
+nmap <silent> <space>qc :windo lclose \| cclose \| call Pclose()<cr>
 
 nmap <space>ln <Plug>(qf_loc_next)
 nmap <space>lp <Plug>(qf_loc_previous)
