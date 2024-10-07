@@ -1,5 +1,15 @@
 #!/bash
 
+vim() {
+  # Turn off the backckground color for the active plane when opening vim. We
+  # might open mutlple panes in vim, and we only want the active vim pane to
+  # have a background. So rather than trying to make tmux handle it, we simply
+  # ignore panes that have vim open, and allow vim to manage it itself.
+  tmux set -p window-active-style fg=default,bg=default
+  nvim "$@"
+  tmux set -p window-active-style fg=default,bg=colour236
+}
+
 run_command() {
     echo "================================================================================"
     echo "Running command: $*"
