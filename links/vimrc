@@ -417,6 +417,13 @@ nnoremap gV `[v`]
 "omg I hate Ex mode
 nnoremap Q <nop>
 
+"on the note of annoying things...
+inoremap :w<cr> <esc>:w<cr>
+inoremap :wq<cr> <esc>:wq<cr>
+inoremap :W<cr> <esc>:w<cr>
+inoremap :Wq<cr> <esc>:wq<cr>
+inoremap :WQ<cr> <esc>:wq<cr>
+
 "insert a seperator line
 nnoremap <space>= 80i=<esc>
 
