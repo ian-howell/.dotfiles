@@ -1,3 +1,10 @@
+" Notes on vimscript style:
+"
+" Typically, vimscript (and blankspace) should be Pythonic.
+"
+" In general, use plugin-names-like-this, FunctionNamesLikeThis,
+" CommandNamesLikeThis, augroup_names_like_this, variable_names_like_this.
+"
 "===[ Helper functions
 function IsGitRepo()
   silent let root = system('git rev-parse')
@@ -53,27 +60,29 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-let gitSource = 'bash -c '.shellescape('comm -3 <(git ls-files --other --exclude-standard --cached | sort) <(git ls-files --deleted --exclude-standard | sort)')
-let fileSource = 'fd . --type f --type l'
-let allSource = fileSource . ' --hidden --no-ignore'
+" TODO: I don't know who wrote this*, but it's psychotic. Please fix it.
+" *it was me, I wrote it
+let git_source = 'bash -c '.shellescape('comm -3 <(git ls-files --other --exclude-standard --cached | sort) <(git ls-files --deleted --exclude-standard | sort)')
+let file_source = 'fd . --type f --type l'
+let all_source = file_source . ' --hidden --no-ignore'
 if IsGitRepo()
   " This is madness...
   " The comm command will list all the files tracked by git, excluding any deleted files.
   " However, fzf insists on using sh rather than bash, and the 'command <(other_command)' syntax (Process Substitution)
   " is not POSIX compliant, and doesn't work in sh. So this command will tell sh to run the 'comm' command using bash
-  let fzfSource = gitSource
+  let fzf_source = git_source
 else
-  let fzfSource = fileSource
+  let fzf_source = file_source
 endif
 
 " So this is smart - f* will use git files if in a git repo, and fd files otherwise
-nnoremap <silent> <space>ff :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
-nnoremap <silent> <space>fv :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
-nnoremap <silent> <space>fs :call fzf#run(fzf#wrap({'source': fzfSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>ff :call fzf#run(fzf#wrap({'source': fzf_source, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>fv :call fzf#run(fzf#wrap({'source': fzf_source, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>fs :call fzf#run(fzf#wrap({'source': fzf_source, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
 
-nnoremap <silent> <space>FF :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
-nnoremap <silent> <space>FV :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
-nnoremap <silent> <space>FS :call fzf#run(fzf#wrap({'source': allSource, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>FF :call fzf#run(fzf#wrap({'source': all_source, 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>FV :call fzf#run(fzf#wrap({'source': all_source, 'sink': 'vsplit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
+nnoremap <silent> <space>FS :call fzf#run(fzf#wrap({'source': all_source, 'sink': 'split', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
 
 " Shortcut to find buffers
 nnoremap <silent> <space>bb :call fzf#run(fzf#wrap({'source': map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'sink': 'edit', 'window': {'width': 0.9, 'height': 0.6}, 'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}))<cr>
@@ -225,7 +234,7 @@ function! ApprenticeOverrides() abort
     hi DiffText ctermbg=235 ctermfg=110 cterm=reverse guibg=#262626 guifg=#8fafd7 gui=reverse
 endfunction
 
-augroup ApprenticeOverrides
+augroup apprentice_overrides
     autocmd!
     autocmd ColorScheme apprentice call ApprenticeOverrides()
 augroup END
@@ -238,15 +247,16 @@ silent! colorscheme apprentice
 
 "Show all non-printable characters (ascii index <= 32)
 highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
-augroup vimrc-show-non-printable-characters
+augroup emphasize_non_printable_characters
   autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
 augroup END
 
 "===[ Search behaviour
 set incsearch                        "Lookahead as search pattern is specified
 
+" TODO: I think I want to delete this
 "Pulled from :help 'incsearch' - highlight all matches while searching
-augroup vimrc-incsearch-highlight
+augroup vimrc_incsearch_highlight
     autocmd!
     autocmd CmdlineEnter /,\? :set hlsearch
     autocmd CmdlineLeave /,\? :set nohlsearch
@@ -522,7 +532,7 @@ endif
 set listchars=tab:\ \ ,trail:·
 
 let g:my_listchars_toggle = 0
-function s:ToggleIndentationLines()
+function ToggleIndentationLines()
   if g:my_listchars_toggle == 1
     set listchars=tab:\ \ ,trail:·
   else
@@ -531,7 +541,7 @@ function s:ToggleIndentationLines()
   endif
   let g:my_listchars_toggle = !g:my_listchars_toggle
 endfunction
-command TIL call s:ToggleIndentationLines()
+command TIL call ToggleIndentationLines()
 
 "Remove the background highlighting from the above special characters
 highlight clear SpecialKey
@@ -567,7 +577,7 @@ function EditWithoutLosingSyntax()
 endfunction
 nnoremap <silent> <space>be :call EditWithoutLosingSyntax()<cr>
 
-augroup vimStartup
+augroup recall_position
   autocmd!
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid, when inside an event handler
@@ -577,7 +587,6 @@ augroup vimStartup
     \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
     \ |   exe "normal! g`\""
     \ | endif
-
 augroup END
 
 "===[ Grep customization
@@ -676,7 +685,7 @@ set lazyredraw
 command! -range=% IX  <line1>,<line2>w !curl -F 'f:1=<-' ix.io | tr -d '\n' | xclip -i -selection clipboard
 " Clipboard hacks - By default, vim clears out the system and X clipboards
 " upon closing. This fixes that
-augroup clipboard-retention
+augroup clipboard_retention
   autocmd!
   autocmd VimLeave * call system("xclip -i -selection primary", getreg('*'))
   autocmd VimLeave * call system("xclip -i -selection clipboard", getreg('+'))
