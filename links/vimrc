@@ -8,7 +8,7 @@ endfunction
 call plug#begin()
 
 " Colorschemes
-Plug 'ian-howell/Apprentice'
+Plug 'romainl/Apprentice'
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
@@ -287,8 +287,9 @@ setlocal colorcolumn=80
 
 " Background colors for active vs inactive windows
 " Note that "black" means the same as "transparent"
-hi ActiveWindow ctermbg=236
-hi link Normal ActiveWindow
+" TODO: notermguicolors is fine for now, but it's probably pretty limiting...
+set notermguicolors
+hi link ActiveWindow Normal
 hi InactiveWindow ctermbg=black
 hi CursorColumn ctermbg=237
 
@@ -308,7 +309,7 @@ function HandleFocusLeave()
   setlocal winhighlight=Normal:InactiveWindow,NormalNC:InactiveWindow
 endfunction
 
-""Only highlight the active window
+"Only highlight the active window
 augroup highlight_follows_focus
   autocmd!
   autocmd WinEnter,FocusGained * call HandleFocusEnter()
