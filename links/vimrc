@@ -284,6 +284,8 @@ set number             "Show the cursor's current line
 setlocal cursorline
 setlocal cursorcolumn
 setlocal colorcolumn=80
+hi CursorLine ctermbg=236
+hi CursorColumn ctermbg=236
 
 " Background colors for active vs inactive windows
 " Note that "black" means the same as "transparent"
@@ -291,7 +293,6 @@ setlocal colorcolumn=80
 set notermguicolors
 hi link ActiveWindow Normal
 hi InactiveWindow ctermbg=black
-hi CursorColumn ctermbg=237
 
 " Change highlight group of active/inactive windows
 function HandleFocusEnter()
