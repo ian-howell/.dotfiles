@@ -217,8 +217,21 @@ runtime macros/matchit.vim
 
 "===[ Colors
 syntax enable
+
+function! ApprenticeOverrides() abort
+    hi DiffAdd ctermbg=238 ctermfg=NONE cterm=NONE guibg=#444444 guifg=NONE gui=NONE
+    hi DiffChange ctermbg=250 ctermfg=238 cterm=reverse guibg=#bcbcbc guifg=#444444 gui=reverse
+    hi DiffDelete ctermbg=52 ctermfg=52 cterm=NONE guibg=#5f0000 guifg=NONE gui=NONE
+    hi DiffText ctermbg=235 ctermfg=110 cterm=reverse guibg=#262626 guifg=#8fafd7 gui=reverse
+endfunction
+
+augroup ApprenticeOverrides
+    autocmd!
+    autocmd ColorScheme apprentice call ApprenticeOverrides()
+augroup END
+
 " This is such a hack: set the colorscheme to torte, then set it to apprentice.
-" If setting it to apprentice fails, it will do so quietly. This is import
+" If setting it to apprentice fails, it will do so quietly. This is important
 " when installing plugins with 'vim +PlugInstall +qall'
 colorscheme torte
 silent! colorscheme apprentice
