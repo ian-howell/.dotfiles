@@ -280,9 +280,10 @@ set nowrap             "Don't word wrap
 set breakindent        "However, if I *do* turn on wrap, I'd like to keep the same level of indentation
 set number             "Show the cursor's current line
 
-"Highlight the current line and column
-set cursorline
-set cursorcolumn
+"Highlight the current line, column, and the 80th column
+setlocal cursorline
+setlocal cursorcolumn
+setlocal colorcolumn=80
 
 " Background colors for active vs inactive windows
 " Note that "black" means the same as "transparent"
@@ -295,6 +296,7 @@ hi CursorColumn ctermbg=237
 function HandleFocusEnter()
   setlocal cursorline
   setlocal cursorcolumn
+  setlocal colorcolumn=80
   setlocal winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
 endfunction
 
@@ -302,6 +304,7 @@ endfunction
 function HandleFocusLeave()
   setlocal nocursorline
   setlocal nocursorcolumn
+  setlocal colorcolumn=
   setlocal winhighlight=Normal:InactiveWindow,NormalNC:InactiveWindow
 endfunction
 
@@ -317,7 +320,6 @@ augroup END
 " sidescroll has some sort of issue with ALE, in which a line with an error or warning fails to render when
 " scrolling. I'm leaving it commented out here so I don't accidentally turn it back on in the future
 " set sidescroll=1            "Set horizontal scroll speed
-set colorcolumn=80          "color line 80
 set textwidth=80            "gq will wrap text at 80, same as colorcolumn
 set formatoptions=cqlMj     "In order: wrap comments automatically, allow 'gq' to work on comments,
                             "don't break long lines in insert mode, don't insert space when 'J'oining,
