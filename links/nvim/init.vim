@@ -12,7 +12,7 @@ function IsGitRepo()
 endfunction
 
 "===[ Plugins
-call plug#begin()
+call plug#begin('~/.config/nvim/plugged')
 
 " Colorschemes
 Plug 'romainl/Apprentice'
