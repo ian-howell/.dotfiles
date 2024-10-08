@@ -20,6 +20,8 @@ augroup END
 Plug 'tpope/vim-surround'
 " This isn't working with vim-go
 " Plug 'tpope/vim-repeat'
+
+" TODO: This appears to be deprecated by :help commenting
 Plug 'tpope/vim-commentary'
 Plug 'wellle/targets.vim'
 Plug 'wellle/context.vim'
@@ -134,6 +136,7 @@ nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep --ignore-dir "v
 
 
 
+" TODO: check how much of this is still needed with neovim's LSP support
 Plug 'dense-analysis/ale'
 "Always show the gutter
 let g:ale_sign_column_always = 1
@@ -193,16 +196,19 @@ let g:ale_sh_shellcheck_exclusions = 'SC1090'
 
 
 
+" TODO: check how much of this is still needed with neovim's LSP support
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 let g:go_fmt_fail_silently = 1
 
-" I need to revisit whether I need vim-qf anymore now that cfilter exists, but I have a retro in 5 minutes, so
-" that'll be future Ian's problem
-Plug 'romainl/vim-qf'
 packadd cfilter
 nnoremap <space>q/ :Cfilter //<Left>
 nnoremap <space>q! :Cfilter! //<Left>
 nnoremap <space>qx :Cfilter! /mock\\|test/<cr>
+
+" TODO: I doubt I need any of vim-qf with neovim
+" I need to revisit whether I need vim-qf anymore now that cfilter exists, but I have a retro in 5 minutes, so
+" that'll be future Ian's problem
+Plug 'romainl/vim-qf'
 
 nmap <space>qn <Plug>(qf_qf_next)
 nmap <space>qp <Plug>(qf_qf_previous)

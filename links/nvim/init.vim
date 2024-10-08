@@ -7,6 +7,7 @@
 
 source ~/.config/nvim/helperfunctions.vim
 source ~/.config/nvim/pluginconfigs/plugins.vim
+source ~/.config/nvim/behavior.vim
 
 "===[ Colors
 syntax enable
@@ -128,73 +129,7 @@ set nostartofline           "Prevent the cursor fom changing columns when jumpin
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
-" Zoom in on a specific window, tmux-style
-nnoremap <c-w>z ma:tabedit %<cr>`a
-
-"===[ Miscellaneous key mappings
-"Quickly source vimrc
-nnoremap <silent> <space>s :source $MYVIMRC<CR>
-
-"Turn off the help on F1. The first is for normal-ish modes, while the second
-"is for insert-ish modes
-noremap <f1> <nop>
-noremap! <f1> <nop>
-
-"Fast bracketing (repeatable)
-inoremap {{ {<CR>}<UP><END>
-inoremap (( (<CR>)<UP><END>
-inoremap [[ [<CR>]<UP><END>
-
-"Yank to EOL like it should
-nnoremap Y y$
-
-"Easier access to system clipboard (highly opinionated)
-map <space>' "+
-"Since the above seems to be so flaky and system-dependent, here's another quick trick for pasting
-nnoremap <silent> <space>pp :set paste<CR>i
-"But I don't want to get stuck in paste mode; that's annoying
-autocmd InsertLeave * set nopaste
-
-"Remove all trailing blankspaces from a file
-function StripTrailingBlankSpaces()
-  let l:winview = winsaveview()
-  silent! %s/\(\s\|\)\+$//e
-  call winrestview(l:winview)
-endfunction
-nnoremap <silent> <space>ws :call StripTrailingBlankSpaces()<CR>
-"Remove all non-printable characters from a file
-nnoremap  <space>np :%s/[^!-~ \n\t]//g<CR>
-
-"Sane paragraph boundaries
-"TODO: Decide if this is necessary
-function NextParagraph()
-  let myline = search('^\s*$', 'W')
-  if myline <= 0
-    execute 'normal! G$'
-  else
-    execute 'normal! '.myline.'G0'
-  endif
-endfunction
-
-function PrevParagraph()
-  let myline = search('^\s*$', 'bW')
-  if myline <= 0
-    execute 'normal! gg0'
-  else
-    execute 'normal! '.myline.'G0'
-  endif
-endfunction
-nnoremap <silent> { :<C-u>call PrevParagraph()<CR>
-nnoremap <silent> } :<C-u>call NextParagraph()<CR>
-xnoremap <silent> { :<C-u>exe "normal! gv"<Bar>call PrevParagraph()<CR>
-xnoremap <silent> } :<C-u>exe "normal! gv"<Bar>call NextParagraph()<CR>
-
-" Jump between function definitions. Taken from :help section
-map [[ ?{<CR>w99[{
-map ][ /}<CR>b99]}
-map ]] j0[[%/{<CR>
-map [] k$][%?}<CR>
-
+"===[ Mouse
 "Make sure the mouse is off, even in gui environments
 set mouse=
 "Mappings to make the scrollwheel work as expected
@@ -207,22 +142,6 @@ noremap <LeftMouse> <nop>
 noremap <RightMouse> <nop>
 "but we can use this for convenient window swapping
 noremap <C-LeftMouse> <LeftMouse>
-
-"select newly pasted text
-nnoremap gV `[v`]
-
-"omg I hate Ex mode
-nnoremap Q <nop>
-
-"on the note of annoying things...
-inoremap :w<cr> <esc>:w<cr>
-inoremap :wq<cr> <esc>:wq<cr>
-inoremap :W<cr> <esc>:w<cr>
-inoremap :Wq<cr> <esc>:wq<cr>
-inoremap :WQ<cr> <esc>:wq<cr>
-
-"insert a seperator line
-nnoremap <space>= 80i=<esc>
 
 
 "===[ Statusline
@@ -416,10 +335,6 @@ set diffopt+=algorithm:histogram,indent-heuristic
 "Remove the dashes from DiffDelete. Mind the trailing space
 set fillchars+=diff:\
 
-"Mappings for working with diffs in visual mode
-xnoremap <silent> <space>do :diffget<CR>
-xnoremap <silent> <space>dp :diffput<CR>
-
 "===[ Unsorted
 "Sane backspace
 set backspace=indent,eol,start
@@ -442,9 +357,6 @@ augroup clipboard_retention
 augroup END
 " Allow tons of tabs. This is useful for git-vimdiff
 set tabpagemax=99
-
-" Popup the latest git commit for the current line
-nmap <silent><space>gbl :call setbufvar(winbufnr(popup_atcursor(split(system("git log -n 1 -L " . line(".") . ",+1:" . expand("%:p")), "\n"), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
 " TODO: This is a vim setting - figure out the neovim equivalent
 " set completeopt=menu,menuone,popup
