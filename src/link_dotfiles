@@ -18,6 +18,7 @@ tmux:.config/tmux
 kitty:.config/kitty
 vim:.vim
 vimrc:.vimrc
+nvim:.config/nvim
 zsh:.zsh
 zshenv:.zshenv
 zshrc:.zshrc
