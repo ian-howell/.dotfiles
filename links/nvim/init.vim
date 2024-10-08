@@ -4,12 +4,8 @@
 "
 " In general, use plugin-names-like-this, FunctionNamesLikeThis,
 " CommandNamesLikeThis, augroup_names_like_this, variable_names_like_this.
-"
-"===[ Helper functions
-function IsGitRepo()
-  silent let root = system('git rev-parse')
-  return !v:shell_error
-endfunction
+
+source ~/.config/nvim/helperfunctions.vim
 
 "===[ Plugins
 call plug#begin('~/.config/nvim/plugged')
