@@ -12,6 +12,20 @@ links/vim/undo/*
 !links/vim/undo/placeholder
 
 
+# Machine specific for nvim
+# TODO: fix this list
+links/nvim/backup/
+links/nvim/swap/
+links/nvim/.netrwhist
+links/nvim/plugged/
+links/nvim/view/
+
+# Ignore everything in the undo directory
+links/nvim/undo/*
+# But not the placeholder file
+!links/nvim/undo/placeholder
+
+
 # Tags. Because for some reason I need that in my .dotfiles :eye-roll:
 tags
 
