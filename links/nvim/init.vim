@@ -24,13 +24,6 @@ augroup emphasize_non_printable_characters
   autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
 augroup END
 
-"===[ Tab behaviour
-set shiftwidth=4       "Indent/outdent by 4 columns
-set shiftround         "Indents always land on a multiple of shiftwidth
-set smarttab           "Backspace deletes a shiftwidth's worth of spaces
-set expandtab          "Turns tabs into spaces
-set autoindent         "Keep the same indentation level when inserting a new line
-
 "===[ Line and column display settings
 "== Lines =="
 set nowrap             "Don't word wrap
