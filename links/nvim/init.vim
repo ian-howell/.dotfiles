@@ -24,45 +24,6 @@ augroup emphasize_non_printable_characters
   autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
 augroup END
 
-"===[ Search behaviour
-set incsearch                        "Lookahead as search pattern is specified
-
-" TODO: I think I want to delete this
-"Pulled from :help 'incsearch' - highlight all matches while searching
-augroup vimrc_incsearch_highlight
-    autocmd!
-    autocmd CmdlineEnter /,\? :set hlsearch
-    autocmd CmdlineLeave /,\? :set nohlsearch
-augroup END
-
-nnoremap <space>hl :set hlsearch! hlsearch?<cr>
-
-" Defines an operator that will search for the specified text.
-function SetSearch( type )
-  let saveZ = @z
-
-  if a:type == 'line'
-    '[,']yank z
-  elseif a:type == 'block'
-    " This is not likely as it can only happen from visual mode, for which the mapping isn't defined anyway
-    execute "normal! `[\<c-v>`]\"zy"
-  else
-    normal! `[v`]"zy
-  endif
-
-  " Escape out special characters as well as convert spaces so more than one can be matched.
-  let value = substitute( escape( @z, '$*^[]~\/.' ), '\_s\+', '\\_s\\+', 'g' )
-
-  let @/ = value
-  let @z = saveZ
-
-  " Add it to the search history.
-  call histadd( '/', value )
-
-  set hls
-endfunction
-nnoremap ,/ :set opfunc=SetSearch<cr>g@
-
 "===[ Tab behaviour
 set shiftwidth=4       "Indent/outdent by 4 columns
 set shiftround         "Indents always land on a multiple of shiftwidth

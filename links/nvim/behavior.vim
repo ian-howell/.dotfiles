@@ -60,3 +60,39 @@ map <f1> <nop>
 
 " Disable Ex mode
 nnoremap Q <nop>
+
+" Search {{{1
+" ==============================================================================
+"
+" Lookahead as search pattern is specified
+set incsearch
+
+nnoremap <silent> <space>hl :set hlsearch!<cr>
+
+" Defines an operator that will search for the specified text.
+function SetSearch( type )
+  let saveZ = @z
+
+  if a:type == 'line'
+    '[,']yank z
+  elseif a:type == 'block'
+    " This is not likely as it can only happen from visual mode, for which the
+    " mapping isn't defined anyway
+    execute "normal! `[\<c-v>`]\"zy"
+  else
+    normal! `[v`]"zy
+  endif
+
+  " Escape out special characters as well as convert spaces so more than one can
+  " be matched.
+  let value = substitute( escape( @z, '$*^[]~\/.' ), '\_s\+', '\\_s\\+', 'g' )
+
+  let @/ = value
+  let @z = saveZ
+
+  " Add it to the search history.
+  call histadd( '/', value )
+
+  set hls
+endfunction
+nnoremap ,/ :set opfunc=SetSearch<cr>g@"}}}
