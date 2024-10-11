@@ -1,3 +1,8 @@
+" vim: foldmethod=marker foldlevel=0
+"
+" Keymappings {{{1
+" ==============================================================================
+
 " Quickly source vimrc
 nnoremap <silent> <space>s :source $MYVIMRC<CR>
 
