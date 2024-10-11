@@ -95,9 +95,8 @@ function SetSearch( type )
 
   set hls
 endfunction
-nnoremap ,/ :set opfunc=SetSearch<cr>g@"}}}
+nnoremap ,/ :set opfunc=SetSearch<cr>g@"
 
-" ==============================================================================
 " Indentation {{{1
 " ==============================================================================
 
