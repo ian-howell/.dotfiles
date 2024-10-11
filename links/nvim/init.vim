@@ -26,9 +26,10 @@ augroup END
 
 "===[ Line and column display settings
 "== Lines =="
-set nowrap             "Don't word wrap
-set breakindent        "However, if I *do* turn on wrap, I'd like to keep the same level of indentation
 set number             "Show the cursor's current line
+
+" Keep the sign column open at all times
+set signcolumn=yes
 
 "Highlight the current line, column, and the 80th column
 setlocal cursorline
@@ -66,18 +67,6 @@ augroup highlight_follows_focus
   autocmd WinEnter,FocusGained * call HandleFocusEnter()
   autocmd WinLeave,FocusLost * call HandleFocusLeave()
 augroup END
-
-
-"== Columns =="
-" sidescroll has some sort of issue with ALE, in which a line with an error or warning fails to render when
-" scrolling. I'm leaving it commented out here so I don't accidentally turn it back on in the future
-" set sidescroll=1            "Set horizontal scroll speed
-set textwidth=80            "gq will wrap text at 80, same as colorcolumn
-set formatoptions=cqlMj     "In order: wrap comments automatically, allow 'gq' to work on comments,
-                            "don't break long lines in insert mode, don't insert space when 'J'oining,
-                            "remove comment leaders when 'J'oining lines
-set signcolumn=yes          "Keep the sign column open at all times
-set nostartofline           "Prevent the cursor fom changing columns when jumping
 
 "===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
@@ -286,6 +275,7 @@ set wildignore+=%*
 "===[ Diffs
 set diffopt+=algorithm:histogram,indent-heuristic
 
+" TODO: this is broken...
 "Remove the dashes from DiffDelete. Mind the trailing space
 set fillchars+=diff:\
 
@@ -314,8 +304,5 @@ set tabpagemax=99
 
 " TODO: This is a vim setting - figure out the neovim equivalent
 " set completeopt=menu,menuone,popup
-
-" Don't mess with the EOL characters at the end of a file
-set nofixendofline
 
 set modeline

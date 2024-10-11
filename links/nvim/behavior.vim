@@ -116,3 +116,51 @@ set expandtab
 
 " Copy indent from current line when starting a new line
 set autoindent
+
+" Columns {{{1
+" ==============================================================================
+
+" Don't word wrap
+set nowrap
+
+" Every wrapped line will continue visually indented (same amount of space as
+" the beginning of that line), thus preserving horizontal blocks of text.
+set breakindent
+
+" TODO: resolve this issue
+" sidescroll has some sort of issue with ALE, in which a line with an error or
+" warning fails to render when scrolling. I'm leaving it commented out here so I
+" don't accidentally turn it back on in the future
+" The minimal number of columns to scroll horizontally.
+" set sidescroll=1
+
+" Maximum width of text that is being inserted. A longer line will be broken
+" after white space to get this width. A zero value disables this.
+set textwidth=80
+
+" This is a sequence of letters which describes how automatic formatting is to
+" be done.
+" The following are set here, but note that other values may be added by an
+" ftplugin:
+"
+" c     Auto-wrap comments using 'textwidth', inserting the current comment
+"       leader automatically.
+"
+" q     Allow formatting of comments with "gq".
+"       Note that formatting will not change blank lines or lines containing
+"       only the comment leader.  A new paragraph starts after such a line,
+"       or when the comment leader changes.
+"
+" n     When formatting text, recognize numbered lists.  The indent of the text
+"       after the number is used for the next line.  The default is to find a
+"       number, optionally followed by '.', ':', ')', ']' or '}'.
+"
+" l     Long lines are not broken in insert mode: When a line was longer than
+"       'textwidth' when the insert command started, Vim does not automatically
+"       format it
+"
+" j     Where it makes sense, remove a comment leader when joining lines
+set formatoptions=cqnlj
+
+" Don't mess with the EOL characters at the end of a file
+set nofixendofline
