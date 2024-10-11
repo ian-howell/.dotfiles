@@ -96,3 +96,24 @@ function SetSearch( type )
   set hls
 endfunction
 nnoremap ,/ :set opfunc=SetSearch<cr>g@"}}}
+
+" ==============================================================================
+" Indentation {{{1
+" ==============================================================================
+
+" Number of spaces to use for each step of (auto)indent
+set shiftwidth=4
+
+" Round indent to multiple of 'shiftwidth'.  Applies to > and <
+set shiftround
+
+" A TAB in front of a line inserts blanks according to 'shiftwidth'. A <BS> will
+" delete a 'shiftwidth' worth of space at the start of the line
+set smarttab
+
+" Use spaces when the TAB key is pressed in insert mode. Spaces are used in
+" indents with the '>' and '<' commands and when 'autoindent' is on
+set expandtab
+
+" Copy indent from current line when starting a new line
+set autoindent
