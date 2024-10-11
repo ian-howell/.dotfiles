@@ -363,3 +363,5 @@ set tabpagemax=99
 
 " Don't mess with the EOL characters at the end of a file
 set nofixendofline
+
+set modeline
