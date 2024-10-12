@@ -1,7 +1,9 @@
 #!/bin/bash
 set -x
 
-echo "Getting latest version of go"
+echo "================================================================================"
+echo "| Installing nvm                                                               |"
+echo "================================================================================"
 
 ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 

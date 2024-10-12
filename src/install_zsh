@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "================================================================================"
+echo "| Installing Zsh                                                               |"
+echo "================================================================================"
+
 install_zsh() {
   # If the user's shell is already zsh, do nothing.
   if grep -q "^$USER:.*zsh" /etc/passwd; then
