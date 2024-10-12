@@ -75,3 +75,15 @@ let s:right_statusline .= ' %P'
 let s:right_statusline .= ' %y'
 
 let &statusline = s:left_statusline . '%=' . s:right_statusline
+
+" Invisible characters {{{1
+" ==============================================================================
+
+" Turn on printing of blank spaces, but don't show tabs, only trailing spaces.
+set list listchars=tab:\ \ ,trail:·
+
+" Highlight non-printable characters as "horrible orange" (ascii index <= 32)
+highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
+augroup emphasize_non_printable_characters
+  autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
+augroup END
