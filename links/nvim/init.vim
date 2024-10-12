@@ -26,20 +26,6 @@ set splitbelow       "Put horizontal splits on the bottom rather than the top
 set foldmethod=syntax            "Create folds on syntax
 set foldlevel=999                "Start vim with all folds open
 
-"===[ Show undesirable hidden characters
-"Show hidden characters
-if &modifiable
-  set list
-endif
-
-set listchars=tab:\ \ ,trail:·
-
-"Show all non-printable characters (ascii index <= 32)
-highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
-augroup emphasize_non_printable_characters
-  autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
-augroup END
-
 "===[ Persistant Undos
 set undofile
 
