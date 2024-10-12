@@ -39,16 +39,6 @@ map [] k$][%?}<CR>
 " Select newly pasted text
 nnoremap gV `[v`]
 
-" I frequently try to save while still in insert mode. It's pretty annoying,
-" because I usually get all the way to the Enter key before noticing, meaning
-" that my cursor drops to the next line and autoindent takes over, and
-" recovering is annoying. These mappings serve as a fantastic crutch.
-inoremap :w<cr> <esc>:w<cr>
-inoremap :wq<cr> <esc>:wq<cr>
-inoremap :W<cr> <esc>:w<cr>
-inoremap :Wq<cr> <esc>:wq<cr>
-inoremap :WQ<cr> <esc>:wq<cr>
-
 " Insert a seperator line
 nnoremap <space>= 80i=<esc>
 
