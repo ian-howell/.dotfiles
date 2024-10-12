@@ -10,7 +10,7 @@ silent! colorscheme apprentice
 " Focus {{{1
 " ==============================================================================
 
-"Highlight the current line, column, and the 80th column
+" Highlight the current line, column, and the 80th column
 setlocal cursorline
 setlocal cursorcolumn
 setlocal colorcolumn=80
@@ -40,7 +40,7 @@ function HandleFocusLeave()
   setlocal winhighlight=Normal:InactiveWindow,NormalNC:InactiveWindow
 endfunction
 
-"Only highlight the active window
+" Only highlight the active window
 augroup highlight_follows_focus
   autocmd!
   autocmd WinEnter,FocusGained * call HandleFocusEnter()
