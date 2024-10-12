@@ -9,6 +9,7 @@ source ~/.config/nvim/helperfunctions.vim
 source ~/.config/nvim/pluginconfigs/plugins.vim
 source ~/.config/nvim/behavior.vim
 source ~/.config/nvim/appearance.vim
+source ~/.config/nvim/autocorrect.vim
 
 "===[ Line and column display settings
 "== Lines =="
@@ -20,31 +21,6 @@ set signcolumn=yes
 "===[ Windows and splitting
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
-
-"===[ Fix misspellings on the fly
-iabbrev          retrun           return
-iabbrev           pritn           print
-iabbrev           Pritn           Print
-iabbrev         Pritnln           Println
-iabbrev         printf9           printf(
-iabbrev        fprintf9           fprintf(
-iabbrev         Printf9           Printf(
-iabbrev        Fprintf9           Fprintf(
-iabbrev         incldue           include
-iabbrev         inculde           include
-iabbrev         inlcude           include
-iabbrev              ;t           't
-iabbrev            ymal           yaml
-
-command! W w
-command! Q q
-command! QA qa
-command! Qa qa
-command! W w
-command! WQ wq
-command! Wq wq
-command! WQa wqa
-command! Wqa wqa
 
 "===[ Folds
 set foldmethod=syntax            "Create folds on syntax
