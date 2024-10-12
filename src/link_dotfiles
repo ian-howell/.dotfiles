@@ -8,6 +8,7 @@ links_dir=$HOME/.dotfiles/links
 links="
 bashrc:.bashrc
 bin:.bin
+fonts:.fonts
 funcs:.funcs
 gitconfig:.gitconfig
 global_gitignore:.global_gitignore
