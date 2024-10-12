@@ -1,7 +1,9 @@
 #!/bin/bash
 set -x
 
-echo "Installing fd"
+echo "================================================================================"
+echo "| Installing fd                                                                 "
+echo "================================================================================"
 
 ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
@@ -10,7 +12,6 @@ install_fd() {
     -O "$ARTIFACTS_DIR/fd-musl_7.2.0_amd64.deb"
   sudo dpkg -i "$ARTIFACTS_DIR/fd-musl_7.2.0_amd64.deb"
 }
-
 
 # Use a subshell so that we don't need to remember where we started
 (

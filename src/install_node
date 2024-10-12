@@ -1,3 +1,7 @@
+echo "================================================================================"
+echo "| Installing nvm                                                               |"
+echo "================================================================================"
+
 # Good god I hate JS people. This is how you indicate that you don't want their script to touch your dotfiles
 export PROFILE=/dev/null
 
