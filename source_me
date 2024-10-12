@@ -14,8 +14,6 @@ sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needre
 
 # Order is (somewhat) important
 bash src/install_essentials
-# This has *probably* already been run
-#bash "src/install_git"
 bash src/install_zsh
 bash src/install_fzf
 bash src/install_fd
