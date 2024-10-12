@@ -47,3 +47,31 @@ augroup highlight_follows_focus
   autocmd WinLeave,FocusLost * call HandleFocusLeave()
 augroup END
 
+" Statusline {{{1
+" ==============================================================================
+
+function FileModified()
+  if &modified
+    return "  ∆ "
+  elseif !&modifiable
+    return "  ✗ "
+  endif
+  return "    "
+endfunction
+
+" Left side looks like:
+" $modified_status ‹$filename›
+" TODO: git branch could be cool here
+let s:left_statusline = ''
+let s:left_statusline .= '%{FileModified()}'
+let s:left_statusline .= ' ‹%f›'
+
+" Right side looks like:
+" L$lineNo C$colNo $percent $filetype
+let s:right_statusline = ''
+let s:right_statusline .= ' L%l'
+let s:right_statusline .= ' C%c'
+let s:right_statusline .= ' %P'
+let s:right_statusline .= ' %y'
+
+let &statusline = s:left_statusline . '%=' . s:right_statusline

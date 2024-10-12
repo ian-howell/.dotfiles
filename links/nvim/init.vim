@@ -21,41 +21,6 @@ set signcolumn=yes
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
-"===[ Statusline
-
-"Custom modified flag
-function FileModified()
-  if &modified
-    return "  ∆ "
-  elseif !&modifiable
-    return "  ✗ "
-  else
-    return "    "
-  endif
-endfunction
-
-" TODO: This isn't used, but it's kinda neat. Let's work it in somehow
-"Custom git branch flag
-function GitBranch()
-  if !IsGitRepo() || !&modifiable
-    return ""
-  endif
-  let branch = FugitiveHead()
-  if len(branch)
-    return " «" . branch . "»"
-  endif
-  return " «detached HEAD»"
-endfunction
-
-set statusline=                            "Start empty
-set statusline+=%{FileModified()}   "Mark whether the file is modified, unmodified, or unmodifiable
-set statusline+=\ ‹%f›                     "File name
-set statusline+=%=                         "Switch to the right side
-set statusline+=\ L%l                      "Current line
-set statusline+=\ C%c                      "Current column
-set statusline+=\ %P                       "Percentage through file
-set statusline+=\ %y                       "Filetype
-
 "===[ Fix misspellings on the fly
 iabbrev          retrun           return
 iabbrev           pritn           print
