@@ -1,6 +1,9 @@
 {
   "extras": [
-
+    "lazyvim.plugins.extras.lang.git",
+    "lazyvim.plugins.extras.lang.go",
+    "lazyvim.plugins.extras.lang.helm",
+    "lazyvim.plugins.extras.ui.mini-animate"
   ],
   "news": {
     "NEWS.md": "6520"
