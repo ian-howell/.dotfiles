@@ -10,7 +10,6 @@ source ~/.config/nvim/pluginconfigs/plugins.vim
 source ~/.config/nvim/behavior.vim
 
 "===[ Colors
-syntax enable
 
 " This is such a hack: set the colorscheme to torte, then set it to apprentice.
 " If setting it to apprentice fails, it will do so quietly. This is important
@@ -72,21 +71,6 @@ augroup END
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
-"===[ Mouse
-"Make sure the mouse is off, even in gui environments
-set mouse=
-"Mappings to make the scrollwheel work as expected
-noremap <ScrollWheelUp> 2<C-Y>
-noremap <ScrollWheelDown> 2<C-E>
-noremap <C-ScrollWheelUp> 5zh
-noremap <C-ScrollWheelDown> 5zl
-"Unmap all the useless mouse actions
-noremap <LeftMouse> <nop>
-noremap <RightMouse> <nop>
-"but we can use this for convenient window swapping
-noremap <C-LeftMouse> <LeftMouse>
-
-
 "===[ Statusline
 
 "Custom modified flag
@@ -113,9 +97,6 @@ function GitBranch()
   return " «detached HEAD»"
 endfunction
 
-"Always show the status line
-set laststatus=2
-
 set statusline=                            "Start empty
 set statusline+=%{FileModified()}   "Mark whether the file is modified, unmodified, or unmodifiable
 set statusline+=\ ‹%f›                     "File name
@@ -124,9 +105,6 @@ set statusline+=\ L%l                      "Current line
 set statusline+=\ C%c                      "Current column
 set statusline+=\ %P                       "Percentage through file
 set statusline+=\ %y                       "Filetype
-
-"Finally, turn off the titlebar
-set notitle
 
 "===[ Fix misspellings on the fly
 iabbrev          retrun           return
@@ -165,42 +143,10 @@ endif
 
 set listchars=tab:\ \ ,trail:·
 
-let g:my_listchars_toggle = 0
-function ToggleIndentationLines()
-  if g:my_listchars_toggle == 1
-    set listchars=tab:\ \ ,trail:·
-  else
-    "Set tabs to a straight line followed by blanks and trailing spaces to dots
-    set listchars=tab:│\ ,trail:·
-  endif
-  let g:my_listchars_toggle = !g:my_listchars_toggle
-endfunction
-command TIL call ToggleIndentationLines()
-
-"Remove the background highlighting from the above special characters
-highlight clear SpecialKey
-
-"===[ Tags
-set tags=./tags;,tags;
-nnoremap <space>tj :tjump /
-nnoremap <space>tp :ptjump /
-
 "===[ Persistant Undos
 set undofile
-" TODO: fix this
-set undodir=$HOME/.vim/undo
 
 "===[ File navigation
-"Allow changed buffers to be hidden
-set hidden
-
-"Recursively search current directory
-set path=.,,**
-
-nnoremap <silent> <space>bn :bnext<cr>
-nnoremap <silent> <space>bp :bprevious<cr>
-nnoremap <silent> <space>bf :bfirst<cr>
-nnoremap <silent> <space>bl :blast<cr>
 
 "This does bufdo e without losing highlighting
 "TODO: This is slow af. Use asyncrun
@@ -212,22 +158,18 @@ function EditWithoutLosingSyntax()
 endfunction
 nnoremap <silent> <space>be :call EditWithoutLosingSyntax()<cr>
 
+" When editing a file, always jump to the last known cursor position (if it's
+" valid). Ignores commit messages (it's likely a different one than last time).
+function! RecallLastPosition()
+  if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+    exe "normal! g`\""
+  endif
+endfunction
+
 augroup recall_position
   autocmd!
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid, when inside an event handler
-  " (happens when dropping a file on gvim) and for a commit message (it's
-  " likely a different one than last time).
-  autocmd BufReadPost *
-    \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
-    \ |   exe "normal! g`\""
-    \ | endif
+  autocmd BufReadPost * call RecallLastPosition()
 augroup END
-
-"===[ Grep customization
-if executable('ag')
-  let &grepprg='ag'
-endif
 
 "===[ Quickfix and Location window Shortcuts
 " TODO: I think this can be simplified? Look into getqflist()
@@ -259,50 +201,10 @@ nmap <silent> <space>qc :windo lclose \| cclose \| call Pclose()<cr>
 set wildmenu
 set wildmode=longest:full,full
 set wildoptions=fuzzy,pum
-set wildignore+=*.o,*.so
-set wildignore+=*.d
-set wildignore+=*.aux,*.out,*.pdf
-set wildignore+=*.pyc,__pycache__
-set wildignore+=*.tar,*.gz,*.zip,*.bzip,*.bz2
-set wildignore+=tags
-set wildignore+=/home/**/*venv*/**
-set wildignore+=*.class
-set wildignore+=*.png,*.jpg,*.bmp,*.gif
-set wildignore+=*.html  " Comment this out for html, obviously
-set wildignore+=*.doctree
-set wildignore+=%*
-
-"===[ Diffs
-set diffopt+=algorithm:histogram,indent-heuristic
-
-" TODO: this is broken...
-"Remove the dashes from DiffDelete. Mind the trailing space
-set fillchars+=diff:\
 
 "===[ Unsorted
-"Sane backspace
-set backspace=indent,eol,start
-"Don't use swp files
-set noswapfile
-"Get out of visual mode faster
-set ttimeoutlen=0
-" Update faster. This is used for a handful of plugins (like git-gutter)
-set updatetime=750
-" Only redraw the screen when needed - this works for macros and mappings
-set lazyredraw
+
 " Sharing is caring - romainl: https://gist.github.com/romainl/1cad2606f7b00088dda3bb511af50d53
 command! -range=% IX  <line1>,<line2>w !curl -F 'f:1=<-' ix.io | tr -d '\n' | xclip -i -selection clipboard
-" Clipboard hacks - By default, vim clears out the system and X clipboards
-" upon closing. This fixes that
-augroup clipboard_retention
-  autocmd!
-  autocmd VimLeave * call system("xclip -i -selection primary", getreg('*'))
-  autocmd VimLeave * call system("xclip -i -selection clipboard", getreg('+'))
-augroup END
-" Allow tons of tabs. This is useful for git-vimdiff
-set tabpagemax=99
-
-" TODO: This is a vim setting - figure out the neovim equivalent
-" set completeopt=menu,menuone,popup
 
 set modeline
