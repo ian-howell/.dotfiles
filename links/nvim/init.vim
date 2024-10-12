@@ -8,20 +8,7 @@
 source ~/.config/nvim/helperfunctions.vim
 source ~/.config/nvim/pluginconfigs/plugins.vim
 source ~/.config/nvim/behavior.vim
-
-"===[ Colors
-
-" This is such a hack: set the colorscheme to torte, then set it to apprentice.
-" If setting it to apprentice fails, it will do so quietly. This is important
-" when installing plugins with 'vim +PlugInstall +qall'
-colorscheme torte
-silent! colorscheme apprentice
-
-"Show all non-printable characters (ascii index <= 32)
-highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
-augroup emphasize_non_printable_characters
-  autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
-augroup END
+source ~/.config/nvim/appearance.vim
 
 "===[ Line and column display settings
 "== Lines =="
@@ -142,6 +129,12 @@ if &modifiable
 endif
 
 set listchars=tab:\ \ ,trail:·
+
+"Show all non-printable characters (ascii index <= 32)
+highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
+augroup emphasize_non_printable_characters
+  autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
+augroup END
 
 "===[ Persistant Undos
 set undofile
