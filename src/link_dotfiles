@@ -37,7 +37,7 @@ for link in $links; do
   mkdir -p "$target_dir"
 
   # delete any old files/links
-  if [[ -e "$target" || -h "$target" ]]; then
+  if [[ -e "$target" || -L "$target" ]]; then
     rm "$target"
   fi
 
