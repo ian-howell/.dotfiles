@@ -5,16 +5,23 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'romainl/Apprentice'
 
 function! ApprenticeOverrides() abort
-    hi DiffAdd ctermbg=238 ctermfg=NONE cterm=NONE guibg=#444444 guifg=NONE gui=NONE
-    hi DiffChange ctermbg=250 ctermfg=238 cterm=reverse guibg=#bcbcbc guifg=#444444 gui=reverse
-    hi DiffDelete ctermbg=52 ctermfg=52 cterm=NONE guibg=#5f0000 guifg=NONE gui=NONE
-    hi DiffText ctermbg=235 ctermfg=110 cterm=reverse guibg=#262626 guifg=#8fafd7 gui=reverse
+  hi DiffAdd ctermbg=238 ctermfg=NONE cterm=NONE guibg=#444444 guifg=NONE gui=NONE
+  hi DiffChange ctermbg=250 ctermfg=238 cterm=reverse guibg=#bcbcbc guifg=#444444 gui=reverse
+  hi DiffDelete ctermbg=52 ctermfg=52 cterm=NONE guibg=#5f0000 guifg=NONE gui=NONE
+  hi DiffText ctermbg=235 ctermfg=110 cterm=reverse guibg=#262626 guifg=#8fafd7 gui=reverse
+
+  hi LineNr guifg=#5e5e5e guibg=default
+  hi StatusLine guifg=#5e5e5e guibg=#303030
+  " NOTE: black means transparent
+  hi WinSeparator guifg=#5e5e5e guibg=black
 endfunction
 
+
 augroup apprentice_overrides
-    autocmd!
-    autocmd ColorScheme apprentice call ApprenticeOverrides()
-augroup END
+  autocmd!
+  autocmd ColorScheme apprentice call ApprenticeOverrides()
+augroup end
+
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
