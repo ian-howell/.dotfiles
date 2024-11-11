@@ -14,15 +14,13 @@ silent! colorscheme apprentice
 setlocal cursorline
 setlocal cursorcolumn
 setlocal colorcolumn=80
-hi CursorLine ctermbg=236
-hi CursorColumn ctermbg=236
+hi CursorLine ctermbg=236 guibg=#303030
+hi CursorColumn ctermbg=236 guibg=#303030
 
 " Background colors for active vs inactive windows
 " Note that "black" means the same as "transparent"
-" TODO: notermguicolors is fine for now, but it's probably pretty limiting...
-set notermguicolors
 hi link ActiveWindow Normal
-hi InactiveWindow ctermbg=black
+hi InactiveWindow guibg=black
 
 " Change highlight group of active/inactive windows
 function HandleFocusEnter()
