@@ -256,6 +256,8 @@ imap <C-L> <Plug>(copilot-accept-word)
 " Enable copilot for all filetypes
 let b:copilot_enabled = v:true
 
+Plug 'folke/which-key.nvim'
+
 call plug#end()
 
 "For more matching. See :h matchit
