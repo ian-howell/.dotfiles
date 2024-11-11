@@ -6,6 +6,9 @@
 " Quickly source vimrc
 nnoremap <silent> <space>s :source $MYVIMRC<CR>
 
+nnoremap <space>- :split<CR>
+nnoremap <space>\ :vsplit<CR>
+
 " Fast, repeatable bracketing
 inoremap {{ {<CR>}<UP><END>
 inoremap (( (<CR>)<UP><END>
