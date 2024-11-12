@@ -22,10 +22,6 @@ set signcolumn=yes
 set splitright       "Put vertical splits on the right rather than the left
 set splitbelow       "Put horizontal splits on the bottom rather than the top
 
-"===[ Folds
-set foldmethod=syntax            "Create folds on syntax
-set foldlevel=999                "Start vim with all folds open
-
 "===[ Persistant Undos
 set undofile
 
