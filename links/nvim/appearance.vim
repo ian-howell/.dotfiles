@@ -1,5 +1,11 @@
 " vim: foldmethod=marker foldlevel=0
 
+" Show the line number column
+set number
+
+" Keep the sign column open at all times
+set signcolumn=yes
+
 " Colorscheme {{{1
 " ==============================================================================
 
