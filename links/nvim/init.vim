@@ -50,11 +50,6 @@ augroup recall_position
   autocmd BufReadPost * call RecallLastPosition()
 augroup END
 
-"===[ Wildmenu
-set wildmenu
-set wildmode=longest:full,full
-set wildoptions=fuzzy,pum
-
 "===[ Unsorted
 
 " Sharing is caring - romainl: https://gist.github.com/romainl/1cad2606f7b00088dda3bb511af50d53
