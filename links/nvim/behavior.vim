@@ -157,3 +157,30 @@ set formatoptions=cqnlj
 
 " Don't mess with the EOL characters at the end of a file
 set nofixendofline
+
+" Quickfix and Location list windows {{{1
+" ==============================================================================
+" TODO: I think this can be simplified? Look into getqflist()
+function ToggleQuickfix()
+  for i in range(1, winnr('$'))
+    let bnum = winbufnr(i)
+    if getbufvar(bnum, '&buftype') == 'quickfix'
+      cclose
+      return
+    endif
+  endfor
+  botright copen
+endfunction
+nmap <silent> <space>qt :call ToggleQuickfix()<cr>
+
+" Quickly close all quickfix and location lists
+" TODO: I think this might be overkill?
+function Pclose()
+  for i in range(1, winnr('$'))
+    let bnum = winbufnr(i)
+    if getbufvar(bnum, '&buftype') == 'nofile'
+      execute "bdelete" . bnum
+    endif
+  endfor
+endfunction
+nmap <silent> <space>qc :windo lclose \| cclose \| call Pclose()<cr>
