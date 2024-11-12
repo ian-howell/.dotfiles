@@ -1,5 +1,19 @@
 " vim: foldmethod=marker foldlevel=0
 
+" Turn on modelines so that the thing at the top of the file works
+set modeline
+
+" Put vertical splits on the right rather than the left
+set splitright
+" Put horizontal splits on the bottom rather than the top
+set splitbelow
+
+" Make the undo tree persist across vim instances
+set undofile
+
+" Sharing is caring - romainl: https://gist.github.com/romainl/1cad2606f7b00088dda3bb511af50d53
+command! -range=% IX  <line1>,<line2>w !curl -F 'f:1=<-' ix.io | tr -d '\n' | xclip -i -selection clipboard
+
 " Keymappings {{{1
 " ==============================================================================
 
@@ -160,6 +174,7 @@ set nofixendofline
 
 " Quickfix and Location list windows {{{1
 " ==============================================================================
+
 " TODO: I think this can be simplified? Look into getqflist()
 function ToggleQuickfix()
   for i in range(1, winnr('$'))
@@ -184,3 +199,19 @@ function Pclose()
   endfor
 endfunction
 nmap <silent> <space>qc :windo lclose \| cclose \| call Pclose()<cr>
+
+" Recall last position in a file 1{{{
+"===============================================================================
+
+" When editing a file, always jump to the last known cursor position (if it's
+" valid). Ignores commit messages (it's likely a different one than last time).
+function! RecallLastPosition()
+  if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+    exe "normal! g`\""
+  endif
+endfunction
+
+augroup recall_position
+  autocmd!
+  autocmd BufReadPost * call RecallLastPosition()
+augroup END
