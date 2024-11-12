@@ -1,13 +1,30 @@
-echo "================================================================================"
-echo "| Installing nvm                                                               |"
-echo "================================================================================"
+#!/bin/bash
 
-# Good god I hate JS people. This is how you indicate that you don't want their script to touch your dotfiles
-export PROFILE=/dev/null
+ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+function main() {
+  if is_installed; then
+    return
+  fi
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  print_banner
+  install_node
+}
 
-nvm install --lts
+function is_installed() {
+  command -v node >/dev/null
+}
+
+function print_banner() {
+  echo "================================================================================"
+  echo "| Installing node                                                              |"
+  echo "================================================================================"
+}
+
+function install_node() {
+  curl -fsSL https://deb.nodesource.com/setup_23.x -o "$ARTIFACTS_DIR/nodesource_setup.sh"
+  sudo -E bash "$ARTIFACTS_DIR/nodesource_setup.sh"
+  sudo apt-get install -y nodejs
+}
+
+main
