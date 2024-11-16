@@ -28,7 +28,7 @@ hi link ColorColumn CursorColumn
 set termguicolors
 hi link ActiveWindow Normal
 " InactiveWindow is a darker shade of the default nord background color
-hi InactiveWindow guibg=#262a32
+hi InactiveWindow guibg=#1e222a
 
 " Normally, I could just do this:
 "   set winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
