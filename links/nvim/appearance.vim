@@ -47,8 +47,8 @@ endfunction
 " Only highlight the active window
 augroup highlight_follows_focus
   autocmd!
-  autocmd WinEnter,FocusGained * call HandleFocusEnter()
-  autocmd WinLeave,FocusLost * call HandleFocusLeave()
+  autocmd BufEnter,WinEnter,FocusGained * call HandleFocusEnter()
+  autocmd BufLeave,WinLeave,FocusLost * call HandleFocusLeave()
 augroup END
 
 " Statusline {{{1
