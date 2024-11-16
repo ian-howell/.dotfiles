@@ -11,7 +11,7 @@ set signcolumn=yes
 
 " If setting the colorscheme fails, it will do so quietly. This is important
 " when installing plugins with 'vim +PlugInstall +qall'
-silent! colorscheme apprentice
+silent! colorscheme nord
 
 " Focus {{{1
 " ==============================================================================
@@ -20,13 +20,21 @@ silent! colorscheme apprentice
 setlocal cursorline
 setlocal cursorcolumn
 setlocal colorcolumn=80
-hi CursorLine ctermbg=236 guibg=#303030
-hi CursorColumn ctermbg=236 guibg=#303030
+
+" Make the colorcolumn a little less intrusive (default is white)
+hi link ColorColumn CursorColumn
 
 " Background colors for active vs inactive windows
-" Note that "black" means the same as "transparent"
+set termguicolors
 hi link ActiveWindow Normal
-hi InactiveWindow guibg=black
+" InactiveWindow is a darker shade of the default nord background color
+hi InactiveWindow guibg=#262a32
+
+" Normally, I could just do this:
+"   set winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
+" But since vim always has an "active" window, even if I've switched to a
+" different tmux pane, I need to use autocmds to change the highlight groups
+" based on focus.
 
 " Change highlight group of active/inactive windows
 function HandleFocusEnter()
@@ -87,6 +95,7 @@ let &statusline = s:left_statusline . '%=' . s:right_statusline
 set list listchars=tab:\ \ ,trail:·
 
 " Highlight non-printable characters as "horrible orange" (ascii index <= 32)
+" TODO: Figure out the gui color for this
 highlight NonPrintableCharacters ctermfg=208 ctermbg=208 cterm=NONE
 augroup emphasize_non_printable_characters
   autocmd BufEnter * match NonPrintableCharacters /\b(3[0-1]|[0-2]?[0-9])\b/
