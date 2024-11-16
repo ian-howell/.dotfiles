@@ -132,10 +132,16 @@ nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
 
 
 Plug 'skywind3000/asyncrun.vim'
+" Automatically open the quickfix window and show to first 10 lines
+let g:asyncrun_open = 10
 " Fast access to asyncronous background jobs
 nnoremap <space>! :AsyncRun<space>
-nnoremap <space>/ :AsyncRun! -post=botright\ copen -program=grep --ignore-dir "vendor"<space>
-nnoremap <space>* :AsyncRun! -post=botright\ copen -program=grep --ignore-dir "vendor" <cword> -ws<CR>
+set grepprg=ag\ --vimgrep
+nnoremap <space>/ :AsyncRun! -strip -program=grep<space>
+" Note: <cword> is a variable representing the word under the cursor, but
+" <c-r><c-w> will actually expands to the word under the cursor. The latter is
+" visually more friendly
+nnoremap <space>* :AsyncRun! -strip -program=grep -ws <c-r><c-w>
 
 
 
