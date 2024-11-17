@@ -134,12 +134,8 @@ set nowrap
 " the beginning of that line), thus preserving horizontal blocks of text.
 set breakindent
 
-" TODO: resolve this issue
-" sidescroll has some sort of issue with ALE, in which a line with an error or
-" warning fails to render when scrolling. I'm leaving it commented out here so I
-" don't accidentally turn it back on in the future
 " The minimal number of columns to scroll horizontally.
-" set sidescroll=1
+set sidescroll=1
 
 " Maximum width of text that is being inserted. A longer line will be broken
 " after white space to get this width. A zero value disables this.

@@ -10,3 +10,4 @@ source ~/.config/nvim/pluginconfigs/plugins.vim
 source ~/.config/nvim/behavior.vim
 source ~/.config/nvim/appearance.vim
 source ~/.config/nvim/autocorrect.vim
+source ~/.config/nvim/lsp.lua
