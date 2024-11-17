@@ -1,0 +1,31 @@
+sourceRoot: $HOME/.dotfiles/links
+targetRoot: $HOME
+links:
+  - source: bashrc
+    target: .bashrc
+  - source: bin
+    target: .bin
+  - source: fonts
+    target: .fonts
+  - source: funcs
+    target: .funcs
+  - source: gitconfig
+    target: .gitconfig
+  - source: global_gitignore
+    target: .global_gitignore
+
+
+
+
+# zprofile:.zprofile
+# sh_aliases:.sh_aliases
+# tmux:.config/tmux
+# kitty:.config/kitty
+# vim:.vim
+# vimrc:.vimrc
+# nvim:.config/nvim
+# zsh:.zsh
+# zshenv:.zshenv
+# zshrc:.zshrc
+# git-hook-post-commit:.dotfiles/.git/hooks/post-commit
+# git-hook-post-commit:.dotfiles/.git/hooks/post-rewrite
