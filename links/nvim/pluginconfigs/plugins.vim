@@ -6,8 +6,7 @@ Plug 'arcticicestudio/nord-vim'
 
 " Things that should be built in
 Plug 'tpope/vim-surround'
-" This isn't working with vim-go
-" Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-repeat'
 
 " TODO: This appears to be deprecated by :help commenting
 Plug 'tpope/vim-commentary'
@@ -126,74 +125,6 @@ nnoremap <space>* :AsyncRun! -strip -program=grep -ws <c-r><c-w>
 
 
 
-
-
-
-
-" TODO: check how much of this is still needed with neovim's LSP support
-Plug 'dense-analysis/ale'
-"Always show the gutter
-let g:ale_sign_column_always = 1
-
-"Stop linting 'on the fly' in insert mode
-let g:ale_lint_on_text_changed = 'normal'
-"I'd rather lint when we leave insert mode
-let g:ale_lint_on_insert_leave = 1
-
-"Custom signs for gutter
-" TODO: Figure these out
-" let g:ale_sign_error = "❌"
-" let g:ale_sign_warning = "⚠️"
-" let g:ale_sign_info = "ℹ️"
-let g:ale_sign_error = "✗"
-let g:ale_sign_warning = "∆"
-let g:ale_sign_info = "ⅰ"
-
-highlight ALEErrorSign ctermfg=red
-highlight ALEWarningSign ctermfg=yellow
-highlight ALEInfoSign ctermfg=cyan
-
-" Show popups on hover
-let g:ale_floating_preview = 1
-" Since vim's default uses nice unicode characters when possible, you can trick
-" ale into using that default with
-let g:ale_floating_window_border = repeat([''], 6)
-
-set omnifunc=ale#completion#OmniFunc
-
-let g:ale_linters = {
-      \ 'go': [
-        \ 'golangci-lint',
-        \ 'go build',
-        \ 'gopls',
-        \],
-      \}
-
-" I don't really care to lint yaml
-let g:ale_linters_ignore = {'yaml': ['yamllint']}
-
-" Turn linting errors into warnings
-let g:ale_type_map = {
-      \ 'flake8': {'ES': 'WS', 'E': 'W'},
-      \ 'golangci-lint': {'ES': 'WS', 'E': 'W'},
-      \}
-
-" let ale know that we're using python3
-let g:ale_python_flake8_executable = 'python3'
-let g:ale_python_flake8_options = '-m flake8'
-
-let g:ale_go_golangci_lint_package = 1
-let g:ale_go_golangci_lint_options = '--config ~/.golangci.yaml'
-
-let g:ale_sh_shellcheck_exclusions = 'SC1090'
-
-
-
-
-" TODO: check how much of this is still needed with neovim's LSP support
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-let g:go_fmt_fail_silently = 1
-
 packadd cfilter
 nnoremap <space>q/ :Cfilter //<Left>
 nnoremap <space>q! :Cfilter! //<Left>
@@ -245,8 +176,9 @@ let b:copilot_enabled = v:true
 
 Plug 'folke/which-key.nvim'
 
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
 call plug#end()
 
 "For more matching. See :h matchit
 runtime macros/matchit.vim
-
