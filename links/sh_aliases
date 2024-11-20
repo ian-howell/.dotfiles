@@ -93,6 +93,8 @@ alias :e=true
 # view, but with forced yaml syntax
 alias viewyaml="view +set\ ft=yaml -"
 
+alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
+
 #===[ grep
 # Ignore binaries/directories
 alias grep="grep -Idskip --color=auto"
