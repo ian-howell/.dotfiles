@@ -950,6 +950,30 @@ require('lazy').setup({
     vim.keymap.set('n', '<c-k>', ':TmuxNavigateUp<cr>', { silent = true }),
     vim.keymap.set('n', '<c-l>', ':TmuxNavigateRight<cr>', { silent = true }),
   },
+
+  { -- Copilot
+    'github/copilot.vim',
+
+    config = function()
+      -- The following lines need to stay together.
+      -- Combined, they replace 'Tab' with <c-e> to accept a suggestion
+      vim.keymap.set('i', '<C-E>', 'copilot#Accept("")', {
+        expr = true,
+        replace_keycodes = true,
+      })
+      vim.g.copilot_no_tab_map = true
+
+      -- Navigate through different suggestions
+      vim.keymap.set('i', '<C-J>', '<Plug>(copilot-next)')
+      vim.keymap.set('i', '<C-K>', '<Plug>(copilot-previous)')
+
+      -- Accept the next word in the suggestion
+      vim.keymap.set('i', '<C-F>', '<Plug>(copilot-accept-word)')
+
+      -- Enable copilot for all filetypes
+      vim.b.copilot_enabled = true
+    end,
+  },
   {
     -- TODO: Look into this one, it looks cool.
     -- But for right now, it's breaking normal keybindings in quickfix windows...
