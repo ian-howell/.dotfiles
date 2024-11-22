@@ -1,29 +1,59 @@
 #!/bin/bash
 
-ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
+REPO_DIR="$HOME/.config/neovim"
 
-install_dependencies() {
+function main() {
+  if [ ! -d "$REPO_DIR" ]; then
+    install
+  else
+    upgrade
+  fi
+}
+
+function install() {
+  print_banner "Installing Neovim"
+  install_dependencies
+  clone_repo
+  build
+}
+
+function upgrade() {
+  print_banner "Upgrading Neovim"
+  if pull_latest_code; then
+    build
+  else
+    echo "Up to date"
+  fi
+}
+
+function clone_repo() {
+  git clone https://github.com/neovim/neovim "$REPO_DIR"
+}
+
+function install_dependencies() {
   sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential
 }
 
-install_plugins() {
-  vim +PlugInstall +qall
-}
-
-install_neovim() {
-  cd "$ARTIFACTS_DIR" || return
-
-  install_dependencies
-
-  git clone https://github.com/neovim/neovim
-  cd neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo
+function build() {
+  cd "$REPO_DIR" || exit 1
+  make CMAKE_BUILD_TYPE=RelWithDebInfo
   sudo make install
-
-  install_plugins
 }
 
-echo "================================================================================"
-echo "| Installing Neovim                                                            |"
-echo "================================================================================"
+# Pull the latest code from the repo. Return 1 if there are no changes
+function pull_latest_code() {
+  cd "$REPO_DIR" || exit 1
+  git fetch
+  if [ -z "$(git diff --name-only origin/master)" ]; then
+    return 1
+  fi
+  git pull
+}
 
-install_neovim
+function print_banner() {
+  echo "================================================================================"
+  echo "$1"
+  echo "================================================================================"
+}
+
+main
