@@ -145,8 +145,12 @@ vim.opt.inccommand = 'split'
 -- TODO: Most of these flags should just go into the global rg config file
 vim.opt.grepprg = 'rg --vimgrep --hidden -i -S'
 
+-- [[ Focus Settings ]]
+
 -- Show which line your cursor is on
-vim.opt.cursorline = true
+vim.opt_local.cursorline = true
+vim.opt_local.cursorcolumn = true
+vim.opt_local.colorcolumn = '80'
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
