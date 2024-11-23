@@ -222,6 +222,34 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- When editing a file, always jump to the last known cursor position (if it's
+-- valid). Ignores commit messages (it's likely a different one than last time).
+RecallLastPosition = function()
+  if vim.fn.line '\'"' < 1 then
+    -- We've never opened this file before
+    return
+  end
+
+  if vim.fn.line '\'"' > vim.fn.line '$' then
+    -- The file has shrunk since we last edited it
+    return
+  end
+
+  if vim.bo.ft == 'commit' then
+    -- We don't want to do this for git commit messages
+    return
+  end
+
+  -- Jump to the last known cursor position
+  vim.cmd 'normal! g`"'
+end
+
+vim.api.nvim_create_autocmd('BufReadPost', {
+  desc = 'Recall cursor position',
+  group = vim.api.nvim_create_augroup('recall-position', { clear = true }),
+  callback = RecallLastPosition,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
