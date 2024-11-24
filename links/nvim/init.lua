@@ -278,7 +278,7 @@ RecallLastPosition = function()
     return
   end
 
-  if vim.bo.ft == 'commit' then
+  if vim.bo.ft == 'gitcommit' then
     -- We don't want to do this for git commit messages
     return
   end
