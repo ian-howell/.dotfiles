@@ -144,11 +144,6 @@ vim.opt.grepprg = 'rg --vimgrep --hidden -i -S'
 
 -- [[ Focus Settings ]]
 
--- Show which line your cursor is on
-vim.opt_local.cursorline = true
-vim.opt_local.cursorcolumn = true
-vim.opt_local.colorcolumn = '80'
-
 -- NOTE: If colors are funky, don't forget to test with the true-color-24-test
 vim.opt.termguicolors = true
 --
