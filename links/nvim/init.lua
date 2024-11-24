@@ -494,6 +494,24 @@ require('lazy').setup({
           winblend = 10,
           -- No need to put a title on the "Results" window
           results_title = false,
+
+          -- This is more or less the defaults, except that we add hidden files
+          -- Several of these are simply required for telescope to work correctly.
+          -- See `:help telescope.defaults.vimgrep_arguments` for details
+          -- TODO: find out if this will just work with the default rg settings
+          vimgrep_arguments = {
+            'rg',
+            '--color=never',
+            '--no-heading',
+            '--with-filename',
+            '--line-number',
+            '--column',
+            '--smart-case',
+            -- Show hidden files...
+            '--hidden',
+            -- ... but don't show the .git directory
+            '--glob=!/.git/',
+          },
         },
         -- pickers = {}
         extensions = {
