@@ -364,10 +364,11 @@ require('lazy').setup({
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    -- Sets the loading event to 'VimEnter'
+    event = 'VimEnter',
     opts = {
       icons = {
-        -- set icon mappings to true if you have a Nerd Font
+        -- Set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
         -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
         -- default whick-key.nvim defined Nerd Font icons, otherwise define a string table
@@ -407,13 +408,13 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<space>c', group = 'code', mode = { 'n', 'x' } },
+        { '<space>c', group = 'code',     mode = { 'n', 'x' } },
         { '<space>d', group = 'document' },
         { '<space>r', group = 'rename' },
         { '<space>s', group = 'search' },
         { '<space>w', group = 'workspace' },
         { '<space>t', group = 'toggle' },
-        { '<space>g', group = 'git', mode = { 'n', 'v' } },
+        { '<space>g', group = 'git',      mode = { 'n', 'v' } },
         { '<space>q', group = 'quickfix' },
       },
     },
@@ -448,7 +449,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -576,7 +577,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -588,7 +589,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -913,7 +914,9 @@ require('lazy').setup({
 
   { -- Color scheme
     'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+
+    -- Make sure to load this before all the other start plugins.
+    priority = 1000,
     init = function()
       vim.cmd.colorscheme 'tokyonight'
 
