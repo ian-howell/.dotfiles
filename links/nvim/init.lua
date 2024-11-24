@@ -492,6 +492,8 @@ require('lazy').setup({
           },
           -- Make the picker window slightly transparent
           winblend = 10,
+          -- No need to put a title on the "Results" window
+          results_title = false,
         },
         -- pickers = {}
         extensions = {
