@@ -187,6 +187,9 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'WinEnter', 'FocusGained' }, {
 -- Floating windows (e.g. which-key) should be slightly transparent
 vim.opt.winblend = 10
 
+-- Wrap text at 110 characters
+vim.opt.textwidth = 110
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -628,6 +631,9 @@ require('lazy').setup({
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
+          -- Set the formatexpr to nil, I'd rather use text width for gq and
+          -- find a better solution for formatting a file
+          vim.bo[event.buf].formatexpr = nil
           -- NOTE: Remember that Lua is a real programming language, and as such it is possible
           -- to define small helper and utility functions so you don't have to repeat yourself.
           --
