@@ -1080,7 +1080,12 @@ require('lazy').setup({
       -- Combined, they replace 'Tab' with <c-e> to accept a suggestion
       vim.keymap.set('i', '<C-E>', 'copilot#Accept("")', {
         expr = true,
-        replace_keycodes = true,
+        -- NOTE: Setting expr = true implicitly sets replace_keycodes = true.
+        -- For some reason, when replace_keycodes is true, I get weird characters
+        -- when I accept a suggestion.
+        -- See https://github.com/orgs/community/discussions/29817#discussioncomment-4217615
+        replace_keycodes = false,
+        desc = 'Accept the current suggestion',
       })
       vim.g.copilot_no_tab_map = true
 
