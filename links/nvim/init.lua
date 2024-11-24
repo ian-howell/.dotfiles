@@ -507,10 +507,7 @@ require('lazy').setup({
             '--line-number',
             '--column',
             '--smart-case',
-            -- Show hidden files...
             '--hidden',
-            -- ... but don't show the .git directory
-            '--glob=!/.git/',
           },
         },
         pickers = {
