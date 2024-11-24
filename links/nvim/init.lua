@@ -336,6 +336,10 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      -- Change the highlight of the signs column if there's git changes
+      numhl = true,
+      -- Since we're using numhl, we don't need gitsigns to open the sign column
+      signcolumn = false,
     },
   },
 
