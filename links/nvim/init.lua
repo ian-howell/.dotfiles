@@ -963,27 +963,30 @@ require('lazy').setup({
       -- animate is more feature rich, and includes things like animated
       -- scrolling and window resizing. I'd like to use both, but prefer
       -- smear-cursor for moving the cursor around.
-      -- require('mini.animate').setup()
+      require('mini.animate').setup()
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  {
-    'sphamba/smear-cursor.nvim',
 
-    opts = {
-      -- Smear cursor when switching buffers
-      smear_between_buffers = true,
-
-      -- Use floating windows to display smears outside buffers.
-      -- May have performance issues with other plugins.
-      use_floating_windows = true,
-
-      -- Attempt to hide the real cursor when smearing.
-      hide_target_hack = true,
-    },
-  },
+  -- { -- Smear cursor when moving between buffers
+  -- TODO: Fix this - it's really cool, but it's throwing errors... :(
+  --
+  --   'sphamba/smear-cursor.nvim',
+  --
+  --   opts = {
+  --     -- Smear cursor when switching buffers
+  --     smear_between_buffers = true,
+  --
+  --     -- Use floating windows to display smears outside buffers.
+  --     -- May have performance issues with other plugins.
+  --     use_floating_windows = true,
+  --
+  --     -- Attempt to hide the real cursor when smearing.
+  --     hide_target_hack = true,
+  --   },
+  -- },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
