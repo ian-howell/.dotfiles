@@ -244,6 +244,12 @@ end, { desc = 'Grep' })
 -- Swap between buffers
 vim.keymap.set('n', '<leader><leader>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
 
+-- TODO: Figure out how to get put this with the GitSigns config
+-- vim.keymap.set('n', '<space>tg', ':Gitsigns toggle_linehl<cr>', { desc = 'git diff' })
+vim.keymap.set('n', '<space>tg', function()
+  vim.cmd 'Gitsigns toggle_linehl'
+end, { desc = 'git diff' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
