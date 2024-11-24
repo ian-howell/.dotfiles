@@ -983,6 +983,7 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- TODO: I love the git summary. It would be way better if it had some color though
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
@@ -998,7 +999,6 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
-      -- TODO: I love the git summary. It would be way better if it had some color though
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
