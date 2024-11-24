@@ -184,6 +184,9 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'WinEnter', 'FocusGained' }, {
   end,
 })
 
+-- Floating windows (e.g. which-key) should be slightly transparent
+vim.opt.winblend = 10
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -487,6 +490,8 @@ require('lazy').setup({
               ['<space>-'] = 'select_horizontal',
             },
           },
+          -- Make the picker window slightly transparent
+          winblend = 10,
         },
         -- pickers = {}
         extensions = {
