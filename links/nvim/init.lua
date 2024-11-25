@@ -927,6 +927,15 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
+  {                -- Surround
+    "kylechui/nvim-surround",
+ -- Use for stability; omit to use `main` branch for the latest features
+    version = "*",
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup({})
+    end
+  },
   { -- TMUX Navigation
     'christoomey/vim-tmux-navigator',
     vim.keymap.set('n', '<c-h>', ':TmuxNavigateLeft<cr>', { silent = true }),
