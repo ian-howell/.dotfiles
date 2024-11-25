@@ -993,6 +993,19 @@ require('lazy').setup({
       vim.b.copilot_enabled = true
     end,
   },
+  { -- Aerial
+    'stevearc/aerial.nvim',
+    opts = {},
+    -- Optional dependencies.
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons"
+    },
+
+    vim.keymap.set("n", "<c-n>", ":AerialNext<CR>", { desc = "next" }),
+    vim.keymap.set("n", "<c-p>", ":AerialPrev<CR>", { desc = "prev" }),
+    vim.keymap.set("n", "<space>at", ":AerialToggle!<CR>", { desc = "toggle" }),
+  },
   {
     -- TODO: Look into this one, it looks cool.
     -- But for right now, it's breaking normal keybindings in quickfix windows...
