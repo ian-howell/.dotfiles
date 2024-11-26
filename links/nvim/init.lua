@@ -102,6 +102,25 @@ vim.opt.winblend = 10
 -- Wrap text at 110 characters
 vim.opt.textwidth = 110
 
+-- Turn on highlighting while searching
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+  desc = 'Highlight while searching',
+  group = vim.api.nvim_create_augroup('highlight-while-searching', { clear = true }),
+  callback = function()
+    if vim.fn.index({ '/', '?' }, vim.fn.getcmdtype()) >= 0 then
+      vim.opt.hlsearch = true
+    end
+  end,
+})
+-- Turn off highlighting when done searching
+vim.api.nvim_create_autocmd('CmdlineLeave', {
+  desc = 'Stop highlighting after searching',
+  group = vim.api.nvim_create_augroup('stop-highlighting-after-search', { clear = true }),
+  callback = function()
+    vim.opt.hlsearch = false
+  end,
+})
+
 -- [[ Basic Keymaps ]]
 -- See `:help vim.keymap.set()`
 
