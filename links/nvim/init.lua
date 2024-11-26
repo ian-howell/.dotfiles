@@ -1004,7 +1004,7 @@ require('lazy').setup({
 
     vim.keymap.set("n", "<c-n>", ":AerialNext<CR>", { desc = "next" }),
     vim.keymap.set("n", "<c-p>", ":AerialPrev<CR>", { desc = "prev" }),
-    vim.keymap.set("n", "<space>at", ":AerialToggle!<CR>", { desc = "toggle" }),
+    vim.keymap.set("n", "<space>ta", ":AerialToggle!<CR>", { desc = "Aerial" }),
   },
   {
     -- TODO: Look into this one, it looks cool.
