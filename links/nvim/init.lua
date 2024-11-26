@@ -106,8 +106,7 @@ vim.opt.textwidth = 110
 -- See `:help vim.keymap.set()`
 
 -- Toggle highlights
--- TODO: Should this start with 't' to match the other toggles?
-vim.keymap.set('n', '<leader>hl', '<cmd>nohlsearch<CR>')
+vim.keymap.set('n', '<leader>th', '<cmd>set hlsearch!<CR>')
 
 -- Easy access to :split and :vsplit. Use '\' instead of '|' because of Shift.
 vim.keymap.set('n', '-', ':split<CR>', { desc = 'Split window horizontally' })
