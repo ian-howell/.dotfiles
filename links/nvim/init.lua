@@ -209,6 +209,7 @@ RecallLastPosition = function()
     return -- The file has shrunk since we last edited it
   end
 
+  -- TODO: This is not working as expected
   if vim.bo.ft == 'gitcommit' then
     return -- We don't want to do this for git commit messages
   end
