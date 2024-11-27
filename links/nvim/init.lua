@@ -663,7 +663,9 @@ require('lazy').setup({
         bashls = {},
         bicep = {},
         dockerls = {},
-        gopls = {},
+        gopls = {
+          cmd = { 'gopls', 'serve', '--remote=auto' },
+        },
         golangci_lint_ls = {},
         helm_ls = {},
         jqls = {},
@@ -1023,6 +1025,10 @@ require('lazy').setup({
     vim.keymap.set("n", "<c-n>", ":AerialNext<CR>", { desc = "next" }),
     vim.keymap.set("n", "<c-p>", ":AerialPrev<CR>", { desc = "prev" }),
     vim.keymap.set("n", "<space>ta", ":AerialToggle!<CR>", { desc = "Aerial" }),
+  },
+  { -- Vim-go
+    'fatih/vim-go',
+    ft = { 'go', 'gomod', },
   },
   {
     -- TODO: Look into this one, it looks cool.
