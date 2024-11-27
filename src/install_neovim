@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPO_DIR="$HOME/.config/neovim"
+REPO_DIR="$HOME/.config/src/neovim"
 
 function main() {
   if [ ! -d "$REPO_DIR" ]; then
@@ -12,6 +12,7 @@ function main() {
 
 function install() {
   print_banner "Installing Neovim"
+  mkdir -p "$REPO_DIR"
   install_dependencies
   clone_repo
   build
