@@ -277,7 +277,7 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  require 'plugins/which-key',
+  require 'plugins/which-key', -- ~/.config/nvim/lua/plugins/which-key.lua
 
   -- NOTE: Plugins can specify dependencies.
   --
@@ -286,31 +286,31 @@ require('lazy').setup({
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
 
-  require 'plugins/telescope',
+  require 'plugins/telescope',      -- ~/.config/nvim/lua/plugins/telescope.lua
 
-  require 'plugins/lsp',
+  require 'plugins/lsp',            -- ~/.config/nvim/lua/plugins/lsp.lua
 
-  require 'plugins/autocompletion',
+  require 'plugins/autocompletion', -- ~/.config/nvim/lua/plugins/autocompletion.lua
 
-  require 'plugins/tokyonight',
+  require 'plugins/tokyonight',     -- ~/.config/nvim/lua/plugins/tokyonight.lua
 
-  require 'plugins/todo-comments',
+  require 'plugins/todo-comments',  -- ~/.config/nvim/lua/plugins/todo-comments.lua
 
-  require 'plugins/mini',
+  require 'plugins/mini',           -- ~/.config/nvim/lua/plugins/mini.lua
 
-  require 'plugins/smooth',
+  require 'plugins/smooth',         -- ~/.config/nvim/lua/plugins/smooth.lua
 
-  require 'plugins/treesitter',
+  require 'plugins/treesitter',     -- ~/.config/nvim/lua/plugins/treesitter.lua
 
-  require 'plugins/surround',
+  require 'plugins/surround',       -- ~/.config/nvim/lua/plugins/surround.lua
 
-  require 'plugins/tmux-navigator',
+  require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
 
-  require 'plugins/copilot',
+  require 'plugins/copilot',        -- ~/.config/nvim/lua/plugins/copilot.lua
 
-  require 'plugins/aerial',
+  require 'plugins/aerial',         -- ~/.config/nvim/lua/plugins/aerial.lua
 
-  { -- Vim-go
+  {                                 -- Vim-go
     'fatih/vim-go',
     ft = { 'go', 'gomod', },
   },
