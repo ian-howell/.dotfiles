@@ -2,7 +2,7 @@
 -- See `:help vim.keymap.set()`
 
 -- Toggle highlights
-vim.keymap.set('n', '<leader>th', '<cmd>set hlsearch!<CR>')
+vim.keymap.set('n', '<space>th', '<cmd>set hlsearch!<CR>')
 
 -- Easy access to :split and :vsplit. Use '\' instead of '|' because of Shift.
 vim.keymap.set('n', '-', '<cmd>split<CR>', { desc = 'Split window horizontally' })
@@ -30,7 +30,7 @@ vim.keymap.set('n', '<space>qf', '<cmd>cfirst<CR>', { desc = 'first' })
 vim.keymap.set('n', '<space>ql', '<cmd>clast<CR>', { desc = 'last' })
 
 -- Swap between buffers
-vim.keymap.set('n', '<leader><leader>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
+vim.keymap.set('n', '<space><space>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
 
 -- TODO: Figure out how to get put this with the GitSigns config
 -- vim.keymap.set('n', '<space>tg', '<cmd>Gitsigns toggle_linehl<cr>', { desc = 'git diff' })
