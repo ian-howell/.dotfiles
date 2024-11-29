@@ -93,22 +93,22 @@ return {
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map('<leader>cs', require('telescope.builtin').lsp_document_symbols, 'symbols in file')
+          map('<space>cs', require('telescope.builtin').lsp_document_symbols, 'symbols in file')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
-          map('<leader>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'symbols in project')
+          map('<space>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'symbols in project')
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, 'rename')
+          map('<space>rn', vim.lsp.buf.rename, 'rename')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, 'action', { 'n', 'x' })
+          map('<space>ca', vim.lsp.buf.code_action, 'action', { 'n', 'x' })
 
           -- Format the current buffer in normal mode, or the current selection in visual mode.
-          map('<leader>cf', vim.lsp.buf.format, 'format', { 'n', 'x' })
+          map('<space>cf', vim.lsp.buf.format, 'format', { 'n', 'x' })
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -144,7 +144,7 @@ return {
           --
           -- This may be unwanted, since they displace some of your code
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map('<leader>ti', function()
+            map('<space>ti', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, 'inlay hints')
           end
