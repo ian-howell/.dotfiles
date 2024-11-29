@@ -37,22 +37,6 @@ vim.keymap.set('n', '<space>qP', ':cpfile<CR>', { desc = 'previous' })
 vim.keymap.set('n', '<space>qf', ':cfirst<CR>', { desc = 'first' })
 vim.keymap.set('n', '<space>ql', ':clast<CR>', { desc = 'last' })
 
--- Cooler Grep
-vim.keymap.set('n', '<space>/', function()
-  local query = vim.fn.input '/'
-  if query ~= '' then
-    vim.cmd('silent! grep! ' .. query)
-    vim.cmd 'cwindow'
-
-    -- Check if the quickfix list is empty
-    local qf_list = vim.fn.getqflist()
-    if vim.tbl_isempty(qf_list) then
-      -- vim.api.nvim_err_writeln 'rg: no results found.'
-      vim.api.nvim_err_writeln(vim.opt.grepprg:get() .. ' ' .. query .. ': no results found.')
-    end
-  end
-end, { desc = 'Grep' })
-
 -- Swap between buffers
 vim.keymap.set('n', '<leader><leader>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
 
