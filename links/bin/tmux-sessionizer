@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+function main() {
+    session_name=$(get_session_name "$@")
+    if [[ -z $session_name ]]; then
+        exit 0
+    fi
+
+    switch_to_session "$session_name"
+}
+
+function get_session_name() {
+    if [[ $# -eq 1 ]]; then
+        echo "$1"
+        return
+    fi
+
+    # Start with my custom sessions
+    declare -A name_to_dir=(
+        ["dotfiles"]="$HOME/.dotfiles"
+    )
+
+    # Create an array of the keys
+    names=("${!name_to_dir[@]}")
+
+    # Add the tmux sessions
+    mapfile -t tmux_sessions < <(tmux list-sessions -F "#{session_name}" 2> /dev/null)
+    names+=("${tmux_sessions[@]}")
+
+
+    selected=$(\
+        printf "%s\n" "${names[@]}" |\
+        fzf --height 40% --reverse --border --delimiter='\ ' --prompt="Select a session: "\
+    )
+
+    echo "$selected"
+}
+
+main "$@"
+
+#
+# if [[ $# -eq 1 ]]; then
+#     selected=$1
+# else
+#     # Get the list of existing tmux sessions
+#     sessions=$(tmux list-sessions -F "#{session_name}" 2> /dev/null)
+#
+#     # Append some of my directories to the list
+#     sessions+="\n$(find "$HOME" -type d)"
+#
+#     # Select one of the sessions
+#     selected=$(echo -e "$sessions" | fzf --height 40% --reverse --border --prompt="Select a session: ")
+# fi
+#
+# echo "$selected"
+# #
+# # if [[ -z $selected ]]; then
+# #     exit 0
+# # fi
+# #
+# # selected_name=$(basename "$selected" | tr . _)
+# # tmux_running=$(pgrep tmux)
+# #
+# # if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+# #     tmux new-session -s "$selected_name" -c "$selected"
+# #     exit 0
+# # fi
+# #
+# # if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+# #     tmux new-session -ds "$selected_name" -c "$selected"
+# # fi
+# #
+# # tmux switch-client -t "$selected_name"
+#
+#
+# # function read_config() {
+# #     local config_file="$HOME/.dotfiles/links/tmux/sessionizer.conf"
+# #     if [[ -f $config_file ]]; then
+# #         # shellcheck source=$HOME/.dotfiles/links/tmux/sessionizer.conf
+# #
+# #     fi
+# # }

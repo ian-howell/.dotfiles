@@ -77,6 +77,9 @@ require('lazy').setup({
   {                                 -- Vim-go
     'fatih/vim-go',
     ft = { 'go', 'gomod', },
+    config = function()
+      vim.g.go_gopls_options = { '-remote=auto' }
+    end,
   },
   {
     -- TODO: Look into this one, it looks cool.
