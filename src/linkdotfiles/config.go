@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
-
-	"github.com/goccy/go-yaml"
+	"path/filepath"
 )
 
 // Config represents the configuration for the program
@@ -32,41 +30,57 @@ type Link struct {
 	Target string `yaml:"target"`
 }
 
-type Linker struct {
-	fs.FS
-}
-
-func NewLinker(fs fs.FS) Linker {
-	return Linker{fs}
-}
-
-func (l Linker) LinkFiles(config Config) error {
-	for _, link := range config.Links {
-		if err := os.Symlink(link.Source, link.Target); err != nil {
-			return fmt.Errorf("failed to create symlink: %w", err)
-		}
-	}
-	return nil
-}
-
-// loadConfig reads the config file at the given path and returns a Config
-func loadConfig(configFilePath string) (Config, error) {
-	configContent, err := os.ReadFile(configFilePath)
+func getConfig() Config {
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return Config{}, fmt.Errorf("failed to read config file: %w", err)
+		panic(fmt.Sprintf("failed to get user home directory: %v", err))
 	}
-
-	var config Config
-	if err := yaml.Unmarshal(configContent, &config); err != nil {
-		return Config{}, fmt.Errorf("failed to decode config: %w", err)
+	return Config{
+		SourceRoot: filepath.Join(homeDir, ".dotfiles/links"),
+		TargetRoot: homeDir,
+		Links: []Link{
+			{"bashrc", ".bashrc"},
+			{"bin", ".bin"},
+			{"fonts", ".fonts"},
+			{"funcs", ".funcs"},
+			{"gitconfig", ".gitconfig"},
+			{"global_gitignore", ".global_gitignore"},
+			{"inputrc", ".inputrc"},
+			{"zprofile", ".zprofile"},
+			{"sh_aliases", ".sh_aliases"},
+			{"tmux", ".config/tmux"},
+			{"kitty", ".config/kitty"},
+			{"vim", ".vim"},
+			{"vimrc", ".vimrc"},
+			{"nvim", ".config/nvim"},
+			{"zsh", ".zsh"},
+			{"zshenv", ".zshenv"},
+			{"zshrc", ".zshrc"},
+			{"git-hook-post-commit", ".dotfiles/.git/hooks/post-commit"},
+			{"git-hook-post-commit", ".dotfiles/.git/hooks/post-rewrite"},
+			{"lazygit.yml", ".config/lazygit/config.yml"},
+		},
 	}
-
-	return config, nil
 }
 
-func LinkFiles(config Config) error {
+func linkFiles(config Config) error {
 	for _, link := range config.Links {
-		if err := os.Symlink(link.Source, link.Target); err != nil {
+		source := config.SourceRoot + "/" + link.Source
+		target := config.TargetRoot + "/" + link.Target
+
+		// Create the parent directory if it doesn't exist
+		if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
+			return fmt.Errorf("failed to create parent directory: %w", err)
+		}
+
+		// If the target already exists, remove it
+		if _, err := os.Lstat(target); err == nil {
+			if err := os.RemoveAll(target); err != nil {
+				return fmt.Errorf("failed to remove existing target: %w", err)
+			}
+		}
+
+		if err := os.Symlink(source, target); err != nil {
 			return fmt.Errorf("failed to create symlink: %w", err)
 		}
 	}

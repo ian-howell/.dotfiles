@@ -21,8 +21,9 @@ bash src/remap_capslock
 bash src/install_node
 bash src/install_delta
 bash src/install_lazygit
-bash src/link_dotfiles
 bash src/install_neovim
+
+./src/linkdotfiles/linkdotfiles
 
 git submodule update --init --recursive
 
