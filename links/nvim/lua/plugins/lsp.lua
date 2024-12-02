@@ -183,9 +183,7 @@ return {
         bashls = {},
         bicep = {},
         dockerls = {},
-        gopls = {
-          cmd = { 'gopls', 'serve', '--remote=auto' },
-        },
+        gopls = {},
         golangci_lint_ls = {},
         helm_ls = {},
         jqls = {},
