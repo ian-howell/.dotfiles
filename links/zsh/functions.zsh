@@ -1,5 +1,3 @@
-#!/bash
-
 vim() {
   # TODO: fix this
   # Turn off the backckground color for the active plane when opening vim. We

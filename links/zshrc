@@ -1,13 +1,8 @@
 #!/usr/bin/zsh
-#===[ Things that need to be sourced
-# IMPORTANT: This section needs to remain at the top. Some of the other things
-# in this file will depend on it.
 
-# Source my aliases
-source "$HOME/.sh_aliases"
+source $HOME/.dotfiles/links/zsh/aliases.zsh
 
-# My custom functions
-source "$HOME/.funcs"
+source $HOME/.dotfiles/links/zsh/functions.zsh
 
 #===[ Colors
 # Turn on convenient colors
