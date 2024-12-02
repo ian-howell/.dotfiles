@@ -231,6 +231,7 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 # My personal bins
 [[ -d "$HOME/.dotfiles/links/bin" ]] && prepend "$HOME/.dotfiles/links/bin"
 [[ -d "$HOME/bin" ]] && prepend "$HOME/bin"
+prepend "$HOME/.local/bin"
 
 # Add go to the environment
 export GOROOT="/usr/local/go"
@@ -271,6 +272,9 @@ my-backward-delete-word() {
 }
 zle -N my-backward-delete-word
 bindkey '^W' my-backward-delete-word
+
+# Set up zoxide
+eval "$(zoxide init --cmd cd zsh)"
 
 #===[ Plugins
 [[ -s "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
