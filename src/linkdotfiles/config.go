@@ -41,11 +41,9 @@ func getConfig() Config {
 		Links: []Link{
 			{"bin", ".bin"},
 			{"fonts", ".fonts"},
-			{"funcs", ".funcs"},
 			{"gitconfig", ".gitconfig"},
 			{"global_gitignore", ".global_gitignore"},
 			{"zprofile", ".zprofile"},
-			{"sh_aliases", ".sh_aliases"},
 			{"tmux", ".config/tmux"},
 			{"kitty", ".config/kitty"},
 			{"nvim", ".config/nvim"},
