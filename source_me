@@ -22,6 +22,7 @@ bash src/install_node
 bash src/install_delta
 bash src/install_lazygit
 bash src/install_neovim
+bash src/install_zoxide
 
 ./src/linkdotfiles/linkdotfiles
 
