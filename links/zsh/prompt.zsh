@@ -1,54 +1,57 @@
-# Outputs current branch info in prompt format
+# Outputs git info in prompt format
 function git_prompt_info() {
+  if ! is_git_repo; then
+    return
+  fi
+
   local ref
-  ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
-  ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
-  local prefix suffix
-  # prefix="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
-  prefix="%{$fg_bold[blue]%}"
-  suffix="%{$reset_color%} "
-  echo "$prefix${ref#refs/heads/}$(parse_git_dirty)$suffix"
+  ref=$(git_ref)
+
+  if is_git_dirty; then
+    red ref
+  else
+    green ref
+  fi
+}
+# is_git_repo returns 0 if the current directory is in a git repository, and 1 otherwise.
+function is_git_repo() {
+  git rev-parse --is-inside-work-tree &>/dev/null
 }
 
-# Checks if working tree is dirty
-function parse_git_dirty() {
-  local STATUS=''
-  local -a FLAGS
-  local dirty clean
-  dirty=" %{$fg[red]%}✗"
-  clean=" %{$fg_bold[green]%}✓"
-  staging=" %{$fg[yellow]%}★"
-  FLAGS=('--porcelain')
-  FLAGS+='--ignore-submodules=dirty'
-  STATUS=$(command git status ${FLAGS} 2> /dev/null)
+# git_ref returns the current git branch or commit hash.
+function git_ref() {
+  local ref
+  ref=$(git symbolic-ref HEAD 2> /dev/null)
+  if [[ -n $ref ]]; then
+    echo "${ref#refs/heads/}"
+    return
+  fi
 
-  UNTRACKED=$(command git status ${FLAGS} 2> /dev/null | grep "^??")
-  INDEX_CHANGED=$(command git status ${FLAGS} 2> /dev/null | grep "^[^ ?].")
-  WORKINGTREE_CHANGED=$(command git status ${FLAGS} 2> /dev/null | grep "^.[^ ?]")
-  let "val = 0"
-  if [[ -n $UNTRACKED ]]; then
-    let "val = $val | 4"
-  fi
-  if [[ -n $INDEX_CHANGED ]]; then
-    let "val = $val | 2"
-  fi
-  if [[ -n $WORKINGTREE_CHANGED ]]; then
-    let "val = $val | 1"
-  fi
-  if [[ $val -eq 0 ]]; then
-    echo " %{$fg_bold[green]%}$val"
-  elif [[ "(( $val % 2 ))" -eq 0 ]]; then
-    echo " %{$fg_bold[yellow]%}$val"
-  else
-    echo " %{$fg_bold[red]%}$val"
-  fi
+  ref=$(git rev-parse --short HEAD 2> /dev/null)
+  echo "${ref#refs/heads/}"
+}
+
+# is_git_dirty returns 0 if the current git repository has uncommitted changes, and 1 otherwise.
+function is_git_dirty() {
+  [[ -n $(git status --porcelain 2> /dev/null) ]]
 }
 
 # If we're in an SSH session, show the hostname in the prompt
 function ssh_prompt_info() {
   if [[ -n $SSH_CLIENT ]]; then
-      echo " %{$fg_bold[red]%}SSH(%m)%{$reset_color%}"
+    red "SSH(%m)"
   fi
+}
+
+function path_prompt_info() {
+  case ${KEYMAP} in
+    main|viins) 
+      cyan "%c"
+      return
+      ;;
+  esac
+
+  magenta "%c"
 }
 
 function set_prompt() {
@@ -60,7 +63,7 @@ function set_prompt() {
   esac
   directory=" %{$mode_indication_color%}%c%{$reset_color%}"
   ret_status="%(?:%{$fg_bold[green]%}✓:%{$fg_bold[red]%}✗)%{$reset_color%}"
-  LINE1="$ret_status$(ssh_prompt_info)$directory $(git_prompt_info)"
+  LINE1="$ret_status$(ssh_prompt_info)$(path_prompt_info) $(git_prompt_info)"
 
   NEWLINE=$'\n'
   PROMPT="${LINE1}${NEWLINE}$ "
@@ -82,3 +85,20 @@ zle -N zle-line-init
 # TRAPWINCH() {
 #   zle && { zle -R; zle reset-prompt }
 # }
+
+# TODO: It would be nice to have a suite of these that are just always available.
+function red() {
+  echo "%{$fg_bold[red]%}$1%{$reset_color%}"
+}
+
+function green() {
+  echo "%{$fg_bold[green]%}$1%{$reset_color%}"
+}
+
+function magenta() {
+  echo "%{$fg_bold[magenta]%}$1%{$reset_color%}"
+}
+
+function cyan() {
+  echo "%{$fg_bold[cyan]%}$1%{$reset_color%}"
+}
