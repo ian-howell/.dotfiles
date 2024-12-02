@@ -1,29 +1,3 @@
-vim() {
-  # TODO: fix this
-  # Turn off the backckground color for the active plane when opening vim. We
-  # might open mutlple panes in vim, and we only want the active vim pane to
-  # have a background. So rather than trying to make tmux handle it, we simply
-  # ignore panes that have vim open, and allow vim to manage it itself.
-  # tmux set -p window-active-style fg=default,bg=default
-  nvim "$@"
-  # tmux set -p window-active-style fg=default,bg=colour236
-}
-
-run_command() {
-    echo "================================================================================"
-    echo "Running command: $*"
-    echo "================================================================================"
-    eval "$@"
-}
-
-pycalc() {
-  python3 << EOF
-from math import *
-from datetime import *
-print($*)
-EOF
-}
-
 # Opposite of cd. Giving an argument jumps up that many directories
 bd() {
   iter="${1:-1}"
@@ -34,67 +8,12 @@ bd() {
   done
 }
 
-# cdf - cd into the directory of the selected file
-cdf() {
-   local file
-   local dir
-   file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir" || return
-}
-
-# cd to a parent directory
-cdr() {
-  local dirs=()
-  get_parent_dirs() {
-    if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
-    if [[ "${1}" == '/' ]]; then
-      for _dir in "${dirs[@]}"; do echo "$_dir"; done
-    else
-      get_parent_dirs "$(dirname "$1")"
-    fi
-  }
-  local DIR
-  DIR=$(get_parent_dirs "$(realpath "${1:-$PWD}")" | fzf --tac)
-  cd "$DIR" || return
-}
-
-gsb() {
-  local branches branch
-  branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
-  branch=$(echo "$branches" |
-           fzf -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
-  git checkout "$(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")"
-}
-
-# Generate a random password
-randpw() {
-  < /dev/urandom tr -dc A-Z-a-z-0-9%\!+@^ | head -c"${1:-32}"
-  echo
-}
-
-# List all todos
-todo() {
-  grep --color=always -HInsr "TODO" ./* | awk '{printf $1; for (i=2; i <= NF; i++) printf FS$i; print NL }'
-}
-
-# Scrollable, colored grep
-grepc() {
-  grep -I "$@" --color=always | less -R --quit-if-one-screen
-}
-
-# Scrollable, colored ag
-agc() {
-  ag --color --group "$@" | less -R --quit-if-one-screen
-}
-
-# Scrollable, colored jq
-jqc() {
-  jq -C "$@" | less -R --quit-if-one-screen
-}
-
-# Scrollable, colored yq
-yqc() {
-  yq -C "$@" | less -R --quit-if-one-screen
-}
+# Add paging and color to various commands
+grepc() { grep -I "$@" --color=always | less -R --quit-if-one-screen }
+agc() { ag --color --group "$@" | less -R --quit-if-one-screen }
+jqc() { jq -C "$@" | less -R --quit-if-one-screen }
+yqc() { yq -C "$@" | less -R --quit-if-one-screen }
+treec() { tree -C "$@" | less -R --quit-if-one-screen }
 
 count() {
   ag "$@" -c | awk '
@@ -105,34 +24,10 @@ count() {
     '
 }
 
-# Colorful trees
-treec() {
-  tree -C "$@" | less -R --quit-if-one-screen
-}
-
-# Fast access to virtual python environments
-vpy() {
-  if [ -z "$1" ]; then
-    echo "Need to provide a venv"
-  elif [ "$1" = "ls" ]; then
-    ls "$HOME/.venvs"
-  else
-    source "$HOME/.venvs/$1/bin/activate"
-  fi
-}
-
 # Paste to ix.io
 ix() {
   # examples: ix < file; command | ix
   curl -n -F 'f:1=<-' http://ix.io;
-}
-
-# Setup local branches to track all remote branches
-# Note: This will not overwrite any local branch. This means that if there is a
-# name collision between a local branch and a remote branch, this command will
-# fail for that branch
-gpa() {
-  git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done
 }
 
 # Create a temporary directory, then go there.
@@ -162,26 +57,6 @@ bak() {
   done
 }
 
-# Wraps an interactive shell with readline. Requires rlwrap
-rl() {
-  if ! command -v rlwrap; then
-    printf "Couldn't find rlwrap, please install it\n"
-  fi
-  if (( $# != 1 )); then
-    printf "Usage: %s <wrapped_application>\n" "$0"
-    printf "EXAMPLE: %s python\n" "$0"
-    return
-  fi
-  rlwrap --remember --complete-filenames "$1"
-}
-
-stopwatch() {
-  date1=$(date +%s)
-  while true; do
-    echo -ne "$(date -u -d @$(( $(date +%s) - date1 )) +%H:%M:%S)\r"
-  done
-}
-
 stealth-toggle() {
   if [[ -f ~/.zsh_history.bak ]]; then
     echo "STEALTH => NORMAL"
@@ -194,7 +69,6 @@ stealth-toggle() {
   fi
 }
 
-# convenience routine which appends a string to a path.
 append() {
   if (( $# != 1 )); then
     printf "Usage: %s <absolute_path>\n" "$0"
@@ -204,7 +78,6 @@ append() {
   addpath "$1" append
 }
 
-# convenience routine which prepends a string to a path.
 prepend() {
   if (( $# != 1 )); then
     printf "Usage: %s <absolute_path>\n" "$0"
@@ -214,7 +87,6 @@ prepend() {
   addpath "$1" prepend
 }
 
-#===[ addpath
 # Add $1 to the PATH variable.  $2 must be "append" or "prepend" to indicate
 # where the component is added.
 addpath()
@@ -247,5 +119,3 @@ addpath()
   export PATH="$result"
   unset result value
 }
-#===]
-# vim:foldmethod=marker:foldlevel=0:foldmarker====[,===]
