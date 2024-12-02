@@ -4,15 +4,8 @@ source $HOME/.dotfiles/links/zsh/aliases.zsh
 
 source $HOME/.dotfiles/links/zsh/functions.zsh
 
-#===[ Colors
-# Turn on convenient colors
+# Turn on colors
 autoload -U colors && colors
-
-# ls colors
-if [[ -z "$LS_COLORS" ]]; then
-  (( $+commands[dircolors] )) && eval "$(dircolors -b)"
-fi
-ls --color -d . &>/dev/null && alias ls='ls --color=tty' || { ls -G . &>/dev/null && alias ls='ls -G' }
 
 #===[ Functions
 # Outputs current branch info in prompt format

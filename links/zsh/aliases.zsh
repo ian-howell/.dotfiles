@@ -72,16 +72,8 @@ alias gup="git restore -p"
 alias gus="git restore --staged"
 
 #===[ ls
-# Hidden files
-alias lsa="ls -a"
-# list style
-alias l='ls -l'
-# time order
-alias lstr='ls -ltr'
-# List only directories in the current directory
-alias lsd="ls -d */"
-# Count all the directories in the current directory
-alias countdir="ls -d */ | wc -l"
+# Add color
+alias ls="ls --color=auto"
 
 #===[ vim
 alias :q=exit
