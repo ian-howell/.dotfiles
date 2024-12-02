@@ -253,18 +253,6 @@ setopt no_share_history
 # recognize that comments are comments
 setopt interactivecomments
 
-# This... almost works. ctrl-z does backgrounding AND foregrounding. It could
-# use seom work though
-fancy-ctrl-z() {
-  if [[ $#BUFFER -eq 0 ]]; then
-    fg
-  else
-    bg
-  fi
-}
-zle -N fancy-ctrl-z
-bindkey '^Z' fancy-ctrl-z
-
 # When hitting ctrl-w in insert mode, include the slash character (/) as a word separator
 my-backward-delete-word() {
     local WORDCHARS=${WORDCHARS/\//}
