@@ -76,6 +76,8 @@ alias gus="git restore --staged"
 alias ls="ls --color=auto"
 
 #===[ vim
+alias vim="nvim"
+
 alias :q=exit
 alias :wq=exit
 alias :qa=exit
@@ -84,8 +86,6 @@ alias :e=true
 
 # view, but with forced yaml syntax
 alias viewyaml="view +set\ ft=yaml -"
-
-alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
 
 #===[ grep
 # Ignore binaries/directories
