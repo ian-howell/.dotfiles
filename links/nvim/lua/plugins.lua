@@ -19,10 +19,13 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      -- Change the highlight of the signs column if there's git changes
-      numhl = true,
-      -- Since we're using numhl, we don't need gitsigns to open the sign column
-      signcolumn = false,
+      signs = {
+        add = { text = '+' },
+        change = { text = '~' },
+        delete = { text = '_' },
+        topdelete = { text = '‾' },
+        changedelete = { text = '~' },
+      },
     },
   },
 
