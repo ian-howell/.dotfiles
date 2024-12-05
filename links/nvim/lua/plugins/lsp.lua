@@ -153,11 +153,10 @@ return {
 
       -- Change diagnostic symbols in the sign column (gutter)
       if vim.g.have_nerd_font then
-        local types = { 'Error', 'Warn', 'Hint', 'Info' }
-        for _, type in ipairs(types) do
+        local signs = { Error = '', Warn = '', Hint = '', Info = '' }
+        for type, icon in pairs(signs) do
           local hl = 'DiagnosticSign' .. type
-          -- Specifically set the text icon to be empty - I don't want to open the sign column
-          vim.fn.sign_define(hl, { text = "", texthl = hl, numhl = hl })
+          vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
         end
       end
 
