@@ -53,31 +53,33 @@ require('lazy').setup({
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
 
-  require 'plugins/telescope',      -- ~/.config/nvim/lua/plugins/telescope.lua
+  require 'plugins/telescope', -- ~/.config/nvim/lua/plugins/telescope.lua
 
-  require 'plugins/lsp',            -- ~/.config/nvim/lua/plugins/lsp.lua
+  require 'plugins/lsp', -- ~/.config/nvim/lua/plugins/lsp.lua
 
-  require 'plugins/autoformat',     -- ~/.config/nvim/lua/plugins/autoformat.lua
+  require 'plugins/autoformat', -- ~/.config/nvim/lua/plugins/autoformat.lua
 
   require 'plugins/autocompletion', -- ~/.config/nvim/lua/plugins/autocompletion.lua
 
-  require 'plugins/tokyonight',     -- ~/.config/nvim/lua/plugins/tokyonight.lua
+  require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
 
-  require 'plugins/todo-comments',  -- ~/.config/nvim/lua/plugins/todo-comments.lua
+  require 'plugins/tokyonight', -- ~/.config/nvim/lua/plugins/tokyonight.lua
 
-  require 'plugins/mini',           -- ~/.config/nvim/lua/plugins/mini.lua
+  require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
 
-  require 'plugins/smooth',         -- ~/.config/nvim/lua/plugins/smooth.lua
+  require 'plugins/mini', -- ~/.config/nvim/lua/plugins/mini.lua
 
-  require 'plugins/treesitter',     -- ~/.config/nvim/lua/plugins/treesitter.lua
+  require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
 
-  require 'plugins/surround',       -- ~/.config/nvim/lua/plugins/surround.lua
+  require 'plugins/treesitter', -- ~/.config/nvim/lua/plugins/treesitter.lua
+
+  require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
 
   require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
 
-  require 'plugins/copilot',        -- ~/.config/nvim/lua/plugins/copilot.lua
+  require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
 
-  require 'plugins/aerial',         -- ~/.config/nvim/lua/plugins/aerial.lua
+  require 'plugins/aerial', -- ~/.config/nvim/lua/plugins/aerial.lua
 
   {
     -- TODO: Look into this one, it looks cool.
@@ -103,7 +105,6 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
