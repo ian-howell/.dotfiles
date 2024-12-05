@@ -107,9 +107,6 @@ return {
           -- or a suggestion from your LSP for this to activate.
           map('<space>ca', vim.lsp.buf.code_action, 'action', { 'n', 'x' })
 
-          -- Format the current buffer in normal mode, or the current selection in visual mode.
-          map('<space>cf', vim.lsp.buf.format, 'format', { 'n', 'x' })
-
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
