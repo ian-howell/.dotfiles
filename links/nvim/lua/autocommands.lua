@@ -30,7 +30,7 @@ RecallLastPosition = function()
   vim.cmd 'normal! g`"' -- Jump to the last known cursor position
 end
 
-vim.api.nvim_create_autocmd('BufReadPost', {
+vim.api.nvim_create_autocmd('BufWinEnter', {
   desc = 'Recall cursor position',
   group = vim.api.nvim_create_augroup('recall-position', { clear = true }),
   callback = RecallLastPosition,
