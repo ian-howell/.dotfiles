@@ -57,6 +57,8 @@ require('lazy').setup({
 
   require 'plugins/lsp',            -- ~/.config/nvim/lua/plugins/lsp.lua
 
+  require 'plugins/autoformat',     -- ~/.config/nvim/lua/plugins/autoformat.lua
+
   require 'plugins/autocompletion', -- ~/.config/nvim/lua/plugins/autocompletion.lua
 
   require 'plugins/tokyonight',     -- ~/.config/nvim/lua/plugins/tokyonight.lua
@@ -77,13 +79,6 @@ require('lazy').setup({
 
   require 'plugins/aerial',         -- ~/.config/nvim/lua/plugins/aerial.lua
 
-  {                                 -- Vim-go
-    'fatih/vim-go',
-    ft = { 'go', 'gomod', },
-    config = function()
-      vim.g.go_gopls_options = { '-remote=auto' }
-    end,
-  },
   {
     -- TODO: Look into this one, it looks cool.
     -- But for right now, it's breaking normal keybindings in quickfix windows...
