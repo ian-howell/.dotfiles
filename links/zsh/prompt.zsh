@@ -115,6 +115,10 @@ function blue() {
   echo "%{$fg[blue]%}$1%{$reset_color%}"
 }
 
+function red() {
+  echo "%{$fg[red]%}$1%{$reset_color%}"
+}
+
 function red_bold() {
   echo "%{$fg_bold[red]%}$1%{$reset_color%}"
 }
