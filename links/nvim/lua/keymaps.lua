@@ -9,18 +9,20 @@ vim.keymap.set('n', '-', '<cmd>split<CR>', { desc = 'Split window horizontally' 
 vim.keymap.set('n', '\\', '<cmd>vsplit<CR>', { desc = 'Split window vertically' })
 
 -- Quickfix Mappings
--- TODO: Is this the right way to define a function?
-local toggleQuickFix = function()
-  for _, win in ipairs(vim.fn.getwininfo()) do
-    if win.quickfix == 1 then
-      vim.cmd 'cclose | wincmd p'
-      return
-    end
-  end
-  vim.cmd 'copen'
-end
 
-vim.keymap.set('n', '<space>qt', toggleQuickFix, { desc = 'toggle' })
+do
+  local toggleQuickFix = function()
+    for _, win in ipairs(vim.fn.getwininfo()) do
+      -- TODO: This has some weirdness with location lists
+      if win.quickfix == 1 then
+        vim.cmd 'cclose | wincmd p'
+        return
+      end
+    end
+    vim.cmd 'copen'
+  end
+  vim.keymap.set('n', '<space>qt', toggleQuickFix, { desc = 'toggle' })
+end
 vim.keymap.set('n', '<space>qo', '<cmd>copen<CR>', { desc = 'open' })
 vim.keymap.set('n', '<space>qn', '<cmd>cnext<CR>', { desc = 'next' })
 vim.keymap.set('n', '<space>qN', '<cmd>cnfile<CR>', { desc = 'next' })
