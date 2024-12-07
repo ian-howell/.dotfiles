@@ -16,6 +16,7 @@ return {
         'markdown',
         'markdown_inline',
         'query',
+        'regex',
         'vim',
         'vimdoc',
       },

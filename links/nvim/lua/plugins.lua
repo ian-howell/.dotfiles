@@ -60,6 +60,8 @@ require('lazy').setup({
 
   require 'plugins/vim-go', -- ~/.config/nvim/lua/plugins/vim-go.lua
 
+  require 'plugins/noice', -- ~/.config/nvim/lua/plugins/noice.lua
+
   {
     -- TODO: Look into this one, it looks cool.
     -- But for right now, it's breaking normal keybindings in quickfix windows...
