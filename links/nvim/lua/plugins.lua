@@ -58,6 +58,8 @@ require('lazy').setup({
 
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
 
+  require 'plugins/vim-go', -- ~/.config/nvim/lua/plugins/vim-go.lua
+
   {
     -- TODO: Look into this one, it looks cool.
     -- But for right now, it's breaking normal keybindings in quickfix windows...
