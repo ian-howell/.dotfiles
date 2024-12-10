@@ -3,6 +3,10 @@ alias ut="python -m unittest"
 alias pprint="python -m json.tool"
 
 #===[ Git aliases
+
+# Open Lazygit
+alias lg="lazygit"
+
 # This is my most used git command
 alias g="git status"
 
