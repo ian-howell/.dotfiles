@@ -1,5 +1,5 @@
 gui:
-  nerdFontsVersion: "3"
+  # Tokyonight theme
   theme:
     activeBorderColor:
       - "#ff966c"
@@ -25,3 +25,168 @@ gui:
       - "#c53b53"
     defaultFgColor:
       - "#c8d3f5"
+  nerdFontsVersion: "3"
+  expandFocusedSidePanel: true
+  showBottomLine: false
+
+# Keybindings. Changes to defaults are documented
+keybinding:
+  universal:
+    quit: q
+    quit-alt1: <c-c>
+    return: <esc>
+    quitWithoutChangingDirectory: Q
+    togglePanel: <tab>
+    prevItem: <up>
+    nextItem: <down>
+    prevItem-alt: k
+    nextItem-alt: j
+    prevPage: ','
+    nextPage: .
+    scrollLeft: H
+    scrollRight: L
+    gotoTop: g # Changed from <
+    gotoBottom: G # Changed from >
+    toggleRangeSelect: v
+    rangeSelectDown: <s-down>
+    rangeSelectUp: <s-up>
+    prevBlock: <c-k> # Changed from left - this matches tmux and vim
+    nextBlock: <c-j> # Changed from right - this matches tmux and vim
+    prevBlock-alt: h
+    nextBlock-alt: l
+    nextBlock-alt2: <disabled> # Changed from <tab>
+    prevBlock-alt2: <disabled> # Changed from <backtab>
+    jumpToBlock:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+    nextMatch: "n"
+    prevMatch: "N"
+    startSearch: /
+    optionMenu: <disabled>
+    optionMenu-alt1: '?'
+    select: <space>
+    goInto: <enter>
+    confirm: <enter>
+    confirmInEditor: <a-enter>
+    remove: d
+    new: "n"
+    edit: e
+    openFile: o
+    scrollUpMain: <pgup>
+    scrollDownMain: <pgdown>
+    scrollUpMain-alt1: <c-y> # Changed from K
+    scrollDownMain-alt1: <c-e> # Changed from J
+    scrollUpMain-alt2: <c-u>
+    scrollDownMain-alt2: <c-d>
+    executeShellCommand: ':'
+    createRebaseOptionsMenu: m
+    pushFiles: P
+    pullFiles: p
+    refresh: R
+    createPatchOptionsMenu: <c-p>
+    nextTab: <tab> # Changed from ]
+    prevTab: <backtab> # Changed from [
+    nextScreenMode: +
+    prevScreenMode: _
+    undo: z
+    redo: <c-z>
+    filteringMenu: <c-s>
+    diffingMenu: W
+    diffingMenu-alt: <disabled> # Changed from <c-e>
+    copyToClipboard: <c-o>
+    openRecentRepos: <c-r>
+    submitEditorText: <enter>
+    extrasMenu: '@'
+    toggleWhitespaceInDiffView: <c-w>
+    increaseContextInDiffView: '}'
+    decreaseContextInDiffView: '{'
+    increaseRenameSimilarityThreshold: )
+    decreaseRenameSimilarityThreshold: (
+    openDiffTool: <c-t>
+  status:
+    checkForUpdate: u
+    recentRepos: <enter>
+    allBranchesLogGraph: a
+  files:
+    commitChanges: <disabled> # Changed from c
+    commitChangesWithoutHook: w
+    amendLastCommit: a # Changed from A
+    commitChangesWithEditor: c # Changed from C
+    findBaseCommitForFixup: <c-f>
+    confirmDiscard: x
+    ignoreFile: i
+    refreshFiles: r
+    stashAllChanges: s
+    viewStashOptions: S
+    toggleStagedAll: a
+    viewResetOptions: D
+    fetch: f
+    toggleTreeView: '`'
+    openMergeTool: M
+    openStatusFilter: <c-b>
+    copyFileInfoToClipboard: "y"
+  branches:
+    createPullRequest: o
+    viewPullRequestOptions: O
+    copyPullRequestURL: <disabled> # Changed from <c-y>
+    checkoutBranchByName: c
+    forceCheckoutBranch: F
+    rebaseBranch: r
+    renameBranch: R
+    mergeIntoCurrentBranch: M
+    viewGitFlowOptions: i
+    fastForward: f
+    createTag: T
+    pushTag: P
+    setUpstream: u
+    fetchRemote: f
+    sortOrder: s
+  worktrees:
+    viewWorktreeOptions: w
+  commits:
+    squashDown: s
+    renameCommit: <c-r> # Changed from r
+    renameCommitWithEditor: r # Changed from R
+    viewResetOptions: X # Changed from g
+    markCommitAsFixup: f
+    createFixupCommit: F
+    squashAboveCommits: S
+    moveDownCommit: J # Changed from <c-j>
+    moveUpCommit: K # Changed from <c-k>
+    amendToCommit: a # Changed from A
+    resetCommitAuthor: <disabled> # Changed from a
+    pickCommit: p
+    revertCommit: t
+    cherryPickCopy: C
+    pasteCommits: V
+    markCommitAsBaseForRebase: B
+    tagCommit: T
+    checkoutCommit: <space>
+    resetCherryPick: <c-R>
+    copyCommitAttributeToClipboard: "y"
+    openLogMenu: <c-l>
+    openInBrowser: o
+    viewBisectOptions: b
+    startInteractiveRebase: i
+  amendAttribute:
+    resetAuthor: a
+    setAuthor: A
+    addCoAuthor: c
+  stash:
+    popStash: g
+    renameStash: r
+  commitFiles:
+    checkoutCommitFile: c
+  main:
+    toggleSelectHunk: a
+    pickBothHunks: b
+    editSelectHunk: E
+  submodules:
+    init: i
+    update: u
+    bulkMenu: b
+  commitMessage:
+    commitMenu: <c-o>
