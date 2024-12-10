@@ -41,8 +41,8 @@ keybinding:
     nextItem: <down>
     prevItem-alt: k
     nextItem-alt: j
-    prevPage: ','
-    nextPage: .
+    prevPage: <c-u> # Changed from ,
+    nextPage: <c-d> # Changed from .
     scrollLeft: H
     scrollRight: L
     gotoTop: g # Changed from <
@@ -79,8 +79,8 @@ keybinding:
     scrollDownMain: <pgdown>
     scrollUpMain-alt1: <c-y> # Changed from K
     scrollDownMain-alt1: <c-e> # Changed from J
-    scrollUpMain-alt2: <c-u>
-    scrollDownMain-alt2: <c-d>
+    scrollUpMain-alt2: <disabled> # Changed from <c-u>
+    scrollDownMain-alt2: <disabled> # Changed from <c-d>
     executeShellCommand: ':'
     createRebaseOptionsMenu: m
     pushFiles: P
