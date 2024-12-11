@@ -23,6 +23,15 @@ return {
       -- Accept the next word in the suggestion
       vim.keymap.set('i', '<C-F>', '<Plug>(copilot-accept-word)')
 
+      -- Toggle copilot
+      -- TODO: I should consider creating a PR for this
+      local wk = require 'which-key'
+      wk.add {
+        { '<space>tc', group = 'copilot' },
+        { '<space>tce', '<cmd>Copilot enable<CR>', desc = 'enable' },
+        { '<space>tcd', '<cmd>Copilot disable<CR>', desc = 'disable' },
+      }
+
       -- Enable copilot for all filetypes
       vim.b.copilot_enabled = true
     end,
