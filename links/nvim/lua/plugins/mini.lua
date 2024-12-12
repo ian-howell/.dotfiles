@@ -43,16 +43,16 @@ return {
       -- animate is more feature rich, and includes things like animated
       -- scrolling and window resizing. I'd like to use both, but prefer
       -- smear-cursor for moving the cursor around.
-      require('mini.animate').setup({
+      require('mini.animate').setup {
         -- Prefer Smear
-        cursor = { enable = false, },
+        cursor = { enable = false },
         -- Prefer Neoscroll
-        scroll = { enable = false, },
+        scroll = { enable = false },
         -- These are for floating windows, but they just seem to slow things down? I'm not really sure what
         -- they're supposed to do.
-        open = { enable = false, },
-        close = { enable = false, },
-      })
+        open = { enable = false },
+        close = { enable = false },
+      }
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
