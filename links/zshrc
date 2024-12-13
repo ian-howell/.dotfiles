@@ -60,13 +60,13 @@ setopt inc_append_history     # add commands to HISTFILE in order of execution
 #===[ fzf
 source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --filepath-word" # Note to self: --border doesn't play nicely with fzf-atb
-export FZF_DEFAULT_COMMAND="fd --hidden --no-ignore --exclude='*vendor/*'"
+export FZF_DEFAULT_COMMAND="fd --type f --hidden --no-ignore --exclude='.git'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # Preview file content using bat (https://github.com/sharkdp/bat)
 export FZF_CTRL_T_OPTS="
   --preview 'bat -n --color=always {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'"
-export FZF_ALT_C_COMMAND="find -L . -mindepth 1 \\( -path '*/vendor*' -o -path '*/gocode/pkg*' -o -path '*/go/pkg*' -o -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune -o -type d -print 2> /dev/null"
+export FZF_ALT_C_COMMAND="fd --type d --hidden --no-ignore --exclude='.git'"
 # Print tree structure in the preview window
 export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 
