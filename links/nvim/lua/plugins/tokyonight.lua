@@ -9,6 +9,10 @@ return {
 
       -- Comments are italicized by default in tokyonight, and it's ugly.
       vim.cmd.hi 'Comment gui=none'
+
+      -- Make the colorcolumn the same color as the default background.
+      -- This way, it will only be visible on the current line (thanks to the cursorline setting).
+      vim.cmd 'hi! link ColorColumn Normal'
     end,
   },
 }
