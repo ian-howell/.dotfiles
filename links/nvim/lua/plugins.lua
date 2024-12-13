@@ -62,6 +62,8 @@ require('lazy').setup({
 
   require 'plugins/noice', -- ~/.config/nvim/lua/plugins/noice.lua
 
+  require 'plugins/zenmode', -- ~/.config/nvim/lua/plugins/zenmode.lua
+
   {
     -- TODO: Look into this one, it looks cool.
     -- But for right now, it's breaking normal keybindings in quickfix windows...
