@@ -13,6 +13,10 @@ return {
       -- Make the colorcolumn the same color as the default background.
       -- This way, it will only be visible on the current line (thanks to the cursorline setting).
       vim.cmd 'hi! link ColorColumn Normal'
+
+      -- I want the "vim crosshair", but the cursorcolumn is too much. This tones it
+      -- down a bit by using a darker color that more closely matches the background.
+      vim.cmd.hi 'CursorColumn guibg=#1d2133'
     end,
   },
 }
