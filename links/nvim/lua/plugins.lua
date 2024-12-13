@@ -1,9 +1,6 @@
 -- [[ Configure and install plugins ]]
 
 require('lazy').setup({
-  -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -18,9 +15,7 @@ require('lazy').setup({
   -- Then, because we use the `config` key, the configuration only runs
   -- after the plugin has been loaded:
   --  config = function() ... end
-
-  require 'plugins/which-key', -- ~/.config/nvim/lua/plugins/which-key.lua
-
+  --
   -- NOTE: Plugins can specify dependencies.
   --
   -- The dependencies are proper plugin specifications as well - anything
@@ -28,40 +23,25 @@ require('lazy').setup({
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
 
-  require 'plugins/telescope', -- ~/.config/nvim/lua/plugins/telescope.lua
-
-  require 'plugins/lsp', -- ~/.config/nvim/lua/plugins/lsp.lua
-
-  require 'plugins/autoformat', -- ~/.config/nvim/lua/plugins/autoformat.lua
-
-  require 'plugins/autocompletion', -- ~/.config/nvim/lua/plugins/autocompletion.lua
-
-  require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
-
-  require 'plugins/tokyonight', -- ~/.config/nvim/lua/plugins/tokyonight.lua
-
-  require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
-
-  require 'plugins/mini', -- ~/.config/nvim/lua/plugins/mini.lua
-
-  require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
-
-  require 'plugins/treesitter', -- ~/.config/nvim/lua/plugins/treesitter.lua
-
-  require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
-
-  require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
-
-  require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
-
   require 'plugins/aerial', -- ~/.config/nvim/lua/plugins/aerial.lua
-
+  require 'plugins/autocompletion', -- ~/.config/nvim/lua/plugins/autocompletion.lua
+  require 'plugins/autoformat', -- ~/.config/nvim/lua/plugins/autoformat.lua
+  require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
+  require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
-
-  require 'plugins/vim-go', -- ~/.config/nvim/lua/plugins/vim-go.lua
-
+  require 'plugins/lsp', -- ~/.config/nvim/lua/plugins/lsp.lua
+  require 'plugins/mini', -- ~/.config/nvim/lua/plugins/mini.lua
   require 'plugins/noice', -- ~/.config/nvim/lua/plugins/noice.lua
-
+  require 'plugins/sleuth', -- ~/.config/nvim/lua/plugins/sleuth.lua
+  require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
+  require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
+  require 'plugins/telescope', -- ~/.config/nvim/lua/plugins/telescope.lua
+  require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
+  require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
+  require 'plugins/tokyonight', -- ~/.config/nvim/lua/plugins/tokyonight.lua
+  require 'plugins/treesitter', -- ~/.config/nvim/lua/plugins/treesitter.lua
+  require 'plugins/go', -- ~/.config/nvim/lua/plugins/vim-go.lua
+  require 'plugins/which-key', -- ~/.config/nvim/lua/plugins/which-key.lua
   require 'plugins/zenmode', -- ~/.config/nvim/lua/plugins/zenmode.lua
 
   {
