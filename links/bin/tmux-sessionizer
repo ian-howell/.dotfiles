@@ -4,83 +4,22 @@
 # Use with
 # bind-key s display-popup -E 'tmux-sessionizer'
 
-predefined_sessions_filepath=$(mktemp)
-trap 'rm -f $predefined_sessions_filepath' EXIT
-
-available_sessions_filepath=$(mktemp)
-trap 'rm -f $available_sessions_filepath' EXIT
-
-function main() {
-    if [ $# -eq 1 ]; then
-        switch_to_session "$1"
-        exit 0
-    fi
-
-    initialize_predefined_sessions
-    get_available_sessions
-    desired_session=$(get_session)
-    if [[ -z $desired_session ]]; then
-        exit 0
-    fi
-    switch_to_session "$desired_session"
-}
-
-function initialize_predefined_sessions() {
-    # Start with my custom sessions.
-    cat <<EOF >"$predefined_sessions_filepath"
-dotfiles $HOME/.dotfiles
-EOF
-}
-
-# get_available_sessions returns the path to a file containing a list of available sessions
-# The list starts with my default configured sessions and ends with the current tmux sessions
-function get_available_sessions() {
-    # Start with my custom sessions.
-    awk '{print "- " $1}' <"$predefined_sessions_filepath" >"$available_sessions_filepath"
-
-    # Add the tmux sessions.
-    tmux list-sessions -F "- #{session_name}" 2>/dev/null >>"$available_sessions_filepath"
-
-    # Sort the sessions
-    sort -u "$available_sessions_filepath" -o "$available_sessions_filepath"
-
-    # Swap the current session with a *
-    current_session=$(tmux display-message -p "#{session_name}")
-    sed -i "s/^- $current_session.*/* $current_session/" "$available_sessions_filepath"
-}
-
-function get_session() {
-    awk '{print $1 " " $2}' <"$available_sessions_filepath" |
-        fzf --height 40% --reverse --border --prompt="Select a session: " |
-        awk '{print $2}'
-}
-
-function switch_to_session() {
-    local session_name=$1
-    session_dir=$(
-        awk -v session_name="$session_name" '$1 == session_name {print $2}' \
-            <"$predefined_sessions_filepath"
+main() {
+    local session
+    session=$(
+        sesh list --icons | fzf-tmux -p 55%,60% \
+            --no-sort --ansi --border-label ' sesh ' --prompt '⚡  ' \
+            --header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
+            --bind 'tab:down,btab:up' \
+            --bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list --icons)' \
+            --bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
+            --bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c --icons)' \
+            --bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \
+            --bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
+            --bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡  )+reload(sesh list --icons)'
     )
-
-    if [[ -z $session_dir ]]; then
-        session_dir=$(pwd)
-    fi
-
-    if [[ -z $TMUX ]]; then
-        # We're not in tmux, so try to attach to the session
-        if ! tmux attach-session -t "$session_name"; then
-            tmux new-session -s "$session_name" -c "$session_dir"
-        fi
-        exit 
-    fi
-
-    if ! tmux has-session -t="$session_name" 2>/dev/null; then
-        # If the session does not exist, create it
-        tmux new-session -ds "$session_name" -c "$session_dir"
-    fi
-
-    # Otherwise, switch to the session
-    tmux switch-client -t "$session_name"
+    [[ -z "$session" ]] && return
+    sesh connect "$session"
 }
 
-main "$@"
+main
