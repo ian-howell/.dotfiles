@@ -190,3 +190,11 @@ keybinding:
     bulkMenu: b
   commitMessage:
     commitMenu: <c-o>
+
+# Custom commands
+customCommands:
+  - key: "F"
+    command: "git push --force"
+    context: "localBranches"
+    description: "Force push"
+    loadingText: "Force pushing"
