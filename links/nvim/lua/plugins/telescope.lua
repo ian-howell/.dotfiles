@@ -59,7 +59,6 @@ return {
             '--column',
             '--smart-case',
             '--hidden',
-            '--exclude-dir=.git',
           },
           file_ignore_patterns = { '.git/' },
         },
