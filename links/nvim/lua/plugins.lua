@@ -40,7 +40,7 @@ require('lazy').setup({
   require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
   require 'plugins/tokyonight', -- ~/.config/nvim/lua/plugins/tokyonight.lua
   require 'plugins/treesitter', -- ~/.config/nvim/lua/plugins/treesitter.lua
-  require 'plugins/go', -- ~/.config/nvim/lua/plugins/vim-go.lua
+  require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
   require 'plugins/which-key', -- ~/.config/nvim/lua/plugins/which-key.lua
   require 'plugins/zenmode', -- ~/.config/nvim/lua/plugins/zenmode.lua
 
