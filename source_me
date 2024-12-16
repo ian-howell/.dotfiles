@@ -14,6 +14,7 @@ sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needre
 
 # Order is (somewhat) important
 bash src/install_essentials
+bash src/install_go
 bash src/install_zsh
 bash src/install_fzf
 bash src/install_fd
