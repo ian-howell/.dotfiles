@@ -4,6 +4,9 @@
     pager = delta
 [push]
     default = matching
+[remote.origin]
+    # Only push the current branch
+    push = HEAD
 [include]
     path = ~/.dotfiles/local_gitconfig
 [user]
