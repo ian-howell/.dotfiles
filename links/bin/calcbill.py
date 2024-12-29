@@ -12,8 +12,9 @@ How to use this script:
 import sys
 
 mickey_group = {"MICKEY", "KELLY", "ZAC", "ANTHONY"}
-pam_group = {"PAM", "PAMELA", "JENNA", "ANDREW"}
+pam_group = {"PAM", "PAMELA", "ANDREW"}
 ian_group = {"IAN", "JAMI"}
+jenna_group = {"JENNA"}
 
 
 def main(args):
@@ -32,6 +33,7 @@ def get_data_from_stdin(debug_log=lambda: None):
             "mickey_group": {},
             "pam_group": {},
             "ian_group": {},
+            "jenna_group": {},
             }
     for i, line in enumerate(lines):
         debug_log(f"{i=} {line=}")
@@ -46,6 +48,9 @@ def get_data_from_stdin(debug_log=lambda: None):
         elif name in ian_group:
             debug_log(f"matched 'ian_group', parsing {lines[i+2]=}")
             results["ian_group"][line] = parse_money(lines[i+2])
+        elif name in jenna_group:
+            debug_log(f"matched 'jenna_group', parsing {lines[i+2]=}")
+            results["jenna_group"][line] = parse_money(lines[i+2])
     return results
 
 
