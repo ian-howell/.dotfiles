@@ -30,6 +30,7 @@ require('lazy').setup({
   require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
   require 'plugins/lsp', -- ~/.config/nvim/lua/plugins/lsp.lua
+  require 'plugins/lualine', -- ~/.config/nvim/lua/plugins/lualine.lua
   require 'plugins/mini', -- ~/.config/nvim/lua/plugins/mini.lua
   require 'plugins/noice', -- ~/.config/nvim/lua/plugins/noice.lua
   require 'plugins/sleuth', -- ~/.config/nvim/lua/plugins/sleuth.lua

@@ -12,6 +12,10 @@ return {
           ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
         },
       },
+      messages = {
+        -- disable the virtual text that shows the search count
+        view_search = false,
+      },
       presets = {
         command_palette = true, -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
