@@ -14,6 +14,7 @@ return {
       },
       messages = {
         -- disable the virtual text that shows the search count
+        disable = true,
         view_search = false,
       },
       presets = {
