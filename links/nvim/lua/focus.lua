@@ -47,12 +47,3 @@ vim.api.nvim_create_autocmd('CmdlineEnter', {
     end
   end,
 })
--- Turn off highlighting when done searching
-vim.api.nvim_create_autocmd('CmdlineLeave', {
-  desc = 'Stop highlighting after searching',
-  group = vim.api.nvim_create_augroup('stop-highlighting-after-search', { clear = true }),
-  callback = function()
-    vim.opt.hlsearch = false
-  end,
-})
-
