@@ -23,9 +23,25 @@ return {
         winbar = 100,
       },
       sections = {
-        lualine_a = { 'mode' },
-        lualine_b = { 'diff', 'diagnostics' },
-        lualine_c = { 'filename' },
+        lualine_a = {
+          {
+            'mode',
+            fmt = function(str)
+              return str:sub(1, 1)
+            end,
+          },
+        },
+        lualine_b = {
+          {
+            'filename',
+            path = 4, -- show the parent directory
+            symbols = {
+              modified = 'Δ', -- Text to show when the file is modified.
+              readonly = '', -- Text to show when the file is non-modifiable or readonly.
+            },
+          },
+        },
+        lualine_c = { 'diff', 'diagnostics' },
         lualine_x = { 'searchcount', 'selectioncount' },
         lualine_y = { 'progress' },
         lualine_z = { 'location' },
@@ -33,7 +49,16 @@ return {
       inactive_sections = {
         lualine_a = {},
         lualine_b = {},
-        lualine_c = { 'filename' },
+        lualine_c = {
+          {
+            'filename',
+            path = 4, -- show the parent directory
+            symbols = {
+              modified = 'Δ', -- Text to show when the file is modified.
+              readonly = '', -- Text to show when the file is non-modifiable or readonly.
+            },
+          },
+        },
         lualine_x = { 'location' },
         lualine_y = {},
         lualine_z = {},
@@ -41,7 +66,7 @@ return {
       tabline = {},
       winbar = {},
       inactive_winbar = {},
-      extensions = {},
+      extensions = { 'aerial', 'quickfix' },
     },
   },
 }
