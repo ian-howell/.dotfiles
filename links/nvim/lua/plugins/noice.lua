@@ -13,9 +13,11 @@ return {
         },
       },
       messages = {
-        -- disable the virtual text that shows the search count
-        disable = true,
-        view_search = false,
+        view = 'mini', -- use the mini view for messages. The huge popup is annoying.
+        view_search = false, -- disable the virtual text that shows the search count
+      },
+      notify = {
+        enabled = false, -- again, why is the popup so huge?
       },
       presets = {
         command_palette = true, -- position the cmdline and popupmenu together
