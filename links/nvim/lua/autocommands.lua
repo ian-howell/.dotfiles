@@ -36,4 +36,15 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
   callback = RecallLastPosition,
 })
 
+local quickfix = require 'functions/quickfix' -- ~/.config/nvim/lua/functions/quickfix.lua
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+  pattern = 'qf',
+  desc = 'Setup keybindings for the quickfix window',
+  group = vim.api.nvim_create_augroup('quickfix_mapping', { clear = true }),
+  callback = function()
+    vim.keymap.set('n', '-', quickfix.openInSplit, { desc = 'Open quickfix in split' })
+    vim.keymap.set('n', '\\', quickfix.openInVsplit, { desc = 'Open quickfix in vsplit' })
+  end,
+})
+
 -- vim: ts=2 sts=2 sw=2 et
