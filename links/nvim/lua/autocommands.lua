@@ -36,4 +36,17 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
   callback = RecallLastPosition,
 })
 
+-- vim.api.nvim_create_autocmd({ 'FileType' }, {
+--   pattern = 'qf',
+--   desc = 'Setup keybindings for the quickfix window',
+--   group = vim.api.nvim_create_augroup('quickfix_mapping', { clear = true }),
+--   callback = function()
+--     -- TODO: Setup keymaps using the library
+--     vim.keymap.set('n', '-', function()
+--       -- local qflist = vim.fn.getqflist()
+--       print 'hello!'
+--     end)
+--   end,
+-- })
+
 -- vim: ts=2 sts=2 sw=2 et
