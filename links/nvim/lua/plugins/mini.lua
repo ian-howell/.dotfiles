@@ -16,13 +16,6 @@ return {
         n_lines = 500,
       }
 
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
-
       -- TODO: smear-cursor is _way_ cooler for moving the cursor around, but
       -- animate is more feature rich, and includes things like animated
       -- scrolling and window resizing. I'd like to use both, but prefer
