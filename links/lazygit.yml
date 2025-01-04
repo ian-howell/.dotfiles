@@ -28,6 +28,7 @@ gui:
   nerdFontsVersion: "3"
   expandFocusedSidePanel: true
   showBottomLine: false
+  sidePanelWidth: 0.2 # gives you more space to show things side-by-side
 
 # Keybindings. Changes to defaults are documented
 keybinding:
@@ -198,3 +199,8 @@ customCommands:
     context: "localBranches"
     description: "Force push"
     loadingText: "Force pushing"
+
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never --side-by-side --line-numbers
