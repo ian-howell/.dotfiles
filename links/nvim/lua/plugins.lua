@@ -27,6 +27,7 @@ require('lazy').setup({
   require 'plugins/autoformat', -- ~/.config/nvim/lua/plugins/autoformat.lua
   require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
   require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
+  require 'plugins/fzf', -- ~/.config/nvim/lua/plugins/fzf.lua
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
   require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
   require 'plugins/lsp', -- ~/.config/nvim/lua/plugins/lsp.lua
@@ -38,7 +39,6 @@ require('lazy').setup({
   require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
   require 'plugins/sneak', -- ~/.config/nvim/lua/plugins/sneak.lua
   require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
-  require 'plugins/telescope', -- ~/.config/nvim/lua/plugins/telescope.lua
   require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
   require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
   require 'plugins/tokyonight', -- ~/.config/nvim/lua/plugins/tokyonight.lua
