@@ -24,7 +24,6 @@ require('lazy').setup({
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
 
   require 'plugins/aerial', -- ~/.config/nvim/lua/plugins/aerial.lua
-  require 'plugins/autocompletion', -- ~/.config/nvim/lua/plugins/autocompletion.lua
   require 'plugins/autoformat', -- ~/.config/nvim/lua/plugins/autoformat.lua
   require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
   require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
