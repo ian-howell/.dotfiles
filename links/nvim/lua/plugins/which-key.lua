@@ -45,13 +45,14 @@ return {
 
       -- Document existing key chains
       spec = {
-        { '<space>c', group = 'code',     mode = { 'n', 'x' } },
+        { '<space>c', group = 'code', mode = { 'n', 'x' } },
+        { '<space>cc', group = 'calls' },
         { '<space>d', group = 'document' },
         { '<space>r', group = 'rename' },
         { '<space>s', group = 'search' },
         { '<space>w', group = 'workspace' },
         { '<space>t', group = 'toggle' },
-        { '<space>g', group = 'git',      mode = { 'n', 'v' } },
+        { '<space>g', group = 'git', mode = { 'n', 'v' } },
         { '<space>q', group = 'quickfix' },
       },
     },

@@ -11,7 +11,7 @@ return {
       },
     },
   },
-  { 'Bilal2453/luvit-meta',     lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -23,7 +23,7 @@ return {
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim',       opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -64,40 +64,39 @@ return {
           -- Set the formatexpr to nil, I'd rather use text width for gq and
           -- find a better solution for formatting a file
           vim.bo[event.buf].formatexpr = nil
-          -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-          -- to define small helper and utility functions so you don't have to repeat yourself.
-          --
-          -- In this case, we create a function that lets us more easily define mappings specific
-          -- for LSP related items. It sets the mode, buffer and description for us each time.
+
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
           end
 
+          local fzf = require 'fzf-lua'
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, 'goto definition')
+          map('gd', fzf.lsp_definitions, 'goto definition')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('gD', require('telescope.builtin').lsp_type_definitions, 'goto type definition')
+          map('gD', fzf.lsp_typedefs, 'goto type definition')
 
           -- Find references for the word under your cursor.
-          map('<space>cr', require('telescope.builtin').lsp_references, 'references')
+          map('<space>cr', fzf.lsp_references, 'find references')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('<space>ci', require('telescope.builtin').lsp_implementations, 'implementation')
-
-          -- Fuzzy find all the symbols in your current document.
-          --  Symbols are things like variables, functions, types, etc.
-          map('<space>cs', require('telescope.builtin').lsp_document_symbols, 'symbols in file')
+          map('<space>ci', fzf.lsp_implementations, 'goto implementation')
 
           -- Fuzzy find all the symbols in your current workspace.
-          --  Similar to document symbols, except searches over your entire project.
-          map('<space>cS', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'symbols in project')
+          --  Symbols are things like variables, functions, types, etc.
+          map('<space>cs', fzf.lsp_live_workspace_symbols, 'symbols in workspace')
+
+          -- Fuzzy find over all incoming calls to the function under your cursor.
+          map('<space>cci', fzf.lsp_incoming_calls, 'incoming calls')
+
+          -- Fuzzy find over all outgoing calls to the function under your cursor.
+          map('<space>cco', fzf.lsp_outgoing_calls, 'outgoing calls')
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
