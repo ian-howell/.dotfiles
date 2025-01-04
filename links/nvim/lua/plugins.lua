@@ -36,6 +36,7 @@ require('lazy').setup({
   require 'plugins/quicker', -- ~/.config/nvim/lua/plugins/quicker.lua
   require 'plugins/sleuth', -- ~/.config/nvim/lua/plugins/sleuth.lua
   require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
+  require 'plugins/sneak', -- ~/.config/nvim/lua/plugins/sneak.lua
   require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
   require 'plugins/telescope', -- ~/.config/nvim/lua/plugins/telescope.lua
   require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
