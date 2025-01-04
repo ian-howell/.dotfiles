@@ -1,40 +1,34 @@
 return {
   { -- Copilot
-    'github/copilot.vim',
+    'zbirenbaum/copilot.lua',
+    cmd = 'Copilot',
+    event = 'InsertEnter',
 
-    config = function()
-      -- The following lines need to stay together.
-      -- Combined, they replace 'Tab' with <c-e> to accept a suggestion
-      vim.keymap.set('i', '<C-E>', 'copilot#Accept("")', {
-        expr = true,
-        -- NOTE: Setting expr = true implicitly sets replace_keycodes = true.
-        -- For some reason, when replace_keycodes is true, I get weird characters
-        -- when I accept a suggestion.
-        -- See https://github.com/orgs/community/discussions/29817#discussioncomment-4217615
-        replace_keycodes = false,
-        desc = 'Accept the current suggestion',
-      })
-      vim.g.copilot_no_tab_map = true
-
-      -- Navigate through different suggestions
-      vim.keymap.set('i', '<C-J>', '<Plug>(copilot-next)')
-      vim.keymap.set('i', '<C-K>', '<Plug>(copilot-previous)')
-
-      -- Accept the next word in the suggestion
-      vim.keymap.set('i', '<C-F>', '<Plug>(copilot-accept-word)')
-
-      -- Toggle copilot
-      -- TODO: I should consider creating a PR for this
-      local wk = require 'which-key'
-      wk.add {
-        { '<space>tc', group = 'copilot' },
-        { '<space>tce', '<cmd>Copilot enable<CR>', desc = 'enable' },
-        { '<space>tcd', '<cmd>Copilot disable<CR>', desc = 'disable' },
-      }
-
-      -- Enable copilot for all filetypes
-      vim.b.copilot_enabled = true
-    end,
+    opts = {
+      panel = { enabled = false },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        hide_during_completion = true,
+        debounce = 75,
+        keymap = {
+          -- This is the same as normal completion.
+          accept = '<C-y>',
+          accept_word = '<C-f>',
+          accept_line = '<C-l>',
+          -- We can't use <C-n> (or <C-p>) because those are the triggers for normal completion.
+          next = '<C-j>',
+          prev = '<C-k>',
+          -- This is the same as normal completion.
+          dismiss = '<C-e>',
+        },
+      },
+      filetypes = {
+        ['*'] = true,
+      },
+      copilot_node_command = 'node', -- Node.js version must be > 18.x
+      server_opts_overrides = {},
+    },
   },
 }
 -- vim: ts=2 sts=2 sw=2 et
