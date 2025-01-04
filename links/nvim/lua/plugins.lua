@@ -44,18 +44,7 @@ require('lazy').setup({
   require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
   require 'plugins/which-key', -- ~/.config/nvim/lua/plugins/which-key.lua
   require 'plugins/zenmode', -- ~/.config/nvim/lua/plugins/zenmode.lua
-
-  {
-    -- TODO: Look into this one, it looks cool.
-    -- But for right now, it's breaking normal keybindings in quickfix windows...
-    -- {
-    --   'kevinhwang91/nvim-bqf',
-    --   opts = {
-    --     auto_enable = true,
-    --     auto_resize_height = true,
-    --   },
-    -- },
-  },
+  require 'plugins/quicker', -- ~/.config/nvim/lua/plugins/quicker.lua
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
