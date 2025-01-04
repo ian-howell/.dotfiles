@@ -29,10 +29,12 @@ require('lazy').setup({
   require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
   require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
+  require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
   require 'plugins/lsp', -- ~/.config/nvim/lua/plugins/lsp.lua
   require 'plugins/lualine', -- ~/.config/nvim/lua/plugins/lualine.lua
   require 'plugins/mini', -- ~/.config/nvim/lua/plugins/mini.lua
   require 'plugins/noice', -- ~/.config/nvim/lua/plugins/noice.lua
+  require 'plugins/quicker', -- ~/.config/nvim/lua/plugins/quicker.lua
   require 'plugins/sleuth', -- ~/.config/nvim/lua/plugins/sleuth.lua
   require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
   require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
@@ -41,10 +43,8 @@ require('lazy').setup({
   require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
   require 'plugins/tokyonight', -- ~/.config/nvim/lua/plugins/tokyonight.lua
   require 'plugins/treesitter', -- ~/.config/nvim/lua/plugins/treesitter.lua
-  require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
   require 'plugins/which-key', -- ~/.config/nvim/lua/plugins/which-key.lua
   require 'plugins/zenmode', -- ~/.config/nvim/lua/plugins/zenmode.lua
-  require 'plugins/quicker', -- ~/.config/nvim/lua/plugins/quicker.lua
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
