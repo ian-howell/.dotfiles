@@ -57,7 +57,7 @@ return {
       vim.keymap.set('n', '<space>fr', fzf.resume, { desc = 'resume' })
       vim.keymap.set('n', '<space>ft', fzf.treesitter, { desc = 'treesitter' })
       vim.keymap.set('n', '<space>fq', fzf.quickfix, { desc = 'quickfix' })
-      vim.keymap.set('n', '<space>fQ', fzf.quickfix_stack, { desc = 'loclist' })
+      vim.keymap.set('n', '<space>fQ', fzf.quickfix_stack, { desc = 'previous quickfix lists' })
       vim.keymap.set('n', '<space>fL', fzf.lines, { desc = 'all buffer lines' })
       vim.keymap.set('n', '<space>fl', fzf.blines, { desc = 'current buffer lines' })
       vim.keymap.set('n', '<space>bb', fzf.buffers, { desc = 'buffers' })
