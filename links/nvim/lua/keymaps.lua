@@ -15,17 +15,6 @@ vim.keymap.set('n', '<C-Down>', window.expand_down, { desc = 'Increase window he
 vim.keymap.set('n', '<C-Left>', window.expand_left, { desc = 'Increase window width (leftwards)' })
 vim.keymap.set('n', '<C-Right>', window.expand_right, { desc = 'Increase window width (rightwards)' })
 
--- Quickfix Mappings
-local quickfix = require 'functions/quickfix' -- ~/.config/nvim/lua/functions/quickfix.lua
-vim.keymap.set('n', '<space>qt', quickfix.toggleQuickFix, { desc = 'toggle' })
-vim.keymap.set('n', '<space>qo', '<cmd>copen<CR>', { desc = 'open' })
-vim.keymap.set('n', '<space>qn', '<cmd>cnext<CR>', { desc = 'next' })
-vim.keymap.set('n', '<space>qN', '<cmd>cnfile<CR>', { desc = 'next' })
-vim.keymap.set('n', '<space>qp', '<cmd>cprevious<CR>', { desc = 'previous' })
-vim.keymap.set('n', '<space>qP', '<cmd>cpfile<CR>', { desc = 'previous' })
-vim.keymap.set('n', '<space>qf', '<cmd>cfirst<CR>', { desc = 'first' })
-vim.keymap.set('n', '<space>ql', '<cmd>clast<CR>', { desc = 'last' })
-
 -- Swap between buffers
 vim.keymap.set('n', '<space><space>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
 

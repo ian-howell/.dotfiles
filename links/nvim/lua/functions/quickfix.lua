@@ -1,16 +1,5 @@
 local M = {}
 
-function M.toggleQuickFix()
-  for _, win in ipairs(vim.fn.getwininfo()) do
-    -- TODO: This has some weirdness with location lists
-    if win.quickfix == 1 then
-      vim.cmd 'cclose | wincmd p'
-      return
-    end
-  end
-  vim.cmd 'copen'
-end
-
 -- openInSplit opens the current quickfix entry in a split window.
 -- It is intended to be called from within a quickfix window.
 function M.openInSplit()
