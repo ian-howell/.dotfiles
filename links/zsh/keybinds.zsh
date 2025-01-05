@@ -4,6 +4,7 @@ bindkey -v
 # allow v to edit the command line (standard behaviour)
 zle -N edit-command-line
 autoload -Uz edit-command-line
+bindkey '^X^E' edit-command-line
 bindkey -M vicmd 'q' edit-command-line
 
 # allow ctrl-p, ctrl-n for navigate history (standard behaviour)
