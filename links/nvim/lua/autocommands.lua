@@ -42,8 +42,14 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
   desc = 'Setup keybindings for the quickfix window',
   group = vim.api.nvim_create_augroup('quickfix_mapping', { clear = true }),
   callback = function()
-    vim.keymap.set('n', '-', quickfix.openInSplit, { desc = 'Open quickfix in split' })
-    vim.keymap.set('n', '\\', quickfix.openInVsplit, { desc = 'Open quickfix in vsplit' })
+    vim.keymap.set('n', '-', quickfix.openInSplit, {
+      buffer = true,
+      desc = 'Open quickfix in split',
+    })
+    vim.keymap.set('n', '\\', quickfix.openInVsplit, {
+      buffer = true,
+      desc = 'Open quickfix in vsplit',
+    })
   end,
 })
 
