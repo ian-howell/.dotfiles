@@ -29,6 +29,9 @@ vim.keymap.set('n', '<space>ql', '<cmd>clast<CR>', { desc = 'last' })
 -- Swap between buffers
 vim.keymap.set('n', '<space><space>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
 
+-- Go to file even if it doesn't exist
+vim.keymap.set('n', 'gf', '<cmd>edit <cfile><CR>', { desc = 'Go to file' })
+
 -- TODO: Figure out how to get put this with the GitSigns config
 -- vim.keymap.set('n', '<space>tg', '<cmd>Gitsigns toggle_linehl<cr>', { desc = 'git diff' })
 vim.keymap.set('n', '<space>tg', function()
