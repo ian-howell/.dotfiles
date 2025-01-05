@@ -2,6 +2,13 @@
 # the delay when switching between viins and vicmd modes.
 KEYTIMEOUT=1
 
+# If ohmyposh is installed, use it to set the prompt. Note that this returns from the script early.
+# If oh-my-posh is not installed, skip this and use my custom prompt.
+if command -v oh-my-posh &> /dev/null; then
+  eval "$(oh-my-posh init zsh --config ~/.dotfiles/links/ohmyposh/tokyonight.omp.yaml)"
+  return
+fi
+
 function set_prompt() {
   # Return code must be done first
   return_code_icon="$(returncode_prompt_info $?)"
