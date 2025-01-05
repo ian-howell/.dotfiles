@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+
+palette:
+  blue-bell: "#9aa5ce"
+  blue-black: "#565f89"
+  celeste-blue: "#b4f9f8"
+  light-sky-blue: "#7dcfff"
+  main-bg: "#24283b"
+  pastal-grey: "#cfc9c2"
+  pistachio-green: "#9ece6a"
+  terminal-black: "#414868"
+  terminal-blue: "#7aa2f7"
+  terminal-green: "#73daca"
+  terminal-magenta: "#bb9af7"
+  terminal-red: "#f7768e"
+  terminal-white: "#c0caf5"
+  terminal-yellow: "#e0af68"
+  white-blue: "#a9b1d6"
+secondary_prompt:
+  template: ">    "
+transient_prompt:
+  # The transient prompt replaces the primary prompt after the command has run
+  foreground: p:pastel-grey
+  template: '$ '
+console_title_template: " {{ .Folder }} :: {{if .Root}}Admin{{end}}"
+blocks:
+- type: prompt
+  alignment: left
+  segments:
+  - properties:
+      max_width: 30
+      style: powerlevel
+    template: "<b>{{ .Path }}</b> "
+    foreground: p:terminal-magenta
+    type: path
+    style: plain
+  - properties:
+      branch_icon: "\ue725 "
+      fetch_status: true
+    # Recall that >- means that newlines are folded into spaces, and that a dash in a Go template string means
+    # to "eat" all blank spaces on that side of the token. This is abused a bit in the following to selectively
+    # separate components with spaces. For example, there
+    template: >-
+      {{ .HEAD }}
+      {{ if .Working.Changed -}}
+        {{- if gt .Working.Unmerged 0 }}<p:terminal-magenta>!{{ .Working.Unmerged }}</> {{ end -}}
+        {{- if gt .Working.Added 0 }}<p:pistachio-green>+{{ .Working.Added }}</> {{ end -}}
+        {{- if gt .Working.Modified 0 }}<p:blue-bell>~{{ .Working.Modified }}</> {{ end -}}
+        {{- if gt .Working.Deleted 0 }}<p:terminal-red>-{{ .Working.Deleted }}</> {{ end -}}
+        {{- if gt .Working.Untracked 0 }}<p:terminal-yellow>?{{ .Working.Untracked }}</> {{ end -}}
+      {{- end -}}
+      {{ if or (.Working.Changed) (.Staging.Changed) }}|{{ end }}
+      {{ if .Staging.Changed -}}
+        {{- if gt .Staging.Unmerged 0 }}<p:terminal-magenta>!{{ .Staging.Unmerged }}</> {{ end -}}
+        {{- if gt .Staging.Added 0 }}<p:pistachio-green>+{{ .Staging.Added }}</> {{ end -}}
+        {{- if gt .Staging.Modified 0 }}<p:blue-bell>~{{ .Staging.Modified }}</> {{ end -}}
+        {{- if gt .Staging.Deleted 0 }}<p:terminal-red>-{{ .Staging.Deleted }}</> {{ end -}}
+        {{- if gt .Staging.Untracked 0 }}<p:terminal-yellow>?{{ .Staging.Untracked }}</>{{ end -}}
+      {{- end }}
+    foreground: p:light-sky-blue
+    type: git
+    style: plain
+- type: prompt
+  alignment: left
+  segments:
+  - template: $
+    foreground_templates:
+    - "{{ if gt .Code 0 }}p:terminal-red{{ end }}"
+    - "{{ if eq .Code 0 }}p:pistachio-green{{ end }}"
+    type: text
+    style: plain
+  newline: true
+version: 3
+final_space: true

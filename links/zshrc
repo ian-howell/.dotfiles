@@ -7,8 +7,6 @@ source $HOME/.dotfiles/links/zsh/functions.zsh
 # Turn on colors
 autoload -U colors && colors
 
-source $HOME/.dotfiles/links/zsh/prompt.zsh
-
 source $HOME/.dotfiles/links/zsh/keybinds.zsh
 
 #===[ Completion
@@ -96,6 +94,13 @@ setopt interactivecomments
 
 # Set up zoxide
 eval "$(zoxide init --cmd cd zsh)"
+
+# eval "$(oh-my-posh init zsh)"
+if command -v oh-my-posh &> /dev/null; then
+  eval "$(oh-my-posh init zsh --config ~/.dotfiles/links/ohmyposh/tokyonight.omp.yaml)"
+else
+  source "$HOME/.dotfiles/links/zsh/prompt.zsh"
+fi
 
 #===[ Plugins
 source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"

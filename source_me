@@ -25,6 +25,7 @@ bash src/install_lazygit
 bash src/install_neovim
 bash src/install_zoxide
 bash src/install_sesh
+bash src/install_ohmyposh
 
 ./src/linkdotfiles/linkdotfiles
 
