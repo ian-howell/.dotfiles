@@ -104,7 +104,7 @@ return {
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<space>ca', vim.lsp.buf.code_action, 'action', { 'n', 'x' })
+          map('<space>ca', fzf.lsp_code_actions, 'action', { 'n', 'x' })
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
