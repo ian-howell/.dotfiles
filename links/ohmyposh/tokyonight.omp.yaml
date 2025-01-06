@@ -20,8 +20,12 @@ secondary_prompt:
   template: ">    "
 transient_prompt:
   # The transient prompt replaces the primary prompt after the command has run
-  foreground: p:pastel-grey
-  template: '$ '
+  template: "$ "
+  foreground_templates:
+  - "{{ if gt .Code 0 }}p:terminal-red{{ end }}"
+  - "{{ if eq .Code 0 }}p:terminal-black{{ end }}"
+  type: text
+  style: plain
 console_title_template: " {{ .Folder }} :: {{if .Root}}Admin{{end}}"
 blocks:
 - type: prompt
