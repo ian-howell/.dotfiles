@@ -34,6 +34,7 @@ require('lazy').setup({
   require 'plugins/lualine', -- ~/.config/nvim/lua/plugins/lualine.lua
   require 'plugins/mini', -- ~/.config/nvim/lua/plugins/mini.lua
   require 'plugins/noice', -- ~/.config/nvim/lua/plugins/noice.lua
+  require 'plugins/obsession', -- ~/.config/nvim/lua/plugins/obsession.lua
   require 'plugins/quicker', -- ~/.config/nvim/lua/plugins/quicker.lua
   require 'plugins/sleuth', -- ~/.config/nvim/lua/plugins/sleuth.lua
   require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
