@@ -31,6 +31,9 @@ blocks:
 - type: prompt
   alignment: left
   segments:
+  - template: "\n"
+    type: text
+    style: plain
   - type: session
     style: plain
     foreground: p:blue-black
