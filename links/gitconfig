@@ -46,3 +46,6 @@
     whitespace = red reverse
 [alias]
     clean-branches = clean-branches
+
+[include]
+    path = ~/.config/work/.gitconfig

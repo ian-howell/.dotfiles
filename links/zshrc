@@ -92,6 +92,11 @@ setopt no_share_history
 # recognize that comments are comments
 setopt interactivecomments
 
+# Source work-specific zshrc (if it exists)
+if [[ -s "$HOME/.config/work/zshrc" ]]; then
+    source "$HOME/.config/work/zshrc"
+fi
+
 # Set up zoxide
 eval "$(zoxide init --cmd cd zsh)"
 
