@@ -74,19 +74,27 @@ return {
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', fzf.lsp_definitions, 'goto definition')
+          map('gd', function()
+            fzf.lsp_definitions { jump_to_single_result = true }
+          end, 'goto definition')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('gD', fzf.lsp_typedefs, 'goto type definition')
+          map('gD', function()
+            fzf.lsp_typedefs { jump_to_single_result = true }
+          end, 'goto type definition')
 
           -- Find references for the word under your cursor.
-          map('<space>cr', fzf.lsp_references, 'find references')
+          map('<space>cr', function()
+            fzf.lsp_references { jump_to_single_result = true }
+          end, 'find references')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('<space>ci', fzf.lsp_implementations, 'goto implementation')
+          map('<space>ci', function()
+            fzf.lsp_implementations { jump_to_single_result = true }
+          end, 'goto implementation')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Symbols are things like variables, functions, types, etc.
@@ -105,6 +113,9 @@ return {
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('<space>ca', fzf.lsp_code_actions, 'action', { 'n', 'x' })
+
+          -- Show all LSP info for the item under your cursor.
+          map('<space>cA', fzf.lsp_finder, 'finder')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
