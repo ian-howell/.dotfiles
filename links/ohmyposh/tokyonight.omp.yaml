@@ -23,7 +23,7 @@ transient_prompt:
   template: "$ "
   foreground_templates:
   - "{{ if gt .Code 0 }}p:terminal-red{{ end }}"
-  - "{{ if eq .Code 0 }}p:terminal-black{{ end }}"
+  - "{{ if eq .Code 0 }}p:pistachio-green{{ end }}"
   type: text
   style: plain
 console_title_template: " {{ .Folder }} :: {{if .Root}}Admin{{end}}"
