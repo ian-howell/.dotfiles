@@ -61,6 +61,10 @@ return {
       vim.keymap.set('n', '<space>fL', fzf.lines, { desc = 'all buffer lines' })
       vim.keymap.set('n', '<space>fl', fzf.blines, { desc = 'current buffer lines' })
       vim.keymap.set('n', '<space>bb', fzf.buffers, { desc = 'buffers' })
+
+      vim.keymap.set('n', '<space>fg', fzf.git_status, { desc = 'git files' })
+      vim.keymap.set('n', '<space>gl', fzf.git_commits, { desc = 'git log' })
+      vim.keymap.set('n', '<space>gh', fzf.git_bcommits, { desc = 'git log for file' })
     end,
   },
 }
