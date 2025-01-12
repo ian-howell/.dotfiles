@@ -27,6 +27,7 @@ require('lazy').setup({
   require 'plugins/autoformat', -- ~/.config/nvim/lua/plugins/autoformat.lua
   require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
   require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
+  require 'plugins/flit', -- ~/.config/nvim/lua/plugins/flit.lua
   require 'plugins/fzf', -- ~/.config/nvim/lua/plugins/fzf.lua
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
   require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
@@ -38,7 +39,6 @@ require('lazy').setup({
   require 'plugins/quicker', -- ~/.config/nvim/lua/plugins/quicker.lua
   require 'plugins/sleuth', -- ~/.config/nvim/lua/plugins/sleuth.lua
   require 'plugins/smooth', -- ~/.config/nvim/lua/plugins/smooth.lua
-  require 'plugins/sneak', -- ~/.config/nvim/lua/plugins/sneak.lua
   require 'plugins/surround', -- ~/.config/nvim/lua/plugins/surround.lua
   require 'plugins/tmux-navigator', -- ~/.config/nvim/lua/plugins/tmux-navigator.lua
   require 'plugins/todo-comments', -- ~/.config/nvim/lua/plugins/todo-comments.lua
