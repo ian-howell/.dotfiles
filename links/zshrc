@@ -103,7 +103,12 @@ eval "$(zoxide init --cmd cd zsh)"
 source "$HOME/.dotfiles/links/zsh/prompt.zsh"
 
 #===[ Plugins
+
 source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
+
 # Fish-like autosuggestions
+bindkey '^y' autosuggest-accept
+bindkey '^e' autosuggest-clear
 source "$HOME/.dotfiles/links/zsh/zsh-autosuggestions.zsh"
+
 source "$HOME/.dotfiles/links/zsh/almostontop.plugin.zsh"
