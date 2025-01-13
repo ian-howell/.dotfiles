@@ -1,0 +1,7 @@
+import = [
+	"/home/azureuser/.config/work/sesh.toml",
+]
+
+[[session]]
+name = "dotfiles"
+path = "~/.dotfiles"
