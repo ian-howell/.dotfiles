@@ -35,6 +35,19 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
   callback = RecallLastPosition,
 })
 
+-- When creating a new git commit, start in insert mode
+vim.api.nvim_create_autocmd('BufWinEnter', {
+  pattern = '*.git/COMMIT_EDITMSG',
+  desc = 'Start git commit messages in insert mode',
+  group = vim.api.nvim_create_augroup('gitcommit-insert', { clear = true }),
+  callback = function()
+    -- If it's a new commit, start in insert mode, otherwise start in normal mode
+    if vim.fn.getline(1) == '' then
+      vim.cmd 'startinsert!'
+    end
+  end,
+})
+
 local quickfix = require 'functions/quickfix' -- ~/.config/nvim/lua/functions/quickfix.lua
 vim.api.nvim_create_autocmd({ 'FileType' }, {
   pattern = 'qf',
