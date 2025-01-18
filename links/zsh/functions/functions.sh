@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.dotfiles/links/zsh/functions/dexec.sh"
+
 # Opposite of cd. Giving an argument jumps up that many directories
 bd() {
   iter="${1:-1}"
