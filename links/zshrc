@@ -2,7 +2,7 @@
 
 source $HOME/.dotfiles/links/zsh/aliases.zsh
 
-source $HOME/.dotfiles/links/zsh/functions.zsh
+source $HOME/.dotfiles/links/zsh/functions.sh
 
 # Turn on colors
 autoload -U colors && colors
