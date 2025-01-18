@@ -1,0 +1,6 @@
+# Shellcheck complains that it can't follow non-constant source, meaning that I can't use $HOME
+disable=SC1090
+# Shellcheck complains when it can't read a source for whatever reason
+disable=SC1091
+# Ignore the warnings about cd failing
+disable=SC2164

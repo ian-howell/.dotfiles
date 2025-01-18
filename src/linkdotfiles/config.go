@@ -54,6 +54,7 @@ func getConfig() Config {
 			{"git-hook-post-commit", ".dotfiles/.git/hooks/post-rewrite"},
 			{"lazygit.yml", ".config/lazygit/config.yml"},
 			{"sesh", ".config/sesh"},
+			{"shellcheckrc", ".shellcheckrc"},
 		},
 	}
 }
