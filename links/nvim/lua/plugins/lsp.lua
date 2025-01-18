@@ -119,6 +119,16 @@ return {
           -- Show all LSP info for the item under your cursor.
           map('<space>cA', fzf.lsp_finder, 'finder')
 
+          -- Toggle inline diagnostics
+          local inline_diagnostics_enabled = true
+          map('<space>td', function()
+            if vim.diagnostic.count() == 0 then
+              return
+            end
+            inline_diagnostics_enabled = not inline_diagnostics_enabled
+            vim.diagnostic.config { virtual_text = inline_diagnostics_enabled }
+          end, 'toggle diagnostics')
+
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
