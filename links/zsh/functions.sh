@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Opposite of cd. Giving an argument jumps up that many directories
 bd() {
   iter="${1:-1}"
