@@ -1,5 +1,7 @@
 #!/usr/bin/zsh
 
+source "$HOME/.dotfiles/links/zsh/utils/utils.sh"
+
 source $HOME/.dotfiles/links/zsh/aliases.zsh
 
 source $HOME/.dotfiles/links/zsh/functions.sh
