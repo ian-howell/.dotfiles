@@ -11,11 +11,11 @@ bd() {
 }
 
 # Add paging and color to various commands
-grepc() { grep -I "$@" --color=always | less -R --quit-if-one-screen }
-agc() { ag --color --group "$@" | less -R --quit-if-one-screen }
-jqc() { jq -C "$@" | less -R --quit-if-one-screen }
-yqc() { yq -C "$@" | less -R --quit-if-one-screen }
-treec() { tree -C "$@" | less -R --quit-if-one-screen }
+grepc() { grep -I "$@" --color=always | less -R --quit-if-one-screen; }
+agc() { ag --color --group "$@" | less -R --quit-if-one-screen; }
+jqc() { jq -C "$@" | less -R --quit-if-one-screen; }
+yqc() { yq -C "$@" | less -R --quit-if-one-screen; }
+treec() { tree -C "$@" | less -R --quit-if-one-screen; }
 
 count() {
   ag "$@" -c | awk '
