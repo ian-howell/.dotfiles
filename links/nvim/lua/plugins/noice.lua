@@ -14,6 +14,8 @@ return {
       },
       messages = {
         view = 'mini', -- use the mini view for messages. The huge popup is annoying.
+        view_error = 'mini', -- view for errors
+        view_warn = 'mini', -- view for warnings
         view_search = false, -- disable the virtual text that shows the search count
       },
       notify = {
@@ -21,14 +23,10 @@ return {
       },
       presets = {
         command_palette = true, -- position the cmdline and popupmenu together
-        long_message_to_split = true, -- long messages will be sent to a split
-        inc_rename = false, -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = true, -- add a border to hover docs and signature help
       },
     },
     dependencies = {
       'MunifTanjim/nui.nvim',
-      'rcarriga/nvim-notify',
     },
 
     vim.keymap.set('n', '<space>nd', '<cmd>NoiceDismiss<CR>', { desc = 'NoiceDismiss' }),
