@@ -37,46 +37,51 @@ end
 
 -- get_window_by_number returns the window handle for the specified window number.
 function M.get_window_by_number(win_number)
-  local windows = vim.api.nvim_list_wins()
-  for _, win in ipairs(windows) do
-    if vim.api.nvim_win_get_number(win) == win_number then
-      return win
-    end
-  end
-  return nil
+  return vim.fn.win_getid(win_number)
 end
 
--- get_left_window returns the window handle for the window to the left of the current window.
--- It returns nil if there is no window to the left.
-function M.get_left_window()
-  if M.touches_left_edge(vim.api.nvim_win_get_number(0)) then
+-- get_current_window returns the window handle for the current window.
+function M.get_current_window()
+  return vim.api.nvim_get_current_win()
+end
+
+-- get_window_number returns the window number for the specified window handle, or the current window if no
+-- window is given.
+function M.get_window_number(window)
+  return vim.api.nvim_win_get_number(window or M.get_current_window())
+end
+
+-- get_left_window returns the window handle for the window to the left of the given window, or the current
+-- window if no window is given. It returns nil if there is no window to the left.
+function M.get_left_window(window_number)
+  if M.touches_left_edge(window_number or vim.api.nvim_win_get_number(0)) then
     return nil
   end
   return M.get_window_by_number(vim.fn.winnr 'h')
 end
 
--- get_right_window returns the window handle for the window to the right of the current window.
--- It returns nil if there is no window to the right.
-function M.get_right_window()
-  if M.touches_right_edge(vim.api.nvim_win_get_number(0)) then
+-- get_right_window returns the window handle for the window to the right of the given window, or the current
+-- window if no window is given. It returns nil if there is no window to the right.
+function M.get_right_window(window_number)
+  if M.touches_right_edge(window_number or vim.api.nvim_win_get_number(0)) then
     return nil
   end
   return M.get_window_by_number(vim.fn.winnr 'l')
 end
 
--- get_above_window returns the window handle for the window above the current window.
--- It returns nil if there is no window above.
-function M.get_above_window()
-  if M.touches_top_edge(vim.api.nvim_win_get_number(0)) then
+-- get_above_window returns the window handle for the window above the given window, or the current window if
+-- no window is given. It returns nil if there is no window above.
+function M.get_above_window(window_number)
+  if M.touches_top_edge(window_number or M.get_current_window()) then
     return nil
   end
   return M.get_window_by_number(vim.fn.winnr 'k')
 end
 
--- get_below_window returns the window handle for the window below the current window.
--- It returns nil if there is no window below.
-function M.get_below_window()
-  if M.touches_bottom_edge(vim.api.nvim_win_get_number(0)) then
+-- get_below_window returns the window handle for the window below the given window, or the current window if
+-- no window is given. It returns nil if there is no window below.
+function M.get_below_window(window_number)
+  if M.touches_bottom_edge(window_number or vim.api.nvim_win_get_number(0)) then
     return nil
   end
   return M.get_window_by_number(vim.fn.winnr 'j')
