@@ -15,6 +15,73 @@ local function too_narrow(window_number)
   return vim.api.nvim_win_get_width(vim.fn.win_getid(window_number)) <= 2
 end
 
+-- touches_top_edge returns true if the window touches the top edge of the screen.
+function M.touches_top_edge(window_number)
+  return vim.fn.winnr 'k' == window_number
+end
+
+-- touches_bottom_edge returns true if the window touches the bottom edge of the screen.
+function M.touches_bottom_edge(window_number)
+  return vim.fn.winnr 'j' == window_number
+end
+
+-- touches_left_edge returns true if the window touches the left edge of the screen.
+function M.touches_left_edge(window_number)
+  return vim.fn.winnr 'h' == window_number
+end
+
+-- touches_right_edge returns true if the window touches the right edge of the screen.
+function M.touches_right_edge(window_number)
+  return vim.fn.winnr 'l' == window_number
+end
+
+-- get_window_by_number returns the window handle for the specified window number.
+function M.get_window_by_number(win_number)
+  local windows = vim.api.nvim_list_wins()
+  for _, win in ipairs(windows) do
+    if vim.api.nvim_win_get_number(win) == win_number then
+      return win
+    end
+  end
+  return nil
+end
+
+-- get_left_window returns the window handle for the window to the left of the current window.
+-- It returns nil if there is no window to the left.
+function M.get_left_window()
+  if M.touches_left_edge(vim.api.nvim_win_get_number(0)) then
+    return nil
+  end
+  return M.get_window_by_number(vim.fn.winnr 'h')
+end
+
+-- get_right_window returns the window handle for the window to the right of the current window.
+-- It returns nil if there is no window to the right.
+function M.get_right_window()
+  if M.touches_right_edge(vim.api.nvim_win_get_number(0)) then
+    return nil
+  end
+  return M.get_window_by_number(vim.fn.winnr 'l')
+end
+
+-- get_above_window returns the window handle for the window above the current window.
+-- It returns nil if there is no window above.
+function M.get_above_window()
+  if M.touches_top_edge(vim.api.nvim_win_get_number(0)) then
+    return nil
+  end
+  return M.get_window_by_number(vim.fn.winnr 'k')
+end
+
+-- get_below_window returns the window handle for the window below the current window.
+-- It returns nil if there is no window below.
+function M.get_below_window()
+  if M.touches_bottom_edge(vim.api.nvim_win_get_number(0)) then
+    return nil
+  end
+  return M.get_window_by_number(vim.fn.winnr 'j')
+end
+
 -- expand_up expands the window upwards by one line.
 -- If it can't expand the window, it returns false.
 function M.expand_up(window_number, depth)
