@@ -27,8 +27,9 @@ setopt inc_append_history     # add commands to HISTFILE in order of execution
 
 #===[ fzf
 source ~/.fzf.zsh
+
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --filepath-word" # Note to self: --border doesn't play nicely with fzf-tab
-export FZF_DEFAULT_COMMAND="fd --type f --hidden --no-ignore --exclude='.git'"
+export FZF_DEFAULT_COMMAND="fd --type file --hidden --no-ignore --exclude='.git'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # Preview file content using bat (https://github.com/sharkdp/bat)
 export FZF_CTRL_T_OPTS="
