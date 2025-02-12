@@ -55,7 +55,6 @@ return {
         { '<space>g', group = 'git', mode = { 'n', 'v' } },
         { '<space>q', group = 'quickfix' },
         { '<space>G', group = 'go', mode = { 'n', 'v' } },
-        { '<space>C', group = 'copilot' },
       },
     },
   },
