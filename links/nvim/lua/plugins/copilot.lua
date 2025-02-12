@@ -29,7 +29,9 @@ return {
         copilot_node_command = 'node', -- Node.js version must be > 18.x
         server_opts_overrides = {},
       }
+    end,
 
+    init = function()
       -- Toggle
       -- TODO: This just doesn't work. It doesn't even appear to work when I run the command directly. It
       -- works more like 'Copilot disable'
