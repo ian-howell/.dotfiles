@@ -28,7 +28,7 @@ require('lazy').setup({
   require 'plugins/autopairs', -- ~/.config/nvim/lua/plugins/autopairs.lua
   require 'plugins/blink', -- ~/.config/nvim/lua/plugins/blink.lua'
   require 'plugins/copilot', -- ~/.config/nvim/lua/plugins/copilot.lua
-  require 'plugins/flit', -- ~/.config/nvim/lua/plugins/flit.lua
+  require 'plugins/flash', -- ~/.config/nvim/lua/plugins/flash.lua
   require 'plugins/fzf', -- ~/.config/nvim/lua/plugins/fzf.lua
   require 'plugins/gitsigns', -- ~/.config/nvim/lua/plugins/gitsigns.lua
   require 'plugins/go', -- ~/.config/nvim/lua/plugins/go.lua
