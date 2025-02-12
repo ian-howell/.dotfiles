@@ -16,4 +16,6 @@ require 'lazy-bootstrap' -- ~/.config/nvim/lua/lazy-bootstrap.lua
 
 require 'plugins' -- ~/.config/nvim/lua/plugins.lua
 
+vim.cmd [[colorscheme tokyonight-storm]]
+
 -- vim: ts=2 sts=2 sw=2 et
