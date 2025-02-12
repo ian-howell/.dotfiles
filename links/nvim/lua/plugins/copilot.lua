@@ -6,7 +6,6 @@ return {
 
     config = function()
       require('copilot').setup {
-        panel = { enabled = false },
         suggestion = {
           enabled = true,
           auto_trigger = true,
@@ -35,8 +34,9 @@ return {
       -- TODO: This just doesn't work. It doesn't even appear to work when I run the command directly. It
       -- works more like 'Copilot disable'
       -- vim.keymap.set('n', '<space>tc', '<cmd>Copilot toggle<CR>', { desc = 'Toggle Copilot' })
-      vim.keymap.set('n', '<space>tcd', '<cmd>Copilot disable<CR>', { desc = 'disable copilot' })
-      vim.keymap.set('n', '<space>tce', '<cmd>Copilot enable<CR>', { desc = 'enable copilot' })
+      vim.keymap.set('n', '<space>Cd', '<cmd>Copilot disable<CR>', { desc = 'disable' })
+      vim.keymap.set('n', '<space>Ce', '<cmd>Copilot enable<CR>', { desc = 'enable' })
+      vim.keymap.set('n', '<space>Cp', '<cmd>Copilot panel<CR>', { desc = 'open panel' })
     end,
   },
 }
