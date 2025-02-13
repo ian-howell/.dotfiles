@@ -65,4 +65,14 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
   end,
 })
 
+-- When entering a new file, set the formatoptions to *not* insert comment characters when I press `o` or `O`.
+-- NOTE: This is needed here because formatoptions ise set by the filetype plugin, which happens after all of
+-- my settings. This causes my custom settings to be overridden.
+-- stuff overrides my settings.
+vim.api.nvim_create_autocmd('BufEnter', {
+  callback = function()
+    vim.bo.formatoptions = vim.bo.formatoptions:gsub('o', '')
+  end,
+})
+
 -- vim: ts=2 sts=2 sw=2 et
