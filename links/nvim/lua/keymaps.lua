@@ -8,13 +8,6 @@ vim.keymap.set('n', '<space>th', '<cmd>set hlsearch!<CR>')
 vim.keymap.set('n', '-', '<cmd>split<CR>', { desc = 'Split window horizontally' })
 vim.keymap.set('n', '\\', '<cmd>vsplit<CR>', { desc = 'Split window vertically' })
 
--- Window resizing
-local window = require 'functions/window' -- ~/.config/nvim/lua/functions/window.lua
-vim.keymap.set('n', '<C-Up>', window.expand_up, { desc = 'Increase window height (upwards)' })
-vim.keymap.set('n', '<C-Down>', window.expand_down, { desc = 'Increase window height (downwards)' })
-vim.keymap.set('n', '<C-Left>', window.expand_left, { desc = 'Increase window width (leftwards)' })
-vim.keymap.set('n', '<C-Right>', window.expand_right, { desc = 'Increase window width (rightwards)' })
-
 -- Swap between buffers
 vim.keymap.set('n', '<space><space>', '<C-6>', { desc = '[ ] Swap to the last buffer' })
 
