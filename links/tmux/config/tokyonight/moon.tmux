@@ -23,7 +23,8 @@ set -g status-right-style "NONE,fg=#828bb8,bg=#1e2030"
 
 set -g status-left "#[fg=#1b1d2b,bg=#82aaff,bold] #S #[fg=#82aaff,bg=#1e2030,nobold,nounderscore,noitalics]"
 
-set -g status-right '#[default] #(cd #{pane_current_path}; git rev-parse --abbrev-ref HEAD)'
+set -g status-right '#[default]'
+set -ag status-right '#(cd #{pane_current_path}; git rev-parse --is-inside-work-tree >/dev/null 2>&1 && echo " $(git rev-parse --abbrev-ref HEAD) ")'
 set -ag status-right "#[fg=#1e2030,bg=#1e2030,nobold,nounderscore,noitalics]#[fg=#82aaff,bg=#1e2030] #{prefix_highlight} #[fg=#3b4261,bg=#1e2030,nobold,nounderscore,noitalics]#[fg=#82aaff,bg=#3b4261] %Y-%m-%d  %H:%M #[fg=#82aaff,bg=#3b4261,nobold,nounderscore,noitalics]#[fg=#1b1d2b,bg=#82aaff,bold] #h "
 
 setw -g window-status-activity-style "underscore,fg=#828bb8,bg=#1e2030"
