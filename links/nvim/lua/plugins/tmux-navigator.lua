@@ -1,22 +1,18 @@
 return {
-  { -- TMUX Navigation
-    'christoomey/vim-tmux-navigator',
-    vim.keymap.set('n', '<c-h>', '<cmd>TmuxNavigateLeft<cr>', {
-      silent = true,
-      desc = 'Move to the left pane',
-    }),
-    vim.keymap.set('n', '<c-j>', '<cmd>TmuxNavigateDown<cr>', {
-      silent = true,
-      desc = 'Move to the lower pane',
-    }),
-    vim.keymap.set('n', '<c-k>', '<cmd>TmuxNavigateUp<cr>', {
-      silent = true,
-      desc = 'Move to the upper pane',
-    }),
-    vim.keymap.set('n', '<c-l>', '<cmd>TmuxNavigateRight<cr>', {
-      silent = true,
-      desc = 'Move to the right pane',
-    }),
+  "christoomey/vim-tmux-navigator",
+  cmd = {
+    "TmuxNavigateLeft",
+    "TmuxNavigateDown",
+    "TmuxNavigateUp",
+    "TmuxNavigateRight",
+    "TmuxNavigatePrevious",
+    "TmuxNavigatorProcessList",
+  },
+  keys = {
+    { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
+    { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
+    { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
+    { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
   },
 }
 
