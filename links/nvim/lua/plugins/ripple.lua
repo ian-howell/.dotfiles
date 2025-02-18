@@ -5,8 +5,8 @@ return {
   keys = {
     "<C-Up>",
     "<C-Down>",
+    "<C-Left>",
     "<C-Right>",
-    "<C-Down>",
   },
   opts = {
     keys = {
