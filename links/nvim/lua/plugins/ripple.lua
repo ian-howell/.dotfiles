@@ -8,5 +8,8 @@ return {
     "<C-Left>",
     "<C-Right>",
   },
-  opts = {},
+  opts = {
+    vertical_step_size = 2,
+    horizontal_step_size = 5,
+  },
 }
