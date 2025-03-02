@@ -112,7 +112,23 @@ end
 
 set_autoformat("go", true)
 set_autoformat("lua", true)
+set_autoformat("markdown", false)
 set_autoformat("sh", false)
 set_autoformat("yaml", false)
+
+-- Textwidth setting
+local set_textwidth = function(pattern, textwidth)
+  vim.api.nvim_create_autocmd({ "FileType" }, {
+    pattern = { pattern },
+    callback = function()
+      vim.bo.textwidth = textwidth
+    end,
+  })
+end
+
+set_textwidth("go", 110)
+set_textwidth("markdown", 80)
+set_textwidth("lua", 80)
+set_textwidth("sh", 80)
 
 -- vim: ts=2 sts=2 sw=2 et
