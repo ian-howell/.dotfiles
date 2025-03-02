@@ -84,7 +84,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
   callback = function()
     vim.opt_local.cursorline = true
     vim.opt_local.cursorcolumn = true
-    vim.opt_local.colorcolumn = "110"
+    vim.opt_local.colorcolumn = tostring(vim.opt_local.textwidth:get())
     vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
   end,
 })
