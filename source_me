@@ -28,6 +28,8 @@ bash src/install_zoxide
 bash src/install_sesh
 bash src/install_ohmyposh
 
+# TODO: Just `go run` this. Currently, I need to rebuild the binary every time I
+# adjust my dotfile links.
 ./src/linkdotfiles/linkdotfiles
 
 git submodule update --init --recursive
