@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-change_number=$(git log | grep "^    Change-Id: " | head -n1 | cut -d' ' -f6)
-git review -d "$change_number"

@@ -50,8 +50,6 @@ func getConfig() Config {
 			{"zsh", ".zsh"},
 			{"zshenv", ".zshenv"},
 			{"zshrc", ".zshrc"},
-			{"git-hook-post-commit", ".dotfiles/.git/hooks/post-commit"},
-			{"git-hook-post-commit", ".dotfiles/.git/hooks/post-rewrite"},
 			{"lazygit.yml", ".config/lazygit/config.yml"},
 			{"sesh", ".config/sesh"},
 			{"shellcheckrc", ".shellcheckrc"},
