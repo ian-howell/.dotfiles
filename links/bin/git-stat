@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+
 usage() {
     printf "usage: git stat [ref]\n\n"
     printf "If [ref] is provided, stat all files that differ from [ref].\n"
-    printf "If [ref] is not provided, stat all files that differ from master.\n"
+    printf "If [ref] is not provided, stat all files that differ from main.\n"
 }
 
 if [[ "$1" = "-h" ]]; then
@@ -10,6 +11,6 @@ if [[ "$1" = "-h" ]]; then
   exit 0
 fi
 
-ref="${1:-master}"
+ref="${1:-main}"
 git diff "$(git merge-base HEAD "$ref")" --stat="$(tput cols)" --color=always \
   | sort --key=2 --field-separator \| --numeric-sort --reverse
