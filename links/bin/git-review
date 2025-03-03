@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "git stat"
+git stat
+
+merge_commit=$(git merge-base HEAD origin/main)
+git reset --soft $merge_commit
+git reset  # to make everything unstaged
