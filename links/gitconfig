@@ -48,7 +48,7 @@
 [pull]
 	rebase = true
 [push]
-	default = matching
+	default = simple
 [remote.origin]
 	# Only push the current branch
 	push = HEAD
