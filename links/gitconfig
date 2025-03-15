@@ -1,5 +1,7 @@
 [alias]
 	clean-branches = clean-branches
+[branch]
+	sort = -committerdate
 [color]
 	ui = true
 [color "diff-highlight"]
