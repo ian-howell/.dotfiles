@@ -52,6 +52,11 @@
 [remote.origin]
 	# Only push the current branch
 	push = HEAD
+[rerere]
+        # REuse REcorded Resolution causes git to "remember" how to address a
+        # given conflict. When git encounters a conflict that it has already
+        # seen, it will automatically use the same resolution as before.
+        enabled = true
 [user]
 	email = ian.howell0@gmail.com
 	name = Ian Howell
