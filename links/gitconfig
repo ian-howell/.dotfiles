@@ -48,6 +48,8 @@
     clean-branches = clean-branches
 [pull]
 	rebase = true
+[column]
+        ui = auto
 [include]
     path = ~/.dotfiles/links/delta/tokyonigh_storm.gitconfig
 
