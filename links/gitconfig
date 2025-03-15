@@ -1,60 +1,58 @@
-[core]
-    editor = nvim
-    excludesfile = ~/.dotfiles/links/global_gitignore
-    pager = delta
-[push]
-    default = matching
-[remote.origin]
-    # Only push the current branch
-    push = HEAD
-[include]
-    path = ~/.dotfiles/local_gitconfig
-[user]
-    email = ian.howell0@gmail.com
-    name = Ian Howell
-[diff]
-    algorithm = histogram
-    colorMoved = default
-[commit]
-    verbose = true
-[init]
-    defaultBranch = main
-[interactive]
-    diffFilter = delta --color-only --features=interactive
-[delta]
-    navigate = true    # use n and N to move between diff sections
-    side-by-side = true
-    line-numbers = true
-[delta "interactive"]
-    keep-plus-minus-markers = false
-[merge]
-    conflictstyle = diff3
-[color]
-    ui = true
-[color "diff-highlight"]
-    oldNormal = red bold
-    oldHighlight = red bold 52
-    newNormal = green bold
-    newHighlight = green bold 22
-[color "diff"]
-    meta = 11
-    frag = magenta bold
-    func = 146 bold
-    commit = yellow bold
-    old = red bold
-    new = green bold
-    whitespace = red reverse
 [alias]
-    clean-branches = clean-branches
+	clean-branches = clean-branches
+[color]
+	ui = true
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[color "diff"]
+	meta = 11
+	frag = magenta bold
+	func = 146 bold
+	commit = yellow bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+[column]
+	ui = auto
+[commit]
+	verbose = true
+[core]
+	editor = nvim
+	excludesfile = ~/.dotfiles/links/global_gitignore
+	pager = delta
+[delta]
+	navigate = true	# use n and N to move between diff sections
+	side-by-side = true
+	line-numbers = true
+[delta "interactive"]
+	keep-plus-minus-markers = false
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[include]
+	path = ~/.dotfiles/local_gitconfig
+	path = ~/.dotfiles/links/delta/tokyonigh_storm.gitconfig
+	path = ~/.config/work/.gitconfig
+[init]
+	defaultBranch = main
+[interactive]
+	diffFilter = delta --color-only --features=interactive
+[merge]
+	conflictstyle = diff3
 [pull]
 	rebase = true
-[column]
-        ui = auto
-[include]
-    path = ~/.dotfiles/links/delta/tokyonigh_storm.gitconfig
+[push]
+	default = matching
+[remote.origin]
+	# Only push the current branch
+	push = HEAD
+[user]
+	email = ian.howell0@gmail.com
+	name = Ian Howell
 
-[include]
-    path = ~/.config/work/.gitconfig
 [credential "azrepos:org/msazuredev"]
 	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
 	username = ianhowell@microsoft.com
