@@ -1,5 +1,6 @@
 [alias]
 	clean-branches = clean-branches
+        accuse = blame -w -M -C -C -C
 [branch]
 	sort = -committerdate
 [color]
