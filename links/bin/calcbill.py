@@ -13,7 +13,7 @@ How to use this script:
 import sys
 
 mickey_group = {"MICKEY", "KELLY", "ZAC", "ANTHONY"}
-pam_group = {"PAM", "PAMELA", "ANDREW"}
+pam_group = {"PAM", "ANDREW"}
 ian_group = {"IAN", "JAMI"}
 jenna_group = {"JENNA"}
 
