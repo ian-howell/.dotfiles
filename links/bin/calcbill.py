@@ -9,6 +9,7 @@ How to use this script:
     6. Run the script, and paste all of the text into the console
     7. Hammer on the enter key a few times to scroll, then hit ctrl-d
 """
+
 import sys
 
 mickey_group = {"MICKEY", "KELLY", "ZAC", "ANTHONY"}
@@ -30,27 +31,27 @@ def get_data_from_stdin(debug_log=lambda: None):
     # white space, but should retain the valuable lines with real data
     lines = [line for line in sys.stdin.readlines() if len(line) >= 3]
     results = {
-            "mickey_group": {},
-            "pam_group": {},
-            "ian_group": {},
-            "jenna_group": {},
-            }
+        "mickey_group": {},
+        "pam_group": {},
+        "ian_group": {},
+        "jenna_group": {},
+    }
     for i, line in enumerate(lines):
         debug_log(f"{i=} {line=}")
         # explicitly passing a space forces the resulting list to have len >= 1
         name = line.split(" ", 1)[0]
         if name in mickey_group:
             debug_log(f"matched 'mickey_group', parsing {lines[i+2]=}")
-            results["mickey_group"][line] = parse_money(lines[i+2])
+            results["mickey_group"][line] = parse_money(lines[i + 2])
         elif name in pam_group:
             debug_log(f"matched 'pam_group', parsing {lines[i+2]=}")
-            results["pam_group"][line] = parse_money(lines[i+2])
+            results["pam_group"][line] = parse_money(lines[i + 2])
         elif name in ian_group:
             debug_log(f"matched 'ian_group', parsing {lines[i+2]=}")
-            results["ian_group"][line] = parse_money(lines[i+2])
+            results["ian_group"][line] = parse_money(lines[i + 2])
         elif name in jenna_group:
             debug_log(f"matched 'jenna_group', parsing {lines[i+2]=}")
-            results["jenna_group"][line] = parse_money(lines[i+2])
+            results["jenna_group"][line] = parse_money(lines[i + 2])
     return results
 
 
@@ -63,7 +64,7 @@ def print_report(report):
     for group_name in sorted(report):
         group = report[group_name]
         # strip off the string "_group" from the group name and capitalize the group owner name
-        group_owner = group_name[:-len('_group')].title()
+        group_owner = group_name[: -len("_group")].title()
         group_total = total_for_group(group)
         total += group_total
 
@@ -71,7 +72,7 @@ def print_report(report):
         for person in sorted(group):
             name = person.split()[0].title()
             print("{: <30} {:>.2f}".format(name, group[person]))
-        print('-' * 40)
+        print("-" * 40)
         print("{: <30} {:>.2f}".format("Total", group_total))
         print()
 
