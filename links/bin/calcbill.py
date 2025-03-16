@@ -13,8 +13,7 @@ How to use this script:
 import sys
 
 mickey_group = {"MICKEY", "KELLY"}
-pam_group = {"PAM", "ANDREW"}
-ian_group = {"IAN", "JAMI"}
+ian_group = {"IAN", "JAMI", "ANDREW", "PAM"}
 jenna_group = {"JENNA"}
 zac_group = {"ZAC"}
 anthony_group = {"ANTHONY"}
@@ -34,7 +33,6 @@ def get_data_from_stdin(debug_log=lambda: None):
     lines = [line for line in sys.stdin.readlines() if len(line) >= 3]
     results = {
         "mickey_group": {},
-        "pam_group": {},
         "ian_group": {},
         "jenna_group": {},
         "zac_group": {},
@@ -47,9 +45,6 @@ def get_data_from_stdin(debug_log=lambda: None):
         if name in mickey_group:
             debug_log(f"matched 'mickey_group', parsing {lines[i+2]=}")
             results["mickey_group"][line] = parse_money(lines[i + 2])
-        elif name in pam_group:
-            debug_log(f"matched 'pam_group', parsing {lines[i+2]=}")
-            results["pam_group"][line] = parse_money(lines[i + 2])
         elif name in ian_group:
             debug_log(f"matched 'ian_group', parsing {lines[i+2]=}")
             results["ian_group"][line] = parse_money(lines[i + 2])
