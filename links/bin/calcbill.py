@@ -76,8 +76,7 @@ def print_report(report):
         print("{: <30} {:>.2f}".format("Total", group_total))
         print()
 
-    print()
-
+    print("=" * 40)
     print("{:.<30} {:>.2f}".format("Total of totals", total))
 
 
