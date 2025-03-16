@@ -12,10 +12,12 @@ How to use this script:
 
 import sys
 
-mickey_group = {"MICKEY", "KELLY", "ZAC", "ANTHONY"}
+mickey_group = {"MICKEY", "KELLY"}
 pam_group = {"PAM", "ANDREW"}
 ian_group = {"IAN", "JAMI"}
 jenna_group = {"JENNA"}
+zac_group = {"ZAC"}
+anthony_group = {"ANTHONY"}
 
 
 def main(args):
@@ -35,6 +37,8 @@ def get_data_from_stdin(debug_log=lambda: None):
         "pam_group": {},
         "ian_group": {},
         "jenna_group": {},
+        "zac_group": {},
+        "anthony_group": {},
     }
     for i, line in enumerate(lines):
         debug_log(f"{i=} {line=}")
@@ -52,6 +56,12 @@ def get_data_from_stdin(debug_log=lambda: None):
         elif name in jenna_group:
             debug_log(f"matched 'jenna_group', parsing {lines[i+2]=}")
             results["jenna_group"][line] = parse_money(lines[i + 2])
+        elif name in zac_group:
+            debug_log(f"matched 'zac_group', parsing {lines[i+2]=}")
+            results["zac_group"][line] = parse_money(lines[i + 2])
+        elif name in anthony_group:
+            debug_log(f"matched 'anthony_group', parsing {lines[i+2]=}")
+            results["anthony_group"][line] = parse_money(lines[i + 2])
     return results
 
 
