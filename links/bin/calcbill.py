@@ -74,10 +74,11 @@ def print_report(report):
         total += group_total
 
         print("==============={: ^10}===============".format(group_owner))
-        for person in sorted(group):
-            name = person.split()[0].title()
-            print("{: <30} {:>.2f}".format(name, group[person]))
-        print("-" * 40)
+        if len(group) > 1:
+            for person in sorted(group):
+                name = person.split()[0].title()
+                print("{: <30} {:>.2f}".format(name, group[person]))
+            print("-" * 40)
         print("{: <30} {:>.2f}".format("Total", group_total))
         print()
 
