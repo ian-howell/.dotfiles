@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# This script installs the latest version of Go.
+# If an argument was provided, it should be in the form of a version number
+# (e.g., 1.24.0), and the script will install that specific version.
+
 main() {
   delete_go
-  install_go
+  install_go "$1"
+  go version
 }
 
 delete_go() {
@@ -10,15 +15,21 @@ delete_go() {
 }
 
 install_go() {
-  print_banner "Installing go"
+  local version="$1"
+  print_banner "Installing go $version"
 
   tmpdir=$(mktemp -d)
   trap 'rm -rf "$tmpdir"' EXIT
 
-  filename=$(
-    curl -sL 'https://golang.org/dl/?mode=json' |
-      jq '.[0].files[] | select(.arch == "amd64") | select(.os == "linux") | .filename' -r
-  )
+  local filename
+  if [ -n "$version" ]; then
+    filename="go$version.linux-amd64.tar.gz"
+  else
+    filename=$(
+      curl -sL 'https://golang.org/dl/?mode=json' |
+        jq '.[0].files[] | select(.arch == "amd64") | select(.os == "linux") | .filename' -r
+    )
+  fi
 
   tarball="$tmpdir/$filename"
   release_url="https://go.dev/dl/$filename"
@@ -33,4 +44,4 @@ function print_banner() {
   echo "================================================================================"
 }
 
-main
+main "$1"
