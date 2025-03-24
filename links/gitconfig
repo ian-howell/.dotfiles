@@ -34,7 +34,21 @@
 	keep-plus-minus-markers = false
 [diff]
 	algorithm = histogram
-	colorMoved = default
+	# Show code movement in different colors then added and removed lines
+	colorMoved = plain
+	# Detect renames
+	renames = true
+	# Replace the a/ and b/ in the diff header output with where the diff is
+	# coming from, so i/ (index), w/ (working directory) or c/ commit.
+	mnemonicPrefix = true
+[fetch]
+	# If the remote branch was deleted, delete the local branch as well
+        prune = true
+	# Same as above, but for tags
+        pruneTags = true
+[help]
+	# Allow git to fix my spelling.
+        autocorrect = prompt
 [include]
 	path = ~/.dotfiles/local_gitconfig
 	path = ~/.dotfiles/links/delta/tokyonigh_storm.gitconfig
@@ -44,11 +58,31 @@
 [interactive]
 	diffFilter = delta --color-only --features=interactive
 [merge]
+	# Include the base when showing mrerge conflicts
 	conflictstyle = diff3
 [pull]
+	# Make `git pull` perform a rebase rather than a merge
 	rebase = true
 [push]
+	# pushes the current branch to the same name on the remote. Old defaults
+	# used to push *all* branches, which is psychotic. We'll be explicit
+	# here because *sheeeeesh*
 	default = simple
+	# If the upstream is not set, automatically set it
+	autoSetupRemote = true
+	# push all local tags that aren’t on the server, every time you push
+	followTags = true
+[rebase]
+	# Automatically squash commits that start with "fixup!"
+	autoSquash = true
+	# Automatically stash any uncommitted changes prior to rebasing and pop
+	# them after the rebase is complete
+	autoStash = true
+	# Make sure stacked refs are moved when a branch is rebased. This is
+	# *extremely* useful for stacked PRs. Unfortunately, this needs a newer
+	# version of git (>=2.38) than is provided in Ubuntu 22.04 LTS, so won't
+	# be useful to me until I upgrade
+	updateRefs = true
 [remote.origin]
 	# Only push the current branch
 	push = HEAD
@@ -57,6 +91,12 @@
         # given conflict. When git encounters a conflict that it has already
         # seen, it will automatically use the same resolution as before.
         enabled = true
+	# Automatically re-apply the resolutions if they're seen again
+	autoupdate = true
+[tag]
+	# treat dotted version numbers as a series of integer values for sorting
+	# purposes
+        sort = version:refname
 [user]
 	email = ian.howell0@gmail.com
 	name = Ian Howell
