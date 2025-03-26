@@ -4,6 +4,10 @@ set -x
 echo "================================================================================"
 echo "| Installing essentials                                                         "
 echo "================================================================================"
+
+# Make sure we're getting the latest version of git
+sudo add-apt-repository ppa:git-core/ppa -y
+
 sudo apt-get -y -q update
 
 # The following are library-type things. They're basically dependencies
