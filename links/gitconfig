@@ -60,6 +60,9 @@
 [merge]
 	# Include the base when showing mrerge conflicts
 	conflictstyle = diff3
+	tool = nvim
+[mergetool "nvim"]
+	cmd = nvim -d $LOCAL $MERGED $REMOTE
 [pull]
 	# Make `git pull` perform a rebase rather than a merge
 	rebase = true
