@@ -39,6 +39,7 @@ func getConfig() Config {
 		SourceRoot: filepath.Join(homeDir, ".dotfiles/links"),
 		TargetRoot: homeDir,
 		Links: []Link{
+			{"azure/config", ".azure/config"},
 			{"bin", ".bin"},
 			{"fonts", ".fonts"},
 			{"gitconfig", ".gitconfig"},
