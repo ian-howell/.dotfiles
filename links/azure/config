@@ -4,3 +4,6 @@ name = AzureCloud
 [extension]
 use_dynamic_install = yes_without_prompt
 
+[core]
+collect_telemetry = no
+
