@@ -20,17 +20,26 @@ return {
       -- TODO: This just doesn't work. It doesn't even appear to work when I run the command directly. It
       -- works more like 'Copilot disable'
       -- vim.keymap.set('n', '<space>tc', '<cmd>Copilot toggle<CR>', { desc = 'Toggle Copilot' })
-      vim.keymap.set("n", "<space>C", "", { desc = "+Copilot" })
-      vim.keymap.set("n", "<space>Cd", "<cmd>Copilot disable<CR>", { desc = "disable" })
-      vim.keymap.set("n", "<space>Ce", "<cmd>Copilot enable<CR>", { desc = "enable" })
-      vim.keymap.set("n", "<space>Cp", "<cmd>Copilot panel<CR>", { desc = "open panel" })
+      vim.keymap.set("n", "<space>ad", "<cmd>Copilot disable<CR>", { desc = "disable (Copilot)" })
+      vim.keymap.set("n", "<space>ae", "<cmd>Copilot enable<CR>", { desc = "enable (Copilot)" })
+      vim.keymap.set("n", "<space>ap", "<cmd>Copilot panel<CR>", { desc = "open panel (Copilot)" })
     end,
   },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
+    -- TODO: Fix this...
+    -- model = "gpt-4.5-preview",
     init = function()
-      vim.keymap.set("n", "<space>C", "", { desc = "+Copilot" })
-      vim.keymap.set({ "n", "x" }, "<space>Cc", "<cmd>CopilotChat<CR>", { desc = "Open Copilot Chat" })
+      vim.keymap.set("n", "<space>ac", "<cmd>CopilotChatCommit<CR>", { desc = "(CopilotChat)" })
+
+      -- TODO: Add mappings for these
+      --       Commit│
+      -- Fix │ │
+      -- Tests │
+      -- Review│
+      -- Docs│ │
+      -- Explain
+      -- Optimize
     end,
   },
 }
