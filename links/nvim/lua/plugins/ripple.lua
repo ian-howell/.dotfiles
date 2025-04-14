@@ -9,7 +9,8 @@ return {
     "<C-Right>",
   },
   opts = {
-    vertical_step_size = 2,
-    horizontal_step_size = 5,
+    -- TODO: These are broken with LazyVim...
+    --   vertical_step_size = 2,
+    --   horizontal_step_size = 5,
   },
 }
