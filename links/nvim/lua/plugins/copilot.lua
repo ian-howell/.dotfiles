@@ -27,20 +27,54 @@ return {
   },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
-    -- TODO: Fix this...
-    -- model = "gpt-4.5-preview",
-    init = function()
-      vim.keymap.set("n", "<space>ac", "<cmd>CopilotChatCommit<CR>", { desc = "(CopilotChat)" })
-
-      -- TODO: Add mappings for these
-      --       Commit│
-      -- Fix │ │
-      -- Tests │
-      -- Review│
-      -- Docs│ │
-      -- Explain
-      -- Optimize
-    end,
+    opts = {
+      model = "gpt-4o",
+      -- model = "gpt-4.5-preview",
+    },
+    keys = {
+      {
+        "<space>ac",
+        "<cmd>CopilotChatCommit<CR>",
+        desc = "commit (CopilotChat)",
+        mode = { "n", "v" },
+      },
+      {
+        "<space>af",
+        "<cmd>CopilotChatFix<CR>",
+        desc = "fix (CopilotChat)",
+        mode = { "n", "v" },
+      },
+      {
+        "<space>at",
+        "<cmd>CopilotChatTests<CR>",
+        desc = "tests (CopilotChat)",
+        mode = { "n", "v" },
+      },
+      {
+        "<space>ar",
+        "<cmd>CopilotChatReview<CR>",
+        desc = "review (CopilotChat)",
+        mode = { "n", "v" },
+      },
+      {
+        "<space>ad",
+        "<cmd>CopilotChatDocs<CR>",
+        desc = "docs (CopilotChat)",
+        mode = { "n", "v" },
+      },
+      {
+        "<space>ae",
+        "<cmd>CopilotChatExplain<CR>",
+        desc = "explain (CopilotChat)",
+        mode = { "n", "v" },
+      },
+      {
+        "<space>ao",
+        "<cmd>CopilotChatOptimize<CR>",
+        desc = "optimize (CopilotChat)",
+        mode = { "n", "v" },
+      },
+    },
   },
 }
 -- vim: ts=2 sts=2 sw=2 et
