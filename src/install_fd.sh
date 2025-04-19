@@ -1,11 +1,8 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 ARTIFACTS_DIR=${ARTIFACTS_DIR:-$(mktemp -d)}
 
 main() {
-  print_light_gray_banner "fd"
   if command -v fd >/dev/null; then
     echo "fd is already installed"
     return

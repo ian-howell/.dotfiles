@@ -1,12 +1,9 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 BIN_DIR="$HOME/.local/bin"
 
 main() {
   if [ ! -f "$BIN_DIR/oh-my-posh" ]; then
-    print_light_gray_banner "Installing Oh My Posh"
     validate_dependencies
     validate_BIN_DIRectory
     install

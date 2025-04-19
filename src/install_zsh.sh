@@ -1,9 +1,6 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 main() {
-  print_light_gray_banner "Installing zsh"
   install_zsh
 }
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
 function main() {
@@ -9,7 +7,6 @@ function main() {
     return
   fi
 
-  print_light_gray_banner "Installing Node.js"
   install_node
 }
 

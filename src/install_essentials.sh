@@ -1,9 +1,5 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
-print_light_gray_banner "Installing essentials"
-
 # Make sure we're getting the latest version of git
 sudo add-apt-repository ppa:git-core/ppa -y
 
