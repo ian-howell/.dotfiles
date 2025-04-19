@@ -103,29 +103,35 @@ Host burrow
 open_ports() {
   log "🔓 Opening ports in the NSG..."
   # NOTE: 22 is already open by default
-  # create_nsg_rule burrow_group burrowNSG AllowSSH 1000 22
-  create_nsg_rule burrow_group burrowNSG AllowHTTP 1010 80
-  create_nsg_rule burrow_group burrowNSG AllowHTTPS 1020 443
+  # ensure_nsg_rule burrow_group burrowNSG AllowSSH 1000 22
+  ensure_nsg_rule burrow_group burrowNSG AllowHTTP 1010 80
+  ensure_nsg_rule burrow_group burrowNSG AllowHTTPS 1020 443
 }
 
-create_nsg_rule() {
+ensure_nsg_rule() {
   local resource_group=$1
   local nsg_name=$2
   local rule_name=$3
   local priority=$4
   local port=$5
 
-  log "🔒 Creating NSG rule: $rule_name with priority $priority for port $port..."
-  az network nsg rule create \
+  if ! az network nsg rule list \
     --resource-group "$resource_group" \
     --nsg-name "$nsg_name" \
-    --name "$rule_name" \
-    --priority "$priority" \
-    --destination-port-ranges "$port" \
-    --access Allow \
-    --protocol Tcp \
-    --direction Inbound \
-    --output none
+    --query "[?name=='$rule_name']" \
+    --output tsv | grep -q "$rule_name"; then
+    log "🔒 Creating NSG rule: $rule_name with priority $priority for port $port..."
+    az network nsg rule create \
+      --resource-group "$resource_group" \
+      --nsg-name "$nsg_name" \
+      --name "$rule_name" \
+      --priority "$priority" \
+      --destination-port-ranges "$port" \
+      --access Allow \
+      --protocol Tcp \
+      --direction Inbound \
+      --output none
+  fi
 }
 
 setup_vm() {
