@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 REPO_DIR="$HOME/.config/src/neovim"
 
 function main() {
@@ -13,7 +11,6 @@ function main() {
 }
 
 function install() {
-  print_light_gray_banner "Installing Neovim"
   mkdir -p "$REPO_DIR"
   install_dependencies
   clone_repo
@@ -21,7 +18,6 @@ function install() {
 }
 
 function upgrade() {
-  print_light_gray_banner "Upgrading Neovim"
   if pull_latest_code; then
     build
   else

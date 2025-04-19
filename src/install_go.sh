@@ -4,8 +4,6 @@
 # If an argument was provided, it should be in the form of a version number
 # (e.g., 1.24.0), and the script will install that specific version.
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 main() {
   delete_go
   install_go "$1"
@@ -18,7 +16,6 @@ delete_go() {
 
 install_go() {
   local version="$1"
-  print_light_gray_banner "Installing go $version"
 
   tmpdir=$(mktemp -d)
   trap 'rm -rf "$tmpdir"' EXIT

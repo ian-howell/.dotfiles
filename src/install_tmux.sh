@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 VERSION="3.5a"
 
 main() {
@@ -12,7 +10,6 @@ main() {
 }
 
 install() {
-  print_light_gray_banner "Installing TMUX"
   install_dependencies
 
   tmpdir=$(mktemp -d)

@@ -7,10 +7,7 @@
 # It runs on Unix shells like {a,ba,da,k,z}sh. It uses the common `local`
 # extension. Note: Most shells limit `local` to 1 var per line, contra bash.
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 main() {
-    print_light_gray_banner "Installing zoxide"
     install "$@"
 }
 

@@ -1,13 +1,6 @@
 #!/bin/bash
 
-source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
-
 function main() {
-  if ! command -v kitty &>/dev/null; then
-    print_light_gray_banner "Installing Kitty"
-  else
-    print_light_gray_banner "Upgrading Kitty"
-  fi
   install
 }
 

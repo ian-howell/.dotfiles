@@ -11,7 +11,6 @@ main() {
 }
 
 install_delta() {
-  print_light_gray_banner "Installing Delta"
   mkdir -p "$BIN_DIR"
   download_delta
 }
