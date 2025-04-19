@@ -1,27 +1,25 @@
 #!/bin/bash
 
-base_dir="$(dirname "$(realpath "$0")")"
-
 prevent_apt_daemon_restart_prompts() {
   sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
 }
 
 install_components() {
   local components=(
-    "$base_dir/src/install_essentials.sh"
-    "$base_dir/src/install_go.sh"
-    "$base_dir/src/install_zsh.sh"
-    "$base_dir/src/install_fzf.sh"
-    "$base_dir/src/install_fd.sh"
-    "$base_dir/src/remap_capslock.sh"
-    "$base_dir/src/install_node.sh"
-    "$base_dir/src/install_delta.sh"
-    "$base_dir/src/install_lazygit.sh"
-    "$base_dir/src/install_neovim.sh"
-    "$base_dir/src/install_tmux.sh"
-    "$base_dir/src/install_zoxide.sh"
-    "$base_dir/src/install_sesh.sh"
-    "$base_dir/src/install_ohmyposh.sh"
+    "$HOME/.dotfiles/src/install_essentials.sh"
+    "$HOME/.dotfiles/src/install_go.sh"
+    "$HOME/.dotfiles/src/install_zsh.sh"
+    "$HOME/.dotfiles/src/install_fzf.sh"
+    "$HOME/.dotfiles/src/install_fd.sh"
+    "$HOME/.dotfiles/src/remap_capslock.sh"
+    "$HOME/.dotfiles/src/install_node.sh"
+    "$HOME/.dotfiles/src/install_delta.sh"
+    "$HOME/.dotfiles/src/install_lazygit.sh"
+    "$HOME/.dotfiles/src/install_neovim.sh"
+    "$HOME/.dotfiles/src/install_tmux.sh"
+    "$HOME/.dotfiles/src/install_zoxide.sh"
+    "$HOME/.dotfiles/src/install_sesh.sh"
+    "$HOME/.dotfiles/src/install_ohmyposh.sh"
   )
 
   for component in "${components[@]}"; do
@@ -32,7 +30,7 @@ install_components() {
 link_dotfiles() {
   # TODO: Just `go run` this. Currently, I need to rebuild the binary every time I
   # adjust my dotfile links.
-  "$base_dir/src/linkdotfiles/linkdotfiles"
+  "$HOME/.dotfiles/src/linkdotfiles/linkdotfiles"
 }
 
 update_git_submodules() {
