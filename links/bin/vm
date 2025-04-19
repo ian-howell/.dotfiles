@@ -1,0 +1,188 @@
+#!/bin/bash
+
+main() {
+  az_login
+
+  case "$1" in
+  create)
+    create_vm
+    ;;
+  delete)
+    delete_vm
+    ;;
+  status)
+    vm_status
+    ;;
+  start)
+    start_vm
+    ;;
+  stop)
+    stop_vm
+    ;;
+  help | *)
+    echo "Usage: $0 {create|delete|status|start|stop|help}"
+    echo "  🛠️  create - Create the VM and configure NSG rules"
+    echo "  🗑️  delete - Delete the VM and associated resources"
+    echo "  📊  status - Show the current status of the VM"
+    echo "  ▶️  start  - Start the VM if it is stopped"
+    echo "  ⏹️  stop   - Stop the VM if it is running"
+    echo "  ℹ️  help   - Show this help message"
+    ;;
+  esac
+}
+
+az_login() {
+  if ! az account show >/dev/null 2>&1; then
+    echo "🔐 Logging into Azure..."
+    az login
+  fi
+}
+
+create_vm() {
+  ensure_resource_group
+
+  echo "🚀 Creating the VM..."
+  az vm create \
+    --resource-group burrow_group \
+    --name burrow \
+    --image Ubuntu2404 \
+    --size Standard_D4s_v3 \
+    --admin-username ian \
+    --ssh-key-values ~/.ssh/id_ed25519.pub \
+    --public-ip-address-dns-name burrow \
+    --subscription "Visual Studio Enterprise Subscription" \
+    --security-type TrustedLaunch \
+    --output table
+
+  add_ssh_config
+
+  open_ports
+
+  setup_vm
+
+  echo "✅ VM created successfully!"
+}
+
+ensure_resource_group() {
+  if ! az group show --name burrow_group >/dev/null 2>&1; then
+    echo "🏗️ Creating resource group 'burrow_group'..."
+    az group create --name burrow_group --location eastus
+  fi
+}
+
+add_ssh_config() {
+  local ssh_config_file="$HOME/.ssh/config"
+  local ssh_known_hosts_file="$HOME/.ssh/known_hosts"
+  local host_entry="
+Host burrow
+  HostName burrow.eastus.cloudapp.azure.com
+  User ian
+  IdentityFile ~/.ssh/id_ed25519
+  ForwardAgent yes
+"
+
+  # Remove old host key if it exists
+  if ssh-keygen -f "$ssh_known_hosts_file" -R "burrow.eastus.cloudapp.azure.com" >/dev/null 2>&1; then
+    echo "🗑️ Removed old SSH host key for 'burrow'."
+  fi
+
+  # Add the host key to known_hosts
+  echo "🔑 Adding SSH host key for 'burrow'..."
+  ssh-keyscan -H burrow.eastus.cloudapp.azure.com >>"$ssh_known_hosts_file" 2>/dev/null
+
+  # Add SSH configuration if not already present
+  if ! grep -q "Host burrow" "$ssh_config_file" 2>/dev/null; then
+    echo "🛠️ Adding SSH configuration for 'burrow'..."
+    echo "$host_entry" >>"$ssh_config_file"
+    echo "✅ SSH configuration added."
+  else
+    echo "ℹ️ SSH configuration for 'burrow' already exists."
+  fi
+}
+
+open_ports() {
+  echo "🔓 Opening ports in the NSG..."
+  # NOTE: 22 is already open by default
+  # create_nsg_rule burrow_group burrowNSG AllowSSH 1000 22
+  create_nsg_rule burrow_group burrowNSG AllowHTTP 1010 80
+  create_nsg_rule burrow_group burrowNSG AllowHTTPS 1020 443
+}
+
+create_nsg_rule() {
+  local resource_group=$1
+  local nsg_name=$2
+  local rule_name=$3
+  local priority=$4
+  local port=$5
+
+  echo "🔒 Creating NSG rule: $rule_name with priority $priority for port $port..."
+  az network nsg rule create \
+    --resource-group "$resource_group" \
+    --nsg-name "$nsg_name" \
+    --name "$rule_name" \
+    --priority "$priority" \
+    --destination-port-ranges "$port" \
+    --access Allow \
+    --protocol Tcp \
+    --direction Inbound \
+    --output table
+}
+
+setup_vm() {
+  echo "🔧 Setting up the VM..."
+  # TODO: submodules are not being cloned
+  ssh burrow <<'EOF'
+        sudo apt update && sudo apt install -y git
+        git clone --recurse-submodules https://github.com/ian-howell/.dotfiles.git $HOME/.dotfiles
+        cd $HOME/.dotfiles
+        ./setup.sh | tee $HOME/setup.log
+EOF
+}
+
+delete_vm() {
+  echo "🗑️ Deleting the VM..."
+  az vm delete --resource-group burrow_group --name burrow --yes --no-wait
+
+  echo "🗑️ Disassociating the public IP address..."
+  az network nic update \
+    --resource-group burrow_group \
+    --name burrowVMNic \
+    --remove ipConfigurations[0].publicIpAddress \
+    --output none
+
+  echo "🗑️ Deleting the public IP address..."
+  az network public-ip delete \
+    --resource-group burrow_group \
+    --name burrowPublicIP \
+    --output table
+
+  echo "✅ VM deletion complete."
+}
+
+vm_status() {
+  echo "📊 Checking VM status..."
+  az vm get-instance-view \
+    --resource-group burrow_group \
+    --name burrow \
+    --subscription "Visual Studio Enterprise Subscription" \
+    --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus" \
+    --output table
+}
+
+start_vm() {
+  echo "▶️ Starting the VM..."
+  az vm start \
+    --resource-group burrow_group \
+    --name burrow \
+    --subscription "Visual Studio Enterprise Subscription"
+}
+
+stop_vm() {
+  echo "⏹️ Stopping the VM..."
+  az vm stop \
+    --resource-group burrow_group \
+    --name burrow \
+    --subscription "Visual Studio Enterprise Subscription"
+}
+
+main "$@"
