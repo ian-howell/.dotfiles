@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.dotfiles/links/zsh/utils/output/log.sh"
+
 main() {
   az_login
 
@@ -183,16 +185,6 @@ stop_vm() {
     --resource-group burrow_group \
     --name burrow \
     --subscription "Visual Studio Enterprise Subscription"
-}
-
-# Logs a message with a timestamp and a vertical separator.
-# The timestamp is displayed in magenta.
-#
-# Example:
-#   log "🔐 Logging into Azure..."
-#   Output: 2023-10-05 14:23:45 │ 🔐 Logging into Azure...
-log() {
-  echo -e "\033[35m$(date '+%Y-%m-%d %H:%M:%S')\033[0m │ $*"
 }
 
 main "$@"
