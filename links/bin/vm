@@ -54,7 +54,7 @@ create_vm() {
     --public-ip-address-dns-name burrow \
     --subscription "Visual Studio Enterprise Subscription" \
     --security-type TrustedLaunch \
-    --output table
+    --output none
 
   add_ssh_config
 
@@ -125,7 +125,7 @@ create_nsg_rule() {
     --access Allow \
     --protocol Tcp \
     --direction Inbound \
-    --output table
+    --output none
 }
 
 setup_vm() {
@@ -162,7 +162,7 @@ delete_vm() {
   az network public-ip delete \
     --resource-group burrow_group \
     --name burrowPublicIP \
-    --output table
+    --output none
 
   log "✅ VM deletion complete."
 }
