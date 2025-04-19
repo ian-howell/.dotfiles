@@ -3,7 +3,7 @@
 source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
 
 main() {
-  print_light_gray_banner
+  print_light_gray_banner "Installing zsh"
   install_zsh
 }
 
@@ -14,7 +14,6 @@ install_zsh() {
     return
   fi
 
-  echo "Installing zsh..."
   sudo apt-get -qq -y install zsh
 
   # This sed trick prevents `chsh` from asking for a password.
