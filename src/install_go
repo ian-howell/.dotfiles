@@ -4,6 +4,8 @@
 # If an argument was provided, it should be in the form of a version number
 # (e.g., 1.24.0), and the script will install that specific version.
 
+source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
+
 main() {
   delete_go
   install_go "$1"
@@ -16,7 +18,7 @@ delete_go() {
 
 install_go() {
   local version="$1"
-  print_banner "Installing go $version"
+  print_light_gray_banner "Installing go $version"
 
   tmpdir=$(mktemp -d)
   trap 'rm -rf "$tmpdir"' EXIT
@@ -36,12 +38,6 @@ install_go() {
   # Download and install
   curl -sL "$release_url" --output "$tarball"
   sudo tar -C /usr/local -xzf "$tarball"
-}
-
-function print_banner() {
-  echo "================================================================================"
-  echo "$1"
-  echo "================================================================================"
 }
 
 main "$1"

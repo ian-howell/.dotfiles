@@ -1,8 +1,11 @@
 #!/bin/bash
 
-echo "================================================================================"
-echo "| Installing Zsh                                                               |"
-echo "================================================================================"
+source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
+
+main() {
+  print_light_gray_banner
+  install_zsh
+}
 
 install_zsh() {
   # If the user's shell is already zsh, do nothing.
@@ -27,4 +30,4 @@ install_zsh() {
   echo "You may need to log out and back in for the changes to take effect..."
 }
 
-install_zsh
+main
