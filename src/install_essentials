@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
 
@@ -43,5 +42,3 @@ sudo apt-get install -y -q \
   ;
 
 sudo ln -s /usr/bin/batcat /usr/bin/bat
-
-set +x
