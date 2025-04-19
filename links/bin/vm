@@ -144,7 +144,6 @@ EOF
   else
     log "❌ VM setup failed. Check the logs for details."
   fi
-EOF
 }
 
 delete_vm() {
