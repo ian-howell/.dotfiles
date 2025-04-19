@@ -75,7 +75,7 @@ create_vm() {
 ensure_resource_group() {
   if ! az group show --name burrow_group >/dev/null 2>&1; then
     log "🏗️ Creating resource group 'burrow_group'..."
-    az group create --name burrow_group --location eastus
+    az group create --name burrow_group --location eastus --output none
   fi
 }
 
