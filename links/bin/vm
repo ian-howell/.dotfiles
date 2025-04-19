@@ -67,16 +67,18 @@ create_vm() {
 
   add_ssh_config
 
-  open_ports
-
   setup_vm
 }
 
 ensure_resource_group() {
-  if ! az group show --name burrow_group >/dev/null 2>&1; then
-    log "🏗️ Creating resource group 'burrow_group'..."
-    az group create --name burrow_group --location eastus --output none
+  if az group show --name burrow_group >/dev/null 2>&1; then
+    return 0
   fi
+
+  log "🏗️ Creating resource group 'burrow_group'..."
+  az group create --name burrow_group --location eastus --output none
+
+  open_ports
 }
 
 add_ssh_config() {
