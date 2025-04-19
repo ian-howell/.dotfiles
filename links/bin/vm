@@ -130,12 +130,13 @@ create_nsg_rule() {
 
 setup_vm() {
   log "🔧 Setting up the VM..."
+
   # The -T flag disables pseudo-terminal allocation, which is unnecessary for
   # non-interactive commands and prevents warnings about stdin not being a terminal.
-  if ssh -T burrow <<'EOF'
+  if ssh -T burrow /bin/bash <<'EOF'
+        touch $HOME/.hushlogin
         ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
-        sudo apt update && sudo apt install -y git
-        git clone --recurse-submodules https://github.com/ian-howell/.dotfiles.git $HOME/.dotfiles
+        git clone --quiet --recurse-submodules https://github.com/ian-howell/.dotfiles.git $HOME/.dotfiles >/dev/null
         cd $HOME/.dotfiles
         ./setup.sh | tee $HOME/setup.log
 EOF
