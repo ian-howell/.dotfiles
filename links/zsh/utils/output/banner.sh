@@ -7,12 +7,14 @@ print_banner() {
     local text="$1"
     local banner_length="${2:-110}" # Default to 110 if no width is provided
     local text_length=${#text}
-    local padding_length=$(( (banner_length - text_length) / 2 ))
-    local padding=$(printf "%*s" "$padding_length" "")
+    local total_padding=$((banner_length - text_length))
+    local left_padding_length=$((total_padding / 2))
+    local right_padding_length=$((total_padding - left_padding_length))
+    local left_padding=$(printf "%*s" "$left_padding_length" "")
+    local right_padding=$(printf "%*s" "$right_padding_length" "")
 
-    # This insanity brought to you by Copilot :)
     echo "+$(printf '=%.0s' $(seq 1 $banner_length))+"
-    echo "|${padding}${text}${padding}|"
+    echo "|${left_padding}${text}${right_padding}|"
     echo "+$(printf '=%.0s' $(seq 1 $banner_length))+"
 }
 
