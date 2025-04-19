@@ -200,8 +200,8 @@ start_vm() {
 }
 
 stop_vm() {
-  log "⏹️ Stopping the VM..."
-  az vm stop \
+  log "⏹️ Deallocating the VM..."
+  az vm deallocate \
     --resource-group burrow_group \
     --name burrow \
     --subscription "Visual Studio Enterprise Subscription"
