@@ -92,7 +92,7 @@ Host burrow
 
   # Add SSH configuration if not already present
   if ! grep -q "Host burrow" "$ssh_config_file" 2>/dev/null; then
-    log "🛠️ Adding SSH configuration for 'burrow'..."
+    log "🌐 Adding SSH configuration for 'burrow'..."
     log "$host_entry" >>"$ssh_config_file"
     log "✅ SSH configuration added."
   else
