@@ -94,11 +94,10 @@ Host burrow
 
   # Remove old host key if it exists
   if ssh-keygen -f "$ssh_known_hosts_file" -R "burrow.eastus.cloudapp.azure.com" >/dev/null 2>&1; then
-    log "🗑️ Removed old SSH host key for 'burrow'."
+    log "🔄 Updated SSH host key for 'burrow'."
+  else
+    log "🔑 Adding SSH host key for 'burrow'..."
   fi
-
-  # Add the host key to known_hosts
-  log "🔑 Adding SSH host key for 'burrow'..."
   ssh-keyscan -H burrow.eastus.cloudapp.azure.com >>"$ssh_known_hosts_file" 2>/dev/null
 
   # Add SSH configuration if not already present
