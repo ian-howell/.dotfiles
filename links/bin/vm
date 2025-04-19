@@ -104,8 +104,6 @@ Host burrow
     log "🌐 Adding SSH configuration for 'burrow'..."
     log "$host_entry" >>"$ssh_config_file"
     log "✅ SSH configuration added."
-  else
-    log "ℹ️ SSH configuration for 'burrow' already exists."
   fi
 }
 
