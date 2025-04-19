@@ -29,7 +29,7 @@ install_components() {
   for component in "${components[@]}"; do
     script_name=$(basename "$component")
     log_file="$log_dir/$script_name.log"
-    echo "🚀 Running script: $script_name"
+    log "🚀 Running script: $script_name"
     if ! bash "$component" >"$log_file" 2>&1; then
       log "❌ Script $script_name failed. Check the log at $log_file for details."
     fi
