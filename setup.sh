@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.dotfiles/links/zsh/utils/output/log.sh"
+
 prevent_apt_daemon_restart_prompts() {
   sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
 }
@@ -29,11 +31,11 @@ install_components() {
     log_file="$log_dir/$script_name.log"
     echo "🚀 Running script: $script_name"
     if ! bash "$component" >"$log_file" 2>&1; then
-      echo "❌ Script $script_name failed. Check the log at $log_file for details."
+      log "❌ Script $script_name failed. Check the log at $log_file for details."
     fi
   done
 
-  echo "Logs saved to: $log_dir"
+  log "Logs saved to: $log_dir"
 }
 
 link_dotfiles() {
@@ -55,7 +57,7 @@ main() {
   install_components
   link_dotfiles
   update_git_submodules
-  echo "========== COMPLETE =========="
+  log "🎉✨ All setup tasks are complete! Your environment is ready to go! 🚀"
 }
 
 main
