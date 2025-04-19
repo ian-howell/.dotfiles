@@ -43,6 +43,15 @@ az_login() {
 create_vm() {
   ensure_resource_group
 
+  if az vm show \
+    --resource-group burrow_group \
+    --name burrow \
+    --subscription "Visual Studio Enterprise Subscription" \
+    --output none 2>/dev/null; then
+    log "✅ VM 'burrow' already exists. Skipping creation."
+    return
+  fi
+
   log "🚀 Creating the VM..."
   az vm create \
     --resource-group burrow_group \
