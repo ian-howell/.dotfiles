@@ -9,7 +9,7 @@ source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
 main() {
   delete_go
   install_go "$1"
-  go version
+  /usr/local/go/bin/go version
 }
 
 delete_go() {
