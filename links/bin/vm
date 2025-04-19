@@ -130,8 +130,8 @@ create_nsg_rule() {
 
 setup_vm() {
   log "🔧 Setting up the VM..."
-  # TODO: submodules are not being cloned
   ssh burrow <<'EOF'
+        ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
         sudo apt update && sudo apt install -y git
         git clone --recurse-submodules https://github.com/ian-howell/.dotfiles.git $HOME/.dotfiles
         cd $HOME/.dotfiles
