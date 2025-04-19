@@ -15,6 +15,7 @@ sudo apt-get install -y -q \
   libxpm-dev \
   libxt-dev \
   python3-dev \
+  python3-venv \
   python3.10-venv \
   ruby-dev \
   lua5.1 \
