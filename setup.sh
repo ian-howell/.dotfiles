@@ -1,28 +1,48 @@
 #!/bin/bash
 
-# Prevent apt from bothering me about restarting daemons
-sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+prevent_apt_daemon_restart_prompts() {
+    sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+}
 
-# Order is (somewhat) important
-source src/install_essentials.sh
-source src/install_go.sh
-source src/install_zsh.sh
-source src/install_fzf.sh
-source src/install_fd.sh
-source src/remap_capslock.sh
-source src/install_node.sh
-source src/install_delta.sh
-source src/install_lazygit.sh
-source src/install_neovim.sh
-source src/install_tmux.sh
-source src/install_zoxide.sh
-source src/install_sesh.sh
-source src/install_ohmyposh.sh
+install_components() {
+    local components=(
+        "src/install_essentials.sh"
+        "src/install_go.sh"
+        "src/install_zsh.sh"
+        "src/install_fzf.sh"
+        "src/install_fd.sh"
+        "src/remap_capslock.sh"
+        "src/install_node.sh"
+        "src/install_delta.sh"
+        "src/install_lazygit.sh"
+        "src/install_neovim.sh"
+        "src/install_tmux.sh"
+        "src/install_zoxide.sh"
+        "src/install_sesh.sh"
+        "src/install_ohmyposh.sh"
+    )
 
-# TODO: Just `go run` this. Currently, I need to rebuild the binary every time I
-# adjust my dotfile links.
-./src/linkdotfiles/linkdotfiles
+    for component in "${components[@]}"; do
+        source "$component"
+    done
+}
 
-git submodule update --init --recursive
+link_dotfiles() {
+    # TODO: Just `go run` this. Currently, I need to rebuild the binary every time I
+    # adjust my dotfile links.
+    ./src/linkdotfiles/linkdotfiles
+}
 
-echo "========== COMPLETE =========="
+update_git_submodules() {
+    git submodule update --init --recursive
+}
+
+main() {
+    prevent_apt_daemon_restart_prompts
+    install_components
+    link_dotfiles
+    update_git_submodules
+    echo "========== COMPLETE =========="
+}
+
+main
