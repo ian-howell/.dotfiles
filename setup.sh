@@ -28,9 +28,7 @@ install_components() {
     script_name=$(basename "$component")
     log_file="$log_dir/$script_name.log"
     echo "🚀 Running script: $script_name"
-    if bash "$component" >"$log_file" 2>&1; then
-      echo "✅ Script $script_name completed successfully."
-    else
+    if ! bash "$component" >"$log_file" 2>&1; then
       echo "❌ Script $script_name failed. Check the log at $log_file for details."
     fi
   done
