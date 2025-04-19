@@ -1,10 +1,12 @@
 #!/bin/bash
 
+source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
+
 function main() {
   if ! command -v kitty &>/dev/null; then
-    print_banner "Installing Kitty"
+    print_light_gray_banner "Installing Kitty"
   else
-    print_banner "Upgrading Kitty"
+    print_light_gray_banner "Upgrading Kitty"
   fi
   install
 }
@@ -15,12 +17,6 @@ function install() {
     installer=nightly
 
   install_desktop_integration
-}
-
-function print_banner() {
-  echo "================================================================================"
-  echo "$1"
-  echo "================================================================================"
 }
 
 function create_symlinks() {

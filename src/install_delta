@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ARTIFACTS_DIR=${ARTIFACTS_DIR:-$(mktemp -d)}
+
 BIN_DIR="$HOME/.local/bin"
 
 main() {
@@ -9,15 +11,9 @@ main() {
 }
 
 install_delta() {
-  print_banner "Installing Delta"
+  print_light_gray_banner "Installing Delta"
   mkdir -p "$BIN_DIR"
   download_delta
-}
-
-print_banner() {
-  echo "================================================================================"
-  echo "$1"
-  echo "================================================================================"
 }
 
 download_delta() {

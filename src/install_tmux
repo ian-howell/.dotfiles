@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.dotfiles/links/zsh/utils/output/output.sh"
+
 VERSION="3.5a"
 
 main() {
@@ -10,7 +12,7 @@ main() {
 }
 
 install() {
-  print_banner "Installing TMUX"
+  print_light_gray_banner "Installing TMUX"
   install_dependencies
 
   tmpdir=$(mktemp -d)
@@ -24,12 +26,6 @@ install() {
 
 install_dependencies() {
   sudo apt-get install -y libevent-2.1-7 libevent-dev ncurses-base bison
-}
-
-print_banner() {
-  echo "================================================================================"
-  echo "$1"
-  echo "================================================================================"
 }
 
 main
