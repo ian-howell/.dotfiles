@@ -37,18 +37,15 @@ function install_dependencies() {
 
 function build() {
   cd "$REPO_DIR" || exit 1
-  make CMAKE_BUILD_TYPE=RelWithDebInfo
+  make CMAKE_BUILD_TYPE=RelWithDebInfo 
   sudo make install
 }
 
-# Pull the latest code from the repo. Return 1 if there are no changes
+# Pull the latest code from the repo
 function pull_latest_code() {
   cd "$REPO_DIR" || exit 1
-  git fetch
-  if [ -z "$(git diff --name-only origin/master)" ]; then
-    return 1
-  fi
-  git pull
+  git fetch --tags --force
+  git checkout nightly
 }
 
 function print_banner() {
