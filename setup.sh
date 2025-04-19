@@ -32,7 +32,7 @@ install_components() {
 link_dotfiles() {
   # TODO: Just `go run` this. Currently, I need to rebuild the binary every time I
   # adjust my dotfile links.
-  ./$base_dir/src/linkdotfiles/linkdotfiles
+  "$base_dir/src/linkdotfiles/linkdotfiles"
 }
 
 update_git_submodules() {
@@ -40,6 +40,9 @@ update_git_submodules() {
 }
 
 main() {
+  export PATH="$PATH:/usr/local/go/bin"
+  export PATH="$PATH:$HOME/.local/bin"
+
   prevent_apt_daemon_restart_prompts
   install_components
   link_dotfiles
