@@ -150,7 +150,7 @@ setup_vm() {
   if ssh -T burrow /bin/bash <<'EOF'
         touch $HOME/.hushlogin
         ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
-        git clone --quiet --recurse-submodules https://github.com/ian-howell/.dotfiles.git $HOME/.dotfiles >/dev/null
+        git clone --quiet --recurse-submodules git@github.com:ian-howell/.dotfiles.git $HOME/.dotfiles >/dev/null
         cd $HOME/.dotfiles
         ./setup.sh | tee $HOME/setup.log
 EOF
