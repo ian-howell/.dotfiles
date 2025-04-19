@@ -9,6 +9,7 @@ prevent_apt_daemon_restart_prompts() {
 install_components() {
   local components=(
     "$HOME/.dotfiles/src/install_essentials.sh"
+    "$HOME/.dotfiles/src/update_git_submodules.sh"
     "$HOME/.dotfiles/src/install_go.sh"
     "$HOME/.dotfiles/src/install_zsh.sh"
     "$HOME/.dotfiles/src/install_fzf.sh"
@@ -44,11 +45,6 @@ link_dotfiles() {
   "$HOME/.dotfiles/src/linkdotfiles/linkdotfiles"
 }
 
-update_git_submodules() {
-  ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
-  git submodule update --init --recursive
-}
-
 main() {
   export PATH="$PATH:/usr/local/go/bin"
   export PATH="$PATH:$HOME/.local/bin"
@@ -56,7 +52,6 @@ main() {
   prevent_apt_daemon_restart_prompts
   install_components
   link_dotfiles
-  update_git_submodules
   log "🎉✨ All setup tasks are complete! Your environment is ready to go! 🚀"
 }
 
