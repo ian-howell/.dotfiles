@@ -33,7 +33,7 @@ main() {
 
 az_login() {
   if ! az account show >/dev/null 2>&1; then
-    echo "🔐 Logging into Azure..."
+    log "🔐 Logging into Azure..."
     az login
   fi
 }
@@ -41,7 +41,7 @@ az_login() {
 create_vm() {
   ensure_resource_group
 
-  echo "🚀 Creating the VM..."
+  log "🚀 Creating the VM..."
   az vm create \
     --resource-group burrow_group \
     --name burrow \
@@ -60,12 +60,12 @@ create_vm() {
 
   setup_vm
 
-  echo "✅ VM created successfully!"
+  log "✅ VM created successfully!"
 }
 
 ensure_resource_group() {
   if ! az group show --name burrow_group >/dev/null 2>&1; then
-    echo "🏗️ Creating resource group 'burrow_group'..."
+    log "🏗️ Creating resource group 'burrow_group'..."
     az group create --name burrow_group --location eastus
   fi
 }
@@ -83,25 +83,25 @@ Host burrow
 
   # Remove old host key if it exists
   if ssh-keygen -f "$ssh_known_hosts_file" -R "burrow.eastus.cloudapp.azure.com" >/dev/null 2>&1; then
-    echo "🗑️ Removed old SSH host key for 'burrow'."
+    log "🗑️ Removed old SSH host key for 'burrow'."
   fi
 
   # Add the host key to known_hosts
-  echo "🔑 Adding SSH host key for 'burrow'..."
+  log "🔑 Adding SSH host key for 'burrow'..."
   ssh-keyscan -H burrow.eastus.cloudapp.azure.com >>"$ssh_known_hosts_file" 2>/dev/null
 
   # Add SSH configuration if not already present
   if ! grep -q "Host burrow" "$ssh_config_file" 2>/dev/null; then
-    echo "🛠️ Adding SSH configuration for 'burrow'..."
-    echo "$host_entry" >>"$ssh_config_file"
-    echo "✅ SSH configuration added."
+    log "🛠️ Adding SSH configuration for 'burrow'..."
+    log "$host_entry" >>"$ssh_config_file"
+    log "✅ SSH configuration added."
   else
-    echo "ℹ️ SSH configuration for 'burrow' already exists."
+    log "ℹ️ SSH configuration for 'burrow' already exists."
   fi
 }
 
 open_ports() {
-  echo "🔓 Opening ports in the NSG..."
+  log "🔓 Opening ports in the NSG..."
   # NOTE: 22 is already open by default
   # create_nsg_rule burrow_group burrowNSG AllowSSH 1000 22
   create_nsg_rule burrow_group burrowNSG AllowHTTP 1010 80
@@ -115,7 +115,7 @@ create_nsg_rule() {
   local priority=$4
   local port=$5
 
-  echo "🔒 Creating NSG rule: $rule_name with priority $priority for port $port..."
+  log "🔒 Creating NSG rule: $rule_name with priority $priority for port $port..."
   az network nsg rule create \
     --resource-group "$resource_group" \
     --nsg-name "$nsg_name" \
@@ -129,7 +129,7 @@ create_nsg_rule() {
 }
 
 setup_vm() {
-  echo "🔧 Setting up the VM..."
+  log "🔧 Setting up the VM..."
   # TODO: submodules are not being cloned
   ssh burrow <<'EOF'
         sudo apt update && sudo apt install -y git
@@ -140,27 +140,27 @@ EOF
 }
 
 delete_vm() {
-  echo "🗑️ Deleting the VM..."
+  log "🗑️ Deleting the VM..."
   az vm delete --resource-group burrow_group --name burrow --yes --no-wait
 
-  echo "🗑️ Disassociating the public IP address..."
+  log "🗑️ Disassociating the public IP address..."
   az network nic update \
     --resource-group burrow_group \
     --name burrowVMNic \
     --remove ipConfigurations[0].publicIpAddress \
     --output none
 
-  echo "🗑️ Deleting the public IP address..."
+  log "🗑️ Deleting the public IP address..."
   az network public-ip delete \
     --resource-group burrow_group \
     --name burrowPublicIP \
     --output table
 
-  echo "✅ VM deletion complete."
+  log "✅ VM deletion complete."
 }
 
 vm_status() {
-  echo "📊 Checking VM status..."
+  log "📊 Checking VM status..."
   az vm get-instance-view \
     --resource-group burrow_group \
     --name burrow \
@@ -170,7 +170,7 @@ vm_status() {
 }
 
 start_vm() {
-  echo "▶️ Starting the VM..."
+  log "▶️ Starting the VM..."
   az vm start \
     --resource-group burrow_group \
     --name burrow \
@@ -178,11 +178,21 @@ start_vm() {
 }
 
 stop_vm() {
-  echo "⏹️ Stopping the VM..."
+  log "⏹️ Stopping the VM..."
   az vm stop \
     --resource-group burrow_group \
     --name burrow \
     --subscription "Visual Studio Enterprise Subscription"
+}
+
+# Logs a message with a timestamp and a vertical separator.
+# The timestamp is displayed in magenta.
+#
+# Example:
+#   log "🔐 Logging into Azure..."
+#   Output: 2023-10-05 14:23:45 │ 🔐 Logging into Azure...
+log() {
+  echo -e "\033[35m$(date '+%Y-%m-%d %H:%M:%S')\033[0m │ $*"
 }
 
 main "$@"
