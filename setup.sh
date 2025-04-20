@@ -7,6 +7,7 @@ prevent_apt_daemon_restart_prompts() {
 }
 
 install_components() {
+  # TODO: Turn these into a DAG and install everything concurrently.
   local components=(
     "$HOME/.dotfiles/src/install_essentials.sh"
     "$HOME/.dotfiles/src/update_git_submodules.sh"
@@ -23,6 +24,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_zoxide.sh"
     "$HOME/.dotfiles/src/install_sesh.sh"
     "$HOME/.dotfiles/src/install_ohmyposh.sh"
+    "$HOME/.dotfiles/src/install_docker.sh"
   )
 
   log_dir=$(mktemp -d /tmp/setup_logs.XXXXXX)
