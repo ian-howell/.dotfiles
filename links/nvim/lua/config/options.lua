@@ -41,6 +41,9 @@ vim.opt.timeoutlen = 300
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+-- LazyVim uses 'screen', which is really cool, but it breaks my muscle memory
+-- for "split and go to definition" (-gd)
+vim.opt.splitkeep = "cursor"
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'` and `:help 'listchars'`
