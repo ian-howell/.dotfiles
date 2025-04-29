@@ -5,3 +5,7 @@ import = [
 [[session]]
 name = "dotfiles"
 path = "~/.dotfiles"
+
+[[session]]
+name = "tmp"
+path = "/tmp"
