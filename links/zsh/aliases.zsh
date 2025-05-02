@@ -44,8 +44,8 @@ alias gfm="(git ls-files -o --exclude-standard; git diff --name-only --diff-filt
 
 # Pull (get) commands
 alias gg="git fetch"
-alias ggm="git fetch; git merge"
-alias ggr="git fetch; git rebase"
+alias ggm="git fetch && git merge && git submodule update --init --recursive"
+alias ggr="git fetch && git rebase && git submodule update --init --recursive"
 
 # Log commands
 alias gl="git log"
