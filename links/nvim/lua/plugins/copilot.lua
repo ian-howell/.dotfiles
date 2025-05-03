@@ -53,6 +53,10 @@ return {
             normal = "gx",
             insert = nil,
           },
+          accept_diff = {
+            normal = "ga",
+            insert = nil,
+          },
         },
       }
     end,
