@@ -27,54 +27,126 @@ return {
   },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
-    opts = {
-      model = "gpt-4o",
-      -- model = "gpt-4.5-preview",
-    },
+    branch = "main",
+    cmd = "CopilotChat",
+    opts = function()
+      return {
+        model = "gpt-4o",
+        auto_insert_mode = false,
+        question_header = "  Ian ",
+        answer_header = "  Copilot ",
+        highlight_headers = true, -- Highlight headers in chat, disable if using markdown renderers (like render-markdown.nvim)
+        show_help = false,
+        auto_follow_cursor = false,
+        window = {
+          layout = "horizontal",
+          relative = "win",
+          width = 1,
+          height = 0.4,
+          row = 10000, -- The first row is 1. This puts the bottom of the window at the bottom of the screen
+        },
+        mappings = {
+          submit_prompt = {
+            insert = "<C-d>",
+          },
+          reset = {
+            normal = "gx",
+            insert = nil,
+          },
+        },
+      }
+    end,
     keys = {
+      { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
+      { "<leader>ac", "<cmd>CopilotChatCommit<CR>", desc = "commit (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>af", "<cmd>CopilotChatFix<CR>", desc = "fix (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>ar", "<cmd>CopilotChatReview<CR>", desc = "review (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>ad", "<cmd>CopilotChatDocs<CR>", desc = "docs (CopilotChat)", mode = { "v" } },
+      { "<leader>ae", "<cmd>CopilotChatExplain<CR>", desc = "explain (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>ao", "<cmd>CopilotChatOptimize<CR>", desc = "optimize (CopilotChat)", mode = { "n", "v" } },
       {
-        "<space>ac",
-        "<cmd>CopilotChatCommit<CR>",
-        desc = "commit (CopilotChat)",
+        "<leader>aa",
+        function()
+          local window = require("CopilotChat").chat
+          if window and window:visible() then
+            window:close()
+            return
+          end
+          require("CopilotChat").open({
+            window = {
+              layout = "horizontal",
+              relative = "win",
+              width = 1,
+              height = 0.4,
+              row = 10000, -- The first row is 1. This puts the bottom of the window at the bottom of the screen
+            },
+          })
+        end,
+        desc = "Toggle (CopilotChat)",
         mode = { "n", "v" },
       },
       {
-        "<space>af",
-        "<cmd>CopilotChatFix<CR>",
-        desc = "fix (CopilotChat)",
+        "<leader>aF",
+        function()
+          local window = require("CopilotChat").chat
+          if window and window:visible() then
+            require("CopilotChat").close()
+          end
+
+          require("CopilotChat").open({
+            window = {
+              layout = "replace",
+            },
+          })
+        end,
+        desc = "Fullscreen (CopilotChat)",
         mode = { "n", "v" },
       },
       {
-        "<space>at",
-        "<cmd>CopilotChatTests<CR>",
-        desc = "tests (CopilotChat)",
+        "<leader>ax",
+        function()
+          return require("CopilotChat").reset()
+        end,
+        desc = "Clear (CopilotChat)",
         mode = { "n", "v" },
       },
       {
-        "<space>ar",
-        "<cmd>CopilotChatReview<CR>",
-        desc = "review (CopilotChat)",
+        "<leader>as",
+        function()
+          return require("CopilotChat").stop()
+        end,
+        desc = "Stop (CopilotChat)",
         mode = { "n", "v" },
       },
       {
-        "<space>ad",
-        "<cmd>CopilotChatDocs<CR>",
-        desc = "docs (CopilotChat)",
-        mode = { "n", "v" },
-      },
-      {
-        "<space>ae",
-        "<cmd>CopilotChatExplain<CR>",
-        desc = "explain (CopilotChat)",
-        mode = { "n", "v" },
-      },
-      {
-        "<space>ao",
-        "<cmd>CopilotChatOptimize<CR>",
-        desc = "optimize (CopilotChat)",
+        "<leader>aq",
+        function()
+          vim.ui.input({
+            prompt = "Quick Chat: ",
+          }, function(input)
+            if input ~= "" then
+              require("CopilotChat").ask(input)
+            end
+          end)
+        end,
+        desc = "Quick Chat (CopilotChat)",
         mode = { "n", "v" },
       },
     },
+    config = function(_, opts)
+      local chat = require("CopilotChat")
+
+      vim.api.nvim_create_autocmd("BufEnter", {
+        pattern = "copilot-chat",
+        callback = function()
+          vim.opt_local.relativenumber = false
+          vim.opt_local.number = false
+          vim.opt_local.conceallevel = 0
+        end,
+      })
+
+      chat.setup(opts)
+    end,
   },
 }
 -- vim: ts=2 sts=2 sw=2 et
