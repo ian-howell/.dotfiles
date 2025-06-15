@@ -42,7 +42,7 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 #===[ Path extensions
 prepend "$HOME/.dotfiles/links/bin"
 prepend "$HOME/.local/bin"
-prepend "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin"
+[[ -d "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin" ]] && prepend "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin"
 
 # Add go to the environment
 export GOROOT="/usr/local/go"
