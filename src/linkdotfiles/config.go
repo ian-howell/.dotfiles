@@ -54,6 +54,7 @@ func getConfig() Config {
 			{"lazygit.yml", ".config/lazygit/config.yml"},
 			{"sesh", ".config/sesh"},
 			{"shellcheckrc", ".shellcheckrc"},
+			{"vscode-nvim", ".config/vscode-nvim"},
 		},
 	}
 }
