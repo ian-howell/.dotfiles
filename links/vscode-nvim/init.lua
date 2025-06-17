@@ -55,6 +55,13 @@ keymap('n', 'gI', notify('editor.action.goToImplementation'), { noremap = true, 
 keymap('n', 'gy', notify('editor.action.goToTypeDefinition'), { noremap = true, silent = true })
 keymap('n', 'K', notify('editor.action.showHover'), { noremap = true, silent = true })
 
+-- Diagnostics
+-- jump to next/previous diagnostic
+keymap('n', '<leader>]d', notify('editor.action.marker.next'), { noremap = true, silent = true })
+keymap('n', '<leader>[d', notify('editor.action.marker.prev'), { noremap = true, silent = true })
+-- open the problems panel
+keymap('n', '<leader>up', notify('workbench.view.problems'), { noremap = true, silent = true })
+
 -- VSCode specific vim settings
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.ignorecase = true
