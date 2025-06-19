@@ -14,6 +14,9 @@ vim.g.mapleader = ' '
 -- Only source this file if we're in VSCode
 local keymap = vim.api.nvim_set_keymap
 
+-- TODO: figure out how to toggle the fun things in the "explorer". I probably
+-- don't need git? But like, the "symbols" thing looks kinda cool...
+
 -- File operations
 keymap('n', '<leader>ff', notify('workbench.action.quickOpen'), { noremap = true, silent = true })
 keymap('n', '<leader>fr', notify('workbench.action.quickOpenRecent'), { noremap = true, silent = true })
@@ -28,6 +31,9 @@ keymap('n', '<leader>ug', notify('workbench.view.scm'), { noremap = true, silent
 keymap('n', '<leader>ub', notify('workbench.action.toggleSidebarVisibility'), { noremap = true, silent = true })
 -- Toggle the auxiliary sidebar
 keymap('n', '<leader>uB', notify('workbench.action.toggleAuxiliaryBar'), { noremap = true, silent = true })
+-- Open Cline
+-- TODO: Fix this.
+keymap('n', '<leader>uc', notify('workbench.action.openCline'), { noremap = true, silent = true })
 
 -- Panels and sidebars
 keymap('n', '<leader>up', notify('workbench.action.togglePanel'), { noremap = true, silent = true })
