@@ -36,7 +36,7 @@ return {
         question_header = "  Ian ",
         answer_header = "  Copilot ",
         highlight_headers = true, -- Highlight headers in chat, disable if using markdown renderers (like render-markdown.nvim)
-        show_help = false,
+        show_help = true,
         auto_follow_cursor = false,
         window = {
           layout = "horizontal",
