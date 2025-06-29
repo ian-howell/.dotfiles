@@ -39,11 +39,9 @@ return {
         show_help = true,
         auto_follow_cursor = false,
         window = {
-          layout = "horizontal",
+          layout = "vertical",
           relative = "win",
-          width = 1,
-          height = 0.4,
-          row = 10000, -- The first row is 1. This puts the bottom of the window at the bottom of the screen
+          width = 0.5,
         },
         mappings = {
           submit_prompt = {
@@ -62,69 +60,28 @@ return {
     end,
     keys = {
       { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
-      { "<leader>ac", "<cmd>CopilotChatCommit<CR>", desc = "commit (CopilotChat)", mode = { "n", "v" } },
-      { "<leader>af", "<cmd>CopilotChatFix<CR>", desc = "fix (CopilotChat)", mode = { "n", "v" } },
-      { "<leader>ar", "<cmd>CopilotChatReview<CR>", desc = "review (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>ac", "<cmd>CopilotChatClose<CR>", desc = "close (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>af", "<cmd>CopilotChatFix<CR>", desc = "fix (CopilotChat)", mode = { "v" } },
+      { "<leader>ar", "<cmd>CopilotChatReview<CR>", desc = "review (CopilotChat)", mode = { "v" } },
       { "<leader>ad", "<cmd>CopilotChatDocs<CR>", desc = "docs (CopilotChat)", mode = { "v" } },
-      { "<leader>ae", "<cmd>CopilotChatExplain<CR>", desc = "explain (CopilotChat)", mode = { "n", "v" } },
-      { "<leader>ao", "<cmd>CopilotChatOptimize<CR>", desc = "optimize (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>ae", "<cmd>CopilotChatExplain<CR>", desc = "explain (CopilotChat)", mode = { "v" } },
       {
-        "<leader>aa",
+        "<leader>ao",
         function()
-          local window = require("CopilotChat").chat
-          if window and window:visible() then
-            window:close()
-            return
-          end
           require("CopilotChat").open({
             window = {
-              layout = "horizontal",
+              layout = "vertical",
               relative = "win",
-              width = 1,
-              height = 0.4,
-              row = 10000, -- The first row is 1. This puts the bottom of the window at the bottom of the screen
+              width = 0.5,
             },
           })
-          -- Jump to the CopilotChat window, go to bottom, and enter insert mode
+          -- Go to bottom and enter insert mode
           vim.schedule(function()
             vim.cmd("normal! G") -- Go to the last line
-            vim.cmd("startinsert") -- Enter insert mode
+            vim.cmd("startinsert!") -- Enter insert mode. The ! makes it work like 'A'
           end)
         end,
-        desc = "Toggle (CopilotChat)",
-        mode = { "n", "v" },
-      },
-      {
-        "<leader>aF",
-        function()
-          local window = require("CopilotChat").chat
-          if window and window:visible() then
-            require("CopilotChat").close()
-          end
-
-          require("CopilotChat").open({
-            window = {
-              layout = "replace",
-            },
-          })
-        end,
-        desc = "Fullscreen (CopilotChat)",
-        mode = { "n", "v" },
-      },
-      {
-        "<leader>ax",
-        function()
-          return require("CopilotChat").reset()
-        end,
-        desc = "Clear (CopilotChat)",
-        mode = { "n", "v" },
-      },
-      {
-        "<leader>as",
-        function()
-          return require("CopilotChat").stop()
-        end,
-        desc = "Stop (CopilotChat)",
+        desc = "open (CopilotChat)",
         mode = { "n", "v" },
       },
       {
@@ -138,7 +95,7 @@ return {
             end
           end)
         end,
-        desc = "Quick Chat (CopilotChat)",
+        desc = "quick (CopilotChat)",
         mode = { "n", "v" },
       },
     },
