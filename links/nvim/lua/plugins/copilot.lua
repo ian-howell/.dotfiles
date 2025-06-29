@@ -85,6 +85,11 @@ return {
               row = 10000, -- The first row is 1. This puts the bottom of the window at the bottom of the screen
             },
           })
+          -- Jump to the CopilotChat window, go to bottom, and enter insert mode
+          vim.schedule(function()
+            vim.cmd("normal! G") -- Go to the last line
+            vim.cmd("startinsert") -- Enter insert mode
+          end)
         end,
         desc = "Toggle (CopilotChat)",
         mode = { "n", "v" },
