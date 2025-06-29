@@ -67,4 +67,7 @@ vim.opt.laststatus = 3
 
 vim.opt.tabstop = 8
 
+-- snacks is laaaaggggyyy
+vim.g.snacks_animate = false
+
 -- vim: ts=2 sts=2 sw=2 et
