@@ -47,7 +47,7 @@ return {
         },
         mappings = {
           submit_prompt = {
-            insert = "<C-d>",
+            insert = "<cr>",
           },
           reset = {
             normal = "gx",
