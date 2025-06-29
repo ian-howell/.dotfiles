@@ -31,7 +31,7 @@ return {
     cmd = "CopilotChat",
     opts = function()
       return {
-        model = "gpt-4o",
+        model = "claude-sonnet-4",
         auto_insert_mode = false,
         question_header = "  Ian ",
         answer_header = "  Copilot ",
