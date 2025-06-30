@@ -1,9 +1,9 @@
 return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
-  config = function()
+  opts = {
     -- Configure diagnostics to show only errors
-    vim.diagnostic.config({
+    diagnostics = {
       severity_sort = true,
       signs = {
         severity = { min = vim.diagnostic.severity.ERROR },
@@ -14,6 +14,6 @@ return {
       underline = {
         severity = { min = vim.diagnostic.severity.ERROR },
       },
-    })
-  end,
+    },
+  },
 }
