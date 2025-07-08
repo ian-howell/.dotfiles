@@ -1,4 +1,7 @@
 fugitive:
 Session.vim
-coverage.html
+
+cover.out
+coverage.out
 cover.html
+coverage.html
