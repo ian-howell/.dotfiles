@@ -25,6 +25,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_sesh.sh"
     "$HOME/.dotfiles/src/install_ohmyposh.sh"
     "$HOME/.dotfiles/src/install_docker.sh"
+    "$HOME/.dotfiles/src/install_opencode.sh"
   )
 
   log_dir=$(mktemp -d /tmp/setup_logs.XXXXXX)
