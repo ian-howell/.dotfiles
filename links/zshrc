@@ -52,6 +52,9 @@ export PATH=$HOME/go/bin:$PATH
 # Enable bash completion. This is useful for applications that don't have zsh completions (e.g. az cli)
 autoload -U +X bashcompinit && bashcompinit
 
+az_completions_file="/etc/bash_completion.d/azure-cli"
+[[ -f "$az_completions_file" ]] && source "$az_completions_file"
+
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
