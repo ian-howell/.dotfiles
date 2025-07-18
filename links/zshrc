@@ -49,6 +49,9 @@ export GOROOT="/usr/local/go"
 export PATH=$GOROOT/bin:$PATH
 export PATH=$HOME/go/bin:$PATH
 
+# Enable bash completion. This is useful for applications that don't have zsh completions (e.g. az cli)
+autoload -U +X bashcompinit && bashcompinit
+
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
