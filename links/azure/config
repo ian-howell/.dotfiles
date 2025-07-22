@@ -8,3 +8,6 @@ dynamic_install_allow_preview = true
 [core]
 collect_telemetry = no
 
+[defaults]
+group = ian-dev03-rg
+
