@@ -65,6 +65,13 @@ return {
       vim.keymap.set("n", "<space>fg", fzf.git_status, { desc = "git files" })
       vim.keymap.set("n", "<space>gl", fzf.git_commits, { desc = "git log" })
       vim.keymap.set("n", "<space>gh", fzf.git_bcommits, { desc = "git log for file" })
+
+      local gitDiffSinceMain = function()
+        local mainBranch = vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")
+        mainBranch = mainBranch:gsub("%s+", "") -- Trim whitespace
+        fzf.git_diff({ ref = mainBranch })
+      end
+      vim.keymap.set("n", "<space>fG", gitDiffSinceMain, { desc = "git diff since main" })
     end,
   },
 }
