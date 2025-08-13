@@ -2,6 +2,15 @@ return {
   { -- Fuzzy Finder (files, lsp, etc)
     "ibhagwan/fzf-lua",
     event = "VimEnter",
+    keys = {
+      {
+        "<space>ft",
+        function()
+          require("fzf-lua").treesitter()
+        end,
+        desc = "treesitter",
+      },
+    },
     config = function()
       local fzf = require("fzf-lua")
       local actions = require("fzf-lua").actions
@@ -55,7 +64,6 @@ return {
       vim.keymap.set("n", "<space>fd", fzf.diagnostics_document, { desc = "diagnostics (file)" })
       vim.keymap.set("n", "<space>fD", fzf.diagnostics_workspace, { desc = "diagnostics (project)" })
       vim.keymap.set("n", "<space>fr", fzf.resume, { desc = "resume" })
-      vim.keymap.set("n", "<space>ft", fzf.treesitter, { desc = "treesitter" })
       vim.keymap.set("n", "<space>fq", fzf.quickfix, { desc = "quickfix" })
       vim.keymap.set("n", "<space>fQ", fzf.quickfix_stack, { desc = "previous quickfix lists" })
       vim.keymap.set("n", "<space>fL", fzf.lines, { desc = "all buffer lines" })
