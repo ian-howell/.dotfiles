@@ -3,12 +3,33 @@ return {
     "ibhagwan/fzf-lua",
     event = "VimEnter",
     keys = {
+      { "<space>ff", "<cmd>FzfLua files<cr>", desc = "files" },
+      { "<space>fh", "<cmd>FzfLua help_tags<cr>", desc = "help" },
+      { "<space>fk", "<cmd>FzfLua keymaps<cr>", desc = "keymaps" },
+      { "<space>fp", "<cmd>FzfLua builtin<cr>", desc = "picker" },
+      { "<space>/", "<cmd>FzfLua live_grep<cr>", desc = "grep" },
+      { "<space>*", "<cmd>FzfLua grep_cword<cr>", desc = "word under the cursor", mode = "n" },
+      { "<space>*", "<cmd>FzfLua grep_visual<cr>", desc = "grep", mode = "x" },
+      { "<space>fd", "<cmd>FzfLua diagnostics_document<cr>", desc = "diagnostics (file)" },
+      { "<space>fD", "<cmd>FzfLua diagnostics_workspace<cr>", desc = "diagnostics (project)" },
+      { "<space>fr", "<cmd>FzfLua resume<cr>", desc = "resume" },
+      { "<space>ft", "<cmd>FzfLua treesitter<cr>", desc = "treesitter" },
+      { "<space>fq", "<cmd>FzfLua quickfix<cr>", desc = "quickfix" },
+      { "<space>fQ", "<cmd>FzfLua quickfix_stack<cr>", desc = "previous quickfix lists" },
+      { "<space>fL", "<cmd>FzfLua lines<cr>", desc = "all buffer lines" },
+      { "<space>fl", "<cmd>FzfLua blines<cr>", desc = "current buffer lines" },
+      { "<space>bb", "<cmd>FzfLua buffers<cr>", desc = "buffers" },
+      { "<space>fg", "<cmd>FzfLua git_status<cr>", desc = "git files" },
+      { "<space>gl", "<cmd>FzfLua git_commits<cr>", desc = "git log" },
+      { "<space>gh", "<cmd>FzfLua git_bcommits<cr>", desc = "git log for file" },
       {
-        "<space>ft",
+        "<space>fG",
         function()
-          require("fzf-lua").treesitter()
+          local mainBranch = vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")
+          mainBranch = mainBranch:gsub("%s+", "") -- Trim whitespace
+          require("fzf-lua").git_diff({ ref = mainBranch })
         end,
-        desc = "treesitter",
+        desc = "git diff since main",
       },
     },
     config = function()
@@ -53,33 +74,6 @@ return {
           file_icons = false,
         },
       })
-
-      vim.keymap.set("n", "<space>ff", fzf.files, { desc = "files" })
-      vim.keymap.set("n", "<space>fh", fzf.help_tags, { desc = "help" })
-      vim.keymap.set("n", "<space>fk", fzf.keymaps, { desc = "keymaps" })
-      vim.keymap.set("n", "<space>fp", fzf.builtin, { desc = "picker" })
-      vim.keymap.set("n", "<space>/", fzf.live_grep, { desc = "grep" })
-      vim.keymap.set("n", "<space>*", fzf.grep_cword, { desc = "word under the cursor" })
-      vim.keymap.set("x", "<space>*", fzf.grep_visual, { desc = "grep" })
-      vim.keymap.set("n", "<space>fd", fzf.diagnostics_document, { desc = "diagnostics (file)" })
-      vim.keymap.set("n", "<space>fD", fzf.diagnostics_workspace, { desc = "diagnostics (project)" })
-      vim.keymap.set("n", "<space>fr", fzf.resume, { desc = "resume" })
-      vim.keymap.set("n", "<space>fq", fzf.quickfix, { desc = "quickfix" })
-      vim.keymap.set("n", "<space>fQ", fzf.quickfix_stack, { desc = "previous quickfix lists" })
-      vim.keymap.set("n", "<space>fL", fzf.lines, { desc = "all buffer lines" })
-      vim.keymap.set("n", "<space>fl", fzf.blines, { desc = "current buffer lines" })
-      vim.keymap.set("n", "<space>bb", fzf.buffers, { desc = "buffers" })
-
-      vim.keymap.set("n", "<space>fg", fzf.git_status, { desc = "git files" })
-      vim.keymap.set("n", "<space>gl", fzf.git_commits, { desc = "git log" })
-      vim.keymap.set("n", "<space>gh", fzf.git_bcommits, { desc = "git log for file" })
-
-      local gitDiffSinceMain = function()
-        local mainBranch = vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")
-        mainBranch = mainBranch:gsub("%s+", "") -- Trim whitespace
-        fzf.git_diff({ ref = mainBranch })
-      end
-      vim.keymap.set("n", "<space>fG", gitDiffSinceMain, { desc = "git diff since main" })
     end,
   },
 }
