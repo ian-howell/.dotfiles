@@ -70,4 +70,7 @@ vim.opt.tabstop = 8
 -- snacks is laaaaggggyyy
 vim.g.snacks_animate = false
 
+-- Folke doesn't know how to manage scrolling. I do.
+vim.opt.scrolloff = 0
+
 -- vim: ts=2 sts=2 sw=2 et
