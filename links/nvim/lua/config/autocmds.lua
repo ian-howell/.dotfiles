@@ -83,7 +83,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
   group = vim.api.nvim_create_augroup("focus-enter", { clear = true }),
   callback = function()
     vim.opt_local.cursorline = true
-    vim.opt_local.cursorcolumn = true
+    vim.opt_local.cursorcolumn = vim.g.cursorcolumn
     vim.opt_local.colorcolumn = tostring(vim.opt_local.textwidth:get())
     vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
   end,
