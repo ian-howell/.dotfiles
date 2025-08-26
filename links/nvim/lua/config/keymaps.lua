@@ -15,4 +15,10 @@ vim.keymap.set("i", "<C-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", { desc = "Fix the last
 vim.keymap.del("n", "<S-h>")
 vim.keymap.del("n", "<S-l>")
 
+vim.g.cursorcolumn = false
+vim.keymap.set("n", "<space>ux", function()
+  vim.g.cursorcolumn = not vim.g.cursorcolumn
+  vim.opt_local.cursorcolumn = vim.g.cursorcolumn
+end, { desc = "Toggle cursor column" })
+
 -- vim: ts=2 sts=2 sw=2 et
