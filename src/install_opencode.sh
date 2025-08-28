@@ -41,7 +41,7 @@ case "$filename" in
     ;;
 esac
 
-INSTALL_DIR=$HOME/.local/bin
+INSTALL_DIR=$HOME/.opencode/bin
 mkdir -p "$INSTALL_DIR"
 
 if [ -z "$requested_version" ]; then
