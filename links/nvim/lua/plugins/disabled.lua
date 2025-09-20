@@ -1,4 +1,4 @@
 return {
   { "akinsho/bufferline.nvim", enabled = false },
-  { "echasnovski/mini.pairs", enabled = false },
+  { "nvim-mini/mini.pairs", enabled = false },
 }
