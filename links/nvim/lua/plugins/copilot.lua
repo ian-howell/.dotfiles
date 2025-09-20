@@ -6,9 +6,7 @@ return {
       panel = { enabled = true },
       suggestion = {
         keymap = {
-          -- LazyVim's defaults here are actually pretty nice, since they more or less match vim defaults
-          accept_word = "<C-f>",
-          accept_line = "<C-l>",
+          -- NOTE: accept_word and accept_line won't work util https://github.com/Saghen/blink.cmp/issues/1498 is addressed
         },
       },
       filetypes = {
