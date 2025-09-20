@@ -11,9 +11,12 @@ vim.keymap.set("n", "<space><space>", "<C-6>", { desc = "[ ] Swap to the last bu
 vim.keymap.set("i", "<C-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", { desc = "Fix the last mispelling" })
 
 -- LazyVim uses H and L to move between buffers. Silly LazyVim, that's useless.
--- This re-enables the much more useful defaults.
+-- This re-enables the much more useful defaults configures more idiomatic
+-- bindings to accomplish the same thing.
 vim.keymap.del("n", "<S-h>")
 vim.keymap.del("n", "<S-l>")
+vim.keymap.set("n", "<c-n>", "<cmd>bnext<CR>", { desc = "Go to next buffer" })
+vim.keymap.set("n", "<c-p>", "<cmd>bprevious<CR>", { desc = "Go to previous buffer" })
 
 vim.g.cursorcolumn = false
 vim.keymap.set("n", "<space>ux", function()
