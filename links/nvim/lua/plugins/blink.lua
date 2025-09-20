@@ -1,6 +1,11 @@
 return {
   "Saghen/blink.cmp",
   opts = {
+    sources = {
+      per_filetype = {
+        codecompanion = { "codecompanion" },
+      },
+    },
     keymap = {
       preset = "default",
       ["<C-n>"] = { "show", "select_next", "fallback_to_mappings" },
