@@ -1,6 +1,9 @@
 return {
   {
     "zbirenbaum/copilot.lua",
+    dependencies = {
+      "copilotlsp-nvim/copilot-lsp", -- (optional) for NES functionality
+    },
 
     opts = {
       panel = { enabled = true },
@@ -11,6 +14,15 @@ return {
       },
       filetypes = {
         ["*"] = true,
+      },
+      nes = {
+        enabled = true, -- requires copilot-lsp as a dependency
+        auto_trigger = true,
+        keymap = {
+          accept_and_goto = "<leader>ag",
+          accept = "<leader>ac",
+          dismiss = "<C-]>",
+        },
       },
     },
 
