@@ -19,8 +19,7 @@ return {
         enabled = true, -- requires copilot-lsp as a dependency
         auto_trigger = true,
         keymap = {
-          accept_and_goto = "<leader>ag",
-          accept = "<leader>ac",
+          accept = "<leader>ay",
           dismiss = "<C-]>",
         },
       },
@@ -36,92 +35,56 @@ return {
     end,
   },
   {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "main",
-    cmd = "CopilotChat",
-    opts = function()
-      return {
-        model = "gpt-5",
-        auto_insert_mode = false,
-        question_header = "  Ian ",
-        answer_header = "  Copilot ",
-        highlight_headers = true, -- Highlight headers in chat, disable if using markdown renderers (like render-markdown.nvim)
-        show_help = true,
-        auto_follow_cursor = false,
-        window = {
-          layout = "vertical",
-          relative = "win",
-          width = 0.5,
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    opts = {
+      display = {
+        chat = {
+          auto_scroll = false,
         },
-        mappings = {
-          submit_prompt = {
-            insert = "<cr>",
-          },
-          reset = {
-            normal = "gx",
-            insert = nil,
-          },
-          accept_diff = {
-            normal = "ga",
-            insert = nil,
-          },
-        },
-      }
-    end,
+      },
+    },
     keys = {
       { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
-      { "<leader>ac", "<cmd>CopilotChatClose<CR>", desc = "close (CopilotChat)", mode = { "n", "v" } },
-      { "<leader>af", "<cmd>CopilotChatFix<CR>", desc = "fix (CopilotChat)", mode = { "v" } },
-      { "<leader>ar", "<cmd>CopilotChatReview<CR>", desc = "review (CopilotChat)", mode = { "v" } },
-      { "<leader>ad", "<cmd>CopilotChatDocs<CR>", desc = "docs (CopilotChat)", mode = { "v" } },
-      { "<leader>ae", "<cmd>CopilotChatExplain<CR>", desc = "explain (CopilotChat)", mode = { "v" } },
       {
-        "<leader>ao",
-        function()
-          require("CopilotChat").open({
-            window = {
-              layout = "vertical",
-              relative = "win",
-              width = 0.5,
-            },
-          })
-          -- Go to bottom and enter insert mode
-          vim.schedule(function()
-            vim.cmd("normal! G") -- Go to the last line
-            vim.cmd("startinsert!") -- Enter insert mode. The ! makes it work like 'A'
-          end)
-        end,
-        desc = "open (CopilotChat)",
+        "<leader>aa",
+        "<cmd>CodeCompanionChat Toggle<CR>",
+        desc = "toggle chat (CodeCompanion)",
         mode = { "n", "v" },
+      },
+      {
+        "<leader>af",
+        "<cmd>CodeCompanion Identify the problem in this code and fix it. You may use the #{buffer} if necesary, but please focus specifically on the provided code.<CR>",
+        desc = "fix (CodeCompanion)",
+        mode = { "v" },
+      },
+      {
+        "<leader>ar",
+        "<cmd>CodeCompanionChat Please review this code. You may use the #{buffer} if necesary, but please focus specifically on the provided code.<CR>",
+        desc = "review (CodeCompanion)",
+        mode = { "v" },
+      },
+      {
+        "<leader>ad",
+        "<cmd>CodeCompanion Please add documentation to this code. If the selected code contains a function, class, or struct header, please add the appropriate doc string, adhering to idiomatic standards for the programming language<CR>",
+        desc = "docs (CodeCompanion)",
+        mode = { "v" },
+      },
+      {
+        "<leader>ae",
+        "<cmd>CodeCompanionChat Could you explain what this code does?. You may use the #{buffer} if necesary, but please focus specifically on the provided code.<CR>",
+        desc = "explain (CodeCompanion)",
+        mode = { "v" },
       },
       {
         "<leader>aq",
-        function()
-          vim.ui.input({
-            prompt = "Quick Chat: ",
-          }, function(input)
-            if input ~= "" then
-              require("CopilotChat").ask(input)
-            end
-          end)
-        end,
-        desc = "quick (CopilotChat)",
+        ":CodeCompanionChat ",
+        desc = "quick (CodeCompanion)",
         mode = { "n", "v" },
       },
     },
-    config = function(_, opts)
-      local chat = require("CopilotChat")
-
-      vim.api.nvim_create_autocmd("BufEnter", {
-        pattern = "copilot-chat",
-        callback = function()
-          vim.opt_local.relativenumber = false
-          vim.opt_local.number = false
-        end,
-      })
-
-      chat.setup(opts)
-    end,
   },
 }
 -- vim: ts=2 sts=2 sw=2 et
