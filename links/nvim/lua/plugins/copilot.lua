@@ -1,10 +1,6 @@
 return {
   {
     "zbirenbaum/copilot.lua",
-    dependencies = {
-      "copilotlsp-nvim/copilot-lsp", -- (optional) for NES functionality
-    },
-
     opts = {
       suggestion = {
         keymap = {
@@ -15,12 +11,7 @@ return {
         ["*"] = true,
       },
       nes = {
-        enabled = true, -- requires copilot-lsp as a dependency
-        auto_trigger = true,
-        keymap = {
-          accept = "<leader>ay",
-          dismiss = "<C-]>",
-        },
+        enabled = false,
       },
     },
 
