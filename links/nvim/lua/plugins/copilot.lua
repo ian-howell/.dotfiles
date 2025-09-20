@@ -6,7 +6,6 @@ return {
     },
 
     opts = {
-      panel = { enabled = true },
       suggestion = {
         keymap = {
           -- NOTE: accept_word and accept_line won't work util https://github.com/Saghen/blink.cmp/issues/1498 is addressed
