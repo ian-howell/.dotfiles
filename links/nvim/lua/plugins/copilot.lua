@@ -27,6 +27,8 @@ return {
     "olimorris/codecompanion.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
+      -- needed to install additional parsers
+      { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
     },
     opts = {
       display = {
