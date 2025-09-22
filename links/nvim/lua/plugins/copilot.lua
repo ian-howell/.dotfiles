@@ -69,7 +69,7 @@ return {
       },
       {
         "<leader>aq",
-        ":CodeCompanionChat ",
+        ":CodeCompanion #{buffer} ",
         desc = "quick (CodeCompanion)",
         mode = { "n", "v" },
       },
