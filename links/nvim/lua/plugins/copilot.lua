@@ -31,10 +31,10 @@ return {
       { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
     },
     opts = {
-      display = {
-        chat = {
-          auto_scroll = false,
-        },
+      strategies = {
+        chat = { adapter = { name = "copilot", model = "gpt-5" } },
+        inline = { adapter = { name = "copilot", model = "gpt-5" } },
+        display = { chat = { auto_scroll = false } },
       },
     },
     keys = {
@@ -78,4 +78,3 @@ return {
     },
   },
 }
--- vim: ts=2 sts=2 sw=2 et
