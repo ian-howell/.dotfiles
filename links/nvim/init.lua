@@ -1,3 +1,6 @@
+-- TODO: Tokyonight
+-- TODO: plugins
+
 -- Automatically create missing directories on save
 vim.api.nvim_create_autocmd("BufWritePre", {
   callback = function(event)
@@ -15,6 +18,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 -- TODO: Fuzzy find files
 
 -- Reload configuration
+-- TODO: :help :restart has hints on sessions and plugins
 vim.keymap.set("n", "<space>V", "<cmd>source $MYVIMRC<cr>")
 
 -- Open help
@@ -28,6 +32,11 @@ vim.keymap.set({"n", "x"}, "<c-j>", "<c-w>j")
 vim.keymap.set({"n", "x"}, "<c-k>", "<c-w>k")
 vim.keymap.set({"n", "x"}, "<c-h>", "<c-w>h")
 vim.keymap.set({"n", "x"}, "<c-l>", "<c-w>l")
+
+-- Quickfix
+vim.keymap.set("n", "<space>qo", "<cmd>copen<cr>")
+-- TODO: Figure out how to do this with just 'q' when you're in the qflist
+vim.keymap.set("n", "<space>qc", "<cmd>cclose<cr>")
 
 -- Undo / swap settings
 vim.o.undofile = true
