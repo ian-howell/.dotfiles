@@ -33,5 +33,6 @@ vim.keymap.set({"n", "x"}, "<c-l>", "<c-w>l")
 vim.o.undofile = true
 vim.o.swapfile = false
 
--- TODO: Figure this one out
-vim.o.botright = true
+-- Window placement: open splits to the right / below
+vim.o.splitright = true
+vim.o.splitbelow = true
