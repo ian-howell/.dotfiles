@@ -27,5 +27,6 @@ vim.keymap.set({"n", "x"}, "<c-l>", "<c-w>l")
 
 -- Quickfix
 
+-- TODO: Fix these
 -- vim.o.undo = true
 -- vim.o.swap = false
