@@ -38,6 +38,8 @@ return {
       },
     },
 
+    event = "VeryLazy",
+
     keys = {
       {
         "<tab>",
