@@ -24,56 +24,81 @@ return {
     end,
   },
   {
-    "olimorris/codecompanion.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      -- needed to install additional parsers
-      { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-    },
+    "folke/sidekick.nvim",
     opts = {
-      strategies = {
-        chat = { adapter = { name = "copilot", model = "gpt-5" } },
-        inline = { adapter = { name = "copilot", model = "gpt-5" } },
-        display = { chat = { auto_scroll = false } },
+      cli = {
+        -- Example of how to add a prompt for use with <leader>ap or :Sidekick cli prompt.
+        -- prompts = {
+        --   refactor = "Please refactor {this} to be more maintainable",
+        --   security = "Review {file} for security vulnerabilities",
+        --   custom = function(ctx)
+        --     return "Current file: " .. ctx.buf .. " at line " .. ctx.row
+        --   end,
+        -- },
       },
     },
+
     keys = {
-      { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
+      {
+        "<tab>",
+        function()
+          -- if there is a next edit, jump to it, otherwise apply it if any
+          if require("sidekick").nes_jump_or_apply() then
+            return -- jumped or applied
+          end
+
+          -- if you are using Neovim's native inline completions
+          if vim.lsp.inline_completion.get() then
+            return
+          end
+
+          -- any other things (like snippets) you want to do on <tab> go here.
+
+          -- fall back to normal tab
+          return "<tab>"
+        end,
+        mode = { "i", "n" },
+        expr = true,
+        desc = "Goto/Apply Next Edit Suggestion",
+      },
       {
         "<leader>aa",
-        "<cmd>CodeCompanionChat Toggle<CR>",
-        desc = "toggle chat (CodeCompanion)",
-        mode = { "n", "v" },
+        function()
+          require("sidekick.cli").toggle()
+        end,
+        desc = "Sidekick Toggle CLI",
       },
       {
-        "<leader>af",
-        "<cmd>CodeCompanion Identify the problem in this code and fix it. You may use the #{buffer} if necesary, but please focus specifically on the provided code.<CR>",
-        desc = "fix (CodeCompanion)",
-        mode = { "v" },
+        "<leader>at",
+        function()
+          require("sidekick.cli").send({ msg = "{this}" })
+        end,
+        mode = { "x", "n" },
+        desc = "Send This",
       },
       {
-        "<leader>ar",
-        "<cmd>CodeCompanionChat Please review this code. You may use the #{buffer} if necesary, but please focus specifically on the provided code.<CR>",
-        desc = "review (CodeCompanion)",
-        mode = { "v" },
+        "<leader>av",
+        function()
+          require("sidekick.cli").send({ msg = "{selection}" })
+        end,
+        mode = { "x" },
+        desc = "Send Visual Selection",
       },
       {
-        "<leader>ad",
-        "<cmd>CodeCompanion Please add documentation to this code. If the selected code contains a function, class, or struct header, please add the appropriate doc string, adhering to idiomatic standards for the programming language<CR>",
-        desc = "docs (CodeCompanion)",
-        mode = { "v" },
+        "<leader>ap",
+        function()
+          require("sidekick.cli").prompt()
+        end,
+        mode = { "n", "x" },
+        desc = "Sidekick Select Prompt",
       },
       {
-        "<leader>ae",
-        "<cmd>CodeCompanionChat Could you explain what this code does?. You may use the #{buffer} if necesary, but please focus specifically on the provided code.<CR>",
-        desc = "explain (CodeCompanion)",
-        mode = { "v" },
-      },
-      {
-        "<leader>aq",
-        ":CodeCompanion #{buffer} ",
-        desc = "quick (CodeCompanion)",
-        mode = { "n", "v" },
+        "<c-.>",
+        function()
+          require("sidekick.cli").focus()
+        end,
+        mode = { "n", "x", "i", "t" },
+        desc = "Sidekick Switch Focus",
       },
     },
   },
