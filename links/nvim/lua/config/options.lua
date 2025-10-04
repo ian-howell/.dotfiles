@@ -73,4 +73,7 @@ vim.g.snacks_animate = false
 -- Folke doesn't know how to manage scrolling. I do.
 vim.opt.scrolloff = 0
 
+-- omg swap files are the worst
+vim.opt.swapfile = false
+
 -- vim: ts=2 sts=2 sw=2 et
