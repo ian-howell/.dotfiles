@@ -131,4 +131,43 @@ set_textwidth("markdown", 80)
 set_textwidth("lua", 80)
 set_textwidth("sh", 80)
 
+-- Strip stray carriage return characters on save
+local ns = vim.api.nvim_create_namespace("strip_crlf")
+local function strip_cr(bufnr)
+  bufnr = bufnr or 0
+  if vim.bo[bufnr].buftype ~= "" then
+    -- skip special buffers
+    return
+  end
+  -- Fast scan to see if any carriage returns exist
+  local has = false
+  for _, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)) do
+    if line:find("\r", 1, true) then
+      has = true
+      break
+    end
+  end
+  if not has then
+    return
+  end
+  local view = vim.fn.winsaveview()
+  -- Replace lines in one shot (single undo block)
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)
+  for i, l in ipairs(lines) do
+    if l:find("\r", 1, true) then
+      lines[i] = l:gsub("\r", "")
+    end
+  end
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, lines)
+  vim.fn.winrestview(view)
+end
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("StripCarriageReturn", { clear = true }),
+  callback = function(args)
+    strip_cr(args.buf)
+  end,
+  desc = "Remove stray \r characters before saving",
+})
+
 -- vim: ts=2 sts=2 sw=2 et
