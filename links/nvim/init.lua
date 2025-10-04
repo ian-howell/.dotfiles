@@ -1,4 +1,18 @@
--- TODO: Tokyonight
+-- Tokyonight colorscheme
+do
+  vim.pack.add({
+    { name = "tokyonight", src = "https://github.com/folke/tokyonight.nvim", checkout = "4d159616aee17796c2c94d2f5f87d2ee1a3f67c7"},
+  })
+  require("tokyonight").setup({
+    style = "storm",
+    on_highlights = function(hl)
+      -- ColorColumn should be invisible except on the active cursor line (using cursorline)
+      hl.ColorColumn = { bg = hl.Normal.bg }
+    end,
+  })
+  vim.cmd.colorscheme("tokyonight")
+end
+
 -- TODO: plugins
 
 -- Automatically create missing directories on save
