@@ -27,6 +27,10 @@ return {
     "folke/sidekick.nvim",
     opts = {
       cli = {
+        mux = {
+          enabled = true,
+          backend = "tmux",
+        },
         -- Example of how to add a prompt for use with <leader>ap or :Sidekick cli prompt.
         -- prompts = {
         --   refactor = "Please refactor {this} to be more maintainable",
