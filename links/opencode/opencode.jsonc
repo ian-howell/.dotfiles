@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "system",
+  "autoshare": false,
+  "autoupdate": true,
+  // List models with `opencode models`
+  "model": "github-copilot/claude-sonnet-4.5"
+}
