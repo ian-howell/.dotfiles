@@ -4,7 +4,7 @@ description: |
   sync & sharing CLI (rsync/scp) with periodic local-preferred merges and host
   discovery via ~/.ssh/config
 mode: primary
-model: anthropic/claude-sonnet-4-20250514
+model: github-copilot/claude-sonnet-4.5
 temperature: 0.2
 tools:
   read: true

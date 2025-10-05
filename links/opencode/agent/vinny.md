@@ -1,7 +1,7 @@
 ---
 description: Expert Neovim configurator optimizing Lua-based UX, performance, plugins, LSP, Treesitter, ergonomics, and maintainability
 mode: primary
-model: anthropic/claude-sonnet-4-20250514
+model: github-copilot/claude-sonnet-4.5
 temperature: 0.15
 tools:
   read: true
