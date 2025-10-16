@@ -7,8 +7,8 @@ set -g mode-style "fg=#82aaff,bg=#3b4261"
 set -g message-style "fg=#82aaff,bg=#3b4261"
 set -g message-command-style "fg=#82aaff,bg=#3b4261"
 
-set -g pane-border-style "fg=#3b4261,bg=#1e2030"
-set -g pane-active-border-style "fg=#82aaff,bg=#1e2030"
+set -g pane-border-style "fg=#3b4261,bg=#1a1b26"
+set -g pane-active-border-style "fg=#82aaff,bg=#1a1b26"
 
 set -g status "on"
 set -g status-justify "left"
