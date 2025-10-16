@@ -1,0 +1,13 @@
+# NOTE: if using windows, copy this file to %APPDATA%/alacritty/
+
+[window]
+startup_mode = "Maximized"
+dynamic_padding = true
+
+[font]
+normal = {family = "Hurmit Nerd Font"}
+
+[keyboard]
+bindings = [
+	{key = "Space", mods = "Control", chars = "\u0000"},
+]
