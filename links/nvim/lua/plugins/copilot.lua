@@ -106,6 +106,98 @@ return {
         mode = { "n", "x", "i", "t" },
         desc = "Sidekick Switch Focus",
       },
+
+      -- Context & Navigation
+      {
+        "<leader>af",
+        function()
+          require("sidekick.cli").send({ msg = "{file}", submit = true })
+        end,
+        desc = "Send Entire File",
+      },
+      {
+        "<leader>ab",
+        function()
+          require("sidekick.cli").send({ msg = "{buffer}", submit = true })
+        end,
+        desc = "Send Current Buffer",
+      },
+      {
+        "<leader>aD",
+        function()
+          require("sidekick.cli").send({ msg = "Fix diagnostics in {this}", submit = true })
+        end,
+        desc = "Fix Diagnostics",
+      },
+
+      -- Specific Prompt Actions
+      {
+        "<leader>ar",
+        function()
+          require("sidekick.cli").send({ msg = "Refactor {this} for better readability", submit = true })
+        end,
+        mode = { "n", "x" },
+        desc = "Refactor This",
+      },
+      {
+        "<leader>aR",
+        function()
+          require("sidekick.cli").send({ msg = "Review {this} for bugs and improvements", submit = true })
+        end,
+        mode = { "n", "x" },
+        desc = "Review This",
+      },
+      {
+        "<leader>ax",
+        function()
+          require("sidekick.cli").send({ msg = "Explain {this} in simple terms", submit = true })
+        end,
+        mode = { "n", "x" },
+        desc = "Explain This",
+      },
+      {
+        "<leader>aT",
+        function()
+          require("sidekick.cli").send({ msg = "Write tests for {this}", submit = true })
+        end,
+        mode = { "n", "x" },
+        desc = "Write Tests",
+      },
+      {
+        "<leader>ad",
+        function()
+          require("sidekick.cli").send({ msg = "Add documentation for {this}", submit = true })
+        end,
+        mode = { "n", "x" },
+        desc = "Document This",
+      },
+
+      -- Chat Management
+      {
+        "<leader>ac",
+        function()
+          require("sidekick.cli").clear()
+        end,
+        desc = "Clear Chat History",
+      },
+      {
+        "<leader>an",
+        function()
+          require("sidekick.cli").new()
+        end,
+        desc = "New Chat Session",
+      },
+      {
+        "<leader>ai",
+        function()
+          vim.ui.input({ prompt = "Ask Sidekick: " }, function(input)
+            if input then
+              require("sidekick.cli").send({ msg = input })
+            end
+          end)
+        end,
+        desc = "Quick Input",
+      },
     },
   },
 }
