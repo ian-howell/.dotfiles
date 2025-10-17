@@ -7,7 +7,7 @@ main() {
 }
 
 delete_az() {
-  sudo apt-get remove -y azure-cli
+  sudo apt-get remove -qq -y azure-cli 2> /dev/null
 }
 
 install_az() {
