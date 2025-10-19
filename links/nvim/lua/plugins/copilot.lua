@@ -171,6 +171,17 @@ return {
         mode = { "n", "x" },
         desc = "Document This",
       },
+      {
+        "<leader>af",
+        function()
+          return ("sidekick.cli").send({
+            msg = "Finish the pattern located at {this}. If there is existing code that comes after {this}, change it to match the pattern set by {this}",
+            submit = true,
+          })
+        end,
+        mode = { "n", "x" },
+        desc = "Finish the Pattern",
+      },
 
       -- Chat Management
       {
