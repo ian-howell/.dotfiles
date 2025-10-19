@@ -17,7 +17,7 @@ function is_installed() {
 function install_node() {
   curl -fsSL https://deb.nodesource.com/setup_23.x -o "$ARTIFACTS_DIR/nodesource_setup.sh"
   sudo -E bash "$ARTIFACTS_DIR/nodesource_setup.sh"
-  sudo apt-get install -y nodejs
+  sudo apt-get install -y nodejs=23.7.0-1nodesource1
 }
 
 main
