@@ -1,3 +1,6 @@
+# Skip "press enter to return to lazygit" prompt after editing files
+promptToReturnFromSubprocess: false
+
 gui:
   # Tokyonight theme
   theme:
