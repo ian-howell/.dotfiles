@@ -127,7 +127,7 @@ local set_textwidth = function(pattern, textwidth)
 end
 
 set_textwidth("go", 110)
-set_textwidth("markdown", 80)
+set_textwidth("markdown", 100)
 set_textwidth("lua", 80)
 set_textwidth("sh", 80)
 
