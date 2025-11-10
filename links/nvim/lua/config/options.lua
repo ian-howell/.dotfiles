@@ -59,8 +59,8 @@ vim.opt.grepprg = "rg --vimgrep --hidden -i -S"
 -- Floating windows (e.g. which-key) should be slightly transparent
 vim.opt.winblend = 10
 
--- Wrap text at 80 characters
-vim.opt.textwidth = 80
+-- Wrap text at 100 characters
+vim.opt.textwidth = 100
 
 -- Show only a single status line (at the bottom). LuaLine will handle the rest.
 vim.opt.laststatus = 3
