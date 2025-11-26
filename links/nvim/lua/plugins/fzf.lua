@@ -25,11 +25,11 @@ return {
       {
         "<space>fG",
         function()
-          local mainBranch = vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")
-          mainBranch = mainBranch:gsub("%s+", "") -- Trim whitespace
-          require("fzf-lua").git_diff({ ref = mainBranch })
+          local mergeBase = vim.fn.system("git merge-base origin/main HEAD")
+          mergeBase = vim.trim(mergeBase) -- Remove trailing newline
+          require("fzf-lua").git_diff({ ref = mergeBase })
         end,
-        desc = "git diff since main",
+        desc = "git diff since branching from main",
       },
     },
     config = function()
