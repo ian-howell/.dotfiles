@@ -66,6 +66,8 @@ return {
           on_create = function()
             vim.keymap.set("t", "<space>-", "<c-s>", { desc = "split" })
             vim.keymap.set("t", "<space>\\", "<c-v>", { desc = "vsplit" })
+            vim.keymap.set("t", "<c-j>", "<c-n>", { desc = "next item" })
+            vim.keymap.set("t", "<c-k>", "<c-p>", { desc = "previous item" })
           end,
         },
 
