@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Interactive Kubernetes context switcher using fzf
+# Use with: bind-key in tmux or call directly
+
+main() {
+    local context
+    local current_context
+
+    # Get current context to highlight it
+    current_context=$(kubectl config current-context 2>/dev/null || echo "")
+
+    # Get all contexts and mark the current one
+    context=$(kubectl config get-contexts -o name | \
+        awk -v current="$current_context" '{
+            if ($0 == current) {
+                print "* " $0
+            } else {
+                print "  " $0
+            }
+        }' | \
+        fzf-tmux -p 80%,60% \
+            --ansi \
+            --border-label ' kubernetes contexts ' \
+            --prompt '☸️  ' \
+            --header "  Current: ${current_context}" \
+            --preview 'kubectl config get-contexts {2} | tail -n +2' \
+            --preview-window=right:40% \
+            --bind 'tab:down,btab:up'
+    )
+
+    [[ -z "$context" ]] && return
+
+    # Remove the marker and whitespace
+    context=$(echo "$context" | sed 's/^[* ] *//')
+
+    # Switch context
+    if kubectl config use-context "$context" >/dev/null 2>&1; then
+        echo "Switched to context: $context"
+    else
+        echo "Failed to switch to context: $context" >&2
+        return 1
+    fi
+}
+
+main
