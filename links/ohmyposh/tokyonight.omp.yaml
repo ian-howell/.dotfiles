@@ -72,6 +72,10 @@ blocks:
     foreground: p:light-sky-blue
     type: git
     style: plain
+  - template: "<b>☸  {{ .Context }}</b>:<p:blue-black>{{ if .Namespace }}{{ .Namespace }}{{ else }}default{{ end }}</> "
+    foreground: p:terminal-blue
+    type: kubectl
+    style: plain
 - type: prompt
   alignment: left
   segments:
