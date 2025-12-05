@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# Interactive Kubernetes namespace switcher using fzf
+# Use with: bind-key in tmux or call directly
+
+main() {
+    local namespace
+    local current_context
+    local current_namespace
+
+    # Get current context and namespace
+    current_context=$(kubectl config current-context 2>/dev/null || echo "none")
+    current_namespace=$(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)
+    current_namespace=${current_namespace:-default}
+
+    # Get all namespaces and mark the current one
+    namespace=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}' 2>/dev/null | \
+        tr ' ' '\n' | \
+        awk -v current="$current_namespace" '{
+            if ($0 == current) {
+                print "* " $0
+            } else {
+                print "  " $0
+            }
+        }' | \
+        fzf-tmux -p 80%,60% \
+            --ansi \
+            --border-label ' kubernetes namespaces ' \
+            --prompt '🏷️  ' \
+            --header "  Context: ${current_context} | Namespace: ${current_namespace}" \
+            --preview 'kubectl get pods -n {2} 2>/dev/null | head -20' \
+            --preview-window=right:60% \
+            --bind 'tab:down,btab:up' \
+            --bind 'ctrl-r:reload(kubectl get namespaces -o jsonpath="{.items[*].metadata.name}" | tr " " "\n")'
+    )
+
+    [[ -z "$namespace" ]] && return
+
+    # Remove the marker and whitespace
+    namespace=$(echo "$namespace" | sed 's/^[* ] *//')
+
+    # Set namespace for current context
+    if kubectl config set-context --current --namespace="$namespace" >/dev/null 2>&1; then
+        echo "Switched to namespace: $namespace"
+    else
+        echo "Failed to switch to namespace: $namespace" >&2
+        return 1
+    fi
+}
+
+main
