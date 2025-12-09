@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Preview script for branches - shows recent commits
+
+repo="$1"
+branch="$2"
+
+if [ -d "$repo" ]; then
+    echo "=== Branch: $branch ==="
+    echo ""
+    git -C "$repo" log --oneline --color=always "$branch" -n 10 2>/dev/null || echo "No commits"
+fi

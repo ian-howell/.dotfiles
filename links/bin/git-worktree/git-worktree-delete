@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Helper script to safely delete a worktree
+
+set -eo pipefail
+
+worktree_to_delete="$1"
+
+# Basic validation
+if [ -z "$worktree_to_delete" ]; then
+    echo "Error: No worktree path provided" >&2
+    exit 1
+fi
+
+# Check if the worktree exists
+if [ ! -d "$worktree_to_delete" ]; then
+    echo "Worktree already removed or doesn't exist: $worktree_to_delete" >&2
+    exit 0
+fi
+
+current_dir=$(pwd)
+
+# Check if we're trying to delete the worktree we're currently in
+if [[ "$current_dir" == "$worktree_to_delete"* ]]; then
+    echo "Error: Cannot delete the current worktree!" >&2
+    echo "You are currently in: $current_dir" >&2
+    exit 1
+fi
+
+# Find the main repo for this worktree
+main_repo=$(git -C "$worktree_to_delete" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null || true)
+
+if [ -z "$main_repo" ]; then
+    echo "Error: Could not find main repository for worktree" >&2
+    exit 1
+fi
+
+# Remove the worktree and suppress git's normal output
+git -C "$main_repo" worktree remove "$worktree_to_delete" 2>&1 || true
+echo "Deleted: $worktree_to_delete" >&2
+exit 0
