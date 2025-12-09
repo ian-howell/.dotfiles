@@ -59,7 +59,7 @@ select_worktree() {
     result=$(
         list_all_worktrees | fzf-tmux -p 100%,100% \
             --ansi --border-label ' Git Worktrees ' --prompt '🌳  ' \
-            --header '^n: new worktree (from current repo)  ^d: delete  ESC: exit' \
+            --header '^n: new worktree (from current repo)  ^d: force delete  ESC: exit' \
             --preview "$SCRIPT_DIR/git-worktree-preview {}" \
             --bind 'tab:down,btab:up' \
             --bind 'ctrl-n:become(echo __CREATE_NEW__)' \

@@ -35,6 +35,6 @@ if [ -z "$main_repo" ]; then
 fi
 
 # Remove the worktree and suppress git's normal output
-git -C "$main_repo" worktree remove "$worktree_to_delete" 2>&1 || true
+git -C "$main_repo" worktree remove --force "$worktree_to_delete" 2>&1 || true
 echo "Deleted: $worktree_to_delete" >&2
 exit 0
