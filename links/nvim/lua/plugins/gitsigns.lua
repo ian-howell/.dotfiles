@@ -66,8 +66,13 @@ return {
         end, { desc = "open in browser" })
         map("n", "<space>gd", gitsigns.diffthis, { desc = "diff against index" })
         map("n", "<space>gD", function()
-          gitsigns.diffthis("@")
-        end, { desc = "diff against last commit" })
+          local merge_base = vim.fn.system("git merge-base origin/main HEAD"):gsub("%s+", "")
+          if vim.v.shell_error == 0 and merge_base ~= "" then
+            gitsigns.diffthis(merge_base)
+          else
+            vim.notify("Could not find merge-base with origin/main", vim.log.levels.WARN)
+          end
+        end, { desc = "diff against merge-base with main" })
 
         -- Toggles
         map("n", "<space>tb", gitsigns.toggle_current_line_blame, { desc = "inline blame" })
