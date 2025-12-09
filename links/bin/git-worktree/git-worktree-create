@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# Helper script to create git worktrees in ~/worktrees/<repo-name>/<branch-name>
+
+set -euo pipefail
+
+# Usage: git-worktree-create <repo-path> <branch-name>
+# Example: git-worktree-create ~/nc-aks/main feature/new-feature
+
+show_usage() {
+    echo "Usage: git-worktree-create <repo-path> <branch-name>"
+    echo ""
+    echo "Creates a git worktree in ~/worktrees/<repo-name>/<branch-name>"
+    echo ""
+    echo "Arguments:"
+    echo "  repo-path    Path to the git repository"
+    echo "  branch-name  Name of the branch to create worktree for"
+    echo ""
+    echo "Example:"
+    echo "  git-worktree-create ~/nc-aks/main feature/new-feature"
+    exit 1
+}
+
+if [ $# -ne 2 ]; then
+    show_usage
+fi
+
+REPO_PATH="$1"
+BRANCH_NAME="$2"
+
+# Validate repo path
+if [ ! -d "$REPO_PATH" ]; then
+    echo "Error: Repository path does not exist: $REPO_PATH" >&2
+    exit 1
+fi
+
+# Get the git root directory (works from both main repo and worktrees)
+REPO_ROOT=$(git -C "$REPO_PATH" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null)
+if [ -z "$REPO_ROOT" ]; then
+    echo "Error: Not a git repository: $REPO_PATH" >&2
+    exit 1
+fi
+
+# Extract repo name from the root directory
+REPO_NAME=$(basename "$REPO_ROOT")
+
+# Create worktrees base directory if it doesn't exist
+WORKTREES_BASE="$HOME/worktrees"
+mkdir -p "$WORKTREES_BASE"
+
+# Create repo-specific directory
+REPO_WORKTREES_DIR="$WORKTREES_BASE/$REPO_NAME"
+mkdir -p "$REPO_WORKTREES_DIR"
+
+# Worktree path (preserving nested structure for branches with slashes)
+WORKTREE_PATH="$REPO_WORKTREES_DIR/$BRANCH_NAME"
+
+# Check if worktree already exists
+if [ -d "$WORKTREE_PATH" ]; then
+    echo "Worktree already exists at: $WORKTREE_PATH" >&2
+    echo "$WORKTREE_PATH"
+    exit 0
+fi
+
+# Create parent directories for nested branch names
+mkdir -p "$(dirname "$WORKTREE_PATH")"
+
+# Check if branch exists locally
+if git -C "$REPO_ROOT" show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
+    # Local branch exists, create worktree from it
+    git -C "$REPO_ROOT" worktree add "$WORKTREE_PATH" "$BRANCH_NAME" >&2
+    echo "Created worktree at: $WORKTREE_PATH" >&2
+    echo "$WORKTREE_PATH"
+    exit 0
+fi
+
+# Check if branch exists on remote
+REMOTE_BRANCH=$(git -C "$REPO_ROOT" branch -r | grep -E "^\s*origin/$BRANCH_NAME$" | head -1 | xargs)
+if [ -n "$REMOTE_BRANCH" ]; then
+    # Remote branch exists, create local tracking branch and worktree
+    CLEAN_BRANCH="${REMOTE_BRANCH#origin/}"
+    git -C "$REPO_ROOT" worktree add -b "$CLEAN_BRANCH" "$WORKTREE_PATH" "$REMOTE_BRANCH" >&2
+    echo "Created worktree at: $WORKTREE_PATH (tracking $REMOTE_BRANCH)" >&2
+    echo "$WORKTREE_PATH"
+    exit 0
+fi
+
+# Branch doesn't exist, create new branch automatically
+echo "Branch '$BRANCH_NAME' does not exist locally or remotely." >&2
+echo "Creating new branch..." >&2
+git -C "$REPO_ROOT" worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH" >&2
+echo "Created worktree with new branch at: $WORKTREE_PATH" >&2
+echo "$WORKTREE_PATH"
+exit 0
