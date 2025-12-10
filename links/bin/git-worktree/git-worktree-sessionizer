@@ -20,12 +20,9 @@ WORKTREES_BASE="$HOME/worktrees"
 
 # Function to list all worktrees from ~/worktrees only
 list_all_worktrees() {
-    # Only list worktrees from ~/worktrees
-    if [ -d "$WORKTREES_BASE" ]; then
-        find "$WORKTREES_BASE" -mindepth 1 -type f -name ".git" 2>/dev/null | while read -r git_file; do
-            dirname "$git_file"
-        done | sort -u
-    fi
+    fd --hidden --max-depth 5 '^\.git$' ~/worktrees |
+        cut -f5- -d'/' |
+        grep -v 'nc-common-tools\/\.git'
 }
 
 # Function to list all branches from a repository (local and remote)
