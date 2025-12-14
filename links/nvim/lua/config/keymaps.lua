@@ -24,4 +24,10 @@ vim.keymap.set("n", "<space>ux", function()
   vim.opt_local.cursorcolumn = vim.g.cursorcolumn
 end, { desc = "Toggle cursor column" })
 
+-- Git commit in a new window
+vim.keymap.set("n", "<space>gc", function()
+  vim.cmd("terminal git commit")
+  vim.cmd("startinsert")
+end, { desc = "git commit" })
+
 -- vim: ts=2 sts=2 sw=2 et
