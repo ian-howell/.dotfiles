@@ -64,11 +64,13 @@ return {
         map({ "n", "x" }, "<space>go", function()
           Snacks.gitbrowse({ what = "permalink" })
         end, { desc = "open in browser" })
-        map("n", "<space>gd", gitsigns.diffthis, { desc = "diff against index" })
+        map("n", "<space>gd", function()
+          vim.cmd("CodeDiff file HEAD")
+        end, { desc = "diff against index" })
         map("n", "<space>gD", function()
           local merge_base = vim.fn.system("git merge-base origin/main HEAD"):gsub("%s+", "")
           if vim.v.shell_error == 0 and merge_base ~= "" then
-            gitsigns.diffthis(merge_base)
+            vim.cmd("CodeDiff file " .. merge_base .. " HEAD")
           else
             vim.notify("Could not find merge-base with origin/main", vim.log.levels.WARN)
           end
