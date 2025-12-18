@@ -71,9 +71,18 @@ return {
           end,
         },
 
+        fzf_opts = {
+          ["--header"] = "<alt-i>: ignore  <alt-h>: hidden\n<c-q>: all -> qf  <alt-q>: selected -> qf",
+          ["--header-first"] = true,
+        },
+
         defaults = {
           git_icons = true,
           file_icons = false,
+        },
+
+        files = {
+          hidden = true,
         },
       })
     end,
