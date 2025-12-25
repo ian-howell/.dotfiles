@@ -125,18 +125,44 @@ return {
       {
         "<leader>at",
         function()
-          require("sidekick.cli").send({ msg = "{this}" })
+          local path = vim.fn.expand("%:p")
+          local pos = vim.api.nvim_win_get_cursor(0)
+          local row = pos[1]
+          local col = pos[2] + 1
+          local text = string.format("@%s :L%d:C%d", path, row, col)
+          vim.fn.setreg("+", text)
         end,
-        mode = { "x", "n" },
-        desc = "Send This",
+        mode = { "n", "x" },
+        desc = "Copy location as {this}",
       },
       {
         "<leader>av",
         function()
-          require("sidekick.cli").send({ msg = "{selection}" })
+          -- visual selection range
+          local path = vim.fn.expand("%:p")
+          local start_pos = vim.fn.getpos("v")
+          local end_pos = vim.fn.getpos(".")
+
+          local srow, scol = start_pos[2], start_pos[3]
+          local erow, ecol = end_pos[2], end_pos[3]
+
+          -- normalize order
+          if erow < srow or (erow == srow and ecol < scol) then
+            srow, erow = erow, srow
+            scol, ecol = ecol, scol
+          end
+
+          local text
+          if srow == erow then
+            text = string.format("@%s :L%d:C%d-C%d", path, srow, scol, ecol)
+          else
+            text = string.format("@%s :L%d:C%d-L%d:C%d", path, srow, scol, erow, ecol)
+          end
+
+          vim.fn.setreg("+", text)
         end,
         mode = { "x" },
-        desc = "Send Visual Selection",
+        desc = "Copy range as {selection}",
       },
       {
         "<leader>ap",
@@ -250,12 +276,12 @@ return {
         "<leader>ai",
         function()
           vim.ui.input({ prompt = "Ask Sidekick: " }, function(input)
-            if input then
-              require("sidekick.cli").send({ msg = input })
+            if input and #input > 0 then
+              vim.fn.setreg("+", input)
             end
           end)
         end,
-        desc = "Quick Input",
+        desc = "Copy input to clipboard",
       },
     },
   },
