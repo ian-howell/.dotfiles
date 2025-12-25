@@ -41,6 +41,11 @@
 	# Replace the a/ and b/ in the diff header output with where the diff is
 	# coming from, so i/ (index), w/ (working directory) or c/ commit.
 	mnemonicPrefix = true
+        # Set nvim as the difftool
+        tool = nvim
+[difftool "nvim"]
+        cmd = nvim -d "$LOCAL" "$REMOTE"
+        prompt = false
 [fetch]
 	# If the remote branch was deleted, delete the local branch as well
         prune = true
