@@ -56,6 +56,9 @@ autoload -U +X bashcompinit && bashcompinit
 az_completions_file="/etc/bash_completion.d/azure-cli"
 [[ -f "$az_completions_file" ]] && source "$az_completions_file"
 
+# Set Kubernetes config file location
+export KUBECONFIG="$HOME/.kube/config"
+
 #===[ Unsorted
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
