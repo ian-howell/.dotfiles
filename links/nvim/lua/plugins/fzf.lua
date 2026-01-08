@@ -70,6 +70,10 @@ return {
 
         winopts = {
           fullscreen = true,
+          preview = {
+            layout = "vertical",
+            vertical = "up:85%",
+          },
           on_create = function()
             vim.keymap.set("t", "<space>-", "<c-s>", { desc = "split" })
             vim.keymap.set("t", "<space>\\", "<c-v>", { desc = "vsplit" })
@@ -79,7 +83,7 @@ return {
         },
 
         fzf_opts = {
-          ["--header"] = "<alt-i>: ignore  <alt-h>: hidden\n<c-q>: all -> qf  <alt-q>: selected -> qf",
+          ["--header"] = "<alt-i>: ignore  <alt-h>: hidden  <c-q>: all -> qf  <alt-q>: selected -> qf",
           ["--header-first"] = true,
         },
 
