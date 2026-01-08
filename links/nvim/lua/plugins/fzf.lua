@@ -3,7 +3,14 @@ return {
     "ibhagwan/fzf-lua",
     event = "VimEnter",
     keys = {
-      { "<space>ff", "<cmd>FzfLua files<cr>", desc = "files" },
+      { "<space>ff", "<cmd>FzfLua files cwd<cr>", desc = "files (cwd)" },
+      {
+        "<space>fF",
+        function()
+          FzfLua.files({ cwd = LazyVim.root() })
+        end,
+        desc = "files (root)",
+      },
       { "<space>fh", "<cmd>FzfLua help_tags<cr>", desc = "help" },
       { "<space>fk", "<cmd>FzfLua keymaps<cr>", desc = "keymaps" },
       { "<space>fp", "<cmd>FzfLua builtin<cr>", desc = "picker" },
