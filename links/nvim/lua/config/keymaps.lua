@@ -30,4 +30,15 @@ vim.keymap.set("n", "<space>gc", function()
   vim.cmd("startinsert")
 end, { desc = "git commit" })
 
+-- Snacks Explorer keymaps
+-- Swap these from the LazyVim defaults:
+-- - `<space>fe` should open from project root
+-- - `<space>fE` should open from current buffer dir
+vim.keymap.set("n", "<space>fe", function()
+  Snacks.explorer({ cwd = vim.uv.cwd() })
+end, { desc = "Explorer (root dir)" })
+vim.keymap.set("n", "<space>fE", function()
+  Snacks.explorer({ cwd = LazyVim.root() })
+end, { desc = "Explorer (cwd)" })
+
 -- vim: ts=2 sts=2 sw=2 et
