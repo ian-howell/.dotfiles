@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Verify that the current ordering is correct. Note that this AWK program came from chatGPT
-if ! tmux list-windows | awk '{if ($0 !~ "^" NR ":") {exit 1}} END {if (NR != FNR) {exit 1}}'; then
-  printf "Windows are not in order. Reorder them with \`tmux move-window -r\`\n" 1>&2
-  exit 1
-fi
+# Temporarily turn off window renumbering - it doesn't allow "holding cells"
+tmux set renumber-windows off
+trap 'tmux set renumber-windows on' EXIT
 
 current_window=$(tmux list-windows | grep "\*" | cut -d: -f1)
 target_window=$1
@@ -28,3 +26,7 @@ fi
 
 # Move our window from its "holding cell" to the target location
 tmux move-window -s 0 -t "$target_window"
+
+# This shouldn't be necessary, but If I did something stupid like specify an out
+# of bounds target, this will ensure that windows are renumbered correctly.
+tmux move-window -r
