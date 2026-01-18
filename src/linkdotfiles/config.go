@@ -55,7 +55,7 @@ func getConfig() Config {
 			{"sesh", ".config/sesh"},
 			{"shellcheckrc", ".shellcheckrc"},
 			{"vscode-nvim", ".config/vscode-nvim"},
-			{"opencode", ".config/opencode"},
+			{"opencode/opencode.jsonc", ".config/opencode/opencode.jsonc"},
 		},
 	}
 }
