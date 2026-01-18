@@ -3,5 +3,8 @@
   "theme": "tokyonight",
   "autoshare": false,
   "autoupdate": true,
-  "model": "github-copilot/gpt-5.2-codex"
+  "model": "github-copilot/gpt-5.2-codex",
+  "keybinds": {
+    "editor_open": "<leader>ctrl+e",
+  },
 }
