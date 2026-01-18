@@ -3,5 +3,5 @@
   "theme": "tokyonight",
   "autoshare": false,
   "autoupdate": true,
-  "model": "github-copilot/gpt-5.2"
+  "model": "github-copilot/gpt-5.2-codex"
 }
