@@ -43,9 +43,7 @@ install_components() {
 }
 
 link_dotfiles() {
-  # TODO: Just `go run` this. Currently, I need to rebuild the binary every time I
-  # adjust my dotfile links.
-  "$HOME/.dotfiles/src/linkdotfiles/linkdotfiles"
+  go run github.com/ian-howell/linkdotfiles@main
 }
 
 main() {
