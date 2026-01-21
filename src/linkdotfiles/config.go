@@ -47,6 +47,7 @@ func getConfig() Config {
 			{"zprofile", ".zprofile"},
 			{"tmux", ".config/tmux"},
 			{"kitty", ".config/kitty"},
+			{"lazyvim", ".config/lazyvim"},
 			{"nvim", ".config/nvim"},
 			{"zsh", ".zsh"},
 			{"zshenv", ".zshenv"},

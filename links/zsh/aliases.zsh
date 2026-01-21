@@ -82,6 +82,7 @@ alias ls="ls --color=auto"
 
 #===[ vim
 alias vim="nvim"
+alias lvim="NVIM_APPNAME=lazyvim nvim"
 
 alias :q=exit
 alias :wq=exit
