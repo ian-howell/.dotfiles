@@ -1,86 +1,89 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 // Config represents the configuration for the program
 type Config struct {
-	// The SourceRoot is the directory where the files to be linked are
-	// located. Defaults to the user's home directory.
-	SourceRoot string `yaml:"sourceRoot"`
-
-	// The TargetRoot is the directory where the links will be created.
-	// Defaults to the user's home directory.
-	TargetRoot string `yaml:"targetRoot"`
-
-	// The Links is a list of links to create. Each link's Source and Target
-	// will be prefixed with the SourceRoot and TargetRoot respectively.
+	// The Links is a list of links to create.
 	Links []Link `yaml:"links"`
 }
 
 // A Link represents a symlink to be created
 type Link struct {
-	// The Source is the path to the file to link to
-	Source string `yaml:"source"`
+	// The File is the absolute path to the file or directory to link to
+	File string `yaml:"file"`
 
-	// The Target is the path where the link will be created
-	Target string `yaml:"target"`
+	// The Link is the absolute path where the link will be created
+	Link string `yaml:"link"`
 }
 
-func getConfig() Config {
+const defaultConfigPath = "~/.dotfiles/linkdotfiles.yaml"
+
+func getConfig() (Config, error) {
+	configPath := expandHome(defaultConfigPath)
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return Config{}, fmt.Errorf("failed to read config file at %s: %w", configPath, err)
+	}
+
+	var config Config
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return Config{}, fmt.Errorf("failed to parse config file at %s: %w", configPath, err)
+	}
+
+	if err := normalizeConfig(&config); err != nil {
+		return Config{}, err
+	}
+
+	return config, nil
+}
+
+func normalizeConfig(config *Config) error {
+	errs := []error{}
+
+	for i, link := range config.Links {
+		if strings.TrimSpace(link.File) == "" {
+			errs = append(errs, fmt.Errorf("links[%d].file is required", i))
+		}
+		if strings.TrimSpace(link.Link) == "" {
+			errs = append(errs, fmt.Errorf("links[%d].link is required", i))
+		}
+
+		link.File = expandHome(link.File)
+		link.Link = expandHome(link.Link)
+		config.Links[i] = link
+
+		if link.File != "" && !filepath.IsAbs(link.File) {
+			errs = append(errs, fmt.Errorf("links[%d].file must be an absolute path", i))
+		}
+		if link.Link != "" && !filepath.IsAbs(link.Link) {
+			errs = append(errs, fmt.Errorf("links[%d].link must be an absolute path", i))
+		}
+	}
+
+	return errors.Join(errs...)
+}
+
+func expandHome(path string) string {
+	if !strings.Contains(path, "~") && !strings.Contains(path, "$HOME") {
+		return path
+	}
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		panic(fmt.Sprintf("failed to get user home directory: %v", err))
+		panic(fmt.Sprintf("failed to resolve home directory: %v", err))
 	}
-	return Config{
-		SourceRoot: filepath.Join(homeDir, ".dotfiles/links"),
-		TargetRoot: homeDir,
-		Links: []Link{
-			{"azure/config", ".azure/config"},
-			{"bin", ".bin"},
-			{"fonts", ".fonts"},
-			{"gitconfig", ".gitconfig"},
-			{"global_gitignore", ".global_gitignore"},
-			{"zprofile", ".zprofile"},
-			{"tmux", ".config/tmux"},
-			{"kitty", ".config/kitty"},
-			{"lazyvim", ".config/lazyvim"},
-			{"nvim", ".config/nvim"},
-			{"zsh", ".zsh"},
-			{"zshenv", ".zshenv"},
-			{"zshrc", ".zshrc"},
-			{"lazygit.yml", ".config/lazygit/config.yml"},
-			{"sesh", ".config/sesh"},
-			{"shellcheckrc", ".shellcheckrc"},
-			{"vscode-nvim", ".config/vscode-nvim"},
-			{"opencode/opencode.jsonc", ".config/opencode/opencode.jsonc"},
-		},
-	}
-}
 
-func linkFiles(config Config) error {
-	for _, link := range config.Links {
-		source := config.SourceRoot + "/" + link.Source
-		target := config.TargetRoot + "/" + link.Target
+	path = strings.ReplaceAll(path, "$HOME", homeDir)
+	path = strings.ReplaceAll(path, "~", homeDir)
 
-		// Create the parent directory if it doesn't exist
-		if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-			return fmt.Errorf("failed to create parent directory: %w", err)
-		}
-
-		// If the target already exists, remove it
-		if _, err := os.Lstat(target); err == nil {
-			if err := os.RemoveAll(target); err != nil {
-				return fmt.Errorf("failed to remove existing target: %w", err)
-			}
-		}
-
-		if err := os.Symlink(source, target); err != nil {
-			return fmt.Errorf("failed to create symlink: %w", err)
-		}
-	}
-	return nil
+	return path
 }

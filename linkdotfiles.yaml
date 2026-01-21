@@ -1,0 +1,37 @@
+links:
+  - file: ~/.dotfiles/links/azure/config
+    link: ~/.azure/config
+  - file: ~/.dotfiles/links/bin
+    link: ~/.bin
+  - file: ~/.dotfiles/links/fonts
+    link: ~/.fonts
+  - file: ~/.dotfiles/links/gitconfig
+    link: ~/.gitconfig
+  - file: ~/.dotfiles/links/global_gitignore
+    link: ~/.global_gitignore
+  - file: ~/.dotfiles/links/zprofile
+    link: ~/.zprofile
+  - file: ~/.dotfiles/links/tmux
+    link: ~/.config/tmux
+  - file: ~/.dotfiles/links/kitty
+    link: ~/.config/kitty
+  - file: ~/.dotfiles/links/lazyvim
+    link: ~/.config/lazyvim
+  - file: ~/.dotfiles/links/nvim
+    link: ~/.config/nvim
+  - file: ~/.dotfiles/links/zsh
+    link: ~/.zsh
+  - file: ~/.dotfiles/links/zshenv
+    link: ~/.zshenv
+  - file: ~/.dotfiles/links/zshrc
+    link: ~/.zshrc
+  - file: ~/.dotfiles/links/lazygit.yml
+    link: ~/.config/lazygit/config.yml
+  - file: ~/.dotfiles/links/sesh
+    link: ~/.config/sesh
+  - file: ~/.dotfiles/links/shellcheckrc
+    link: ~/.shellcheckrc
+  - file: ~/.dotfiles/links/vscode-nvim
+    link: ~/.config/vscode-nvim
+  - file: ~/.dotfiles/links/opencode/opencode.jsonc
+    link: ~/.config/opencode/opencode.jsonc
