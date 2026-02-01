@@ -6,5 +6,7 @@
   "model": "github-copilot/gpt-5.2-codex",
   "keybinds": {
     "editor_open": "<leader>ctrl+e",
+    "session_new": "<leader>ctrl+n",
+    "session_list": "<leader>ctrl+s",
   },
 }
