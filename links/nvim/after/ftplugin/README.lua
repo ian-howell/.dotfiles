@@ -1,0 +1,2 @@
+-- Filetype-specific settings live in this directory.
+-- Use these files only when per-filetype overrides are needed.

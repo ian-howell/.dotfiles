@@ -1,0 +1,1 @@
+-- Autocommands and event-driven behavior.

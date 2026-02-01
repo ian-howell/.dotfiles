@@ -1,0 +1,2 @@
+-- Plugin-specific overrides that must load after plugins.
+-- Keep this directory minimal; prefer lua/plugins/config/ instead.

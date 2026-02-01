@@ -1,0 +1,1 @@
+-- Language Server Protocol setup (servers, diagnostics, formatting).
