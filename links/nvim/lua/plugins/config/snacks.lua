@@ -37,6 +37,8 @@ local function merge_base()
   return vim.trim(output or "")
 end
 
+vim.keymap.set("n", "<leader>f", function() end, { desc = "find" })
+
 vim.keymap.set("n", "<leader>ff", function()
   snacks.picker.files({ cwd = vim.loop.cwd() })
 end, { desc = "files (cwd)" })
