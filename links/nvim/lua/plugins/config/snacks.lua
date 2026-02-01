@@ -37,83 +37,83 @@ local function merge_base()
   return vim.trim(output or "")
 end
 
-vim.keymap.set("n", "<space>ff", function()
+vim.keymap.set("n", "<leader>ff", function()
   snacks.picker.files({ cwd = vim.loop.cwd() })
 end, { desc = "files (cwd)" })
 
-vim.keymap.set("n", "<space>fF", function()
+vim.keymap.set("n", "<leader>fF", function()
   snacks.picker.files({ cwd = repo_root() })
 end, { desc = "files (root)" })
 
-vim.keymap.set("n", "<space>fh", function()
+vim.keymap.set("n", "<leader>fh", function()
   snacks.picker.help()
 end, { desc = "help" })
 
-vim.keymap.set("n", "<space>fk", function()
+vim.keymap.set("n", "<leader>fk", function()
   snacks.picker.keymaps()
 end, { desc = "keymaps" })
 
-vim.keymap.set("n", "<space>fp", function()
+vim.keymap.set("n", "<leader>fp", function()
   snacks.picker()
 end, { desc = "picker" })
 
-vim.keymap.set("n", "<space>/", function()
+vim.keymap.set("n", "<leader>/", function()
   snacks.picker.grep()
 end, { desc = "grep" })
 
-vim.keymap.set({ "n", "x" }, "<space>*", function()
+vim.keymap.set({ "n", "x" }, "<leader>*", function()
   snacks.picker.grep_word()
 end, { desc = "word under the cursor" })
 
-vim.keymap.set("n", "<space>fd", function()
+vim.keymap.set("n", "<leader>fd", function()
   snacks.picker.diagnostics_buffer()
 end, { desc = "diagnostics (file)" })
 
-vim.keymap.set("n", "<space>fD", function()
+vim.keymap.set("n", "<leader>fD", function()
   snacks.picker.diagnostics()
 end, { desc = "diagnostics (project)" })
 
-vim.keymap.set("n", "<space>fr", function()
+vim.keymap.set("n", "<leader>fr", function()
   snacks.picker.resume()
 end, { desc = "resume" })
 
-vim.keymap.set("n", "<space>ft", function()
+vim.keymap.set("n", "<leader>ft", function()
   snacks.picker.treesitter()
 end, { desc = "treesitter" })
 
-vim.keymap.set("n", "<space>fq", function()
+vim.keymap.set("n", "<leader>fq", function()
   snacks.picker.qflist()
 end, { desc = "quickfix" })
 
-vim.keymap.set("n", "<space>fQ", function()
+vim.keymap.set("n", "<leader>fQ", function()
   snacks.picker.qflist()
 end, { desc = "previous quickfix lists" })
 
-vim.keymap.set("n", "<space>fL", function()
+vim.keymap.set("n", "<leader>fL", function()
   snacks.picker.grep_buffers()
 end, { desc = "all buffer lines" })
 
-vim.keymap.set("n", "<space>fl", function()
+vim.keymap.set("n", "<leader>fl", function()
   snacks.picker.lines()
 end, { desc = "current buffer lines" })
 
-vim.keymap.set("n", "<space>bb", function()
+vim.keymap.set("n", "<leader>bb", function()
   snacks.picker.buffers()
 end, { desc = "buffers" })
 
-vim.keymap.set("n", "<space>fg", function()
+vim.keymap.set("n", "<leader>fg", function()
   snacks.picker.git_status()
 end, { desc = "git files" })
 
-vim.keymap.set("n", "<space>gl", function()
+vim.keymap.set("n", "<leader>gl", function()
   snacks.picker.git_log()
 end, { desc = "git log" })
 
-vim.keymap.set("n", "<space>gh", function()
+vim.keymap.set("n", "<leader>gh", function()
   snacks.picker.git_log_file()
 end, { desc = "git log for file" })
 
-vim.keymap.set("n", "<space>fG", function()
+vim.keymap.set("n", "<leader>fG", function()
   local base = merge_base()
   if base == "" then
     snacks.picker.git_diff()
