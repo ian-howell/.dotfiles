@@ -7,3 +7,4 @@ vim.pack.add(specs)
 
 require("plugins.config.tokyonight")
 require("plugins.config.snacks")
+require("plugins.config.tmux-navigator")
