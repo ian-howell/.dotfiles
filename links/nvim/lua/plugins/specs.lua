@@ -1,4 +1,9 @@
 -- Plugin specifications for vim.pack.add().
 -- Keep the plugin list here; load config in lua/plugins/config/.
 
-return {}
+return {
+  {
+    src = "https://github.com/folke/tokyonight.nvim",
+    name = "tokyonight",
+  },
+}

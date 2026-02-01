@@ -1,0 +1,2 @@
+-- Plugin configuration modules live here.
+-- Keep per-plugin setup in small, focused files.
