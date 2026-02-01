@@ -26,6 +26,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_ohmyposh.sh"
     "$HOME/.dotfiles/src/install_docker.sh"
     "$HOME/.dotfiles/src/install_opencode.sh"
+    "$HOME/.dotfiles/src/link_dotfiles.sh"
   )
 
   log_dir=$(mktemp -d /tmp/setup_logs.XXXXXX)
@@ -42,17 +43,12 @@ install_components() {
   log "Logs saved to: $log_dir"
 }
 
-link_dotfiles() {
-  go run github.com/ian-howell/linkdotfiles@main
-}
-
 main() {
   export PATH="$PATH:/usr/local/go/bin"
   export PATH="$PATH:$HOME/.local/bin"
 
   prevent_apt_daemon_restart_prompts
   install_components
-  link_dotfiles
   log "🎉✨ All setup tasks are complete! Your environment is ready to go! 🚀"
 }
 
