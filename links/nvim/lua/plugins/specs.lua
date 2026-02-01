@@ -10,4 +10,8 @@ return {
     src = "https://github.com/folke/snacks.nvim",
     name = "snacks",
   },
+  {
+    src = "https://github.com/christoomey/vim-tmux-navigator",
+    name = "vim-tmux-navigator",
+  },
 }
