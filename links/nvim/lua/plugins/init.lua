@@ -1,0 +1,2 @@
+-- Plugin manager setup and plugin configuration.
+-- Uses vim.pack to manage plugins in the dedicated pack directory.

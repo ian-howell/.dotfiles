@@ -1,0 +1,1 @@
+-- Editor options and defaults.
