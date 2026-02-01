@@ -14,4 +14,8 @@ return {
     src = "https://github.com/christoomey/vim-tmux-navigator",
     name = "vim-tmux-navigator",
   },
+  {
+    src = "https://github.com/folke/which-key.nvim",
+    name = "which-key",
+  },
 }
