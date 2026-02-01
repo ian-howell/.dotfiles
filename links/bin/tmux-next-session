@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ -z "${TMUX:-}" ]]; then
+    printf '%s\n' "Error: not running inside tmux." >&2
+    exit 1
+fi
+
+src_session=$(tmux display-message -p '#S')
+cwd=$(tmux display-message -p '#{pane_current_path}')
+timestamp=$(date +%Y%m%d-%H%M%S)
+cmd=()
+
+if [[ $# -gt 0 ]]; then
+    if [[ "$1" == "--" ]]; then
+        shift
+    fi
+    cmd+=("$@")
+fi
+
+root_prefix=${src_session}
+if [[ "${root_prefix}" == *-* ]]; then
+    root_prefix=${root_prefix%-*}
+fi
+if [[ ${#cmd[@]} -gt 0 ]]; then
+    suffix=${cmd[0]##*/}
+else
+    suffix=${SHELL##*/}
+fi
+suffix=${suffix//:/-}
+suffix=${suffix// /-}
+new_session="${root_prefix}-${suffix}"
+
+if tmux has-session -t "${new_session}" 2>/dev/null; then
+    tmux switch-client -t "${new_session}"
+    exit 0
+fi
+
+tmp_window_name="__tmux_dup_tmp_${timestamp}"
+tmp_window_id=$(tmux new-session -d -s "${new_session}" -n "${tmp_window_name}" -c "${cwd}" -P -F '#{window_id}')
+if [[ ${#cmd[@]} -gt 0 ]]; then
+    tmux new-window -d -t "${new_session}" -c "${cwd}" -n "${new_session}" -- "${cmd[@]}"
+else
+    tmux new-window -d -t "${new_session}" -c "${cwd}" -n "${new_session}"
+fi
+tmux kill-window -t "${tmp_window_id}"
+
+tmux switch-client -t "${new_session}"
