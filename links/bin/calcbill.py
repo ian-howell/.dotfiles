@@ -18,6 +18,11 @@ jenna_group = {"JENNA"}
 zac_group = {"ZAC"}
 anthony_group = {"ANTHONY"}
 
+TRANSFER_ADJUSTMENTS = {
+    "ian_group": 24.30,
+    "zac_group": -24.30,
+}
+
 
 def main(args):
     debug_log = lambda x: None
@@ -70,7 +75,7 @@ def print_report(report):
         group = report[group_name]
         # strip off the string "_group" from the group name and capitalize the group owner name
         group_owner = group_name[: -len("_group")].title()
-        group_total = total_for_group(group)
+        group_total = total_for_group(group_name, group)
         total += group_total
 
         print("==============={: ^10}===============".format(group_owner))
@@ -86,11 +91,11 @@ def print_report(report):
     print("{:.<30} {:>.2f}".format("Total of totals", total))
 
 
-def total_for_group(group):
+def total_for_group(group_name, group):
     total = 0
     for person in group:
         total += group[person]
-    return total
+    return total + TRANSFER_ADJUSTMENTS.get(group_name, 0)
 
 
 if __name__ == "__main__":
