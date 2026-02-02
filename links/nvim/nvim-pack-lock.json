@@ -1,0 +1,20 @@
+{
+  "plugins": {
+    "snacks": {
+      "rev": "fe7cfe9",
+      "src": "https://github.com/folke/snacks.nvim"
+    },
+    "tokyonight": {
+      "rev": "5da1b76",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "vim-tmux-navigator": {
+      "rev": "e41c431",
+      "src": "https://github.com/christoomey/vim-tmux-navigator"
+    },
+    "which-key": {
+      "rev": "3aab214",
+      "src": "https://github.com/folke/which-key.nvim"
+    }
+  }
+}
