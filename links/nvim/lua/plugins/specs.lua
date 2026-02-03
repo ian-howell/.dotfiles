@@ -18,4 +18,12 @@ return {
     src = "https://github.com/folke/which-key.nvim",
     name = "which-key",
   },
+  {
+    src = "https://github.com/lewis6991/gitsigns.nvim",
+    name = "gitsigns",
+  },
+  {
+    src = "https://github.com/esmuellert/vscode-diff.nvim",
+    name = "vscode-diff",
+  },
 }

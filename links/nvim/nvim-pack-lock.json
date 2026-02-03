@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "gitsigns": {
+      "rev": "abf82a6",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
     "snacks": {
       "rev": "fe7cfe9",
       "src": "https://github.com/folke/snacks.nvim"
@@ -11,6 +15,10 @@
     "vim-tmux-navigator": {
       "rev": "e41c431",
       "src": "https://github.com/christoomey/vim-tmux-navigator"
+    },
+    "vscode-diff": {
+      "rev": "8dc25e4",
+      "src": "https://github.com/esmuellert/vscode-diff.nvim"
     },
     "which-key": {
       "rev": "3aab214",
