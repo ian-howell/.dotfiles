@@ -12,6 +12,17 @@ cwd=$(tmux display-message -p '#{pane_current_path}')
 timestamp=$(date +%Y%m%d-%H%M%S)
 cmd=()
 
+# Sessions created by this script store their root name in a tmux session
+# option so nested sessions remain siblings of the same root. We use
+# @tmux_next_session_root to avoid guessing which segment is the root.
+# - If the option exists on the current session, it is the root.
+# - If it is missing, the current session name is treated as the root.
+root_prefix=${src_session}
+root_option=$(tmux show-option -qv -t "${src_session}" @tmux_next_session_root 2>/dev/null || true)
+if [[ -n "${root_option}" ]]; then
+    root_prefix=${root_option}
+fi
+
 if [[ $# -gt 0 ]]; then
     if [[ "$1" == "--" ]]; then
         shift
@@ -19,10 +30,6 @@ if [[ $# -gt 0 ]]; then
     cmd+=("$@")
 fi
 
-root_prefix=${src_session}
-if [[ "${root_prefix}" == *-* ]]; then
-    root_prefix=${root_prefix%-*}
-fi
 if [[ ${#cmd[@]} -gt 0 ]]; then
     suffix=${cmd[0]##*/}
 else
@@ -39,6 +46,7 @@ fi
 
 tmp_window_name="__tmux_dup_tmp_${timestamp}"
 tmp_window_id=$(tmux new-session -d -s "${new_session}" -n "${tmp_window_name}" -c "${cwd}" -P -F '#{window_id}')
+tmux set-option -t "${new_session}" @tmux_next_session_root "${root_prefix}"
 if [[ ${#cmd[@]} -gt 0 ]]; then
     tmux new-window -d -t "${new_session}" -c "${cwd}" -n "${new_session}" -- "${cmd[@]}"
 else
