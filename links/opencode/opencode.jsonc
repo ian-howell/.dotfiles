@@ -9,4 +9,21 @@
     "session_new": "<leader>ctrl+n",
     "session_list": "<leader>ctrl+s",
   },
+  "mcp": {
+    "Azure DevOps": {
+      "type": "local",
+      "command": ["agency", "mcp", "ado"],
+      "enabled": true,
+    },
+    "ICM": {
+      "type": "local",
+      "command": ["agency", "mcp", "icm"],
+      "enabled": true,
+    },
+    "Kusto": {
+      "type": "local",
+      "command": ["agency", "mcp", "kusto"],
+      "enabled": true,
+    },
+  },
 }
