@@ -1,4 +1,4 @@
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin":/home/ian/.config/agency/CurrentVersion
 
 # Add go to the environment
 export GOROOT="/usr/local/go"
