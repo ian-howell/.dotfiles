@@ -10,19 +10,24 @@
     "session_list": "<leader>ctrl+s",
   },
   "mcp": {
-    "Azure DevOps": {
+    "ado": {
       "type": "local",
-      "command": ["agency", "mcp", "ado"],
+      "command": ["agency", "mcp", "ado", "--organization", "AzureForOperatorsIndustry"],
       "enabled": true,
     },
-    "ICM": {
+    "icm": {
       "type": "local",
       "command": ["agency", "mcp", "icm"],
       "enabled": true,
     },
-    "Kusto": {
+    "kusto-dev": {
       "type": "local",
-      "command": ["agency", "mcp", "kusto"],
+      "command": ["agency", "mcp", "kusto", "--service-uri", "https://ncdev-hub.eastus.kusto.windows.net"],
+      "enabled": true,
+    },
+    "workiq": {
+      "type": "local",
+      "command": ["agency", "mcp", "workiq"],
       "enabled": true,
     },
   },
