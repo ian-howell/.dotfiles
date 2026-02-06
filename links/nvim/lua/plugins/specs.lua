@@ -26,4 +26,8 @@ return {
     src = "https://github.com/esmuellert/vscode-diff.nvim",
     name = "vscode-diff",
   },
+  {
+    src = "https://github.com/folke/flash.nvim",
+    name = "flash",
+  },
 }
