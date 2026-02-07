@@ -11,11 +11,7 @@ local group = vim.api.nvim_create_augroup("smart-highlight", { clear = true })
 -- Override n to enable hlsearch and mark as searching
 vim.keymap.set("n", "n", function()
   vim.opt.hlsearch = true
-  -- Turn flag on for 50ms so CursorMoved sees it, but it doesn't stay on
   searching = true
-  vim.defer_fn(function()
-    searching = false
-  end, 50)
   local ok, err = pcall(vim.cmd, "normal! n")
   if not ok then
     if err:match("E486") then
@@ -27,11 +23,7 @@ end, { desc = "Next search result" })
 -- Override N to enable hlsearch and mark as searching
 vim.keymap.set("n", "N", function()
   vim.opt.hlsearch = true
-  -- Turn flag on for 50ms so CursorMoved sees it, but it doesn't stay on
   searching = true
-  vim.defer_fn(function()
-    searching = false
-  end, 50)
   local ok, err = pcall(vim.cmd, "normal! N")
   if not ok then
     if err:match("E486") then
@@ -45,18 +37,25 @@ vim.api.nvim_create_autocmd("CursorMoved", {
   desc = "Clear hlsearch on non-search movement",
   group = group,
   callback = function()
+    -- Make sure that hlsearch is off unless a "searching" command was issued
     if not searching then
       vim.opt.hlsearch = false
     end
+    searching = false
   end,
 })
 
 -- When leaving search command line, enable hlsearch
+-- NOTE: hitting '/' or '/' and them immediately hitting 'esc' turns on hlsearch
 vim.api.nvim_create_autocmd("CmdlineLeave", {
   desc = "Enable hlsearch after search",
   group = group,
-  pattern = { "/", "?" },
   callback = function()
+    local cmdtype = vim.fn.getcmdtype()
+    if cmdtype ~= "/" and cmdtype ~= "?" then
+      return
+    end
+
     searching = true
     vim.opt.hlsearch = true
   end,
