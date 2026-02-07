@@ -1,5 +1,10 @@
 {
   "plugins": {
+    "conform": {
+      "rev": "c2526f1",
+      "src": "https://github.com/stevearc/conform.nvim"
+    },
+    "flash": [],
     "gitsigns": {
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"

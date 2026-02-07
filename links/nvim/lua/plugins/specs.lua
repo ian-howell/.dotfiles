@@ -30,4 +30,8 @@ return {
     src = "https://github.com/folke/flash.nvim",
     name = "flash",
   },
+  {
+    src = "https://github.com/stevearc/conform.nvim",
+    name = "conform",
+  },
 }
