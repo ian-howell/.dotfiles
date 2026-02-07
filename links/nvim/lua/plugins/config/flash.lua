@@ -8,11 +8,6 @@ require("flash").setup({
       match = "CustomFlashMatch",
     },
   },
-  jump = {
-    history = true,
-    register = true,
-    nohlsearch = true,
-  },
 })
 
 vim.api.nvim_set_hl(0, "CustomFlashLabel", {
@@ -32,6 +27,10 @@ vim.api.nvim_set_hl(0, "CustomFlashMatch", {
   bg = "#414868",
   bold = true,
 })
+
+vim.keymap.set({ "n", "x", "o" }, "s", function()
+  require("flash").jump()
+end, { desc = "Flash" })
 
 vim.keymap.set("o", "r", function()
   require("flash").remote()
