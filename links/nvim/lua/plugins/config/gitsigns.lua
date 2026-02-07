@@ -30,8 +30,12 @@ gitsigns.setup({
       vim.keymap.set(mode, lhs, rhs, opts)
     end
 
-    map("n", "]h", function() gitsigns.nav_hunk("next") end, { desc = "Jump to next git hunk" })
-    map("n", "[h", function() gitsigns.nav_hunk("prev") end, { desc = "Jump to previous git hunk" })
+    map("n", "]h", function()
+      gitsigns.nav_hunk("next")
+    end, { desc = "Jump to next git hunk" })
+    map("n", "[h", function()
+      gitsigns.nav_hunk("prev")
+    end, { desc = "Jump to previous git hunk" })
 
     map("v", "<leader>gs", function()
       gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
@@ -54,9 +58,8 @@ gitsigns.setup({
     map("n", "<leader>gd", function()
       vim.cmd("CodeDiff file HEAD")
     end, { desc = "diff against index" })
-    map("n", "<leader>gD", "<cmd>CodeDiff file origin/main...<CR>" , { desc = "diff against merge-base with main" })
+    map("n", "<leader>gD", "<cmd>CodeDiff file origin/main...<CR>", { desc = "diff against merge-base with main" })
 
     map("n", "<leader>ub", gitsigns.toggle_current_line_blame, { desc = "toggle inline blame" })
-
   end,
 })

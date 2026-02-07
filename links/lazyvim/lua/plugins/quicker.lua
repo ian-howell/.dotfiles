@@ -9,38 +9,38 @@ return {
     -- Further, when I hit > it expands the context around the search term.
     --
     -- Plus it looks gorgeous.
-    'stevearc/quicker.nvim',
-    event = 'FileType qf',
+    "stevearc/quicker.nvim",
+    event = "FileType qf",
     config = function()
-      local quicker = require 'quicker'
-      quicker.setup {
+      local quicker = require("quicker")
+      quicker.setup({
         keys = {
           {
-            '>',
+            ">",
             function()
-              require('quicker').expand { before = 2, after = 2, add_to_existing = true }
+              require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
             end,
-            desc = 'expand quickfix context',
+            desc = "expand quickfix context",
           },
           {
-            '<',
+            "<",
             function()
-              require('quicker').collapse()
+              require("quicker").collapse()
             end,
-            desc = 'collapse quickfix context',
+            desc = "collapse quickfix context",
           },
         },
-      }
-
-      vim.keymap.set('n', '<space>q', function()
-        require('quicker').toggle()
-      end, {
-        desc = 'toggle quickfix',
       })
-      vim.keymap.set('n', '<space>l', function()
-        require('quicker').toggle { loclist = true }
+
+      vim.keymap.set("n", "<space>q", function()
+        require("quicker").toggle()
       end, {
-        desc = 'toggle loclist',
+        desc = "toggle quickfix",
+      })
+      vim.keymap.set("n", "<space>l", function()
+        require("quicker").toggle({ loclist = true })
+      end, {
+        desc = "toggle loclist",
       })
     end,
   },
