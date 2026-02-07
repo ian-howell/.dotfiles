@@ -23,6 +23,15 @@ snacks.setup({
   },
 })
 
+local ok_which_key, which_key = pcall(require, "which-key")
+if ok_which_key then
+  which_key.add({
+    { "<leader>f", group = "find" },
+    { "<leader>g", group = "git" },
+    { "<leader>b", group = "buffers" },
+  })
+end
+
 local function repo_root()
   local root = vim.fs.root(0, { ".git" })
   if root and root ~= "" then
@@ -36,8 +45,6 @@ local function merge_base()
   local output = vim.fn.system("git merge-base origin/main HEAD")
   return vim.trim(output or "")
 end
-
-vim.keymap.set("n", "<leader>f", function() end, { desc = "find" })
 
 vim.keymap.set("n", "<leader>ff", function()
   snacks.picker.files({ cwd = vim.loop.cwd() })
