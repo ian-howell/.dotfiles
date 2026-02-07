@@ -57,6 +57,7 @@ vim.api.nvim_create_autocmd("CmdlineLeave", {
   group = group,
   pattern = { "/", "?" },
   callback = function()
+    searching = true
     vim.opt.hlsearch = true
   end,
 })
