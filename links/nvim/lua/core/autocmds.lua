@@ -3,6 +3,7 @@
 local groups = {
   focus_enter = vim.api.nvim_create_augroup("focus-enter", { clear = true }),
   focus_leave = vim.api.nvim_create_augroup("focus-leave", { clear = true }),
+  quickfix = vim.api.nvim_create_augroup("quickfix-maps", { clear = true }),
 }
 
 vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
@@ -26,6 +27,15 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
     vim.opt_local.cursorline = true
     vim.opt_local.cursorcolumn = vim.g.cursorcolumn
     vim.opt_local.colorcolumn = tostring(vim.opt_local.textwidth:get())
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  desc = "Close quickfix/location lists with q",
+  group = groups.quickfix,
+  pattern = { "qf", "help" },
+  callback = function(args)
+    vim.keymap.set("n", "q", "<cmd>q<CR>", { buffer = args.buf, silent = true })
   end,
 })
 
