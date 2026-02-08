@@ -17,6 +17,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_fd.sh"
     "$HOME/.dotfiles/src/remap_capslock.sh"
     "$HOME/.dotfiles/src/install_node.sh"
+    "$HOME/.dotfiles/src/install_bash_language_server.sh"
     "$HOME/.dotfiles/src/install_delta.sh"
     "$HOME/.dotfiles/src/install_lazygit.sh"
     "$HOME/.dotfiles/src/install_neovim.sh"
