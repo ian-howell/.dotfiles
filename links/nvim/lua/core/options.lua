@@ -22,6 +22,9 @@ vim.opt.wrap = false
 -- Save undo history
 vim.opt.undofile = true
 
+-- Always use the system clipboard; can be slow over SSH
+vim.opt.clipboard = "unnamedplus"
+
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
