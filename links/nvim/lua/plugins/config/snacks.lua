@@ -5,11 +5,39 @@ if not ok then
   return
 end
 
+local default_layout = {
+  layout = {
+    width = 0.95,
+    height = 0.95,
+  },
+}
+
+local git_layout = {
+  preset = "default",
+  layout = {
+    width = 0.95,
+    height = 0.95,
+    box = "vertical",
+    { win = "input", height = 1 },
+    { win = "list", height = 0.3 },
+    { win = "preview", height = 0.7 },
+  },
+}
+
+local explorer_layout = {
+  layout = {
+    preset = "sidebar",
+    preview = false,
+    width = 40,
+  },
+}
+
 snacks.setup({
   explorer = {
     replace_netrw = true,
   },
   picker = {
+    layout = default_layout,
     win = {
       input = {
         keys = {
@@ -40,7 +68,9 @@ snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
 snacks.toggle.diagnostics():map("<leader>ud")
 
 vim.keymap.set("n", "<leader>fe", function()
-  snacks.explorer.open()
+  snacks.explorer.open({
+    layout = explorer_layout,
+  })
 end, { desc = "explorer" })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -131,15 +161,17 @@ vim.keymap.set("n", "<leader>bb", function()
 end, { desc = "buffers" })
 
 vim.keymap.set("n", "<leader>fg", function()
-  snacks.picker.git_status()
+  snacks.picker.git_status({
+    layout = git_layout,
+  })
 end, { desc = "git files" })
 
 vim.keymap.set("n", "<leader>gl", function()
-  snacks.picker.git_log()
+  snacks.picker.git_log({ layout = git_layout })
 end, { desc = "git log" })
 
 vim.keymap.set("n", "<leader>gh", function()
-  snacks.picker.git_log_file()
+  snacks.picker.git_log_file({ layout = git_layout })
 end, { desc = "git log for file" })
 
 vim.keymap.set("n", "<leader>gc", function()
@@ -149,9 +181,12 @@ end, { desc = "git commit" })
 vim.keymap.set("n", "<leader>fG", function()
   local base = merge_base()
   if base == "" then
-    snacks.picker.git_diff()
+    snacks.picker.git_diff({ layout = git_layout })
     return
   end
 
-  snacks.picker.git_diff({ base = base })
+  snacks.picker.git_diff({
+    base = base,
+    layout = git_layout,
+  })
 end, { desc = "git diff since branching from main" })
