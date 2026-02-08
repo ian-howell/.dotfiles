@@ -54,4 +54,8 @@ return {
     src = "https://github.com/tpope/vim-sleuth",
     name = "vim-sleuth",
   },
+  {
+    src = "https://github.com/nvim-treesitter/nvim-treesitter",
+    name = "nvim-treesitter",
+  },
 }
