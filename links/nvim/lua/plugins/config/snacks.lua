@@ -32,6 +32,7 @@ if ok_which_key then
     { "<leader>f", group = "find" },
     { "<leader>g", group = "git" },
     { "<leader>b", group = "buffers" },
+    { "<leader>u", group = "UI" },
   })
 end
 
