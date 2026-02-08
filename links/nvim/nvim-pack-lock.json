@@ -17,6 +17,10 @@
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "nvim-treesitter": {
+      "rev": "45a07f86",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
     "oil": {
       "rev": "f55b25e",
       "src": "https://github.com/stevearc/oil.nvim"
