@@ -4,6 +4,14 @@
       "rev": "c2526f1",
       "src": "https://github.com/stevearc/conform.nvim"
     },
+    "copilot": {
+      "rev": "3faffef",
+      "src": "https://github.com/zbirenbaum/copilot.lua"
+    },
+    "copilot-lsp": {
+      "rev": "1b6d827",
+      "src": "https://github.com/copilotlsp-nvim/copilot-lsp"
+    },
     "flash": [],
     "gitsigns": {
       "rev": "abf82a6",

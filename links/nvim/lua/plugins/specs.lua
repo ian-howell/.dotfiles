@@ -42,4 +42,12 @@ return {
     src = "https://github.com/refractalize/oil-git-status.nvim",
     name = "oil-git-status",
   },
+  {
+    src = "https://github.com/zbirenbaum/copilot.lua",
+    name = "copilot",
+  },
+  {
+    src = "https://github.com/copilotlsp-nvim/copilot-lsp",
+    name = "copilot-lsp",
+  },
 }
