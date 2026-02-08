@@ -50,4 +50,8 @@ return {
     src = "https://github.com/copilotlsp-nvim/copilot-lsp",
     name = "copilot-lsp",
   },
+  {
+    src = "https://github.com/tpope/vim-sleuth",
+    name = "vim-sleuth",
+  },
 }

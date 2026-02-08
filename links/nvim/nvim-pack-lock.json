@@ -33,6 +33,10 @@
       "rev": "5da1b76",
       "src": "https://github.com/folke/tokyonight.nvim"
     },
+    "vim-sleuth": {
+      "rev": "be69bff",
+      "src": "https://github.com/tpope/vim-sleuth"
+    },
     "vim-tmux-navigator": {
       "rev": "e41c431",
       "src": "https://github.com/christoomey/vim-tmux-navigator"
