@@ -35,6 +35,8 @@ if ok_which_key then
   })
 end
 
+snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+
 vim.keymap.set("n", "<leader>fe", function()
   snacks.explorer.open()
 end, { desc = "explorer" })
