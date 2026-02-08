@@ -9,6 +9,14 @@
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "oil": {
+      "rev": "f55b25e",
+      "src": "https://github.com/stevearc/oil.nvim"
+    },
+    "oil-git-status": {
+      "rev": "4b5cf53",
+      "src": "https://github.com/refractalize/oil-git-status.nvim"
+    },
     "snacks": {
       "rev": "fe7cfe9",
       "src": "https://github.com/folke/snacks.nvim"
