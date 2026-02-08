@@ -34,4 +34,12 @@ return {
     src = "https://github.com/stevearc/conform.nvim",
     name = "conform",
   },
+  {
+    src = "https://github.com/stevearc/oil.nvim",
+    name = "oil",
+  },
+  {
+    src = "https://github.com/refractalize/oil-git-status.nvim",
+    name = "oil-git-status",
+  },
 }
