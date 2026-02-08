@@ -142,6 +142,10 @@ vim.keymap.set("n", "<leader>gh", function()
   snacks.picker.git_log_file()
 end, { desc = "git log for file" })
 
+vim.keymap.set("n", "<leader>gc", function()
+  snacks.terminal.open({ "git", "commit" }, { cwd = repo_root() })
+end, { desc = "git commit" })
+
 vim.keymap.set("n", "<leader>fG", function()
   local base = merge_base()
   if base == "" then
