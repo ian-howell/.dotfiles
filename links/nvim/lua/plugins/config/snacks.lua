@@ -6,6 +6,9 @@ if not ok then
 end
 
 snacks.setup({
+  explorer = {
+    replace_netrw = true,
+  },
   picker = {
     win = {
       input = {
@@ -31,6 +34,19 @@ if ok_which_key then
     { "<leader>b", group = "buffers" },
   })
 end
+
+vim.keymap.set("n", "<leader>fe", function()
+  snacks.explorer.open()
+end, { desc = "explorer" })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "snacks_picker_list",
+  callback = function(args)
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+    vim.keymap.set("n", "q", "<cmd>q<CR>", { buffer = args.buf, silent = true })
+  end,
+})
 
 local function repo_root()
   local root = vim.fs.root(0, { ".git" })
