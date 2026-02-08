@@ -1,4 +1,7 @@
 require("copilot").setup({
+  filetypes = {
+    ["*"] = true, -- enable for all filetypes
+  },
   suggestion = {
     enabled = true,
     auto_trigger = true,
