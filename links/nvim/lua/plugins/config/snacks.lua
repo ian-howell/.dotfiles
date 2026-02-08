@@ -157,21 +157,31 @@ vim.keymap.set("n", "<leader>fl", function()
 end, { desc = "current buffer lines" })
 
 vim.keymap.set("n", "<leader>bb", function()
-  snacks.picker.buffers()
+  snacks.picker.buffers({
+    focus = "list",
+    matcher = {
+      cwd_bonus = false, -- give bonus for matching files in the cwd
+      frecency = false, -- frecency bonus
+      history_bonus = false, -- give more weight to chronological order
+    },
+  })
 end, { desc = "buffers" })
 
+local default_git_opts = {
+  layout = git_layout,
+  focus = "list",
+}
+
 vim.keymap.set("n", "<leader>fg", function()
-  snacks.picker.git_status({
-    layout = git_layout,
-  })
+  snacks.picker.git_status(default_git_opts)
 end, { desc = "git files" })
 
 vim.keymap.set("n", "<leader>gl", function()
-  snacks.picker.git_log({ layout = git_layout })
+  snacks.picker.git_log(default_git_opts)
 end, { desc = "git log" })
 
 vim.keymap.set("n", "<leader>gh", function()
-  snacks.picker.git_log_file({ layout = git_layout })
+  snacks.picker.git_log_file(default_git_opts)
 end, { desc = "git log for file" })
 
 vim.keymap.set("n", "<leader>gc", function()
@@ -179,14 +189,10 @@ vim.keymap.set("n", "<leader>gc", function()
 end, { desc = "git commit" })
 
 vim.keymap.set("n", "<leader>fG", function()
+  local opts = default_git_opts
   local base = merge_base()
-  if base == "" then
-    snacks.picker.git_diff({ layout = git_layout })
-    return
+  if base ~= "" then
+    opts.base = base
   end
-
-  snacks.picker.git_diff({
-    base = base,
-    layout = git_layout,
-  })
+  snacks.picker.git_diff(opts)
 end, { desc = "git diff since branching from main" })
