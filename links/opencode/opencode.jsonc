@@ -31,4 +31,10 @@
       "enabled": true,
     },
   },
+  "permission": {
+    "bash": {
+      "ssh": "ask",
+      "az": "ask"
+    }
+  }
 }
