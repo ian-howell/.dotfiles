@@ -8,3 +8,6 @@ The files in the "links" directory are symlinked to files according to the conte
 The primary Neovim configuration lives in the "links/nvim" directory. A legacy Neovim configuration
 lives in the "links/lazyvim" directory. The user is fond of the legacy configuration, and it should
 be used as inspiration for the newer setup.
+
+OpenCode workflow: use `opencode-worktree <branch> [repo-path]` to create or reuse a git worktree
+and launch OpenCode inside it. Worktrees default to `${WORKTREES_BASE:-<repo>/.worktrees}`.
