@@ -10,14 +10,14 @@
     "session_list": "<leader>ctrl+s",
   },
   "mcp": {
-    "ado-afo": {
+    "ado-msazuredev": {
       "type": "local",
-      "command": ["agency", "mcp", "ado", "--organization", "AzureForOperatorsIndustry"],
+      "command": ["agency", "mcp", "ado", "--organization", "msazuredev"],
       "enabled": true,
     },
-    "ado-one": {
+    "ado-msazure": {
       "type": "local",
-      "command": ["agency", "mcp", "ado", "--organization", "One"],
+      "command": ["agency", "mcp", "ado", "--organization", "msazure"],
       "enabled": true,
     },
     "icm": {
