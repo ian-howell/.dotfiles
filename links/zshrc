@@ -94,3 +94,6 @@ bindkey '^e' autosuggest-clear
 source "$HOME/.dotfiles/links/zsh/zsh-autosuggestions.zsh"
 
 source "$HOME/.dotfiles/links/zsh/almostontop.plugin.zsh"
+
+[ -s "$HOME/.nvm/nvm.sh" ] && export NVM_DIR="$HOME/.nvm" && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$HOME/.nvm/bash_completion" ] && \. "$HOME/.nvm/bash_completion"  # This loads nvm bash_completion
