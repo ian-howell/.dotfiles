@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Create or reuse a git worktree and launch opencode inside it.
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  opencode-worktree <branch> [repo-path]
+
+Creates (or reuses) a git worktree for <branch> and launches opencode in it.
+
+Arguments:
+  branch     Branch name or task slug (required)
+  repo-path  Path to repo (optional; defaults to current repo)
+
+Environment:
+  WORKTREES_BASE  Override default worktrees base (default: <repo>/.worktrees)
+
+Examples:
+  opencode-worktree feature/api-cleanup
+  opencode-worktree task/add-login ~/projects/my-repo
+EOF
+}
+
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+  usage
+  exit 1
+fi
+
+branch="$1"
+repo_path="${2:-$(pwd)}"
+
+if [ ! -d "$repo_path" ]; then
+  echo "Error: repo path does not exist: $repo_path" >&2
+  exit 1
+fi
+
+slugify() {
+  printf '%s' "$1" |
+    tr '[:upper:]' '[:lower:]' |
+    sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//'
+}
+
+branch="$(slugify "$branch")"
+
+if [ -z "$branch" ]; then
+  echo "Error: branch slug is empty after slugging" >&2
+  exit 1
+fi
+
+repo_root=$(git -C "$repo_path" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null)
+if [ -z "$repo_root" ]; then
+  echo "Error: not a git repository: $repo_path" >&2
+  exit 1
+fi
+
+worktrees_base="${WORKTREES_BASE:-$repo_root/.worktrees}"
+worktree_path="$worktrees_base/$branch"
+
+mkdir -p "$worktrees_base"
+
+if [ -d "$worktree_path" ]; then
+  echo "Reusing worktree: $worktree_path" >&2
+else
+  mkdir -p "$(dirname "$worktree_path")"
+
+  if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
+    git -C "$repo_root" worktree add "$worktree_path" "$branch" >&2
+  else
+    remote_branch=$(git -C "$repo_root" branch -r --list "origin/$branch" | head -1 | xargs)
+    if [ -n "$remote_branch" ]; then
+      git -C "$repo_root" worktree add -b "$branch" "$worktree_path" "$remote_branch" >&2
+    else
+      git -C "$repo_root" worktree add -b "$branch" "$worktree_path" >&2
+    fi
+  fi
+fi
+
+if [ -z "$worktree_path" ] || [ ! -d "$worktree_path" ]; then
+  echo "Error: failed to create worktree for $branch" >&2
+  exit 1
+fi
+
+if ! command -v opencode >/dev/null 2>&1; then
+  echo "Error: opencode not found in PATH" >&2
+  exit 1
+fi
+
+echo "Launching opencode in $worktree_path" >&2
+exec opencode "$worktree_path"
