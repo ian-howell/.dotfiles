@@ -59,24 +59,9 @@ All keybinds are invoked as `<prefix> <key>`.
 - `v` create/switch to child `neovim` under current root
 - `k` create/switch to child `k9s` under current root
 - `z` switch to the root session for the current tree
-
-## keybinds (proposed)
-
-Traversal
-- `c` listPicker of children for current root; select and switch
 - `l` switch to last-used child for current root
-
-Root management
-- `r` listPicker of roots but stay on current child (only update active root for creation)
-- `R` create a new root via prompt
-
-Child management
-- `n` create a new child via prompt (validate uniqueness)
-- `d` delete current child session (confirm)
-- `D` delete an empty root (confirm)
-
-Window consistency
-- `W` ensure all windows in current child run the expected program (relaunch if drift)
+- `c` create a new window in current child running its designated program (zsh for root)
+- `S` create a new root (TODO)
 
 ## listPicker contents
 
@@ -99,5 +84,6 @@ Storage options (implementation detail, not required yet):
 - file in `~/.cache` (later)
 
 ## open questions
-1. Should child names be fixed to the program (`opencode`, `neovim`, `k9s`), or allow aliases like `vim`?
-2. Should `z` (switch to root) update `last_used_child`, or keep it unchanged?
+1. Should child names be fixed to the program (`opencode`, `neovim`, `k9s`), or allow aliases like `vim`? - stick to program name
+2. Should `z` (switch to root) update `last_used_child`, or keep it unchanged? - yes, switch
+3. How should root creation work? Delegate to sesh? - need the AI agent to explore this
