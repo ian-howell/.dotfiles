@@ -8,6 +8,10 @@ dynamic_install_allow_preview = true
 [core]
 collect_telemetry = no
 
+[logging]
+enable_log_file = yes
+log_dir = /tmp/azurelogs
+
 [bicep]
 ; Use the Azure CLI-managed Bicep binary instead of any bicep on PATH.
 use_binary_from_path = false
