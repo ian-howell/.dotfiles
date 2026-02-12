@@ -1,7 +1,7 @@
 -- which-key configuration and group labels.
 
-local ok, which_key = pcall(require, "which-key")
-if not ok then
+local which_key = give("which-key")
+if not which_key then
   return
 end
 
