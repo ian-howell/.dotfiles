@@ -197,12 +197,3 @@ vim.keymap.set("n", "<leader>fG", function()
   end
   snacks.picker.git_diff(opts)
 end, { desc = "git diff since branching from main" })
-
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local opts = { buffer = args.buf }
-    vim.keymap.set("n", "<leader>li", snacks.picker.lsp_implementations, opts)
-    vim.keymap.set("n", "<leader>lr", snacks.picker.lsp_references, opts)
-    vim.keymap.set("n", "<leader>lo", snacks.picker.lsp_symbols, opts)
-  end,
-})
