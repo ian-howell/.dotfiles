@@ -1,7 +1,7 @@
 -- Snacks configuration (picker focused, fzf-lua compatible bindings).
 
-local ok, snacks = pcall(require, "snacks")
-if not ok then
+local snacks = give("snacks")
+if not snacks then
   return
 end
 
@@ -54,8 +54,8 @@ snacks.setup({
   },
 })
 
-local ok_which_key, which_key = pcall(require, "which-key")
-if ok_which_key then
+local which_key = give("which-key")
+if which_key then
   which_key.add({
     { "<leader>f", group = "find" },
     { "<leader>g", group = "git" },

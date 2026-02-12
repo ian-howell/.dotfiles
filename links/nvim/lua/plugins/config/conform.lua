@@ -1,7 +1,7 @@
 -- conform.nvim configuration
 
-local ok, conform = pcall(require, "conform")
-if not ok then
+local conform = give("conform")
+if not conform then
   return
 end
 

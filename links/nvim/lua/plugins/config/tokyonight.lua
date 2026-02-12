@@ -1,7 +1,7 @@
 -- Tokyonight colorscheme configuration.
 
-local ok, tokyonight = pcall(require, "tokyonight")
-if not ok then
+local tokyonight = give("tokyonight")
+if not tokyonight then
   return
 end
 

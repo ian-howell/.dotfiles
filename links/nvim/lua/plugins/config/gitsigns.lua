@@ -1,7 +1,7 @@
 -- Git signs configuration and keymaps.
 
-local ok, gitsigns = pcall(require, "gitsigns")
-if not ok then
+local gitsigns = give("gitsigns")
+if not gitsigns then
   return
 end
 
