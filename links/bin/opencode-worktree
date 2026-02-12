@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create or reuse a git worktree and launch opencode inside it.
+# Create or reuse a git worktree and print its path.
 
 set -euo pipefail
 
@@ -8,7 +8,7 @@ usage() {
 Usage:
   opencode-worktree <branch> [repo-path]
 
-Creates (or reuses) a git worktree for <branch> and launches opencode in it.
+Creates (or reuses) a git worktree for <branch> and prints its path.
 
 Arguments:
   branch     Branch name or task slug (required)
@@ -60,19 +60,17 @@ worktree_path="$worktrees_base/$branch"
 
 mkdir -p "$worktrees_base"
 
-if [ -d "$worktree_path" ]; then
-  echo "Reusing worktree: $worktree_path" >&2
-else
+if [ ! -d "$worktree_path" ]; then
   mkdir -p "$(dirname "$worktree_path")"
 
   if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
-    git -C "$repo_root" worktree add "$worktree_path" "$branch" >&2
+    git -C "$repo_root" worktree add --quiet "$worktree_path" "$branch"
   else
     remote_branch=$(git -C "$repo_root" branch -r --list "origin/$branch" | head -1 | xargs)
     if [ -n "$remote_branch" ]; then
-      git -C "$repo_root" worktree add -b "$branch" "$worktree_path" "$remote_branch" >&2
+      git -C "$repo_root" worktree add --quiet -b "$branch" "$worktree_path" "$remote_branch"
     else
-      git -C "$repo_root" worktree add -b "$branch" "$worktree_path" >&2
+      git -C "$repo_root" worktree add --quiet -b "$branch" "$worktree_path"
     fi
   fi
 fi
@@ -82,10 +80,4 @@ if [ -z "$worktree_path" ] || [ ! -d "$worktree_path" ]; then
   exit 1
 fi
 
-if ! command -v opencode >/dev/null 2>&1; then
-  echo "Error: opencode not found in PATH" >&2
-  exit 1
-fi
-
-echo "Launching opencode in $worktree_path" >&2
-exec opencode "$worktree_path"
+printf '%s\n' "$worktree_path"

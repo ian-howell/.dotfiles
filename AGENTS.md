@@ -10,4 +10,7 @@ lives in the "links/lazyvim" directory. The user is fond of the legacy configura
 be used as inspiration for the newer setup.
 
 OpenCode workflow: use `opencode-worktree <branch> [repo-path]` to create or reuse a git worktree
-and launch OpenCode inside it. Worktrees default to `${WORKTREES_BASE:-<repo>/.worktrees}`.
+and print the worktree path. Worktrees default to `${WORKTREES_BASE:-<repo>/.worktrees}`.
+
+Tmux integration: use `opencode-worktree-sessionizer` (bound to `<prefix> W`) to prompt for a task
+name and open a new tmux session that `cd`s into the repo worktree.

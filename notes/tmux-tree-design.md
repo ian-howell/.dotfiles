@@ -93,3 +93,9 @@ Storage options (implementation detail, not required yet):
 2. derive root name from directory basename, with option to edit
 3. create `root` session and store `root_directory`
 4. switch to new root (root shell)
+
+## opencode worktree sessions
+- use `<prefix> W` to prompt for a task, create a repo-local `.worktrees/<task>` worktree, and open
+  a new tmux session that starts in that worktree
+- implemented by `opencode-worktree` and `opencode-worktree-sessionizer`; use these scripts as a
+  reference for future session tooling
