@@ -23,6 +23,7 @@ dotfiles (root)
 - root: top-level session
 - root directory: the filesystem directory associated with a root session
 - child: leaf session under a root; all windows run the same program
+- implementation language: Go
 
 ## naming convention
 
@@ -45,11 +46,13 @@ This encodes the parent-child relationship and makes it easy to derive the root 
 2. child session
    - represents a single responsibility (e.g., opencode, neovim, k9s)
    - all windows in that session run the same program
+   - child names are fixed to program names (no aliases)
 3. tree height
    - only root and direct children, no nested children
 4. last-used child
    - each root tracks the last selected child session
    - when user switches to a root, land in its last-used child (if any), otherwise the root itself
+   - any command that switches sessions updates last-used child to the previous child for that root
 
 ## keybinds (given)
 All keybinds are invoked as `<prefix> <key>`.
@@ -61,7 +64,7 @@ All keybinds are invoked as `<prefix> <key>`.
 - `z` switch to the root session for the current tree
 - `l` switch to last-used child for current root
 - `c` create a new window in current child running its designated program (zsh for root)
-- `S` create a new root (TODO)
+- `S` create a new root (directory-first)
 
 ## listPicker contents
 
@@ -81,9 +84,12 @@ Minimal metadata needed per root:
 
 Storage options (implementation detail, not required yet):
 - tmux options (`@tree_last_child_<root>`)
+- tmux options (`@tree_root_dir_<root>`)
 - file in `~/.cache` (later)
 
-## open questions
-1. Should child names be fixed to the program (`opencode`, `neovim`, `k9s`), or allow aliases like `vim`? - stick to program name
-2. Should `z` (switch to root) update `last_used_child`, or keep it unchanged? - yes, switch
-3. How should root creation work? Delegate to sesh? - need the AI agent to explore this
+## root creation flow
+1. prompt for directory using listPicker sourced from `fd` or `find` piped to `fzf` (or `gum`)
+   - search roots start at `$HOME` and `/tmp`
+2. derive root name from directory basename, with option to edit
+3. create `root` session and store `root_directory`
+4. switch to new root (root shell)
