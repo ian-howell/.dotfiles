@@ -7,3 +7,7 @@ dynamic_install_allow_preview = true
 
 [core]
 collect_telemetry = no
+
+[bicep]
+; Use the Azure CLI-managed Bicep binary instead of any bicep on PATH.
+use_binary_from_path = false
