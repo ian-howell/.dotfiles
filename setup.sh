@@ -22,6 +22,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_tree_sitter_cli.sh"
     "$HOME/.dotfiles/src/install_delta.sh"
     "$HOME/.dotfiles/src/install_lazygit.sh"
+    "$HOME/.dotfiles/src/install_gh.sh"
     "$HOME/.dotfiles/src/install_neovim.sh"
     "$HOME/.dotfiles/src/install_tmux.sh"
     "$HOME/.dotfiles/src/install_zoxide.sh"
