@@ -4,6 +4,11 @@ ARTIFACTS_DIR="${ARTIFACTS_DIR:-$(mktemp -d)}"
 
 function main() {
   latest_version=$(get_latest_version)
+  if [[ -z "$latest_version" ]]; then
+    echo "Failed to resolve latest gh version" >&2
+    return 1
+  fi
+
   current_version=$(get_current_version)
 
   if [[ "$latest_version" == "$current_version" ]]; then
@@ -15,7 +20,7 @@ function main() {
 
 function get_latest_version() {
   url="https://api.github.com/repos/cli/cli/releases/latest"
-  curl -s "$url" | grep -Po '"tag_name": *"v\K[^"]*'
+  curl -fsSL "$url" | grep -Po '"tag_name": *"v\K[^"]*'
 }
 
 function get_current_version() {
@@ -32,8 +37,8 @@ function install_gh() {
   url+="https://github.com/cli/cli/"
   url+="releases/download/v${latest_version}/"
   url+="gh_${latest_version}_linux_amd64.tar.gz"
-  curl -sLo gh.tar.gz "$url"
-  tar xf gh.tar.gz gh_${latest_version}_linux_amd64
+  curl -fsSLo gh.tar.gz "$url"
+  tar -xzf gh.tar.gz
   sudo install gh_${latest_version}_linux_amd64/bin/gh -D -t /usr/local/bin/
 }
 
