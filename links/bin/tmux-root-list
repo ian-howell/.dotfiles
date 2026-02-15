@@ -2,4 +2,24 @@
 
 set -euo pipefail
 
-echo "TODO: list root tmux sessions"
+separator="${TMUX_TREE_SEPARATOR:- 🌿 }"
+
+sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
+
+if [ -z "$sessions" ]; then
+  exit 0
+fi
+
+while IFS= read -r session; do
+  if [ -z "$session" ]; then
+    continue
+  fi
+
+  case "$session" in
+    *"$separator"*)
+      continue
+      ;;
+  esac
+
+  printf '%s\n' "$session"
+done <<< "$sessions"
