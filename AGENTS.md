@@ -9,6 +9,10 @@ The primary Neovim configuration lives in the "links/nvim" directory. A legacy N
 lives in the "links/lazyvim" directory. The user is fond of the legacy configuration, and it should
 be used as inspiration for the newer setup.
 
+Common zsh locations
+- Keybinds: "links/zsh/keybinds.zsh"
+- Shell functions: "links/zsh/functions/functions.sh"
+
 OpenCode workflow: use `opencode-worktree <branch> [repo-path]` to create or reuse a git worktree
 and print the worktree path. Worktrees default to `${WORKTREES_BASE:-<repo>/.worktrees}`.
 
