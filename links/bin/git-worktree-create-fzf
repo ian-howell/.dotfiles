@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# git-worktree-create-fzf
+# Pick a git branch and create/switch to a tmux session for its worktree.
+#
+# Usage:
+#   git-worktree-create-fzf
+#
+# Output:
+#   When inside tmux, switches to the session. Outside tmux, prints the worktree path.
+#
+# Examples:
+#   git-worktree-create-fzf
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  git-worktree-create-fzf
+
+Creates a git worktree from a branch and switches to its tmux session.
+EOF
+}
+
+if [ $# -ne 0 ]; then
+  usage
+  exit 1
+fi
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "Error: fzf is not installed" >&2
+  exit 1
+fi
+
+repo_root=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null)
+
+repo_name=$(basename "$repo_root")
+current_branch=$(git -C "$repo_root" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+
+declare -A local_branch_map
+
+print_branch() {
+  local name="$1"
+  local source="$2"
+  if [ -z "$name" ]; then
+    return
+  fi
+  if [ "$source" = "local" ]; then
+  printf '%s\t%s\n' "$name" "$name"
+  else
+    printf '%s (origin)\t%s\n' "$name" "$name"
+  fi
+}
+
+list_branches() {
+  local branch
+
+  while IFS= read -r branch; do
+    [ -n "$branch" ] || continue
+    local_branch_map["$branch"]=1
+  done < <(git -C "$repo_root" for-each-ref --format='%(refname:short)' refs/heads)
+
+  if [ -n "$current_branch" ]; then
+    print_branch "$current_branch" "local"
+  fi
+
+  for branch in "${!local_branch_map[@]}"; do
+    if [ "$branch" = "$current_branch" ]; then
+      continue
+    fi
+    print_branch "$branch" "local"
+  done
+
+  while IFS= read -r branch; do
+    [ -n "$branch" ] || continue
+    branch="${branch#origin/}"
+    if [ -n "${local_branch_map[$branch]:-}" ]; then
+      continue
+    fi
+    if [ "$branch" = "HEAD" ]; then
+      continue
+    fi
+    print_branch "$branch" "remote"
+  done < <(git -C "$repo_root" for-each-ref --format='%(refname:short)' refs/remotes/origin)
+}
+
+fzf_preview="git -C '$repo_root' log --oneline --color=always '{2}' -n 10"
+
+selection=$(list_branches | fzf --no-sort --prompt 'branch> ' \
+  --header $'enter: create worktree + switch session\norigin = remote' \
+  --delimiter=$'\t' --with-nth=1 --accept-nth=2 \
+  --bind "start:top+select" \
+  --preview "$fzf_preview" \
+)
+
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+worktree_path=$(git-worktree-create "$selection" "$repo_root")
+
+session_name=$(git-worktree-session-name "$repo_name" "$selection")
+if [ -n "${TMUX:-}" ]; then
+  session_name=$(tmux-root-create "$session_name" "$worktree_path")
+
+  if [ -z "$session_name" ]; then
+    echo "Error: failed to create tmux session" >&2
+    exit 1
+  fi
+
+  tmux switch-client -t "=$session_name"
+else
+  printf '%s\n' "$worktree_path"
+fi

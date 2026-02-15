@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# git-worktree-session-name
+# Build a tmux session name for a repo and branch.
+#
+# Usage:
+#   git-worktree-session-name <repo-name> <branch>
+#
+# Output:
+#   <session-name>
+#
+# Examples:
+#   git-worktree-session-name dotfiles feature/api-cleanup
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  git-worktree-session-name <repo-name> <branch>
+
+Builds a tmux session name for a repo and branch.
+EOF
+}
+
+if [ $# -ne 2 ]; then
+  usage
+  exit 1
+fi
+
+repo_name="$1"
+branch_name="$2"
+
+sanitize_segment() {
+  local name="$1"
+  name=$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9/_-]+/-/g; s|/{2,}|/|g; s|^/+||; s|/+$||')
+
+  IFS='/' read -r -a parts <<< "$name"
+  local part
+  local -a safe_parts
+  for part in "${parts[@]}"; do
+    if [ -z "$part" ] || [ "$part" = "." ] || [ "$part" = ".." ]; then
+      continue
+    fi
+    part=$(printf '%s' "$part" | sed -E 's/^-+//; s/-+$//')
+    if [ -n "$part" ]; then
+      safe_parts+=("$part")
+    fi
+  done
+  local IFS='/'
+  name=$(printf '%s' "${safe_parts[*]}")
+  name=${name##.}
+  printf '%s' "$name"
+}
+
+emoji=""
+repo_safe=$(sanitize_segment "$repo_name")
+branch_safe=$(sanitize_segment "$branch_name")
+
+printf '%s %s %s' "$repo_safe" "$emoji" "$branch_safe"

@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+session_namer="git-worktree-session-name"
+worktree_creator="git-worktree-create"
+
+log_file="${TMPDIR:-/tmp}/git-worktree-sessionizer.log"
+log() {
+  if [ -z "${WORKTREE_SESSIONIZER_DEBUG:-}" ]; then
+    return
+  fi
+  printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_file"
+}
+
+
+fail() {
+  local message="$1"
+  log "$message"
+  echo "$message" >&2
+  if [ -n "${TMUX:-}" ]; then
+    tmux display-message -d 5000 "$message"
+  fi
+  exit 1
+}
+
+if [ -z "${TMUX:-}" ]; then
+  fail "Error: tmux is not running"
+fi
+
+log "starting"
+current_path=$(tmux display-message -p "#{pane_current_path}")
+log "current_path=$current_path"
+repo_root=$(git -C "$current_path" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null)
+log "repo_root=$repo_root"
+
+log "path=$PATH"
+
+task="${1:-}"
+if [ -z "$task" ]; then
+  read -r -p "new branch> " task </dev/tty
+fi
+
+task=${task//$'\n'/}
+task=${task//$'\r'/}
+if [ -z "$task" ]; then
+  log "empty task; exiting"
+  exit 0
+fi
+
+branch="$task"
+log "task=$task branch=$branch"
+
+repo_name=$(basename "$repo_root")
+session_name=$($session_namer "$repo_name" "$branch")
+if [ -z "$session_name" ]; then
+  fail "Error: session name is empty"
+fi
+
+if tmux has-session -t "=$session_name" 2>/dev/null; then
+log "session exists: $session_name"
+  tmux switch-client -t "=$session_name"
+  exit 0
+fi
+
+log "creating session: $session_name"
+if ! tmux new-session -d -s "$session_name" -c "$repo_root"; then
+  fail "Error: failed to create tmux session"
+fi
+
+worktree_path=$($worktree_creator "$branch" "$repo_root")
+
+log "worktree_path=$worktree_path"
+
+cmd_string="cd $(printf '%q' "$worktree_path")"
+log "session command: $cmd_string"
+
+if ! tmux send-keys -t "$session_name" "$cmd_string" C-m; then
+  fail "Error: failed to send command to session"
+fi
+
+if ! tmux has-session -t "=$session_name" 2>/dev/null; then
+  fail "Error: tmux session failed to start"
+fi
+
+tmux switch-client -t "=$session_name"

@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
+# git-worktree-create
 # Create or reuse a git worktree and print its path.
+#
+# Usage:
+#   git-worktree-create <branch> [repo-path]
+#
+# Arguments:
+#   branch     Branch name or task slug (required)
+#   repo-path  Path to repo (optional; defaults to current repo)
+#
+# Environment:
+#   WORKTREES_BASE  Override default worktrees base (default: <repo>/.worktrees)
+#
+# Examples:
+#   git-worktree-create feature/api-cleanup
+#   git-worktree-create task/add-login ~/projects/my-repo
 
 set -euo pipefail
 
 usage() {
   cat <<'EOF'
 Usage:
-  opencode-worktree <branch> [repo-path]
+  git-worktree-create <branch> [repo-path]
 
 Creates (or reuses) a git worktree for <branch> and prints its path.
-
-Arguments:
-  branch     Branch name or task slug (required)
-  repo-path  Path to repo (optional; defaults to current repo)
-
-Environment:
-  WORKTREES_BASE  Override default worktrees base (default: <repo>/.worktrees)
-
-Examples:
-  opencode-worktree feature/api-cleanup
-  opencode-worktree task/add-login ~/projects/my-repo
 EOF
 }
 
@@ -30,43 +34,6 @@ fi
 
 branch="$1"
 repo_path="${2:-$(pwd)}"
-
-if [ ! -d "$repo_path" ]; then
-  echo "Error: repo path does not exist: $repo_path" >&2
-  exit 1
-fi
-
-slugify() {
-  local input
-  local sanitized
-  local part
-  local -a parts
-  local -a safe_parts
-
-  input=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
-  sanitized=$(printf '%s' "$input" | sed -E 's/[^a-z0-9/]+/-/g; s|/{2,}|/|g; s|^/+||; s|/+$||')
-
-  IFS='/' read -r -a parts <<< "$sanitized"
-  for part in "${parts[@]}"; do
-    if [ -z "$part" ] || [ "$part" = "." ] || [ "$part" = ".." ]; then
-      continue
-    fi
-    part=$(printf '%s' "$part" | sed -E 's/^-+//; s/-+$//')
-    if [ -n "$part" ]; then
-      safe_parts+=("$part")
-    fi
-  done
-
-  local IFS='/'
-  printf '%s' "${safe_parts[*]}"
-}
-
-branch="$(slugify "$branch")"
-
-if [ -z "$branch" ]; then
-  echo "Error: branch slug is empty after slugging" >&2
-  exit 1
-fi
 
 repo_root=$(git -C "$repo_path" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null)
 if [ -z "$repo_root" ]; then

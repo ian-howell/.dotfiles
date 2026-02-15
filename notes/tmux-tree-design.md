@@ -97,5 +97,5 @@ Storage options (implementation detail, not required yet):
 ## opencode worktree sessions
 - use `<prefix> W` to prompt for a task, create a repo-local `.worktrees/<task>` worktree, and open
   a new tmux session that starts in that worktree
-- implemented by `opencode-worktree` and `opencode-worktree-sessionizer`; use these scripts as a
+- implemented by `git-worktree-create` and `git-worktree-sessionizer`; use these scripts as a
   reference for future session tooling
