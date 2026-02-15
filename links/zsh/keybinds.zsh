@@ -49,16 +49,18 @@ zle -N my-backward-delete-word
 bindkey '^W' my-backward-delete-word
 
 # FZF: pick files from git status
+# - Uses colorized `git status --short` for display, but inserts clean paths.
+# - Supports multi-select and inserts quoted paths into the command line.
+# - Intended for git repos only; no-op outside a git repo.
+# - Requires `fzf`; silently returns if unavailable.
+# - Handles rename entries by inserting the new path (right side of `->`).
 fzf-git-status-widget() {
-    if ! command -v fzf >/dev/null; then
-        return 0
-    fi
-
-    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-        return 0
-    fi
+    command -v fzf >/dev/null 2>&1 || return 0
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
 
     local selections
+    # Build a two-column list: column 1 is colorized status, column 2 is clean paths.
+    # fzf only displays column 1 but we extract column 2 for insertion.
     selections=$(paste <(git -c color.status=always status --short) \
         <(git status --short | sed -E 's/^.. //') | \
         fzf --ansi --multi --prompt='git status> ' --height=40% --layout=reverse \
@@ -69,20 +71,25 @@ fzf-git-status-widget() {
     local -a files
     local line path
     while IFS= read -r line; do
+        # Extract the clean path column and normalize for insertion.
         path=${line#*$'\t'}
         path=${path## }
         if [[ "$path" == *" -> "* ]]; then
+            # For renames, insert the new path.
             path=${path##* -> }
         fi
         [[ -z "$path" ]] && continue
         files+=("$path")
     done <<< "$selections"
 
-    if (( ${#files} > 0 )); then
+    # Zsh arithmetic: true if array has at least one element.
+    if (( ${#files} )); then
+        # ${(q)...} shell-quotes each element for safe insertion.
         local insert="${(q)files[@]}"
         if [[ -n "$LBUFFER" ]]; then
             LBUFFER+=" "
         fi
+        # Insert quoted paths at the cursor position.
         LBUFFER+="$insert"
     fi
     zle redisplay
