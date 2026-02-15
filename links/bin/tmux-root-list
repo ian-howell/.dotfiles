@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+# tmux-root-list
+# List tmux root sessions (exclude child sessions).
+#
+# Usage:
+#   tmux-root-list
+#
+# Environment:
+#   TMUX_TREE_SEPARATOR  Child separator (default: " 🌿 ")
+#
+# Examples:
+#   tmux-root-list
 
 set -euo pipefail
 

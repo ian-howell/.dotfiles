@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+# git-worktree-list
+# List git worktrees as "name dir" pairs for a repo.
+#
+# Usage:
+#   git-worktree-list [repo-path]
+#
+# Output:
+#   <name> <dir>
+#
+# Examples:
+#   git-worktree-list
+#   git-worktree-list ~/projects/my-repo
 
 set -euo pipefail
 
