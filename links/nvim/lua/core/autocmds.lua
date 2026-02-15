@@ -5,8 +5,12 @@ local groups = {
   focus_leave = vim.api.nvim_create_augroup("focus-leave", { clear = true }),
   lsp_attach = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
   quickfix = vim.api.nvim_create_augroup("quickfix-maps", { clear = true }),
+  on_save = vim.api.nvim_create_augroup("on-save", { clear = true }),
 }
 
+-- ---------------------------------------------------------------------------
+-- Focus UI
+-- ---------------------------------------------------------------------------
 vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
   desc = "Hide focused-only UI when window loses focus",
   group = groups.focus_leave,
@@ -35,6 +39,9 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
   end,
 })
 
+-- ---------------------------------------------------------------------------
+-- Quickfix
+-- ---------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
   desc = "Close quickfix/location lists with q",
   group = groups.quickfix,
@@ -44,6 +51,9 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- ---------------------------------------------------------------------------
+-- LSP Attach
+-- ---------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("LspAttach", {
   desc = "Set LSP-specific keymaps on attach",
   group = groups.lsp_attach,
@@ -56,6 +66,22 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.keymap.set("n", "<leader>lr", snacks.picker.lsp_references, { buffer = args.buf, desc = "references" })
       vim.keymap.set("n", "<leader>ls", snacks.picker.lsp_symbols, { buffer = args.buf, desc = "symbols" })
     end
+  end,
+})
+
+-- ---------------------------------------------------------------------------
+-- On Save
+-- ---------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("BufWritePre", {
+  desc = "Strip Windows CRLF characters on save",
+  group = groups.on_save,
+  callback = function()
+    if vim.fn.search("\\r$", "nw") == 0 then
+      return
+    end
+    local view = vim.fn.winsaveview()
+    vim.cmd([[silent! keepjumps keeppatterns %s/\r$//e]])
+    vim.fn.winrestview(view)
   end,
 })
 
