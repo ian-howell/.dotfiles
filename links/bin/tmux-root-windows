@@ -18,4 +18,31 @@ fi
 
 root_session="$1"
 
-echo "TODO: list windows for root session: $root_session"
+separator="${TMUX_TREE_SEPARATOR:- 🌿 }"
+
+if ! tmux has-session -t "$root_session" 2>/dev/null; then
+  echo "Error: tmux session not found: $root_session" >&2
+  exit 1
+fi
+
+target_sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
+if [ -z "$target_sessions" ]; then
+  exit 0
+fi
+
+while IFS= read -r session; do
+  if [ -z "$session" ]; then
+    continue
+  fi
+
+  if [ "$session" = "$root_session" ]; then
+    printf '%s\n' "$session"
+    continue
+  fi
+
+  case "$session" in
+    "$root_session""$separator"*)
+      printf '%s\n' "$session"
+      ;;
+  esac
+done <<< "$target_sessions"
