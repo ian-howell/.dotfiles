@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# tmux-root-create-fzf
+# Pick a directory under $HOME and create/switch to a root tmux session.
+#
+# Usage:
+#   tmux-root-create-fzf
+#
+# Keybinds:
+#   ctrl-h  Toggle hidden directories in the list
+#
+# Examples:
+#   tmux-root-create-fzf
+
+set -euo pipefail
+
+list_dirs() {
+  local show_hidden="$1"
+  local home_dir="$HOME"
+  local dotfiles_dir="$HOME/.dotfiles"
+  local path
+  local display
+
+  print_entry() {
+    local entry="$1"
+    local rendered="$entry"
+
+    if [ -n "$HOME" ] && [ "${entry#"$HOME"}" != "$entry" ]; then
+      rendered="~${entry#"$HOME"}"
+    fi
+
+    printf '%s\t%s\n' "$rendered" "$entry"
+  }
+
+  if [ -d "$dotfiles_dir" ]; then
+    print_entry "$dotfiles_dir"
+  fi
+
+  if [ "$show_hidden" = "true" ]; then
+    while IFS= read -r path; do
+      [ -n "$path" ] || continue
+      print_entry "$path"
+    done < <(fd -t d . "$home_dir" --hidden --exclude .git --exclude .dotfiles)
+  else
+    while IFS= read -r path; do
+      [ -n "$path" ] || continue
+      print_entry "$path"
+    done < <(fd -t d . "$home_dir" --exclude .git --exclude .dotfiles)
+  fi
+}
+
+if [ "${1:-}" = "--list" ]; then
+  if [ "${2:-}" = "--hidden" ]; then
+    list_dirs "true"
+  else
+    list_dirs "false"
+  fi
+  exit 0
+fi
+
+if [ -z "${TMUX:-}" ]; then
+  echo "Error: tmux is not running" >&2
+  exit 1
+fi
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "Error: fzf is not installed" >&2
+  exit 1
+fi
+
+if ! command -v fd >/dev/null 2>&1; then
+  echo "Error: fd is not installed" >&2
+  exit 1
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_path="$script_dir/$(basename "$0")"
+
+state_file="${TMPDIR:-/tmp}/tmux-root-create-fzf-state"
+printf '0' > "$state_file"
+
+printf -v toggle_cmd "bash -c %q _ %q" \
+  'if [ "$(cat "$1")" = "0" ]; then echo 1 > "$1"; else echo 0 > "$1"; fi' \
+  "$state_file"
+printf -v reload_cmd "bash -c %q _ %q %q" \
+  'if [ "$(cat "$1")" = "0" ]; then "$2" --list; else "$2" --list --hidden; fi' \
+  "$state_file" \
+  "$script_path"
+
+selection=$("$script_path" --list | fzf --no-sort --prompt 'root> ' \
+  --header 'ctrl-h: toggle hidden' \
+  --delimiter=$'\t' --with-nth=1 --accept-nth=2 \
+  --scheme=path --tiebreak=begin,length,index \
+  --bind "start:top+select" \
+  --bind "load:top+select" \
+  --bind "ctrl-h:execute-silent($toggle_cmd)+reload($reload_cmd)" \
+)
+
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+root_name="$(basename "$selection")"
+session_name=$(tmux-root-create "$root_name" "$selection")
+tmux switch-client -t "=$session_name"
