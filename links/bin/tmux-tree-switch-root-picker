@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# tmux-tree-switch-root-picker
+# Show root sessions and switch to last-used child on selection.
+#
+# Usage:
+#   tmux-tree-switch-root-picker
+
+set -euo pipefail
+
+if [ -z "${TMUX:-}" ]; then
+  echo "Error: tmux is not running" >&2
+  exit 1
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$script_dir/tmux-tree-lib"
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "Error: fzf is not installed" >&2
+  exit 1
+fi
+
+roots=$(tmux-tree-list-roots)
+if [ -z "$roots" ]; then
+  exit 0
+fi
+
+selection=$(printf '%s\n' "$roots" | fzf --no-sort --prompt 'root> ' --bind 'start:top+select')
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+root_session="$selection"
+child_name=$(tmux_tree_last_child_get "$root_session")
+
+if [ -n "$child_name" ]; then
+  separator=$(tmux_tree_separator)
+  child_session="${root_session}${separator}${child_name}"
+  if tmux has-session -t "=$child_session" 2>/dev/null; then
+    tmux switch-client -t "=$child_session"
+    exit 0
+  fi
+fi
+
+tmux switch-client -t "=$root_session"

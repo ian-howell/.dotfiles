@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# tmux-tree-switch-root-session
+# Switch to the root session for the current tree.
+#
+# Usage:
+#   tmux-tree-switch-root-session
+
+set -euo pipefail
+
+if [ -z "${TMUX:-}" ]; then
+  echo "Error: tmux is not running" >&2
+  exit 1
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$script_dir/tmux-tree-lib"
+
+root_session=$(tmux_tree_root_name)
+
+if tmux has-session -t "=$root_session" 2>/dev/null; then
+  tmux switch-client -t "=$root_session"
+  exit 0
+fi
+
+tmux new-session -d -s "$root_session"
+tmux switch-client -t "=$root_session"

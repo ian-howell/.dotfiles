@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# tmux-root-list
+# tmux-tree-list-roots
 # List tmux root sessions (exclude child sessions).
 #
 # Usage:
-#   tmux-root-list
+#   tmux-tree-list-roots
 #
 # Environment:
 #   TMUX_TREE_SEPARATOR  Child separator (default: " 🌿 ")
 #
 # Examples:
-#   tmux-root-list
+#   tmux-tree-list-roots
 
 set -euo pipefail
 
@@ -31,6 +31,5 @@ while IFS= read -r session; do
       continue
       ;;
   esac
-
   printf '%s\n' "$session"
 done <<< "$sessions"

@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# tmux-tree-switch-child-session
+# Create or switch to a child session under the current root.
+#
+# Usage:
+#   tmux-tree-switch-child-session <child-name> [command...]
+#
+# Examples:
+#   tmux-tree-switch-child-session opencode opencode
+#   tmux-tree-switch-child-session neovim nvim
+#   tmux-tree-switch-child-session kubernetes k9s
+#   tmux-tree-switch-child-session git lazygit
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  tmux-tree-switch-child-session <child-name> [command...]
+
+Creates or switches to a child session under the current root.
+EOF
+}
+
+if [ $# -lt 1 ]; then
+  usage
+  exit 1
+fi
+
+if [ -z "${TMUX:-}" ]; then
+  echo "Error: tmux is not running" >&2
+  exit 1
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$script_dir/tmux-tree-lib"
+
+child_name="$1"
+shift
+
+root_session=$(tmux_tree_root_name)
+separator=$(tmux_tree_separator)
+child_session="${root_session}${separator}${child_name}"
+root_dir=$(tmux_tree_root_dir)
+
+if [ -z "$root_dir" ]; then
+  echo "Error: missing root metadata (@tree_root_dir) for session: $root_session" >&2
+  echo "Recreate the root via tmux-tree-create-root-from-dir." >&2
+  exit 1
+fi
+
+if ! tmux has-session -t "$child_session" 2>/dev/null; then
+  if [ $# -gt 0 ]; then
+    tmux new-session -d -s "$child_session" -c "$root_dir" -- "$@"
+  else
+    tmux new-session -d -s "$child_session" -c "$root_dir"
+  fi
+  tmux set-option -q -t "$child_session" @tree_root_dir "$root_dir"
+  tmux set-option -q -t "$child_session" @tree_root_name "$root_session"
+fi
+
+tmux switch-client -t "$child_session"

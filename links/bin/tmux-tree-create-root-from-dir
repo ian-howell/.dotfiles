@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
-# tmux-root-create-fzf
+# tmux-tree-create-root-from-dir
 # Pick a directory under $HOME and create/switch to a root tmux session.
 #
 # Usage:
-#   tmux-root-create-fzf
+#   tmux-tree-create-root-from-dir
 #
 # Keybinds:
 #   ctrl-h  Toggle hidden directories in the list
 #
 # Examples:
-#   tmux-root-create-fzf
+#   tmux-tree-create-root-from-dir
+
+# How it works:
+# - Builds a two-column list of candidate directories under $HOME using fd.
+#   Column 1 is a user-friendly display path (with ~), column 2 is the full path.
+# - Feeds that list into fzf with a tab delimiter; we only display column 1
+#   (--with-nth=1) but return column 2 on selection (--accept-nth=2).
+# - ctrl-h toggles hidden directories by flipping a state file and reloading
+#   the list via fzf's reload binding.
+# - The selected path is converted into a sanitized root session name and
+#   passed to tmux-tree-create-root-session, which creates the root session
+#   if needed and switches the client to it.
+# - We temporarily disable pipefail for the fzf pipeline so a SIGPIPE from fzf
+#   doesn't abort the script when the picker exits.
 
 set -euo pipefail
 
@@ -18,7 +31,6 @@ list_dirs() {
   local home_dir="$HOME"
   local dotfiles_dir="$HOME/.dotfiles"
   local path
-  local display
 
   print_entry() {
     local entry="$1"
@@ -75,8 +87,13 @@ fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 script_path="$script_dir/$(basename "$0")"
 
-state_file="${TMPDIR:-/tmp}/tmux-root-create-fzf-state"
+state_file="${TMPDIR:-/tmp}/tmux-tree-create-root-from-dir-state"
 printf '0' > "$state_file"
+
+cleanup() {
+  rm -f "$state_file"
+}
+trap cleanup EXIT
 
 printf -v toggle_cmd "bash -c %q _ %q" \
   'if [ "$(cat "$1")" = "0" ]; then echo 1 > "$1"; else echo 0 > "$1"; fi' \
@@ -86,19 +103,23 @@ printf -v reload_cmd "bash -c %q _ %q %q" \
   "$state_file" \
   "$script_path"
 
-selection=$("$script_path" --list | fzf --no-sort --prompt 'root> ' \
+# The list uses two tab-delimited columns: display label and full path.
+# We show only the display column and return the full path when selected.
+set +o pipefail
+selection=$("$script_path" --list | fzf --prompt 'root> ' \
   --header 'ctrl-h: toggle hidden' \
-  --delimiter=$'\t' --with-nth=1 --accept-nth=2 \
+  --delimiter=$'\t' \
+  --with-nth=1 \
+  --accept-nth=2 \
   --scheme=path --tiebreak=begin,length,index \
-  --bind "start:top+select" \
-  --bind "load:top+select" \
-  --bind "ctrl-h:execute-silent($toggle_cmd)+reload($reload_cmd)" \
-)
+  --bind "ctrl-h:execute-silent($toggle_cmd)+reload($reload_cmd)+clear-query" \
+) || exit 0
+set -o pipefail
 
 if [ -z "$selection" ]; then
   exit 0
 fi
 
 root_name="$(basename "$selection")"
-session_name=$(tmux-root-create "$root_name" "$selection")
+session_name=$(tmux-tree-create-root-session "$root_name" "$selection")
 tmux switch-client -t "=$session_name"

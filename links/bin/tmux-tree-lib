@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# tmux-tree-lib
+# Shared helpers for tmux root/child tree sessions.
+
+set -euo pipefail
+
+tmux_tree_separator() {
+  printf '%s' "${TMUX_TREE_SEPARATOR:- 🌿 }"
+}
+
+tmux_tree_current_session() {
+  tmux display-message -p '#S'
+}
+
+tmux_tree_root_name() {
+  tmux show-option -qv @tree_root_name 2>/dev/null
+}
+
+tmux_tree_root_dir() {
+  tmux show-option -qv @tree_root_dir 2>/dev/null
+}
+
+tmux_tree_last_child_key() {
+  local root_session="$1"
+  printf '%s' "@tree_last_child_${root_session}"
+}
+
+tmux_tree_last_child_get() {
+  local root_session="$1"
+  local key
+  key=$(tmux_tree_last_child_key "$root_session")
+  tmux show-option -qv -t "=$root_session" "$key" 2>/dev/null || true
+}
+
+tmux_tree_last_child_set() {
+  local root_session="$1"
+  local child_name="$2"
+  local key
+  key=$(tmux_tree_last_child_key "$root_session")
+  tmux set-option -q -t "=$root_session" "$key" "$child_name"
+}

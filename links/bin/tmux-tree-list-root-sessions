@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# tmux-root-windows
+# tmux-tree-list-root-sessions
 # List root and child sessions for a given tmux root.
 #
 # Usage:
-#   tmux-root-windows <root-session>
+#   tmux-tree-list-root-sessions <root-session>
 #
 # Output:
 #   <session-name>
@@ -12,16 +12,16 @@
 #   TMUX_TREE_SEPARATOR  Child separator (default: " 🌿 ")
 #
 # Examples:
-#   tmux-root-windows dotfiles
+#   tmux-tree-list-root-sessions dotfiles
 
 set -euo pipefail
 
 usage() {
   cat <<'EOF'
 Usage:
-  tmux-root-windows <root-session>
+  tmux-tree-list-root-sessions <root-session>
 
-Lists windows rooted at a given tmux session.
+Lists sessions rooted at a given tmux session.
 EOF
 }
 

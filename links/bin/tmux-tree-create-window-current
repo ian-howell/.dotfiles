@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# tmux-tree-create-window-current
+# Create a new window in current root/child, running the designated program.
+#
+# Usage:
+#   tmux-tree-create-window-current
+
+set -euo pipefail
+
+if [ -z "${TMUX:-}" ]; then
+  echo "Error: tmux is not running" >&2
+  exit 1
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$script_dir/tmux-tree-lib"
+
+session=$(tmux_tree_current_session)
+root_session=$(tmux_tree_root_name)
+child_name=$(tmux_tree_child_name "$session")
+root_dir=$(tmux_tree_root_dir "$root_session")
+
+if [ -n "$child_name" ]; then
+  tmux new-window -c "$root_dir" -n "$child_name" -- "$child_name"
+else
+  tmux new-window -c "$root_dir"
+fi
