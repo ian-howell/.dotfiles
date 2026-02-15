@@ -4,7 +4,7 @@ ASCII sketch (root + children, no grandchildren):
 ```
 dotfiles (root)
 |- opencode (child)
-|- vim      (child)
+|- nvim     (child)
 `- k9s      (child)
 ```
 
@@ -23,7 +23,7 @@ dotfiles (root)
 - root: top-level session
 - root directory: the filesystem directory associated with a root session
 - child: leaf session under a root; all windows run the same program
-- implementation language: Go
+- implementation language: bash scripts in `links/bin`
 
 ## naming convention
 
@@ -44,7 +44,7 @@ This encodes the parent-child relationship and makes it easy to derive the root 
    - is the anchor of a tree
    - is associated with a root directory
 2. child session
-   - represents a single responsibility (e.g., opencode, neovim, k9s)
+   - represents a single responsibility (e.g., opencode, nvim, k9s)
    - all windows in that session run the same program
    - child names are fixed to program names (no aliases)
 3. tree height
@@ -59,7 +59,7 @@ All keybinds are invoked as `<prefix> <key>`.
 
 - `s` listPicker of all roots. selecting a root switches to its last-used child (or root if none)
 - `o` create/switch to child `opencode` under current root
-- `v` create/switch to child `neovim` under current root
+- `v` create/switch to child `nvim` under current root
 - `k` create/switch to child `k9s` under current root
 - `z` switch to the root session for the current tree
 - `l` switch to last-used child for current root
@@ -73,7 +73,7 @@ Root list
 - action: switch to last-used child of selected root
 
 Child list
-- display: `opencode`, `neovim`, `k9s`
+- display: `opencode`, `nvim`, `k9s`
 - action: switch to selected child under current root
 
 ## state tracking
@@ -88,14 +88,12 @@ Storage options (implementation detail, not required yet):
 - file in `~/.cache` (later)
 
 ## root creation flow
-1. prompt for directory using listPicker sourced from `fd` or `find` piped to `fzf` (or `gum`)
-   - search roots start at `$HOME` and `/tmp`
-2. derive root name from directory basename, with option to edit
-3. create `root` session and store `root_directory`
-4. switch to new root (root shell)
+1. prompt for directory using `tmux-root-create-fzf` (lists under `$HOME`)
+2. create or switch to `root` session (root shell)
 
-## opencode worktree sessions
-- use `<prefix> W` to prompt for a task, create a repo-local `.worktrees/<task>` worktree, and open
-  a new tmux session that starts in that worktree
-- implemented by `git-worktree-create` and `git-worktree-sessionizer`; use these scripts as a
-  reference for future session tooling
+## git worktree sessions
+- use `<prefix> W` to prompt for a branch, create a repo-local `.worktrees/<branch>` worktree, and
+  open a new tmux session that starts in that worktree
+- implemented by `git-worktree-create`, `git-worktree-session-name`, and
+  `git-worktree-sessionizer`; use these scripts as a reference for future session tooling
+- `git-worktree-create-fzf` selects local and remote branches with preview and opens a session
