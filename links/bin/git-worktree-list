@@ -24,4 +24,48 @@ if [ ! -d "$repo_path" ]; then
   exit 1
 fi
 
-echo "TODO: list git worktrees for $repo_path"
+repo_root=$(git -C "$repo_path" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs -r dirname 2>/dev/null)
+if [ -z "$repo_root" ]; then
+  echo "Error: not a git repository: $repo_path" >&2
+  exit 1
+fi
+
+current_path=""
+current_branch=""
+
+print_entry() {
+  local path="$1"
+  local branch="$2"
+  local name
+
+  if [ -z "$path" ]; then
+    return
+  fi
+
+  if [ -n "$branch" ] && [ "$branch" != "(detached)" ]; then
+    name="$branch"
+  else
+    name="$(basename "$path")"
+  fi
+
+  printf '%s %s\n' "$name" "$path"
+}
+
+while IFS= read -r line; do
+  case "$line" in
+    worktree\ *)
+      print_entry "$current_path" "$current_branch"
+      current_path="${line#worktree }"
+      current_branch=""
+      ;;
+    branch\ *)
+      current_branch="${line#branch }"
+      current_branch="${current_branch#refs/heads/}"
+      ;;
+    detached)
+      current_branch="(detached)"
+      ;;
+  esac
+done < <(git -C "$repo_root" worktree list --porcelain)
+
+print_entry "$current_path" "$current_branch"
