@@ -15,7 +15,9 @@ func New() *Client {
 }
 
 func (c *Client) HasSession(name string) bool {
-	return c.run(WithArgs("has-session", "-t", name)) == nil
+	// Use '=' to match the session name exactly, otherwise tmux will match any session that
+	// contains the name as a prefix.
+	return c.run(WithArgs("has-session", "-t", "="+name)) == nil
 }
 
 func (c *Client) ShowOption(name string) (string, error) {

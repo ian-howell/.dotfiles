@@ -9,11 +9,11 @@ Small tmux session helper for root/child session trees.
 Create a root session rooted at a directory.
 
 ```
-treemux ensure-root <root-name> <root-dir>
+treemux ensure-root <root-name> [root-dir]
 ```
 
 Behavior
-- normalizes the root dir to an absolute path
+- normalizes the root dir to an absolute path (defaults to the current directory)
 - creates the root session if missing
 - stores @tree_root_dir and @tree_root_name on the root session
 - prints a result message

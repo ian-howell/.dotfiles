@@ -40,18 +40,21 @@ func run() error {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, "Usage:")
-	fmt.Fprintln(os.Stderr, "  treemux ensure-root <root-name> <root-dir>")
+	fmt.Fprintln(os.Stderr, "  treemux ensure-root <root-name> [root-dir]")
 	fmt.Fprintln(os.Stderr, "  treemux ensure-child <child-name> <command>")
 	fmt.Fprintln(os.Stderr, "  treemux show-root")
 }
 
 func createRoot(args []string) error {
-	if len(args) != 2 {
-		return errors.New("Usage: treemux ensure-root <root-name> <root-dir>")
+	if len(args) < 1 || len(args) > 2 {
+		return errors.New("Usage: treemux ensure-root <root-name> [root-dir]")
 	}
 
 	rootName := args[0]
-	rootDir := args[1]
+	rootDir, err := resolveRootDir(args[1:])
+	if err != nil {
+		return err
+	}
 
 	absRootDir, err := normalizePath(rootDir)
 	if err != nil {
@@ -72,6 +75,7 @@ func createRoot(args []string) error {
 		fmt.Println(sessionName)
 		return nil
 	}
+	fmt.Printf("Creating root tmux session '%s' with root directory '%s'\n", sessionName, absRootDir)
 
 	if err := client.NewSession(sessionName, absRootDir, nil); err != nil {
 		return fmt.Errorf("failed to create tmux session '%s': %v", sessionName, err)
@@ -85,6 +89,27 @@ func createRoot(args []string) error {
 
 	fmt.Println(sessionName)
 	return nil
+}
+
+func resolveRootDir(args []string) (string, error) {
+	if len(args) > 0 {
+		return args[0], nil
+	}
+
+	client := tmux.New()
+	storedRootDir, err := client.ShowOption("@tree_root_dir")
+	if err == nil {
+		storedRootDir = strings.TrimSpace(storedRootDir)
+		if storedRootDir != "" {
+			return storedRootDir, nil
+		}
+	}
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("failed to get current directory: %v", err)
+	}
+	return cwd, nil
 }
 
 func createChild(args []string) error {
