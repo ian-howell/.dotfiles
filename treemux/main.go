@@ -28,6 +28,8 @@ func run() error {
 		return createRoot(os.Args[2:])
 	case "ensure-child":
 		return createChild(os.Args[2:])
+	case "show-root":
+		return showRoot(os.Args[2:])
 	case "-h", "--help", "help":
 		usage()
 		return nil
@@ -40,6 +42,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "Usage:")
 	fmt.Fprintln(os.Stderr, "  treemux ensure-root <root-name> <root-dir>")
 	fmt.Fprintln(os.Stderr, "  treemux ensure-child <child-name> <command>")
+	fmt.Fprintln(os.Stderr, "  treemux show-root")
 }
 
 func createRoot(args []string) error {
@@ -134,6 +137,29 @@ func createChild(args []string) error {
 	}
 
 	fmt.Println(childSession)
+	return nil
+}
+
+func showRoot(args []string) error {
+	if len(args) != 0 {
+		return errors.New("Usage: treemux show-root")
+	}
+
+	if os.Getenv("TMUX") == "" {
+		return errors.New("tmux is not running")
+	}
+
+	client := tmux.New()
+	rootName, err := client.ShowOption("@tree_root_name")
+	if err != nil {
+		return err
+	}
+	rootName = strings.TrimSpace(rootName)
+	if rootName == "" {
+		return errors.New("missing root metadata (@tree_root_name) for current session")
+	}
+
+	fmt.Println(rootName)
 	return nil
 }
 

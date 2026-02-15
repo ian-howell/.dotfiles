@@ -33,6 +33,18 @@ Behavior
 - stores @tree_root_dir and @tree_root_name on the child session
 - prints a result message
 
+### show-root
+
+Print the current root session name.
+
+```
+treemux show-root
+```
+
+Behavior
+- requires running inside tmux
+- reads @tree_root_name from the current session
+
 ## Environment
 
 - TMUX_TREE_SEPARATOR: child separator for session names (default: " 🌿 ")
