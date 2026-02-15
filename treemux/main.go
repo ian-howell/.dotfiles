@@ -24,9 +24,9 @@ func run() error {
 	}
 
 	switch os.Args[1] {
-	case "create-root":
+	case "ensure-root":
 		return createRoot(os.Args[2:])
-	case "create-child":
+	case "ensure-child":
 		return createChild(os.Args[2:])
 	case "-h", "--help", "help":
 		usage()
@@ -38,13 +38,13 @@ func run() error {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, "Usage:")
-	fmt.Fprintln(os.Stderr, "  treemux create-root <root-name> <root-dir>")
-	fmt.Fprintln(os.Stderr, "  treemux create-child <child-name> <command>")
+	fmt.Fprintln(os.Stderr, "  treemux ensure-root <root-name> <root-dir>")
+	fmt.Fprintln(os.Stderr, "  treemux ensure-child <child-name> <command>")
 }
 
 func createRoot(args []string) error {
 	if len(args) != 2 {
-		return errors.New("Usage: treemux create-root <root-name> <root-dir>")
+		return errors.New("Usage: treemux ensure-root <root-name> <root-dir>")
 	}
 
 	rootName := args[0]
@@ -86,7 +86,7 @@ func createRoot(args []string) error {
 
 func createChild(args []string) error {
 	if len(args) != 2 {
-		return errors.New("Usage: treemux create-child <child-name> <command>")
+		return errors.New("Usage: treemux ensure-child <child-name> <command>")
 	}
 
 	if os.Getenv("TMUX") == "" {

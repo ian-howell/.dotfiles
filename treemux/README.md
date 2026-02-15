@@ -4,12 +4,12 @@ Small tmux session helper for root/child session trees.
 
 ## Commands
 
-### create-root
+### ensure-root
 
 Create a root session rooted at a directory.
 
 ```
-treemux create-root <root-name> <root-dir>
+treemux ensure-root <root-name> <root-dir>
 ```
 
 Behavior
@@ -18,12 +18,12 @@ Behavior
 - stores @tree_root_dir and @tree_root_name on the root session
 - prints a result message
 
-### create-child
+### ensure-child
 
 Create a child session under the current root.
 
 ```
-treemux create-child <child-name> <command>
+treemux ensure-child <child-name> <command>
 ```
 
 Behavior
