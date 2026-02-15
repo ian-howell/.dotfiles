@@ -1,0 +1,53 @@
+package tmux
+
+import (
+	"fmt"
+	"os"
+	"os/exec"
+)
+
+type Client struct {
+	Binary string
+}
+
+func New() *Client {
+	return &Client{Binary: "tmux"}
+}
+
+func (c *Client) HasSession(name string) bool {
+	return c.run("has-session", "-t", name) == nil
+}
+
+func (c *Client) ShowOption(name string) (string, error) {
+	cmd := exec.Command(c.Binary, "show-option", "-qv", name)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to read tmux option %s", name)
+	}
+	return string(output), nil
+}
+
+func (c *Client) SetOption(target, name, value string) error {
+	args := []string{"set-option", "-q"}
+	if target != "" {
+		args = append(args, "-t", target)
+	}
+	args = append(args, name, value)
+	return c.run(args...)
+}
+
+func (c *Client) NewSession(name, dir string, command []string) error {
+	args := []string{"new-session", "-d", "-s", name, "-c", dir}
+	if len(command) > 0 {
+		args = append(args, "--")
+		args = append(args, command...)
+	}
+	return c.run(args...)
+}
+
+func (c *Client) run(args ...string) error {
+	cmd := exec.Command(c.Binary, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
