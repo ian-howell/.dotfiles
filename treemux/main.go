@@ -66,7 +66,7 @@ func createRoot(args []string) error {
 
 	client := tmux.New()
 	if client.HasSession(sessionName) {
-		fmt.Printf("Session '%s' already exists, skipping creation\n", sessionName)
+		fmt.Println(sessionName)
 		return nil
 	}
 
@@ -80,7 +80,7 @@ func createRoot(args []string) error {
 		return fmt.Errorf("failed to set tmux option @tree_root_name for session '%s': %v", sessionName, err)
 	}
 
-	fmt.Printf("Created root session: %s\n", sessionName)
+	fmt.Println(sessionName)
 	return nil
 }
 
@@ -119,7 +119,7 @@ func createChild(args []string) error {
 	childSession := rootName + separator + childName
 
 	if client.HasSession(childSession) {
-		fmt.Printf("Child session '%s' already exists, skipping creation\n", childSession)
+		fmt.Println(childSession)
 		return nil
 	}
 
@@ -133,7 +133,7 @@ func createChild(args []string) error {
 		return fmt.Errorf("failed to set tmux option @tree_root_name for child session '%s': %v", childSession, err)
 	}
 
-	fmt.Printf("Created child session: %s\n", childSession)
+	fmt.Println(childSession)
 	return nil
 }
 
