@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  git-worktree-list [repo-path]
+
+Lists git worktrees for the given repo.
+Defaults to the current working directory.
+EOF
+}
+
+if [ $# -gt 1 ]; then
+  usage
+  exit 1
+fi
+
+repo_path="${1:-$(pwd)}"
+
+if [ ! -d "$repo_path" ]; then
+  echo "Error: repo path does not exist: $repo_path" >&2
+  exit 1
+fi
+
+echo "TODO: list git worktrees for $repo_path"

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  tmux-root-windows <root-session>
+
+Lists windows rooted at a given tmux session.
+EOF
+}
+
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+
+root_session="$1"
+
+echo "TODO: list windows for root session: $root_session"
