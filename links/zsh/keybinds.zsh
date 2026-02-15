@@ -47,3 +47,48 @@ my-backward-delete-word() {
 }
 zle -N my-backward-delete-word
 bindkey '^W' my-backward-delete-word
+
+# FZF: pick files from git status
+fzf-git-status-widget() {
+    if ! command -v fzf >/dev/null; then
+        return 0
+    fi
+
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        return 0
+    fi
+
+    local selections
+    selections=$(paste <(git -c color.status=always status --short) \
+        <(git status --short | sed -E 's/^.. //') | \
+        fzf --ansi --multi --prompt='git status> ' --height=40% --layout=reverse \
+            --delimiter=$'\t' --with-nth=1)
+
+    [[ -z "$selections" ]] && return 0
+
+    local -a files
+    local line path
+    while IFS= read -r line; do
+        path=${line#*$'\t'}
+        path=${path## }
+        if [[ "$path" == *" -> "* ]]; then
+            path=${path##* -> }
+        fi
+        [[ -z "$path" ]] && continue
+        files+=("$path")
+    done <<< "$selections"
+
+    if (( ${#files} > 0 )); then
+        local insert="${(q)files[@]}"
+        if [[ -n "$LBUFFER" ]]; then
+            LBUFFER+=" "
+        fi
+        LBUFFER+="$insert"
+    fi
+    zle redisplay
+}
+zle -N fzf-git-status-widget
+bindkey -M viins -r '^G'
+bindkey -M vicmd -r '^G'
+bindkey -M viins '^G' fzf-git-status-widget
+bindkey -M vicmd '^G' fzf-git-status-widget
