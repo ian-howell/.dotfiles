@@ -4,26 +4,26 @@ Small tmux session helper for root/child session trees.
 
 ## Commands
 
-### switch-root
+### create-root
 
-Create or switch to a root session rooted at a directory.
+Create a root session rooted at a directory.
 
 ```
-treemux switch-root <root-name> <root-dir>
+treemux create-root <root-name> <root-dir>
 ```
 
 Behavior
 - normalizes the root dir to an absolute path
 - creates the root session if missing
 - stores @tree_root_dir and @tree_root_name on the root session
-- switches to the session (or attaches if not already in tmux)
+- prints a result message
 
-### switch-child
+### create-child
 
-Create or switch to a child session under the current root.
+Create a child session under the current root.
 
 ```
-treemux switch-child <child-name> <command>
+treemux create-child <child-name> <command>
 ```
 
 Behavior
@@ -31,7 +31,7 @@ Behavior
 - reads @tree_root_dir and @tree_root_name from the current session
 - creates the child session if missing
 - stores @tree_root_dir and @tree_root_name on the child session
-- switches to the child session
+- prints a result message
 
 ## Environment
 

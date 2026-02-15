@@ -23,10 +23,10 @@ func run() error {
 	}
 
 	switch os.Args[1] {
-	case "switch-root":
-		return switchRoot(os.Args[2:])
-	case "switch-child":
-		return switchChild(os.Args[2:])
+	case "create-root":
+		return createRoot(os.Args[2:])
+	case "create-child":
+		return createChild(os.Args[2:])
 	case "-h", "--help", "help":
 		usage()
 		return nil
@@ -37,13 +37,13 @@ func run() error {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, "Usage:")
-	fmt.Fprintln(os.Stderr, "  treemux switch-root <root-name> <root-dir>")
-	fmt.Fprintln(os.Stderr, "  treemux switch-child <child-name> <command>")
+	fmt.Fprintln(os.Stderr, "  treemux create-root <root-name> <root-dir>")
+	fmt.Fprintln(os.Stderr, "  treemux create-child <child-name> <command>")
 }
 
-func switchRoot(args []string) error {
+func createRoot(args []string) error {
 	if len(args) != 2 {
-		return errors.New("Usage: treemux switch-root <root-name> <root-dir>")
+		return errors.New("Usage: treemux create-root <root-name> <root-dir>")
 	}
 
 	rootName := args[0]
@@ -63,34 +63,28 @@ func switchRoot(args []string) error {
 		return errors.New("root session name is empty after sanitizing")
 	}
 
-	if !tmuxHasSession(sessionName) {
-		if err := runTmux("new-session", "-d", "-s", sessionName, "-c", absRootDir); err != nil {
-			return fmt.Errorf("failed to create tmux session '%s': %v", sessionName, err)
-		}
-		if err := runTmux("set-option", "-q", "-t", sessionName, "@tree_root_dir", absRootDir); err != nil {
-			return fmt.Errorf("failed to set tmux option @tree_root_dir for session '%s': %v", sessionName, err)
-		}
-		if err := runTmux("set-option", "-q", "-t", sessionName, "@tree_root_name", sessionName); err != nil {
-			return fmt.Errorf("failed to set tmux option @tree_root_name for session '%s': %v", sessionName, err)
-		}
-	}
-
-	if os.Getenv("TMUX") != "" {
-		if err := runTmux("switch-client", "-t", sessionName); err != nil {
-			return fmt.Errorf("failed to switch tmux client to session '%s': %v", sessionName, err)
-		}
+	if tmuxHasSession(sessionName) {
+		fmt.Printf("Session '%s' already exists, skipping creation\n", sessionName)
 		return nil
 	}
 
-	if err := runTmux("attach-session", "-t", sessionName); err != nil {
-		return fmt.Errorf("failed to attach to tmux session '%s': %v", sessionName, err)
+	if err := runTmux("new-session", "-d", "-s", sessionName, "-c", absRootDir); err != nil {
+		return fmt.Errorf("failed to create tmux session '%s': %v", sessionName, err)
 	}
+	if err := runTmux("set-option", "-q", "-t", sessionName, "@tree_root_dir", absRootDir); err != nil {
+		return fmt.Errorf("failed to set tmux option @tree_root_dir for session '%s': %v", sessionName, err)
+	}
+	if err := runTmux("set-option", "-q", "-t", sessionName, "@tree_root_name", sessionName); err != nil {
+		return fmt.Errorf("failed to set tmux option @tree_root_name for session '%s': %v", sessionName, err)
+	}
+
+	fmt.Printf("Created root session: %s\n", sessionName)
 	return nil
 }
 
-func switchChild(args []string) error {
+func createChild(args []string) error {
 	if len(args) != 2 {
-		return errors.New("Usage: treemux switch-child <child-name> <command>")
+		return errors.New("Usage: treemux create-child <child-name> <command>")
 	}
 
 	if os.Getenv("TMUX") == "" {
@@ -121,21 +115,22 @@ func switchChild(args []string) error {
 	separator := tmuxSeparator()
 	childSession := rootName + separator + childName
 
-	if !tmuxHasSession(childSession) {
-		if err := runTmux("new-session", "-d", "-s", childSession, "-c", rootDir, "--", command); err != nil {
-			return fmt.Errorf("failed to create child tmux session '%s': %v", childSession, err)
-		}
-		if err := runTmux("set-option", "-q", "-t", childSession, "@tree_root_dir", rootDir); err != nil {
-			return fmt.Errorf("failed to set tmux option @tree_root_dir for child session '%s': %v", childSession, err)
-		}
-		if err := runTmux("set-option", "-q", "-t", childSession, "@tree_root_name", rootName); err != nil {
-			return fmt.Errorf("failed to set tmux option @tree_root_name for child session '%s': %v", childSession, err)
-		}
+	if tmuxHasSession(childSession) {
+		fmt.Printf("Child session '%s' already exists, skipping creation\n", childSession)
+		return nil
 	}
 
-	if err := runTmux("switch-client", "-t", childSession); err != nil {
-		return fmt.Errorf("failed to switch tmux client to child session '%s': %v", childSession, err)
+	if err := runTmux("new-session", "-d", "-s", childSession, "-c", rootDir, "--", command); err != nil {
+		return fmt.Errorf("failed to create child tmux session '%s': %v", childSession, err)
 	}
+	if err := runTmux("set-option", "-q", "-t", childSession, "@tree_root_dir", rootDir); err != nil {
+		return fmt.Errorf("failed to set tmux option @tree_root_dir for child session '%s': %v", childSession, err)
+	}
+	if err := runTmux("set-option", "-q", "-t", childSession, "@tree_root_name", rootName); err != nil {
+		return fmt.Errorf("failed to set tmux option @tree_root_name for child session '%s': %v", childSession, err)
+	}
+
+	fmt.Printf("Created child session: %s\n", childSession)
 	return nil
 }
 
@@ -148,6 +143,8 @@ func tmuxSeparator() string {
 	return defaultSeparator
 }
 
+// TODO: This prints "can't find session: <name>" to stderr when the session doesn't exist, which is
+// a bit noisy. We should suppress that output
 func tmuxHasSession(name string) bool {
 	err := runTmux("has-session", "-t", name)
 	return err == nil
