@@ -58,4 +58,8 @@ return {
     src = "https://github.com/nvim-treesitter/nvim-treesitter",
     name = "nvim-treesitter",
   },
+  {
+    src = "https://github.com/ian-howell/ripple-on-save.nvim",
+    name = "ripple-on-save",
+  },
 }
