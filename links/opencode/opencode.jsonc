@@ -8,6 +8,7 @@
     "editor_open": "<leader>ctrl+e",
     "session_new": "<leader>ctrl+n",
     "session_list": "<leader>ctrl+s",
+    "messages_copy": "<leader>ctrl+y",
   },
   "mcp": {
     "ado-msazuredev": {
