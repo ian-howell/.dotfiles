@@ -57,14 +57,18 @@ This encodes the parent-child relationship and makes it easy to derive the root 
 ## keybinds (given)
 All keybinds are invoked as `<prefix> <key>`.
 
-- `s` listPicker of all roots. selecting a root switches to its last-used child (or root if none)
+- `f s` listPicker of all roots. selecting a root switches to its last-used child (or root if none)
 - `o` create/switch to child `opencode` under current root
 - `v` create/switch to child `neovim` under current root
 - `k` create/switch to child `k9s` under current root
 - `z` switch to the root session for the current tree
 - `l` switch to last-used child for current root
+- `L` switch to last-used root (excluding current)
 - `c` create a new window in current child running its designated program (zsh for root)
-- `S` create a new root (directory-first)
+- `f f` create a new root (directory-first)
+- `t` prompt for a root name and attach it for the current directory
+- `T` create a new root in a temp directory
+- `f g` prompt for branch name and attach a worktree root
 
 ## listPicker contents
 
@@ -94,8 +98,7 @@ Storage options (implementation detail, not required yet):
 3. create `root` session and store `root_directory`
 4. switch to new root (root shell)
 
-## opencode worktree sessions
-- use `<prefix> W` to prompt for a task, create a repo-local `.worktrees/<task>` worktree, and open
-  a new tmux session that starts in that worktree
-- implemented by `opencode-worktree` and `opencode-worktree-sessionizer`; use these scripts as a
-  reference for future session tooling
+## treemux worktree sessions
+- use `<prefix> W` to prompt for a branch name, create a repo-local `.worktrees/<branch>` worktree,
+  and attach a treemux root session that starts in that worktree
+- implemented by `treemux-worktree-picker`

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+root=$(treemux show-roots --sort-by=most-recently-used --hide-current | head -n 1)
+if [[ -z "$root" ]]; then
+  tmux display-message "No other treemux roots"
+  exit 0
+fi
+
+root=${root#"${root%%[![:space:]]*}"}
+root=${root%"${root##*[![:space:]]}"}
+if [[ -z "$root" ]]; then
+  tmux display-message "No other treemux roots"
+  exit 0
+fi
+
+treemux attach-root --name "$root"

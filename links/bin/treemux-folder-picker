@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+list_dirs() {
+  local show_hidden="$1"
+  local home_dir="$HOME"
+  local dotfiles_dir="$HOME/.dotfiles"
+  local path
+
+  print_entry() {
+    local entry="$1"
+    local rendered="$entry"
+
+    if [ -n "$HOME" ] && [ "${entry#"$HOME"}" != "$entry" ]; then
+      rendered="~${entry#"$HOME"}"
+    fi
+
+    printf '%s\t%s\n' "$rendered" "$entry"
+  }
+
+  if [ -d "$dotfiles_dir" ]; then
+    print_entry "$dotfiles_dir"
+  fi
+
+  if [ "$show_hidden" = "true" ]; then
+    while IFS= read -r path; do
+      [ -n "$path" ] || continue
+      print_entry "$path"
+    done < <(fd -t d . "$home_dir" /tmp --hidden --exclude .git --exclude .dotfiles)
+  else
+    while IFS= read -r path; do
+      [ -n "$path" ] || continue
+      print_entry "$path"
+    done < <(fd -t d . "$home_dir" /tmp --exclude .git --exclude .dotfiles)
+  fi
+}
+
+if [ "${1:-}" = "--list" ]; then
+  if [ "${2:-}" = "--hidden" ]; then
+    list_dirs "true"
+  else
+    list_dirs "false"
+  fi
+  exit 0
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_path="$script_dir/$(basename "$0")"
+
+state_file="${TMPDIR:-/tmp}/treemux-folder-picker-state"
+printf '0' > "$state_file"
+
+printf -v toggle_cmd "bash -c %q _ %q" \
+  'if [ "$(cat "$1")" = "0" ]; then echo 1 > "$1"; else echo 0 > "$1"; fi' \
+  "$state_file"
+printf -v reload_cmd "bash -c %q _ %q %q" \
+  'if [ "$(cat "$1")" = "0" ]; then "$2" --list; else "$2" --list --hidden; fi' \
+  "$state_file" \
+  "$script_path"
+
+selection=$(
+  "$script_path" --list | fzf --no-sort --prompt 'root> ' \
+    --header 'ctrl-h: toggle hidden' \
+    --delimiter=$'\t' --with-nth=1 --accept-nth=2 \
+    --scheme=path --tiebreak=begin,length,index \
+    --bind "start:top+select" \
+    --bind "load:top+select" \
+    --bind "ctrl-h:execute-silent($toggle_cmd)+reload($reload_cmd)"
+) || true
+
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+# TODO: Match the sesh UI (icons, header, preview, keybinds) once treemux picks stabilize.
+treemux attach-root -d "$selection"

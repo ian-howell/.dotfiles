@@ -103,7 +103,7 @@ alias grpe='grep'
 alias tmux="tmux -2"
 
 # Shortcut to my session manager
-alias t="tmux-sessionizer"
+alias t="treemux-session-picker"
 
 #===[ valgrind
 alias valrgind=valgrind

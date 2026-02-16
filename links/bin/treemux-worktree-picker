@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+set -u -o pipefail
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "Error: fzf is not installed" >&2
+  exit 1
+fi
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+if [ -z "$repo_root" ]; then
+  echo "Error: not inside a git repository" >&2
+  read -r -n 1 -s -p "Press any key to close..." _ </dev/tty
+  echo
+  exit 0
+fi
+
+current_branch=$(git -C "$repo_root" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+
+declare -A local_branch_map
+
+print_branch() {
+  local name="$1"
+  local source="$2"
+  if [ -z "$name" ]; then
+    return
+  fi
+  if [ "$source" = "local" ]; then
+    printf '%s\t%s\n' "$name" "$name"
+  else
+    printf '%s (origin)\t%s\n' "$name" "$name"
+  fi
+}
+
+list_branches() {
+  local branch
+
+  while IFS= read -r branch; do
+    [ -n "$branch" ] || continue
+    local_branch_map["$branch"]=1
+  done < <(git -C "$repo_root" for-each-ref --format='%(refname:short)' refs/heads)
+
+  for branch in "${!local_branch_map[@]}"; do
+    if [ -n "$current_branch" ] && [ "$branch" = "$current_branch" ]; then
+      continue
+    fi
+    print_branch "$branch" "local"
+  done
+
+  while IFS= read -r branch; do
+    [ -n "$branch" ] || continue
+    branch="${branch#origin/}"
+    if [ "$branch" = "HEAD" ]; then
+      continue
+    fi
+    if [ -n "${local_branch_map[$branch]:-}" ]; then
+      continue
+    fi
+    if [ -n "$current_branch" ] && [ "$branch" = "$current_branch" ]; then
+      continue
+    fi
+    print_branch "$branch" "remote"
+  done < <(git -C "$repo_root" for-each-ref --format='%(refname:short)' refs/remotes/origin)
+}
+
+selection=$(list_branches | fzf --print-query --prompt 'branch> ' \
+  --header 'enter: create worktree | type to create new branch' \
+  --delimiter=$'\t' --with-nth=1 --accept-nth=2
+)
+
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+query=$(printf '%s' "$selection" | head -n 1)
+branch=$(printf '%s' "$selection" | tail -n 1)
+
+query=${query//$'\n'/}
+query=${query//$'\r'/}
+branch=${branch//$'\n'/}
+branch=${branch//$'\r'/}
+
+if [ -z "$branch" ]; then
+  branch="$query"
+fi
+
+if [ -z "$branch" ]; then
+  exit 0
+fi
+
+if ! treemux attach-root -w "$branch"; then
+  read -r -n 1 -s -p "Press any key to close..." _ </dev/tty
+  echo
+  exit 0
+fi
