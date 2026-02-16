@@ -27,7 +27,6 @@ install_components() {
     "$HOME/.dotfiles/src/install_tmux.sh"
     "$HOME/.dotfiles/src/install_treemux.sh"
     "$HOME/.dotfiles/src/install_zoxide.sh"
-    "$HOME/.dotfiles/src/install_sesh.sh"
     "$HOME/.dotfiles/src/install_ohmyposh.sh"
     "$HOME/.dotfiles/src/install_docker.sh"
     "$HOME/.dotfiles/src/install_opencode.sh"

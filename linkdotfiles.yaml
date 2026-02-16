@@ -27,8 +27,6 @@ links:
     link: ~/.zshrc
   - file: ~/.dotfiles/links/lazygit.yml
     link: ~/.config/lazygit/config.yml
-  - file: ~/.dotfiles/links/sesh
-    link: ~/.config/sesh
   - file: ~/.dotfiles/links/shellcheckrc
     link: ~/.shellcheckrc
   - file: ~/.dotfiles/links/vscode-nvim
