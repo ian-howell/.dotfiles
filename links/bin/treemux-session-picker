@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+roots=$(treemux show-roots --sort-by=most-recently-used --hide-current)
+if [[ -z "$roots" ]]; then
+  tmux display-message "No other treemux roots"
+  exit 0
+fi
+
+selection=$(printf '%s\n' "$roots" | fzf --border-label ' treemux roots ' --prompt 'roots> ' --bind 'tab:down,btab:up' || true)
+
+if [[ -z "$selection" ]]; then
+  exit 0
+fi
+
+selection=${selection#"${selection%%[![:space:]]*}"}
+selection=${selection%"${selection##*[![:space:]]}"}
+if [[ -z "$selection" ]]; then
+  exit 0
+fi
+
+# TODO: Match the sesh UI (icons, header, preview, keybinds) once treemux picks stabilize.
+treemux attach-root --name "$selection"

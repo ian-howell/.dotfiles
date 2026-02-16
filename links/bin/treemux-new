@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+read -r -p "create new treemux root> " name </dev/tty
+name=${name//$'\n'/}
+name=${name//$'\r'/}
+
+if [[ -z "$name" ]]; then
+  exit 0
+fi
+
+treemux attach-root --name "$name" -d "$(pwd)"

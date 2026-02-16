@@ -9,10 +9,10 @@ The primary Neovim configuration lives in the "links/nvim" directory. A legacy N
 lives in the "links/lazyvim" directory. The user is fond of the legacy configuration, and it should
 be used as inspiration for the newer setup.
 
-OpenCode workflow: use `opencode-worktree <branch> [repo-path]` to create or reuse a git worktree
-and print the worktree path. Worktrees default to `${WORKTREES_BASE:-<repo>/.worktrees}`.
+OpenCode workflow: use `treemux` for root/child tmux session trees. Worktrees default to
+`${WORKTREES_BASE:-<repo>/.worktrees}` when using `treemux attach-root -w <branch>`.
 
-Tmux integration: use `opencode-worktree-sessionizer` (bound to `<prefix> W`) to prompt for a task
-name and open a new tmux session that `cd`s into the repo worktree.
+Tmux integration: use `treemux-worktree-picker` (bound to `<prefix> f g`) to pick a branch and
+attach a treemux worktree root.
 
 When adding scripts to `links/bin`, ensure they are executable (e.g., `chmod +x`).

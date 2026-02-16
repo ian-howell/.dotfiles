@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+child=$(treemux show-children --sort-by=most-recently-used --hide-current | head -n 1)
+if [[ -z "$child" ]]; then
+  tmux display-message "No other treemux children"
+  exit 0
+fi
+
+child=${child#"${child%%[![:space:]]*}"}
+child=${child%"${child##*[![:space:]]}"}
+if [[ -z "$child" ]]; then
+  tmux display-message "No other treemux children"
+  exit 0
+fi
+
+treemux attach-child --name "$child"
