@@ -29,6 +29,10 @@
       "rev": "4b5cf53",
       "src": "https://github.com/refractalize/oil-git-status.nvim"
     },
+    "ripple-on-save": {
+      "rev": "a4ee5bd",
+      "src": "https://github.com/ian-howell/ripple-on-save.nvim"
+    },
     "snacks": {
       "rev": "fe7cfe9",
       "src": "https://github.com/folke/snacks.nvim"
