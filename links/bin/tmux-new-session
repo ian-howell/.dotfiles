@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+read -r -p "create new session> " name </dev/tty
+name=${name//$'\n'/}
+name=${name//$'\r'/}
+
+if [[ -z "$name" ]]; then
+  exit 0
+fi
+
+if tmux has-session -t "$name" 2>/dev/null; then
+  if [[ -n "${TMUX:-}" ]]; then
+    tmux switch-client -t "$name"
+  else
+    tmux attach -t "$name"
+  fi
+  exit 0
+fi
+
+tmux new-session -d -s "$name" -n zsh -c "$(pwd)" zsh
+tmux move-window -s "$name:1" -t "$name:101"
+
+if [[ -n "${TMUX:-}" ]]; then
+  tmux switch-client -t "$name"
+else
+  tmux attach -t "$name"
+fi
