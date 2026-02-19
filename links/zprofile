@@ -14,4 +14,7 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
   ssh-add
 fi
 
+# Use nvim as the pager for man
+export MANPAGER='nvim +Man!'
+
 # vim: ft=sh
