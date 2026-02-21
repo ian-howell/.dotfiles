@@ -9,6 +9,9 @@ The primary Neovim configuration lives in the "links/nvim" directory. A legacy N
 lives in the "links/lazyvim" directory. The user is fond of the legacy configuration, and it should
 be used as inspiration for the newer setup.
 
+Neovim conventions: place LSP helpers under "links/nvim/lua/lsp" and keep keymaps in
+"links/nvim/lua/core" for discoverability.
+
 OpenCode workflow: use `treemux` for root/child tmux session trees. Worktrees default to
 `${WORKTREES_BASE:-<repo>/.worktrees}` when using `treemux attach-root -w <branch>`.
 
