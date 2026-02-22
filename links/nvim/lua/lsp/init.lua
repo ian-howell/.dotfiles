@@ -17,8 +17,5 @@ vim.lsp.util.open_floating_preview = function(contents, syntax, opts, ...)
   return open_floating_preview(contents, syntax, opts, ...)
 end
 
-vim.keymap.set("n", "<leader>do", vim.diagnostic.open_float)
-vim.keymap.set("n", "<leader>dq", vim.diagnostic.setloclist)
-
 require("lsp.servers.gopls")
 require("lsp.servers.bashls")
