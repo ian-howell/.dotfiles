@@ -99,10 +99,6 @@ end
 
 local function open_picker(items)
   local snacks = give("snacks")
-  if not snacks or not snacks.picker then
-    return false
-  end
-
   snacks.picker({
     title = "Definition/Implementations",
     items = items,

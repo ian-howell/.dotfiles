@@ -1,7 +1,4 @@
 local treesitter = give("nvim-treesitter")
-if not treesitter then
-  return
-end
 
 treesitter.setup({})
 

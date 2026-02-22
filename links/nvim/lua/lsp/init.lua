@@ -17,5 +17,5 @@ vim.lsp.util.open_floating_preview = function(contents, syntax, opts, ...)
   return open_floating_preview(contents, syntax, opts, ...)
 end
 
-require("lsp.servers.gopls")
-require("lsp.servers.bashls")
+give("lsp.servers.gopls")
+give("lsp.servers.bashls")

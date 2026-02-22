@@ -1,9 +1,6 @@
 -- Snacks configuration (picker focused, fzf-lua compatible bindings).
 
 local snacks = give("snacks")
-if not snacks then
-  return
-end
 
 local default_layout = {
   layout = {
@@ -34,10 +31,7 @@ snacks.setup({
   },
 })
 
-local keymaps_snacks = give("core.keymaps-snacks")
-if keymaps_snacks then
-  keymaps_snacks.setup()
-end
+give("core.keymaps-snacks").setup()
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "snacks_picker_list",

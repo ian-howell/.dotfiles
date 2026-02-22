@@ -1,9 +1,6 @@
 -- conform.nvim configuration
 
 local conform = give("conform")
-if not conform then
-  return
-end
 
 conform.setup({
   format_on_save = {
