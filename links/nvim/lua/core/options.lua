@@ -67,3 +67,6 @@ vim.opt.expandtab = true
 
 -- omg swap files are the worst
 vim.opt.swapfile = false
+
+-- floating windows should have a borderby default
+vim.o.winborder = "rounded"
