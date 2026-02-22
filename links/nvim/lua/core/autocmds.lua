@@ -58,22 +58,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
   desc = "Set LSP-specific keymaps on attach",
   group = groups.lsp_attach,
   callback = function(args)
-    vim.keymap.set("n", "gd", function()
-      require("lsp.goto-definition").definition_or_implementation_picker()
-    end, { buffer = args.buf, desc = "definition" })
-
-    vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Open diagnostics float" })
-
-    local snacks = give("snacks")
-    if snacks then
-      vim.keymap.set(
-        "n",
-        "<leader>li",
-        snacks.picker.lsp_implementations,
-        { buffer = args.buf, desc = "implementations" }
-      )
-      vim.keymap.set("n", "<leader>lr", snacks.picker.lsp_references, { buffer = args.buf, desc = "references" })
-      vim.keymap.set("n", "<leader>ls", snacks.picker.lsp_symbols, { buffer = args.buf, desc = "symbols" })
+    local keymaps = give("core.keymaps-lsp")
+    if keymaps then
+      keymaps.setup(args.buf)
     end
   end,
 })
