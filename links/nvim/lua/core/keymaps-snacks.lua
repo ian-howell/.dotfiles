@@ -2,20 +2,15 @@ local M = {}
 
 function M.setup()
   local snacks = give("snacks")
-  if not snacks then
-    return
-  end
 
   local which_key = give("which-key")
-  if which_key then
-    which_key.add({
-      { "<leader>f", group = "find" },
-      { "<leader>g", group = "git" },
-      { "<leader>b", group = "buffers" },
-      { "<leader>u", group = "UI" },
-      { "<leader>l", group = "LSP" },
-    })
-  end
+  which_key.add({
+    { "<leader>f", group = "find" },
+    { "<leader>g", group = "git" },
+    { "<leader>b", group = "buffers" },
+    { "<leader>u", group = "UI" },
+    { "<leader>l", group = "LSP" },
+  })
 
   snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
   snacks.toggle.diagnostics():map("<leader>ud")

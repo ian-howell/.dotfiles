@@ -12,6 +12,9 @@ be used as inspiration for the newer setup.
 Neovim conventions: place LSP helpers under "links/nvim/lua/lsp" and keep keymaps in
 "links/nvim/lua/core" for discoverability.
 
+Neovim module loading: prefer `give("module")` over `require("module")` for both plugins and local
+modules. Skip guards around `give` calls; missing modules should fail loudly.
+
 OpenCode workflow: use `treemux` for root/child tmux session trees. Worktrees default to
 `${WORKTREES_BASE:-<repo>/.worktrees}` when using `treemux attach-root -w <branch>`.
 
