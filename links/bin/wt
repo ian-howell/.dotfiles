@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+nvim -u NONE -U NONE -i NONE -n -N --cmd "set shortmess+=I laststatus=0 cmdheight=0" +startinsert /tmp/new-worktree-name
+read -r branch < /tmp/new-worktree-name
+rm /tmp/new-worktree-name
+
+repo_root="$(git rev-parse --show-toplevel)"
+worktree_dir="$repo_root/.worktree/$branch"
+session="$branch"
+
+mkdir -p "$repo_root/.worktree"
+
+# 1. Determine if remote branch exists
+if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+    remote_exists=true
+else
+    remote_exists=false
+fi
+
+# 2. Determine if local branch exists
+if git rev-parse --verify "$branch" >/dev/null 2>&1; then
+    local_exists=true
+else
+    local_exists=false
+fi
+
+# 3. Create local branch if needed
+if ! $local_exists; then
+    if $remote_exists; then
+        echo "Creating local branch $branch tracking origin/$branch"
+        git branch "$branch" "origin/$branch"
+    else
+        echo "Creating new local branch $branch"
+        git branch "$branch"
+    fi
+fi
+
+# 4. Ensure upstream is set correctly
+if $remote_exists; then
+    # Only set upstream if not already correct
+    current_upstream="$(git rev-parse --abbrev-ref "$branch"@{upstream} 2>/dev/null || true)"
+    if [ "$current_upstream" != "origin/$branch" ]; then
+        echo "Setting upstream for $branch → origin/$branch"
+        git branch --set-upstream-to="origin/$branch" "$branch"
+    fi
+fi
+
+# 5. Ensure worktree exists
+if ! git worktree list --porcelain | grep -q "worktree $worktree_dir\$"; then
+    echo "Creating worktree $worktree_dir"
+    git worktree add "$worktree_dir" "$branch"
+fi
+
+# 6. Ensure tmux session exists
+if ! tmux has-session -t "$session" 2>/dev/null; then
+    echo "Creating tmux session $session"
+    tmux new-session -d -c "$worktree_dir" -s "$session"
+fi
+
+# 7. Attach or switch
+if [ -n "${TMUX:-}" ]; then
+    tmux switch-client -t "$session"
+else
+    tmux attach-session -t "$session"
+fi
