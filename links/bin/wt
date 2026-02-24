@@ -6,10 +6,10 @@ read -r branch < /tmp/new-worktree-name
 rm /tmp/new-worktree-name
 
 repo_root="$(git rev-parse --show-toplevel)"
-worktree_dir="$repo_root/.worktree/$branch"
+worktree_dir="$repo_root/.worktrees/$branch"
 session="$branch"
 
-mkdir -p "$repo_root/.worktree"
+mkdir -p "$worktree_dir"
 
 # 1. Determine if remote branch exists
 if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
