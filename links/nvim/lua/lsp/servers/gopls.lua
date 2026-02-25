@@ -1,6 +1,5 @@
 local function root_dir(bufnr)
-  return vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
-    or vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
+  return vim.fs.root(bufnr, { "go.mod", ".git" }) or vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
 end
 
 vim.api.nvim_create_autocmd("FileType", {
