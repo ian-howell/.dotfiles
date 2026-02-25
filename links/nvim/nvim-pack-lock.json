@@ -17,6 +17,14 @@
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "go": {
+      "rev": "421694a",
+      "src": "https://github.com/ray-x/go.nvim"
+    },
+    "guihua": {
+      "rev": "ef44ba4",
+      "src": "https://github.com/ray-x/guihua.lua"
+    },
     "nvim-treesitter": {
       "rev": "45a07f86",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
