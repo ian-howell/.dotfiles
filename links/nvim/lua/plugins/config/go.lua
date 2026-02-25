@@ -6,7 +6,7 @@ local groups = give("core.autocmds")
 go.setup({
   goimports = "goimports",
   gofmt = "goimports",
-  lsp_cfg = true,
+  lsp_cfg = false,
   lsp_keymaps = false,
   lsp_codelens = true,
   dap_debug = true,
