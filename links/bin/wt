@@ -5,7 +5,8 @@ nvim -u NONE -U NONE -i NONE -n -N --cmd "set shortmess+=I laststatus=0 cmdheigh
 read -r branch < /tmp/new-worktree-name
 rm /tmp/new-worktree-name
 
-repo_root="$(git rev-parse --show-toplevel)"
+git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+repo_root="$(dirname "$git_common_dir")"
 worktree_dir="$repo_root/.worktrees/$branch"
 session="$branch"
 
