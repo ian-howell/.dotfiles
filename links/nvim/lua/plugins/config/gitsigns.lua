@@ -1,6 +1,6 @@
 -- Git signs configuration and keymaps.
 
-local gitsigns = give("gitsigns")
+local gitsigns = require("gitsigns")
 
 gitsigns.setup({
   signs = {

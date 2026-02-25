@@ -1,6 +1,6 @@
 -- conform.nvim configuration
 
-local conform = give("conform")
+local conform = require("conform")
 
 conform.setup({
   format_on_save = {

@@ -1,7 +1,7 @@
 -- go.nvim configuration
 
-local go = give("go")
-local groups = give("core.autocmds")
+local go = require("go")
+local groups = require("core.autocmds")
 
 go.setup({
   goimports = "goimports",
@@ -19,7 +19,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   group = groups.on_save,
   pattern = "*.go",
   callback = function()
-    give("go.format").goimports()
+    require("go.format").goimports()
   end,
 })
 

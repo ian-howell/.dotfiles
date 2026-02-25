@@ -58,7 +58,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
   desc = "Set LSP-specific keymaps on attach",
   group = groups.lsp_attach,
   callback = function(args)
-    give("core.keymaps-lsp").setup(args.buf)
+    require("core.keymaps-lsp").setup(args.buf)
   end,
 })
 

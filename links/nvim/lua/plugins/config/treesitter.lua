@@ -1,4 +1,4 @@
-local treesitter = give("nvim-treesitter")
+local treesitter = require("nvim-treesitter")
 
 treesitter.setup({})
 

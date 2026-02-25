@@ -1,7 +1,7 @@
 -- Tokyonight colorscheme configuration.
 
-local tokyonight = give("tokyonight")
-local groups = give("core.autocmds")
+local tokyonight = require("tokyonight")
+local groups = require("core.autocmds")
 
 tokyonight.setup({
   -- dimming inactive windows is cool, but it doesn't dim any windows when I
