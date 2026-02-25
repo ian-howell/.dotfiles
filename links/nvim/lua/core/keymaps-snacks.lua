@@ -1,9 +1,9 @@
 local M = {}
 
 function M.setup()
-  local snacks = give("snacks")
+  local snacks = require("snacks")
 
-  local which_key = give("which-key")
+  local which_key = require("which-key")
   which_key.add({
     { "<leader>f", group = "find" },
     { "<leader>g", group = "git" },

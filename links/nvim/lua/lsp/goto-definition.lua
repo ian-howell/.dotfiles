@@ -98,7 +98,7 @@ local function is_interface_at(file, lnum)
 end
 
 local function open_picker(items)
-  local snacks = give("snacks")
+  local snacks = require("snacks")
   snacks.picker({
     title = "Definition/Implementations",
     items = items,
