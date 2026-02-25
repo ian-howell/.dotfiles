@@ -62,4 +62,12 @@ return {
     src = "https://github.com/ian-howell/ripple-on-save.nvim",
     name = "ripple-on-save",
   },
+  {
+    src = "https://github.com/ray-x/go.nvim",
+    name = "go",
+  },
+  {
+    src = "https://github.com/ray-x/guihua.lua",
+    name = "guihua",
+  },
 }
