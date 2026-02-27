@@ -26,7 +26,8 @@
     },
     "workiq": {
       "type": "local",
-      "command": ["agency", "mcp", "workiq"],
+      // "command": ["workiq", "mcp"], // Use this if the below doesn't work
+      "command": ["npx", "-y", "@microsoft/workiq", "mcp"],
       "enabled": true,
     },
   },
