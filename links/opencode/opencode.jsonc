@@ -1,15 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "tokyonight",
   "autoshare": false,
   "autoupdate": true,
   "model": "github-copilot/gpt-5.2-codex",
-  "keybinds": {
-    "editor_open": "<leader>ctrl+e",
-    "session_new": "<leader>ctrl+n",
-    "session_list": "<leader>ctrl+s",
-    "messages_copy": "<leader>ctrl+y",
-  },
   "mcp": {
     "ado-msazuredev": {
       "type": "local",
