@@ -5,6 +5,10 @@ through tasks. This includes suggesting structural changes to the document itsel
 The files in the "links" directory are symlinked to files according to the content of the
 "linkdotfiles.yaml" file in the root of this repository.
 
+Work-related OpenCode configs (including custom commands/agents) should live under
+"~/.config/work/opencode" and be referenced via the OPENCODE_CONFIG_DIR environment variable.
+Do not manage those paths via linkdotfiles.yaml.
+
 The primary Neovim configuration lives in the "links/nvim" directory. A legacy Neovim configuration
 lives in the "links/lazyvim" directory. The user is fond of the legacy configuration, and it should
 be used as inspiration for the newer setup.
