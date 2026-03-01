@@ -1,0 +1,22 @@
+import = [
+	"~/.config/work/sesh/sesh.toml",
+]
+
+# Reusable window definitions
+[[window]]
+name = "vim"
+startup_script = "nvim"
+
+[[window]]
+name = "opencode"
+startup_script = "opencode"
+
+[[window]]
+name = "lazygit"
+startup_script = "lazygit"
+
+# Personal sessions
+[[session]]
+name = "dotfiles"
+path = "~/.dotfiles"
+windows = ["vim", "opencode", "lazygit"]
