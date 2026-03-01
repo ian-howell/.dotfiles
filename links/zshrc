@@ -43,6 +43,7 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 prepend "$HOME/.dotfiles/links/bin"
 prepend "$HOME/.local/bin"
 prepend "$HOME/.opencode/bin"
+prepend "$HOME/.deno/bin"
 [[ -d "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin" ]] && prepend "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin"
 
 # Add go to the environment
