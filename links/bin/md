@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# md - render markdown in the terminal
+# Uses glow with tokyo-night theme, falls back to bat.
+
+if command -v glow >/dev/null 2>&1; then
+  exec glow -s tokyo-night -p "$@"
+elif command -v bat >/dev/null 2>&1; then
+  exec bat --language=md "$@"
+else
+  echo "md: neither glow nor bat found" >&2
+  exit 1
+fi

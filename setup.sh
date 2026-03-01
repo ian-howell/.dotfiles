@@ -15,6 +15,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_zsh.sh"
     "$HOME/.dotfiles/src/install_fzf.sh"
     "$HOME/.dotfiles/src/install_gum.sh"
+    "$HOME/.dotfiles/src/install_glow.sh"
     "$HOME/.dotfiles/src/install_fd.sh"
     "$HOME/.dotfiles/src/remap_capslock.sh"
     "$HOME/.dotfiles/src/install_node.sh"
