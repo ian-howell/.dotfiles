@@ -38,3 +38,7 @@ local_gitconfig
 
 # Ignore opencode installation artifacts
 opencodetmp
+
+# Python bytecode cache
+__pycache__/
+*.pyc

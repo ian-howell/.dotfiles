@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# AT&T bill splitter
+#
+# Setup (one-time):
+#   uv venv ~/.config/att/venv
+#   uv pip install --python ~/.config/att/venv/bin/python playwright playwright-stealth
+#   ~/.config/att/venv/bin/playwright install chrome
+#
+# Usage:
+#   calcbill            Fetch bill from AT&T (opens browser for CAPTCHA)
+#   calcbill --paste    Paste bill text into stdin instead
+#
+# Credentials stored in ~/.config/att/.env
+
+VENV="$HOME/.config/att/venv"
+
+if [ ! -x "$VENV/bin/python" ]; then
+    echo "Error: AT&T bill venv not found at $VENV" >&2
+    echo "" >&2
+    echo "Run these commands to set it up:" >&2
+    echo "  uv venv $VENV" >&2
+    echo "  uv pip install --python $VENV/bin/python playwright playwright-stealth" >&2
+    echo "  $VENV/bin/playwright install chrome" >&2
+    exit 1
+fi
+
+exec "$VENV/bin/python" "$(dirname "$0")/calcbill.py" "$@"
