@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
 """
-How to use this script:
-    1. Go to att.com/my and sign in
-    2. Click "See charges and Payments"
-    3. Click "Show bill details"
-    5. Select all the text (ctrl-a)
-    6. Run the script, and paste all of the text into the console
-    7. Hammer on the enter key a few times to scroll, then hit ctrl-d
+AT&T bill splitter -- splits a family plan bill among billing groups.
+
+Default mode fetches the bill automatically via browser automation.
+Use --paste to enter bill text manually via stdin.
 """
 
+import argparse
 import sys
+
+from calcbill_fetch import fetch_bill_text
 
 mickey_group = {"MICKEY", "KELLY"}
 ian_group = {"IAN", "JAMI", "ANDREW", "PAM"}
@@ -24,18 +24,38 @@ TRANSFER_ADJUSTMENTS = {
 }
 
 
-def main(args):
-    debug_log = lambda x: None
-    if len(args) == 2 and args[1] == "--debug":
-        debug_log = lambda msg: print(f"DEBUG: {msg}")
-    data = get_data_from_stdin(debug_log=debug_log)
+def main():
+    parser = argparse.ArgumentParser(description="AT&T bill splitter")
+    parser.add_argument(
+        "--paste",
+        action="store_true",
+        help="Paste bill text into stdin instead of fetching",
+    )
+    args = parser.parse_args()
+
+    if args.paste:
+        data = parse_bill_text_from_stdin()
+    else:
+        text = fetch_bill_text()
+        data = parse_bill_text(text)
+
     print_report(data)
 
 
-def get_data_from_stdin(debug_log=lambda: None):
-    # line length limiter is "mostly arbitrary". This should filter out empty lines and lines that only have
-    # white space, but should retain the valuable lines with real data
+def parse_bill_text(text):
+    """Parse bill text from a string and return grouped charge data."""
+    lines = [line for line in text.splitlines() if len(line) >= 3]
+    return _parse_lines(lines)
+
+
+def parse_bill_text_from_stdin():
+    """Parse bill text from stdin (original paste workflow)."""
     lines = [line for line in sys.stdin.readlines() if len(line) >= 3]
+    return _parse_lines(lines)
+
+
+def _parse_lines(lines):
+    """Core parsing logic shared by both input methods."""
     results = {
         "mickey_group": {},
         "ian_group": {},
@@ -44,23 +64,17 @@ def get_data_from_stdin(debug_log=lambda: None):
         "anthony_group": {},
     }
     for i, line in enumerate(lines):
-        debug_log(f"{i=} {line=}")
         # explicitly passing a space forces the resulting list to have len >= 1
         name = line.split(" ", 1)[0]
         if name in mickey_group:
-            debug_log(f"matched 'mickey_group', parsing {lines[i+2]=}")
             results["mickey_group"][line] = parse_money(lines[i + 2])
         elif name in ian_group:
-            debug_log(f"matched 'ian_group', parsing {lines[i+2]=}")
             results["ian_group"][line] = parse_money(lines[i + 2])
         elif name in jenna_group:
-            debug_log(f"matched 'jenna_group', parsing {lines[i+2]=}")
             results["jenna_group"][line] = parse_money(lines[i + 2])
         elif name in zac_group:
-            debug_log(f"matched 'zac_group', parsing {lines[i+2]=}")
             results["zac_group"][line] = parse_money(lines[i + 2])
         elif name in anthony_group:
-            debug_log(f"matched 'anthony_group', parsing {lines[i+2]=}")
             results["anthony_group"][line] = parse_money(lines[i + 2])
     return results
 
@@ -99,4 +113,4 @@ def total_for_group(group_name, group):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
