@@ -33,5 +33,7 @@ links:
     link: ~/.config/vscode-nvim
   - file: ~/.dotfiles/links/opencode/opencode.jsonc
     link: ~/.config/opencode/opencode.jsonc
+  - file: ~/.dotfiles/links/opencode/AGENTS.md
+    link: ~/.config/opencode/AGENTS.md
   - file: ~/.dotfiles/links/sesh
     link: ~/.config/sesh

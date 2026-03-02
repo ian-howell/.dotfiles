@@ -3,6 +3,9 @@
   "autoshare": false,
   "autoupdate": true,
   "model": "github-copilot/claude-opus-4.6",
+  "instructions": [
+    "/home/ian/.config/work/opencode/AGENTS.md"
+  ],
   "mcp": {
     "ado-msazuredev": {
       "type": "local",
