@@ -14,6 +14,29 @@ go.setup({
   textobjects = false,
 })
 
+local function escape_go_test_pattern(value)
+  return value:gsub("([\\%^%$%(%)%%%.%[%]%*%+%-%?%|])", "%%%1")
+end
+
+local function run_coverage_for_test_under_cursor()
+  local gotest = require("go.gotest")
+  local coverage = require("go.coverage")
+  local test = gotest.get_test_func_name()
+  if not test or not test.name then
+    vim.notify("No test function found under the cursor", vim.log.levels.WARN)
+    return
+  end
+
+  local case = gotest.get_testcase_name()
+  local name = test.name
+  if case and case ~= "" then
+    name = string.format("%s/%s", name, case)
+  end
+
+  local pattern = string.format("^%s$", escape_go_test_pattern(name))
+  coverage.run("-p", "-run", pattern)
+end
+
 vim.api.nvim_create_autocmd("BufWritePre", {
   desc = "Format Go files with goimports",
   group = groups.on_save,
@@ -28,6 +51,22 @@ vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("go-maps", { clear = true }),
   pattern = { "go", "gomod", "gowork", "gotmpl" },
   callback = function()
+    local which_key = require("which-key")
+    which_key.add({
+      { "<leader>G", group = "Go" },
+      { "<leader>Ga", group = "Alternate" },
+      { "<leader>Gc", group = "Coverage" },
+      { "<leader>Gd", group = "Debug" },
+      { "<leader>Gf", group = "Format" },
+      { "<leader>Gi", group = "LSP/Code" },
+      { "<leader>Gk", group = "Ginkgo" },
+      { "<leader>GM", group = "Modules" },
+      { "<leader>Gt", group = "Tests" },
+      { "<leader>GU", group = "Tools" },
+      { "<leader>Gx", group = "Misc" },
+      { "<leader>GX", group = "Security/Mocks" },
+    })
+
     local maps = {
       { "<leader>G?", "<cmd>GoCheat<CR>", "Show a Go cheat sheet in a new buffer" },
       { "<leader>Gp", "<cmd>GoProject<CR>", "Set up go.nvim project configuration" },
@@ -62,12 +101,13 @@ vim.api.nvim_create_autocmd("FileType", {
       { "<leader>Gvv", "<cmd>GoVet<CR>", "Run go vet on the current package" },
       { "<leader>Gvl", "<cmd>GoLint<CR>", "Run golangci-lint for the current package" },
 
-      { "<leader>Gcc", "<cmd>GoCoverage<CR>", "Run test coverage for the current package" },
-      { "<leader>Gct", "<cmd>GoCoverage -t<CR>", "Toggle coverage signs" },
+      { "<leader>Gcf", "<cmd>GoCoverage<CR>", "Run test coverage for the current package" },
+      { "<leader>Gct", run_coverage_for_test_under_cursor, "Run coverage for the test under the cursor" },
+      { "<leader>Gcc", "<cmd>GoCoverage -t<CR>", "Toggle coverage signs" },
       { "<leader>Gcr", "<cmd>GoCoverage -r<CR>", "Remove coverage signs from this buffer" },
       { "<leader>GcR", "<cmd>GoCoverage -R<CR>", "Remove coverage signs from all buffers" },
       { "<leader>Gcm", "<cmd>GoCoverage -m<CR>", "Show coverage metrics per function" },
-      { "<leader>Gcf", "<cmd>GoCoverage -f<CR>", "Load a coverage profile file" },
+      { "<leader>Gca", "<cmd>GoCoverage -f<CR>", "Load a coverage profile file" },
       { "<leader>Gcp", "<cmd>GoCoverage -p<CR>", "Run coverage for the current package only" },
 
       { "<leader>Gtt", "<cmd>GoTest<CR>", "Run go test for all packages" },
