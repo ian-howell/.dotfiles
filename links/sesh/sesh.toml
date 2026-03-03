@@ -12,7 +12,7 @@ name = "opencode"
 startup_script = "opencode"
 
 [[window]]
-name = "lazygit"
+name = "git"
 startup_script = "lazygit"
 
 # Personal sessions
