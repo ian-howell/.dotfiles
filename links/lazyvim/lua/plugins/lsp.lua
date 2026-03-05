@@ -1,5 +1,12 @@
 return {
   "neovim/nvim-lspconfig",
+  keys = {
+    {
+      "gd",
+      function() require("lsp.goto-definition").definition_or_implementation_picker() end,
+      desc = "definition",
+    },
+  },
   opts = {
     inlay_hints = {
       -- LazyVim turns this on by default, and it's really pretyy cluttered...

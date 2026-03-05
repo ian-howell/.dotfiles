@@ -3,7 +3,6 @@
 local groups = {
   focus_enter = vim.api.nvim_create_augroup("focus-enter", { clear = true }),
   focus_leave = vim.api.nvim_create_augroup("focus-leave", { clear = true }),
-  lsp_attach = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
   quickfix = vim.api.nvim_create_augroup("quickfix-maps", { clear = true }),
   on_save = vim.api.nvim_create_augroup("on-save", { clear = true }),
 }
@@ -48,17 +47,6 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "qf", "help" },
   callback = function(args)
     vim.keymap.set("n", "q", "<cmd>q<CR>", { buffer = args.buf, silent = true })
-  end,
-})
-
--- ---------------------------------------------------------------------------
--- LSP Attach
--- ---------------------------------------------------------------------------
-vim.api.nvim_create_autocmd("LspAttach", {
-  desc = "Set LSP-specific keymaps on attach",
-  group = groups.lsp_attach,
-  callback = function(args)
-    require("core.keymaps-lsp").setup(args.buf)
   end,
 })
 
