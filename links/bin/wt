@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-nvim -u NONE -U NONE -i NONE -n -N --cmd "set shortmess+=I laststatus=0 cmdheight=0" --cmd "map <CR> :wq<CR>" --cmd "imap <CR> <esc>:wq<CR>" +startinsert /tmp/new-worktree-name
-read -r branch < /tmp/new-worktree-name
-rm /tmp/new-worktree-name
+if [ $# -gt 0 ]; then
+    branch="$1"
+else
+    nvim -u NONE -U NONE -i NONE -n -N --cmd "set shortmess+=I laststatus=0 cmdheight=0" --cmd "map <CR> :wq<CR>" --cmd "imap <CR> <esc>:wq<CR>" +startinsert /tmp/new-worktree-name
+    read -r branch < /tmp/new-worktree-name
+    rm /tmp/new-worktree-name
+fi
 
 git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
 repo_root="$(dirname "$git_common_dir")"
