@@ -1,0 +1,41 @@
+#!/bin/bash
+# Idempotently ensure core windows appear first and in order: shell, vim, opencode, git.
+# Only present core windows are considered — if vim is missing, zsh=1 opencode=2 git=3.
+# Safe to call at any time — no-op when everything is already correct.
+#
+# Uses swap-window for atomic repositioning. Processing left-to-right guarantees
+# earlier placements are never displaced by later ones.
+
+set -euo pipefail
+
+declare -a CORE_ORDER=(shell vim opencode git)
+
+tmux set-option renumber-windows off
+trap 'tmux set-option renumber-windows on' EXIT
+
+# Determine the next target index (starts at base-index, typically 1)
+target=$(tmux show-options -gv base-index 2>/dev/null || echo 1)
+
+for name in "${CORE_ORDER[@]}"; do
+  # Find the current index of this named window (empty if it doesn't exist)
+  current=$(tmux list-windows -F '#{window_index} #{window_name}' \
+    | awk -v n="$name" '$2 == n { print $1; exit }')
+
+  [ -z "$current" ] && continue  # window doesn't exist — skip
+
+  # Pin auto-rename off so the name sticks
+  tmux set-option -w -t ":=$name" automatic-rename off 2>/dev/null || true
+
+  if [ "$current" != "$target" ]; then
+    # Check if the target index is already occupied
+    occupant=$(tmux list-windows -F '#{window_index}' | grep -x "$target" || true)
+
+    if [ -n "$occupant" ]; then
+      tmux swap-window -s "$current" -t "$target"
+    else
+      tmux move-window -s "$current" -t "$target"
+    fi
+  fi
+
+  target=$((target + 1))
+done

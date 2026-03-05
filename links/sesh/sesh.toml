@@ -2,21 +2,28 @@ import = [
 	"~/.config/work/sesh/sesh.toml",
 ]
 
+# Window 0 is always created implicitly by `tmux new-session`. The startup_command
+# below renames it to "shell" and focuses it, so it appears first and is selected
+# on connect. Do not add a "shell" entry to any session's windows list — that would
+# create a duplicate window.
+[default_session]
+startup_command = "tmux rename-window -t :1 shell && tmux select-window -t :1"
+
 # Reusable window definitions
 [[window]]
 name = "vim"
-startup_script = "nvim"
+startup_script = "tmux set-option -w automatic-rename off && nvim; exit"
 
 [[window]]
 name = "opencode"
-startup_script = "opencode"
+startup_script = "tmux set-option -w automatic-rename off && opencode; exit"
 
 [[window]]
 name = "git"
-startup_script = "lazygit"
+startup_script = "tmux set-option -w automatic-rename off && lazygit; exit"
 
 # Personal sessions
 [[session]]
 name = "dotfiles"
 path = "~/.dotfiles"
-windows = ["vim", "opencode", "lazygit"]
+windows = ["vim", "opencode", "git"] # window 0 (shell) is implicit — see default_session above
