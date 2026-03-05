@@ -66,7 +66,7 @@ vim.opt.textwidth = 100
 -- Show only a single status line (at the bottom). LuaLine will handle the rest.
 vim.opt.laststatus = 3
 
-vim.opt.tabstop = 8
+vim.opt.tabstop = 2
 
 -- snacks is laaaaggggyyy
 vim.g.snacks_animate = false
