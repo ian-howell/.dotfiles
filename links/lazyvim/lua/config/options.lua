@@ -57,8 +57,8 @@ vim.opt.inccommand = "split"
 -- TODO: Most of these flags should just go into the global rg config file
 vim.opt.grepprg = "rg --vimgrep --hidden -i -S"
 
--- Floating windows (e.g. which-key) should be slightly transparent
-vim.opt.winblend = 10
+-- No transparency on floating windows
+vim.opt.winblend = 0
 
 -- Wrap text at 100 characters
 vim.opt.textwidth = 100
