@@ -21,8 +21,9 @@ vim.opt.showmode = false
 -- Enable break indent
 vim.opt.breakindent = true
 
--- Don't wrap lines
-vim.opt.wrap = false
+-- Wrap lines. This is needed because copilot's suggestions can be very long, and they force the
+-- screen to jump around if wrap is disabled.
+vim.opt.wrap = true
 
 -- Save undo history
 vim.opt.undofile = true
