@@ -12,7 +12,7 @@ startup_command = "tmux rename-window -t :1 shell && tmux select-window -t :1"
 # Reusable window definitions
 [[window]]
 name = "vim"
-startup_script = "tmux set-option -w automatic-rename off && nvim; exit"
+startup_script = "tmux set-option -w automatic-rename off && vim; exit"
 
 [[window]]
 name = "opencode"
