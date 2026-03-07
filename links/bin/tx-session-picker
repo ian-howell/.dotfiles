@@ -1,0 +1,783 @@
+#!/usr/bin/env python3
+"""
+tx-session-picker: unified tmux session fuzzy picker.
+
+Sources (merged, deduplicated, sorted by MRU):
+  1. Active tmux sessions       — real session_activity timestamps
+  2. Recent sessions            — ~/.local/share/tmux/session-history.json
+  3. Git worktrees of CWD repo  — git worktree list --porcelain (repo-root resolved)
+  4. Sesh configured sessions   — sesh list -j (Src == 'config' only)
+
+Badges:
+  󰐊 current   — the session your tmux client is currently attached to (bold white)
+  󰏤 active    — running in the background, no client attached (dim green)
+  󰔛 recent    — previously visited, not currently running (dim grey)
+  ⎇  worktree  — git worktree of the repo in the current pane (dim cyan)
+  󱂬 config    — cold configured session, never visited (dim)
+
+Navigation:
+  ↑↓ / j k    — move within list
+  Enter        — connect to selected session; closes popup
+  Escape / q   — cancel
+  Ctrl-P       — toggle preview pane
+  Ctrl-X       — kill selected session (if active) or remove from history
+
+Filtering:
+  Type anything   — fuzzy match on name
+  Type 'active'   — show only running sessions
+  Type 'worktree' — show only worktrees
+  Type 'recent'   — show only recent sessions
+  Type 'config'   — show only configured sessions
+
+Deduplication:
+  - A worktree whose sanitized name (/ → _) matches an active session is
+    suppressed from the worktree group; the active entry shows the slash-form
+    branch name instead of the sanitized tmux session name.
+  - History entries that are the sanitized form of a slash-name worktree are
+    collapsed into the slash-form key (normalize_history).
+  - Config entries matching an active session name are suppressed.
+
+Worktree CWD resolution:
+  The picker resolves the git common dir from the current pane's working
+  directory (git rev-parse --git-common-dir) so worktrees are shown correctly
+  whether the pane is at the repo root, a subdirectory, or inside a linked
+  worktree. The popup CWD is set via -d "#{pane_current_path}" in the keybinding
+  and read as $PWD inside the script.
+
+Usage: called from tmux keybinding:
+  bind C-Space display-popup -w 90% -h 85% -E \\
+    -d "\#{pane_current_path}" \\
+    -e "TMUX_CLIENT=\#{client_name}" \\
+    "tx-session-picker"
+
+Sub-commands:
+  tx-session-picker connect <name> <path> <source> [<client>]
+      Connect to the named session.
+  tx-session-picker connect-from-file <result_file> <client>
+      Read selection from file and connect.
+  tx-session-picker kill <name> <source>
+      Kill an active session or remove a history entry (used by Ctrl-X binding).
+  tx-session-picker --list-fzf
+      Print fzf-formatted session list to stdout (used by fzf reload binding).
+"""
+
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+HISTORY_FILE = Path.home() / ".local" / "share" / "tmux" / "session-history.json"
+
+# ANSI codes
+RESET  = "\033[0m"
+BOLD   = "\033[1m"
+DIM    = "\033[2m"
+GREEN  = "\033[32m"
+CYAN   = "\033[36m"
+GREY   = "\033[38;5;244m"
+WHITE  = "\033[37m"
+
+# Source tags — field 4 in fzf lines, used for type-filtering
+SRC_ACTIVE   = "active"
+SRC_RECENT   = "recent"    # history-only: was used, no longer in any config
+SRC_CONFIG   = "config"    # defined in sesh.toml
+SRC_WORKTREE = "worktree"  # git worktree of the current repo
+
+# Group identifiers (order determines display order)
+GROUP_ACTIVE   = "active"
+GROUP_RECENT   = "recent"
+GROUP_WORKTREE = "worktree"
+GROUP_COLD     = "cold"
+
+# Section header labels (shown as --gap-label in fzf)
+GROUP_LABELS = {
+    GROUP_ACTIVE:   "active sessions",
+    GROUP_RECENT:   "recent",
+    GROUP_WORKTREE: "worktrees",
+    GROUP_COLD:     "configured",
+}
+
+# TokyoNight colour flags
+_FZF_COLORS = [
+    "--color=fg:#c0caf5,bg:#1a1b26,hl:#bb9af7",
+    "--color=fg+:#c0caf5,bg+:#222436,hl+:#7dcfff",
+    "--color=border:#3d59a1,label:#3d59a1",
+    "--color=prompt:#7aa2f7,pointer:#f7768e,marker:#9ece6a",
+    "--color=header:#565f89,info:#565f89",
+    "--color=gutter:#1a1b26",
+]
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def run(cmd, **kwargs):
+    """Run a command, return stdout as string. Returns empty string on error."""
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, **kwargs)
+        return result.stdout.strip()
+    except Exception:
+        return ""
+
+
+def relative_time(epoch: float) -> str:
+    """Return a human-readable relative time string like '3h ago'."""
+    if epoch <= 0:
+        return ""
+    delta = int(time.time()) - int(epoch)
+    if delta < 60:
+        return "just now"
+    if delta < 3600:
+        return f"{delta // 60}m ago"
+    if delta < 86400:
+        return f"{delta // 3600}h ago"
+    if delta < 86400 * 30:
+        return f"{delta // 86400}d ago"
+    if delta < 86400 * 365:
+        return f"{delta // (86400 * 30)}mo ago"
+    return f"{delta // (86400 * 365)}y ago"
+
+
+def load_history() -> dict:
+    """Load the session history JSON file. Returns {} on missing/corrupt."""
+    if HISTORY_FILE.exists():
+        try:
+            return json.loads(HISTORY_FILE.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def save_history(history: dict):
+    """Atomically write the session history JSON file."""
+    HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp = HISTORY_FILE.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(history, indent=2))
+    tmp.rename(HISTORY_FILE)
+
+
+def normalize_history(history: dict) -> dict:
+    """
+    Collapse slash-form and sanitized-form (/ → _) history entries into one.
+    When both exist, keep the slash-form key with the max timestamp.
+
+    Example: "ianhowell/foo" and "ianhowell_foo" → "ianhowell/foo" (max ts).
+    Note: "cleanup-macvtap-stuff" is NOT the sanitized form of
+    "ianhowell/cleanup-macvtap-stuff" (that would be "ianhowell_cleanup-macvtap-stuff"),
+    so such entries are kept distinct.
+    """
+    # Build a map from sanitized key → slash-form key for all slash-containing entries
+    slash_keys: dict[str, str] = {}  # sanitized → slash-form
+    for name in list(history.keys()):
+        if "/" in name:
+            slash_keys[name.replace("/", "_")] = name
+
+    normalized: dict[str, float] = {}
+    for name, ts in history.items():
+        if "/" in name:
+            existing = normalized.get(name, 0.0)
+            normalized[name] = max(existing, ts)
+        elif name in slash_keys:
+            # This is the sanitized form of a slash-key — merge into slash-form
+            slash = slash_keys[name]
+            existing = normalized.get(slash, history.get(slash, 0.0))
+            normalized[slash] = max(existing, ts)
+        else:
+            existing = normalized.get(name, 0.0)
+            normalized[name] = max(existing, ts)
+    return normalized
+
+
+def record_session(name: str):
+    """Record the current timestamp for a session in the history file."""
+    history = load_history()
+    history[name] = time.time()
+    save_history(normalize_history(history))
+
+
+# ---------------------------------------------------------------------------
+# Data collection
+# ---------------------------------------------------------------------------
+
+def get_active_sessions() -> list[dict]:
+    """Return active tmux sessions sorted by activity descending."""
+    raw = run(["tmux", "list-sessions",
+               "-F", "#{session_name}\t#{session_activity}\t#{session_attached}"])
+    sessions = []
+    for line in raw.splitlines():
+        if not line.strip():
+            continue
+        parts = line.split("\t")
+        if len(parts) < 3:
+            continue
+        name, activity, attached = parts[0], float(parts[1]), parts[2]
+        sessions.append({
+            "name":      name,
+            "path":      "",
+            "last_used": activity,
+            "attached":  attached == "1",
+            "source":    SRC_ACTIVE,
+        })
+    sessions.sort(key=lambda s: s["last_used"], reverse=True)
+    return sessions
+
+
+def get_sesh_config_sessions() -> list[dict]:
+    """Return sessions defined in sesh config (Src == 'config')."""
+    raw = run(["sesh", "list", "-j"])
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return []
+    sessions = []
+    seen = set()
+    for item in data:
+        if item.get("Src") != "config":
+            continue
+        name = item.get("Name", "")
+        if name in seen:
+            continue
+        seen.add(name)
+        sessions.append({
+            "name":      name,
+            "path":      item.get("Path", ""),
+            "last_used": 0.0,
+            "attached":  False,
+            "source":    SRC_CONFIG,
+        })
+    return sessions
+
+
+def get_git_worktrees(cwd: str) -> list[dict]:
+    """Return git worktrees for the repo containing cwd (excludes main worktree).
+
+    Resolves the git common dir first (git rev-parse --path-format=absolute
+    --git-common-dir) so that worktrees are listed even when cwd is a subdirectory
+    or a linked worktree rather than the repo root.
+    """
+    if not cwd:
+        return []
+    # Resolve repo root via git common dir (.git or .git/worktrees/<name>/..)
+    common_dir = run(
+        ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+        cwd=cwd,
+    )
+    if not common_dir:
+        return []
+    # common_dir is the .git directory; the working tree root is its parent
+    repo_root = str(Path(common_dir).parent)
+    raw = run(["git", "worktree", "list", "--porcelain"], cwd=repo_root)
+    if not raw:
+        return []
+
+    worktrees = []
+    current: dict = {}
+    for line in raw.splitlines():
+        if line.startswith("worktree "):
+            if current:
+                worktrees.append(current)
+            current = {"path": line[len("worktree "):].strip()}
+        elif line.startswith("branch "):
+            branch = line[len("branch "):].strip().replace("refs/heads/", "")
+            current["branch"] = branch
+        elif line == "bare":
+            current["branch"] = "(bare)"
+        elif line.startswith("HEAD "):
+            if "branch" not in current:
+                current["branch"] = "(detached)"
+    if current:
+        worktrees.append(current)
+
+    # Skip the main worktree (index 0); it surfaces via sesh config / tmux sessions
+    if len(worktrees) <= 1:
+        return []
+
+    result = []
+    for wt in worktrees[1:]:
+        path   = wt.get("path", "")
+        branch = wt.get("branch", os.path.basename(path))
+        result.append({
+            "name":      branch,
+            "path":      path,
+            "last_used": 0.0,
+            "attached":  False,
+            "source":    SRC_WORKTREE,
+        })
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Merge and deduplicate
+# ---------------------------------------------------------------------------
+
+def merge_sessions(
+    active: list[dict],
+    config: list[dict],
+    worktrees: list[dict],
+    history: dict,
+    max_recent: int = 8,
+) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
+    """
+    Merge all sources, apply history timestamps, deduplicate, then return
+    four groups:
+      group_a: active tmux sessions              (sorted by last_used desc)
+      group_b: recently used but now inactive    (sorted by last_used desc, capped at max_recent)
+      group_c: all worktrees                     (MRU-first, then alphabetical)
+      group_d: cold configured (no history)      (sorted alphabetically)
+
+    Deduplication:
+      1. Worktrees whose sanitized name (/ → _) matches an active session name
+         are marked "active". The active entry's display_name is set to the
+         slash-form branch name. The worktree is excluded from groups c/d.
+      2. Config entries that match active session names are excluded.
+      3. history_only entries are excluded if they match any known name
+         (including sanitized forms of current worktrees).
+    """
+    history = normalize_history(history)
+
+    active_names      = {s["name"] for s in active}
+    # Map: sanitized-name → worktree entry (for worktrees with slashes in name)
+    sanitized_to_wt: dict[str, dict] = {}
+    for wt in worktrees:
+        if "/" in wt["name"]:
+            sanitized_to_wt[wt["name"].replace("/", "_")] = wt
+
+    worktrees_already_active: set[str] = set()
+
+    # Enrich active sessions:
+    config_by_name = {s["name"]: s for s in config}
+    for s in active:
+        # Attach config path if available
+        if s["name"] in config_by_name:
+            s["path"] = config_by_name[s["name"]]["path"]
+        # If this active session is a treemux-sanitized worktree, show the branch name
+        wt = sanitized_to_wt.get(s["name"])
+        if wt:
+            s["display_name"] = wt["name"]
+            s["path"]         = wt["path"]
+            worktrees_already_active.add(wt["name"])
+
+    # Apply history timestamps
+    for s in config:
+        s["last_used"] = history.get(s["name"], 0.0)
+    for s in worktrees:
+        sanitized = s["name"].replace("/", "_")
+        s["last_used"] = history.get(
+            s["name"],
+            history.get(sanitized, history.get(s["path"], 0.0))
+        )
+
+    # Remove config entries already active
+    config_unique = [s for s in config if s["name"] not in active_names]
+
+    # Remove worktrees already running as active sessions
+    worktrees_visible = [s for s in worktrees if s["name"] not in worktrees_already_active]
+
+    # Compute known names for history-only exclusion
+    wt_sanitized = {s["name"].replace("/", "_") for s in worktrees}
+    known_names = (
+        active_names
+        | {s["name"] for s in config}
+        | {s["name"] for s in worktrees}
+        | wt_sanitized
+    )
+    history_only = [
+        {
+            "name":      name,
+            "path":      "",
+            "last_used": ts,
+            "attached":  False,
+            "source":    SRC_RECENT,
+        }
+        for name, ts in history.items()
+        if name not in known_names
+    ]
+
+    config_recent = [s for s in config_unique if s["last_used"] > 0]
+    config_cold   = sorted([s for s in config_unique if s["last_used"] == 0],
+                           key=lambda s: s["name"])
+
+    wt_recent = [s for s in worktrees_visible if s["last_used"] > 0]
+    wt_cold   = sorted([s for s in worktrees_visible if s["last_used"] == 0],
+                       key=lambda s: s["name"])
+
+    # All worktrees in one group: MRU-first, then alphabetical cold ones.
+    group_c = sorted(wt_recent, key=lambda s: s["last_used"], reverse=True) + wt_cold
+
+    # Recent: history-only + recently-used config entries, capped at max_recent.
+    group_b_all = sorted(
+        history_only + config_recent,
+        key=lambda s: s["last_used"], reverse=True
+    )
+    group_b = group_b_all[:max_recent]
+
+    return active, group_b, group_c, config_cold
+
+
+# ---------------------------------------------------------------------------
+# Rendering
+# ---------------------------------------------------------------------------
+
+_NAME_COL_WIDTH = 92
+_NAME_MAX_LEN   = 90
+
+
+def format_session_line(s: dict) -> str:
+    """
+    Render a session as a tab-delimited fzf line.
+
+    Columns (tab-separated):
+      1: visual display  (shown in fzf via --with-nth=1)
+      2: session name    (returned on accept via --accept-nth=2,3,4)
+      3: session path
+      4: source tag      (searchable via --nth=1,4 so user can type 'worktree' etc.)
+    """
+    name         = s["name"]
+    display_name = s.get("display_name", name)
+    path         = s["path"]
+    source       = s["source"]
+    last_used    = s["last_used"]
+    attached     = s.get("attached", False)
+
+    wt_prefix_len    = 0
+    max_name         = _NAME_MAX_LEN
+    display_name_raw = display_name if len(display_name) <= max_name else display_name[:max_name - 1] + "…"
+
+    if source == SRC_ACTIVE:
+        styled_name = f"{BOLD}{WHITE}{display_name_raw}{RESET}"
+    elif source == SRC_WORKTREE:
+        styled_name = f"{DIM}{CYAN}{display_name_raw}{RESET}"
+    else:
+        styled_name = f"{DIM}{display_name_raw}{RESET}"
+
+    visible_name_len = len(display_name_raw)
+    padding = max(1, _NAME_COL_WIDTH - visible_name_len) * " "
+
+    if source == SRC_ACTIVE:
+        badge = f"{BOLD}{WHITE}󰐊 current  {RESET}" if attached else f"{DIM}{GREEN}󰏤 active   {RESET}"
+    elif source == SRC_WORKTREE:
+        badge = f"{DIM}{CYAN}⎇ worktree {RESET}"
+    elif source == SRC_RECENT or last_used > 0:
+        badge = f"{DIM}{GREY}󰔛 recent   {RESET}"
+    else:
+        badge = f"{DIM}󱂬 config   {RESET}"
+
+    ts = relative_time(last_used)
+    time_str = f"  {DIM}{GREY}{ts}{RESET}" if ts else ""
+
+    display = f" {styled_name}{padding}{badge}{time_str}"
+    return f"{display}\t{name}\t{path}\t{source}"
+
+
+# ---------------------------------------------------------------------------
+# Picker: single fzf, sections in order with no gap whitespace
+# ---------------------------------------------------------------------------
+
+GROUP_ORDER = [GROUP_ACTIVE, GROUP_RECENT, GROUP_WORKTREE, GROUP_COLD]
+
+
+def build_fzf_lines(groups: dict[str, list[dict]]) -> str:
+    """Build the newline-delimited fzf input string from all groups in order."""
+    lines = []
+    for gname in GROUP_ORDER:
+        for s in groups.get(gname, []):
+            lines.append(format_session_line(s))
+    return "\n".join(lines)
+
+
+def collect_groups(cwd: str) -> dict[str, list[dict]]:
+    """Collect all session data and return the four display groups."""
+    history   = load_history()
+    active    = get_active_sessions()
+    config    = get_sesh_config_sessions()
+    worktrees = get_git_worktrees(cwd)
+    group_a, group_b, group_c, group_d = merge_sessions(active, config, worktrees, history)
+    return {
+        GROUP_ACTIVE:   group_a,
+        GROUP_RECENT:   group_b,
+        GROUP_WORKTREE: group_c,
+        GROUP_COLD:     group_d,
+    }
+
+
+def run_picker(
+    groups: dict[str, list[dict]],
+    tmux_client: str,
+    cwd: str,
+) -> None:
+    """
+    Launch a single fzf instance fed all groups in order:
+      active → recent → worktrees → configured
+
+    No blank gap lines between sections — all entries are packed together.
+    The source tag (field 4) is included in fzf's search index (--nth=1,4)
+    so the user can filter by type: 'worktree', 'active', 'recent', 'config'.
+
+    Ctrl-X kills the selected session (if active) or removes it from history,
+    then reloads the list in place.
+
+    On Enter, calls connect_session immediately (fzf runs in the popup TTY).
+    """
+    non_empty = any(groups.get(g) for g in GROUP_ORDER)
+
+    if not non_empty:
+        subprocess.run(["tmux", "display-message", "No sessions found"])
+        return
+
+    fzf_input = build_fzf_lines(groups)
+
+    # reload command: re-run the picker in --list-fzf mode with the same CWD
+    reload_cmd = f"TMUX_POPUP_CWD={cwd} tx-session-picker --list-fzf"
+
+    fzf_cmd = [
+        "fzf",
+        "--ansi",
+        "--no-sort",
+        "--reverse",
+        "--height=100%",
+        "--border=rounded",
+        "--border-label= sessions ",
+        "--prompt=  ",
+        "--pointer=▶",
+        "--marker=●",
+        "--delimiter=\t",
+        "--with-nth=1",                  # display only field 1
+        "--nth=1,4",                     # search field 1 (name) AND field 4 (source tag)
+        "--accept-nth=2,3,4",            # output: name, path, source on Enter
+        f"--header= \033[2m\033[36mctrl-x\033[0m\033[2m  kill / remove\033[0m",
+        "--header-first",
+        "--bind=q:abort",
+        "--bind=ctrl-d:delete-char",
+        # Ctrl-X: kill session or remove from history, then reload list
+        f"--bind=ctrl-x:execute-silent(tx-session-picker kill {{2}} {{4}})+reload({reload_cmd})",
+        "--info=inline-right",
+        "--preview-window=right:45%:hidden:border-left",
+        "--preview=sesh preview {2} 2>/dev/null || echo '(no preview available)'",
+        "--bind=ctrl-p:toggle-preview",
+    ] + _FZF_COLORS
+
+    proc = subprocess.run(
+        fzf_cmd,
+        input=fzf_input,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=None,
+    )
+
+    if proc.returncode != 0 or not proc.stdout:
+        return  # dismissed
+
+    parts  = proc.stdout.strip().split("\t")
+    name   = parts[0].strip() if len(parts) > 0 else ""
+    path   = parts[1].strip() if len(parts) > 1 else ""
+    source = parts[2].strip() if len(parts) > 2 else ""
+
+    if name:
+        connect_session(name, path, source, tmux_client)
+
+
+# ---------------------------------------------------------------------------
+# Connect action
+# ---------------------------------------------------------------------------
+
+def _resolve_worktree_path(branch_name: str) -> str:
+    """
+    Try to resolve the filesystem path for a worktree branch name via sesh/zoxide.
+    Returns the path string, or "" if not found.
+    """
+    raw = run(["sesh", "list", "-j"])
+    if not raw:
+        return ""
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return ""
+    sanitized = branch_name.replace("/", "_")
+    # Look for zoxide entry whose path basename matches the sanitized branch name
+    # or whose name ends with the branch name
+    for item in data:
+        item_path = item.get("Path", "")
+        item_name = item.get("Name", "")
+        if item_path and (
+            os.path.basename(item_path) == sanitized
+            or item_name.endswith(branch_name)
+        ):
+            return item_path
+    return ""
+
+
+def connect_session(name: str, path: str, source: str, tmux_client: str = ""):
+    """
+    Connect to the selected session. Records the visit in history.
+    """
+    record_session(name)
+
+    active_names = set(run(["tmux", "list-sessions", "-F", "#{session_name}"]).splitlines())
+
+    # Direct match: session is already running
+    if name in active_names:
+        _switch(name, tmux_client)
+        return
+
+    # Sanitized match: the treemux-sanitized form is already running
+    sanitized = name.replace("/", "_")
+    if sanitized in active_names and sanitized != name:
+        _switch(sanitized, tmux_client)
+        return
+
+    # Worktree (explicit) or slash-named recent entry (worktree branch in history):
+    # Create the tmux session directly so the slash form of the branch name is
+    # preserved as the session name. treemux.sanitizeSessionName() converts "/" → "_"
+    # unconditionally, so we cannot use treemux attach-root and still get
+    # "ianhowell/cleanup-macvtap-stuff" as the session name.
+    #
+    # We replicate the minimal treemux setup:
+    #   1. tmux new-session -d -s <branch> -c <path>   (creates the session)
+    #   2. set @tree_root_name and @tree_root_dir       (treemux metadata)
+    # Then switch to it.
+    #
+    # Slash-named recent entries (source=SRC_RECENT, "/" in name) are worktree
+    # branches stored in history without a path. Resolve via sesh/zoxide.
+    is_slash_recent = source == SRC_RECENT and "/" in name
+    if (source == SRC_WORKTREE and path) or is_slash_recent:
+        wt_path = path or _resolve_worktree_path(name)
+        if wt_path:
+            # Check if session already exists under the slash name
+            active_check = set(run(["tmux", "list-sessions", "-F", "#{session_name}"]).splitlines())
+            if name not in active_check:
+                subprocess.run(
+                    ["tmux", "new-session", "-d", "-s", name, "-c", wt_path],
+                    capture_output=True,
+                )
+                # Set treemux metadata so the session is compatible with treemux tooling
+                subprocess.run(
+                    ["tmux", "set-option", "-t", name, "-s", "@tree_root_name", name],
+                    capture_output=True,
+                )
+                subprocess.run(
+                    ["tmux", "set-option", "-t", name, "-s", "@tree_root_dir", wt_path],
+                    capture_output=True,
+                )
+            record_session(name)
+            _switch(name, tmux_client)
+            return
+        # Fallback: sesh --switch if path not found
+        subprocess.run(["sesh", "connect", "--switch", name])
+        return
+
+    # Config or history-only: sesh.
+    # --switch tells sesh to use switch-client rather than attach-session,
+    # which is required when called from within a tmux popup.
+    # Always pass the session NAME (not path) so sesh uses the config entry
+    # and honours its startup_command. Passing path causes sesh to create a
+    # session named after the path basename, losing the startup_command.
+    subprocess.run(["sesh", "connect", "--switch", name])
+
+
+def _switch(name: str, tmux_client: str):
+    """Switch tmux client to the named session.
+
+    Dispatches via 'tmux run-shell -b' so the switch-client command is
+    executed asynchronously by the tmux server *after* the popup exits,
+    rather than from within the popup process itself (which would be
+    a no-op or get overridden when the popup closes).
+    """
+    if tmux_client:
+        cmd = f"tmux switch-client -c {tmux_client} -t {name}"
+    else:
+        cmd = f"tmux switch-client -t {name}"
+    subprocess.run(["tmux", "run-shell", "-b", cmd])
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def kill_session(name: str, source: str):
+    """
+    Kill an active session (tmux kill-session) or remove it from history.
+    Called by the Ctrl-X binding in fzf.
+    """
+    if source == SRC_ACTIVE:
+        subprocess.run(["tmux", "kill-session", "-t", name], capture_output=True)
+    else:
+        history = load_history()
+        # Remove both slash-form and sanitized-form from history
+        changed = False
+        for key in [name, name.replace("/", "_")]:
+            if key in history:
+                del history[key]
+                changed = True
+        if changed:
+            save_history(history)
+
+
+def main():
+    args = sys.argv[1:]
+
+    # ------------------------------------------------------------------
+    # Sub-command: connect <name> <path> <source> [<client>]
+    # ------------------------------------------------------------------
+    if args and args[0] == "connect":
+        name        = args[1] if len(args) > 1 else ""
+        path        = args[2] if len(args) > 2 else ""
+        source      = args[3] if len(args) > 3 else ""
+        tmux_client = args[4] if len(args) > 4 else ""
+        connect_session(name, path, source, tmux_client)
+        return
+
+    # ------------------------------------------------------------------
+    # Sub-command: connect-from-file <result_file> <client>
+    # ------------------------------------------------------------------
+    if args and args[0] == "connect-from-file":
+        result_file = args[1] if len(args) > 1 else ""
+        tmux_client = args[2] if len(args) > 2 else ""
+        if not result_file or not os.path.exists(result_file):
+            return
+        parts  = Path(result_file).read_text().strip().split("\t")
+        name   = parts[0].strip() if len(parts) > 0 else ""
+        path   = parts[1].strip() if len(parts) > 1 else ""
+        source = parts[2].strip() if len(parts) > 2 else ""
+        if name:
+            connect_session(name, path, source, tmux_client)
+        return
+
+    # ------------------------------------------------------------------
+    # Sub-command: kill <name> <source>
+    # ------------------------------------------------------------------
+    if args and args[0] == "kill":
+        name   = args[1] if len(args) > 1 else ""
+        source = args[2] if len(args) > 2 else ""
+        if name:
+            kill_session(name, source)
+        return
+
+    # ------------------------------------------------------------------
+    # Sub-command: --list-fzf  (used by fzf reload binding)
+    # ------------------------------------------------------------------
+    if args and args[0] == "--list-fzf":
+        cwd    = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
+        groups = collect_groups(cwd)
+        print(build_fzf_lines(groups))
+        return
+
+    # ------------------------------------------------------------------
+    # Main mode: collect data, run single-fzf picker
+    # ------------------------------------------------------------------
+    cwd         = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
+    tmux_client = os.environ.get("TMUX_CLIENT", "")
+
+    groups = collect_groups(cwd)
+    run_picker(groups, tmux_client, cwd)
+
+
+if __name__ == "__main__":
+    main()

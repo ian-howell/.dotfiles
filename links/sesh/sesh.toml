@@ -4,12 +4,11 @@ import = [
 
 # Window 0 is always created implicitly by `tmux new-session`. The startup_command
 # below renames it to "shell" and focuses it, so it appears first and is selected
-# on connect. Do not add a "shell" entry to any session's windows list — that would
-# create a duplicate window.
+# on connect.
 [default_session]
 startup_command = "tmux rename-window -t :1 shell && tmux select-window -t :1"
 
-# Reusable window definitions
+# Reusable window definitions (kept for reference, not applied to any session)
 [[window]]
 name = "vim"
 startup_script = "tmux set-option -w automatic-rename off && vim; exit"
@@ -26,4 +25,3 @@ startup_script = "tmux set-option -w automatic-rename off && lazygit; exit"
 [[session]]
 name = "dotfiles"
 path = "~/.dotfiles"
-windows = ["vim", "opencode", "git"] # window 0 (shell) is implicit — see default_session above
