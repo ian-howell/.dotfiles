@@ -64,7 +64,12 @@ return {
         map({ "n", "x" }, "<space>go", function()
           Snacks.gitbrowse({ what = "permalink" })
         end, { desc = "open in browser" })
-        map("n", "<space>gd", function()
+        map("n", "<space>gd-", function()
+          gitsigns.toggle_linehl()
+          gitsigns.toggle_deleted()
+          gitsigns.toggle_numhl()
+        end, { desc = "toggle inline diff" })
+        map("n", "<space>gd\\", function()
           vim.cmd("CodeDiff file HEAD")
         end, { desc = "diff against index" })
         map("n", "<space>gD", function()
@@ -78,8 +83,6 @@ return {
 
         -- Toggles
         map("n", "<space>tb", gitsigns.toggle_current_line_blame, { desc = "inline blame" })
-        -- TODO: Figure out what this does
-        map("n", "<space>tD", gitsigns.toggle_deleted, { desc = "deleted lines from index" })
       end,
     },
   },

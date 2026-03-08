@@ -31,6 +31,7 @@ return {
         { "<leader>fg", function() Snacks.picker.git_status(git_layout) end, desc = "git status (changed files)" },
         -- disable LazyVim snacks_picker extra mappings we don't want
         { "<leader>gs", false },
+        { "<leader>gd", false },
         { "<leader>fT", false },
         { "<leader>fG", function()
           local base = vim.trim(vim.fn.system("git merge-base origin/main HEAD") or "")
