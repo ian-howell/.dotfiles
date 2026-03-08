@@ -32,6 +32,7 @@ return {
         -- disable LazyVim snacks_picker extra mappings we don't want
         { "<leader>gs", false },
         { "<leader>gd", false },
+        { "<leader>ub", false },
         { "<leader>fT", false },
         { "<leader>fG", function()
           local base = vim.trim(vim.fn.system("git merge-base origin/main HEAD") or "")
