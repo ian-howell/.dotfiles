@@ -60,8 +60,8 @@ return {
         win = {
           input = {
             keys = {
-              ["<space>-"]  = { "edit_split",  mode = { "n", "i" } },
-              ["<space>\\"] = { "edit_vsplit", mode = { "n", "i" } },
+              ["<leader>-"]  = { "edit_split",  mode = { "n", "i" } },
+              ["<leader>\\"] = { "edit_vsplit", mode = { "n", "i" } },
             },
           },
         },

@@ -47,32 +47,32 @@ return {
 
         -- Actions
         -- visual mode
-        map("v", "<space>gs", function()
+        map("v", "<leader>gs", function()
           gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
         end, { desc = "stage hunk" })
-        map("v", "<space>gr", function()
+        map("v", "<leader>gr", function()
           gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
         end, { desc = "reset hunk" })
         -- normal mode
-        map("n", "<space>gs", gitsigns.stage_hunk, { desc = "stage hunk" })
-        map("n", "<space>gr", gitsigns.reset_hunk, { desc = "reset hunk" })
-        map("n", "<space>gS", gitsigns.stage_buffer, { desc = "stage buffer" })
-        map("n", "<space>gu", gitsigns.undo_stage_hunk, { desc = "undo stage hunk" })
-        map("n", "<space>gR", gitsigns.reset_buffer, { desc = "reset buffer" })
-        map("n", "<space>gp", gitsigns.preview_hunk, { desc = "preview hunk" })
-        map("n", "<space>gb", gitsigns.blame_line, { desc = "blame line" })
-        map({ "n", "x" }, "<space>go", function()
+        map("n", "<leader>gs", gitsigns.stage_hunk, { desc = "stage hunk" })
+        map("n", "<leader>gr", gitsigns.reset_hunk, { desc = "reset hunk" })
+        map("n", "<leader>gS", gitsigns.stage_buffer, { desc = "stage buffer" })
+        map("n", "<leader>gu", gitsigns.undo_stage_hunk, { desc = "undo stage hunk" })
+        map("n", "<leader>gR", gitsigns.reset_buffer, { desc = "reset buffer" })
+        map("n", "<leader>gp", gitsigns.preview_hunk, { desc = "preview hunk" })
+        map("n", "<leader>gb", gitsigns.blame_line, { desc = "blame line" })
+        map({ "n", "x" }, "<leader>go", function()
           Snacks.gitbrowse({ what = "permalink" })
         end, { desc = "open in browser" })
-        map("n", "<space>gd-", function()
+        map("n", "<leader>gd-", function()
           gitsigns.toggle_linehl()
           gitsigns.toggle_deleted()
           gitsigns.toggle_numhl()
         end, { desc = "toggle inline diff" })
-        map("n", "<space>gd\\", function()
+        map("n", "<leader>gd\\", function()
           vim.cmd("CodeDiff file HEAD")
         end, { desc = "diff against index" })
-        map("n", "<space>gD", function()
+        map("n", "<leader>gD", function()
           local merge_base = vim.fn.system("git merge-base origin/main HEAD"):gsub("%s+", "")
           if vim.v.shell_error == 0 and merge_base ~= "" then
             vim.cmd("CodeDiff file " .. merge_base .. " HEAD")
@@ -83,7 +83,7 @@ return {
 
         -- UI
         -- TODO: figure out where ui-related git bindings should live
-        map("n", "<space>ub", gitsigns.toggle_current_line_blame, { desc = "inline blame" })
+        map("n", "<leader>ub", gitsigns.toggle_current_line_blame, { desc = "inline blame" })
       end,
     },
   },

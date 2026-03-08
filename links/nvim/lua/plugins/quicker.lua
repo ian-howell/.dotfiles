@@ -32,12 +32,12 @@ return {
         },
       })
 
-      vim.keymap.set("n", "<space>q", function()
+      vim.keymap.set("n", "<leader>q", function()
         require("quicker").toggle()
       end, {
         desc = "toggle quickfix",
       })
-      vim.keymap.set("n", "<space>l", function()
+      vim.keymap.set("n", "<leader>l", function()
         require("quicker").toggle({ loclist = true })
       end, {
         desc = "toggle loclist",
