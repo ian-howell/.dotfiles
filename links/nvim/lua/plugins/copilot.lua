@@ -18,9 +18,9 @@ return {
     init = function()
       -- TODO: This just doesn't work. It doesn't even appear to work when I run the command directly. It
       -- works more like 'Copilot disable'
-      -- vim.keymap.set('n', '<space>tc', '<cmd>Copilot toggle<CR>', { desc = 'Toggle Copilot' })
-      vim.keymap.set("n", "<space>ad", "<cmd>Copilot disable<CR>", { desc = "disable (Copilot)" })
-      vim.keymap.set("n", "<space>ae", "<cmd>Copilot enable<CR>", { desc = "enable (Copilot)" })
+      -- vim.keymap.set('n', '<leader>tc', '<cmd>Copilot toggle<CR>', { desc = 'Toggle Copilot' })
+      vim.keymap.set("n", "<leader>ad", "<cmd>Copilot disable<CR>", { desc = "disable (Copilot)" })
+      vim.keymap.set("n", "<leader>ae", "<cmd>Copilot enable<CR>", { desc = "enable (Copilot)" })
     end,
   },
   {

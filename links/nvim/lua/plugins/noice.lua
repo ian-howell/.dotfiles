@@ -29,6 +29,6 @@ return {
       "MunifTanjim/nui.nvim",
     },
 
-    vim.keymap.set("n", "<space>nd", "<cmd>NoiceDismiss<CR>", { desc = "NoiceDismiss" }),
+    vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", { desc = "NoiceDismiss" }),
   },
 }
