@@ -15,8 +15,6 @@ links:
     link: ~/.config/tmux
   - file: ~/.dotfiles/links/kitty
     link: ~/.config/kitty
-  - file: ~/.dotfiles/links/lazyvim
-    link: ~/.config/lazyvim
   - file: ~/.dotfiles/links/nvim
     link: ~/.config/nvim
   - file: ~/.dotfiles/links/zsh
