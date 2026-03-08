@@ -81,8 +81,8 @@ return {
           end
         end, { desc = "diff against merge-base with main" })
 
-        -- TODO: figure out where ui-related git bindings should live
         -- UI
+        -- TODO: figure out where ui-related git bindings should live
         map("n", "<space>ub", gitsigns.toggle_current_line_blame, { desc = "inline blame" })
       end,
     },

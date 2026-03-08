@@ -81,7 +81,8 @@ alias gus="git restore --staged"
 alias ls="ls --color=auto"
 
 #===[ vim
-alias vim="NVIM_APPNAME=lazyvim nvim"
+alias vim="nvim"
+alias evim="NVIM_APPNAME=experimental-neovim XDG_CONFIG_HOME=$HOME/.dotfiles/links nvim"
 
 alias :q=exit
 alias :wq=exit
