@@ -32,9 +32,7 @@
     "icm": {
       "type": "local",
       "command": [
-        "agency",
-        "mcp",
-        "icm"
+        "icm-mcp-proxy"
       ],
       "enabled": true,
     },
