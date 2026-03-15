@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# tx-record-session: record a session name + timestamp in the history file.
+# tmux-record-session: record a session name + timestamp in the history file.
 # Called by the tmux client-session-changed hook:
-#   set-hook -g client-session-changed 'run-shell "tx-record-session #{client_session}"'
-# Also callable directly: tx-record-session <session-name>
+#   set-hook -g client-session-changed 'run-shell "tmux-record-session #{client_session}"'
+# Also callable directly: tmux-record-session <session-name>
 
 set -euo pipefail
 
