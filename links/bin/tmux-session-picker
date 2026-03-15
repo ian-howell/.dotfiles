@@ -71,32 +71,32 @@ from pathlib import Path
 HISTORY_FILE = Path.home() / ".local" / "share" / "tmux" / "session-history.json"
 
 # ANSI codes
-RESET  = "\033[0m"
-BOLD   = "\033[1m"
-DIM    = "\033[2m"
-GREEN  = "\033[32m"
-CYAN   = "\033[36m"
-GREY   = "\033[38;5;244m"
-WHITE  = "\033[37m"
+RESET = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+GREEN = "\033[32m"
+CYAN = "\033[36m"
+GREY = "\033[38;5;244m"
+WHITE = "\033[37m"
 
 # Source tags — field 4 in fzf lines, used for type-filtering
-SRC_ACTIVE   = "active"
-SRC_RECENT   = "recent"    # history-only: was used, no longer in any config
-SRC_CONFIG   = "config"    # defined in sesh.toml
+SRC_ACTIVE = "active"
+SRC_RECENT = "recent"  # history-only: was used, no longer in any config
+SRC_CONFIG = "config"  # defined in sesh.toml
 SRC_WORKTREE = "worktree"  # git worktree of the current repo
 
 # Group identifiers (order determines display order)
-GROUP_ACTIVE   = "active"
-GROUP_RECENT   = "recent"
+GROUP_ACTIVE = "active"
+GROUP_RECENT = "recent"
 GROUP_WORKTREE = "worktree"
-GROUP_COLD     = "cold"
+GROUP_COLD = "cold"
 
 # Section header labels (shown as --gap-label in fzf)
 GROUP_LABELS = {
-    GROUP_ACTIVE:   "active sessions",
-    GROUP_RECENT:   "recent",
+    GROUP_ACTIVE: "active sessions",
+    GROUP_RECENT: "recent",
     GROUP_WORKTREE: "worktrees",
-    GROUP_COLD:     "configured",
+    GROUP_COLD: "configured",
 }
 
 # TokyoNight colour flags
@@ -112,6 +112,7 @@ _FZF_COLORS = [
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def run(cmd, **kwargs):
     """Run a command, return stdout as string. Returns empty string on error."""
@@ -169,10 +170,17 @@ def record_session(name: str):
 # Data collection
 # ---------------------------------------------------------------------------
 
+
 def get_active_sessions() -> list[dict]:
     """Return active tmux sessions sorted by activity descending."""
-    raw = run(["tmux", "list-sessions",
-               "-F", "#{session_name}\t#{session_activity}\t#{session_attached}"])
+    raw = run(
+        [
+            "tmux",
+            "list-sessions",
+            "-F",
+            "#{session_name}\t#{session_activity}\t#{session_attached}",
+        ]
+    )
     sessions = []
     for line in raw.splitlines():
         if not line.strip():
@@ -181,13 +189,15 @@ def get_active_sessions() -> list[dict]:
         if len(parts) < 3:
             continue
         name, activity, attached = parts[0], float(parts[1]), parts[2]
-        sessions.append({
-            "name":      name,
-            "path":      "",
-            "last_used": activity,
-            "attached":  attached == "1",
-            "source":    SRC_ACTIVE,
-        })
+        sessions.append(
+            {
+                "name": name,
+                "path": "",
+                "last_used": activity,
+                "attached": attached == "1",
+                "source": SRC_ACTIVE,
+            }
+        )
     sessions.sort(key=lambda s: s["last_used"], reverse=True)
     return sessions
 
@@ -210,13 +220,15 @@ def get_sesh_config_sessions() -> list[dict]:
         if name in seen:
             continue
         seen.add(name)
-        sessions.append({
-            "name":      name,
-            "path":      item.get("Path", ""),
-            "last_used": 0.0,
-            "attached":  False,
-            "source":    SRC_CONFIG,
-        })
+        sessions.append(
+            {
+                "name": name,
+                "path": item.get("Path", ""),
+                "last_used": 0.0,
+                "attached": False,
+                "source": SRC_CONFIG,
+            }
+        )
     return sessions
 
 
@@ -248,9 +260,9 @@ def get_git_worktrees(cwd: str) -> list[dict]:
         if line.startswith("worktree "):
             if current:
                 worktrees.append(current)
-            current = {"path": line[len("worktree "):].strip()}
+            current = {"path": line[len("worktree ") :].strip()}
         elif line.startswith("branch "):
-            branch = line[len("branch "):].strip().replace("refs/heads/", "")
+            branch = line[len("branch ") :].strip().replace("refs/heads/", "")
             current["branch"] = branch
         elif line == "bare":
             current["branch"] = "(bare)"
@@ -266,21 +278,24 @@ def get_git_worktrees(cwd: str) -> list[dict]:
 
     result = []
     for wt in worktrees[1:]:
-        path   = wt.get("path", "")
+        path = wt.get("path", "")
         branch = wt.get("branch", os.path.basename(path))
-        result.append({
-            "name":      branch,
-            "path":      path,
-            "last_used": 0.0,
-            "attached":  False,
-            "source":    SRC_WORKTREE,
-        })
+        result.append(
+            {
+                "name": branch,
+                "path": path,
+                "last_used": 0.0,
+                "attached": False,
+                "source": SRC_WORKTREE,
+            }
+        )
     return result
 
 
 # ---------------------------------------------------------------------------
 # Merge and deduplicate
 # ---------------------------------------------------------------------------
+
 
 def merge_sessions(
     active: list[dict],
@@ -323,41 +338,42 @@ def merge_sessions(
     config_unique = [s for s in config if s["name"] not in active_names]
 
     # Remove worktrees already running as active sessions
-    worktrees_visible = [s for s in worktrees if s["name"] not in worktrees_already_active]
+    worktrees_visible = [
+        s for s in worktrees if s["name"] not in worktrees_already_active
+    ]
 
     # Compute known names for history-only exclusion
     known_names = (
-        active_names
-        | {s["name"] for s in config}
-        | {s["name"] for s in worktrees}
+        active_names | {s["name"] for s in config} | {s["name"] for s in worktrees}
     )
     history_only = [
         {
-            "name":      name,
-            "path":      "",
+            "name": name,
+            "path": "",
             "last_used": ts,
-            "attached":  False,
-            "source":    SRC_RECENT,
+            "attached": False,
+            "source": SRC_RECENT,
         }
         for name, ts in history.items()
         if name not in known_names
     ]
 
     config_recent = [s for s in config_unique if s["last_used"] > 0]
-    config_cold   = sorted([s for s in config_unique if s["last_used"] == 0],
-                           key=lambda s: s["name"])
+    config_cold = sorted(
+        [s for s in config_unique if s["last_used"] == 0], key=lambda s: s["name"]
+    )
 
     wt_recent = [s for s in worktrees_visible if s["last_used"] > 0]
-    wt_cold   = sorted([s for s in worktrees_visible if s["last_used"] == 0],
-                       key=lambda s: s["name"])
+    wt_cold = sorted(
+        [s for s in worktrees_visible if s["last_used"] == 0], key=lambda s: s["name"]
+    )
 
     # All worktrees in one group: MRU-first, then alphabetical cold ones.
     group_c = sorted(wt_recent, key=lambda s: s["last_used"], reverse=True) + wt_cold
 
     # Recent: history-only + recently-used config entries, capped at max_recent.
     group_b_all = sorted(
-        history_only + config_recent,
-        key=lambda s: s["last_used"], reverse=True
+        history_only + config_recent, key=lambda s: s["last_used"], reverse=True
     )
     group_b = group_b_all[:max_recent]
 
@@ -369,7 +385,7 @@ def merge_sessions(
 # ---------------------------------------------------------------------------
 
 _NAME_COL_WIDTH = 92
-_NAME_MAX_LEN   = 90
+_NAME_MAX_LEN = 90
 
 
 def format_session_line(s: dict) -> str:
@@ -382,16 +398,20 @@ def format_session_line(s: dict) -> str:
       3: session path
       4: source tag      (searchable via --nth=1,4 so user can type 'worktree' etc.)
     """
-    name         = s["name"]
+    name = s["name"]
     display_name = s.get("display_name", name)
-    path         = s["path"]
-    source       = s["source"]
-    last_used    = s["last_used"]
-    attached     = s.get("attached", False)
+    path = s["path"]
+    source = s["source"]
+    last_used = s["last_used"]
+    attached = s.get("attached", False)
 
-    wt_prefix_len    = 0
-    max_name         = _NAME_MAX_LEN
-    display_name_raw = display_name if len(display_name) <= max_name else display_name[:max_name - 1] + "…"
+    wt_prefix_len = 0
+    max_name = _NAME_MAX_LEN
+    display_name_raw = (
+        display_name
+        if len(display_name) <= max_name
+        else display_name[: max_name - 1] + "…"
+    )
 
     if source == SRC_ACTIVE:
         styled_name = f"{BOLD}{WHITE}{display_name_raw}{RESET}"
@@ -404,7 +424,11 @@ def format_session_line(s: dict) -> str:
     padding = max(1, _NAME_COL_WIDTH - visible_name_len) * " "
 
     if source == SRC_ACTIVE:
-        badge = f"{BOLD}{WHITE}󰐊 current  {RESET}" if attached else f"{DIM}{GREEN}󰏤 active   {RESET}"
+        badge = (
+            f"{BOLD}{WHITE}󰐊 current  {RESET}"
+            if attached
+            else f"{DIM}{GREEN}󰏤 active   {RESET}"
+        )
     elif source == SRC_WORKTREE:
         badge = f"{DIM}{CYAN}⎇ worktree {RESET}"
     elif source == SRC_RECENT or last_used > 0:
@@ -437,16 +461,18 @@ def build_fzf_lines(groups: dict[str, list[dict]]) -> str:
 
 def collect_groups(cwd: str) -> dict[str, list[dict]]:
     """Collect all session data and return the four display groups."""
-    history   = load_history()
-    active    = get_active_sessions()
-    config    = get_sesh_config_sessions()
+    history = load_history()
+    active = get_active_sessions()
+    config = get_sesh_config_sessions()
     worktrees = get_git_worktrees(cwd)
-    group_a, group_b, group_c, group_d = merge_sessions(active, config, worktrees, history)
+    group_a, group_b, group_c, group_d = merge_sessions(
+        active, config, worktrees, history
+    )
     return {
-        GROUP_ACTIVE:   group_a,
-        GROUP_RECENT:   group_b,
+        GROUP_ACTIVE: group_a,
+        GROUP_RECENT: group_b,
         GROUP_WORKTREE: group_c,
-        GROUP_COLD:     group_d,
+        GROUP_COLD: group_d,
     }
 
 
@@ -491,9 +517,9 @@ def run_picker(
         "--pointer=▶",
         "--marker=●",
         "--delimiter=\t",
-        "--with-nth=1",                  # display only field 1
-        "--nth=1,4",                     # search field 1 (name) AND field 4 (source tag)
-        "--accept-nth=2,3,4",            # output: name, path, source on Enter
+        "--with-nth=1",  # display only field 1
+        "--nth=1,4",  # search field 1 (name) AND field 4 (source tag)
+        "--accept-nth=2,3,4",  # output: name, path, source on Enter
         f"--header= \033[2m\033[36mctrl-x\033[0m\033[2m  kill / remove\033[0m",
         "--header-first",
         "--bind=q:abort",
@@ -517,9 +543,9 @@ def run_picker(
     if proc.returncode != 0 or not proc.stdout:
         return  # dismissed
 
-    parts  = proc.stdout.strip().split("\t")
-    name   = parts[0].strip() if len(parts) > 0 else ""
-    path   = parts[1].strip() if len(parts) > 1 else ""
+    parts = proc.stdout.strip().split("\t")
+    name = parts[0].strip() if len(parts) > 0 else ""
+    path = parts[1].strip() if len(parts) > 1 else ""
     source = parts[2].strip() if len(parts) > 2 else ""
 
     if name:
@@ -537,7 +563,9 @@ def connect_session(name: str, path: str, source: str, tmux_client: str = ""):
     """
     record_session(name)
 
-    active_names = set(run(["tmux", "list-sessions", "-F", "#{session_name}"]).splitlines())
+    active_names = set(
+        run(["tmux", "list-sessions", "-F", "#{session_name}"]).splitlines()
+    )
 
     # Direct match: session is already running
     if name in active_names:
@@ -594,6 +622,7 @@ def _switch(name: str, tmux_client: str):
 # Main
 # ---------------------------------------------------------------------------
 
+
 def kill_session(name: str, source: str):
     """
     Kill an active session (tmux kill-session) or remove it from history.
@@ -615,9 +644,9 @@ def main():
     # Sub-command: connect <name> <path> <source> [<client>]
     # ------------------------------------------------------------------
     if args and args[0] == "connect":
-        name        = args[1] if len(args) > 1 else ""
-        path        = args[2] if len(args) > 2 else ""
-        source      = args[3] if len(args) > 3 else ""
+        name = args[1] if len(args) > 1 else ""
+        path = args[2] if len(args) > 2 else ""
+        source = args[3] if len(args) > 3 else ""
         tmux_client = args[4] if len(args) > 4 else ""
         connect_session(name, path, source, tmux_client)
         return
@@ -630,9 +659,9 @@ def main():
         tmux_client = args[2] if len(args) > 2 else ""
         if not result_file or not os.path.exists(result_file):
             return
-        parts  = Path(result_file).read_text().strip().split("\t")
-        name   = parts[0].strip() if len(parts) > 0 else ""
-        path   = parts[1].strip() if len(parts) > 1 else ""
+        parts = Path(result_file).read_text().strip().split("\t")
+        name = parts[0].strip() if len(parts) > 0 else ""
+        path = parts[1].strip() if len(parts) > 1 else ""
         source = parts[2].strip() if len(parts) > 2 else ""
         if name:
             connect_session(name, path, source, tmux_client)
@@ -642,7 +671,7 @@ def main():
     # Sub-command: kill <name> <source>
     # ------------------------------------------------------------------
     if args and args[0] == "kill":
-        name   = args[1] if len(args) > 1 else ""
+        name = args[1] if len(args) > 1 else ""
         source = args[2] if len(args) > 2 else ""
         if name:
             kill_session(name, source)
@@ -652,7 +681,7 @@ def main():
     # Sub-command: --list-fzf  (used by fzf reload binding)
     # ------------------------------------------------------------------
     if args and args[0] == "--list-fzf":
-        cwd    = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
+        cwd = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
         groups = collect_groups(cwd)
         print(build_fzf_lines(groups))
         return
@@ -660,7 +689,7 @@ def main():
     # ------------------------------------------------------------------
     # Main mode: collect data, run single-fzf picker
     # ------------------------------------------------------------------
-    cwd         = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
+    cwd = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
     tmux_client = os.environ.get("TMUX_CLIENT", "")
 
     groups = collect_groups(cwd)
