@@ -30,11 +30,7 @@ Filtering:
   Type 'config'   — show only configured sessions
 
 Deduplication:
-  - A worktree whose sanitized name (/ → _) matches an active session is
-    suppressed from the worktree group; the active entry shows the slash-form
-    branch name instead of the sanitized tmux session name.
-  - History entries that are the sanitized form of a slash-name worktree are
-    collapsed into the slash-form key (normalize_history).
+  - Worktrees already running as active sessions are suppressed from the worktree group.
   - Config entries matching an active session name are suppressed.
 
 Worktree CWD resolution:
@@ -162,43 +158,11 @@ def save_history(history: dict):
     tmp.rename(HISTORY_FILE)
 
 
-def normalize_history(history: dict) -> dict:
-    """
-    Collapse slash-form and sanitized-form (/ → _) history entries into one.
-    When both exist, keep the slash-form key with the max timestamp.
-
-    Example: "ianhowell/foo" and "ianhowell_foo" → "ianhowell/foo" (max ts).
-    Note: "cleanup-macvtap-stuff" is NOT the sanitized form of
-    "ianhowell/cleanup-macvtap-stuff" (that would be "ianhowell_cleanup-macvtap-stuff"),
-    so such entries are kept distinct.
-    """
-    # Build a map from sanitized key → slash-form key for all slash-containing entries
-    slash_keys: dict[str, str] = {}  # sanitized → slash-form
-    for name in list(history.keys()):
-        if "/" in name:
-            slash_keys[name.replace("/", "_")] = name
-
-    normalized: dict[str, float] = {}
-    for name, ts in history.items():
-        if "/" in name:
-            existing = normalized.get(name, 0.0)
-            normalized[name] = max(existing, ts)
-        elif name in slash_keys:
-            # This is the sanitized form of a slash-key — merge into slash-form
-            slash = slash_keys[name]
-            existing = normalized.get(slash, history.get(slash, 0.0))
-            normalized[slash] = max(existing, ts)
-        else:
-            existing = normalized.get(name, 0.0)
-            normalized[name] = max(existing, ts)
-    return normalized
-
-
 def record_session(name: str):
     """Record the current timestamp for a session in the history file."""
     history = load_history()
     history[name] = time.time()
-    save_history(normalize_history(history))
+    save_history(history)
 
 
 # ---------------------------------------------------------------------------
@@ -334,21 +298,11 @@ def merge_sessions(
       group_d: cold configured (no history)      (sorted alphabetically)
 
     Deduplication:
-      1. Worktrees whose sanitized name (/ → _) matches an active session name
-         are marked "active". The active entry's display_name is set to the
-         slash-form branch name. The worktree is excluded from groups c/d.
-      2. Config entries that match active session names are excluded.
-      3. history_only entries are excluded if they match any known name
-         (including sanitized forms of current worktrees).
+      1. Config entries that match active session names are excluded.
+      2. Worktrees already running as active sessions are excluded from groups c/d.
+      3. history_only entries are excluded if they match any known name.
     """
-    history = normalize_history(history)
-
-    active_names      = {s["name"] for s in active}
-    # Map: sanitized-name → worktree entry (for worktrees with slashes in name)
-    sanitized_to_wt: dict[str, dict] = {}
-    for wt in worktrees:
-        if "/" in wt["name"]:
-            sanitized_to_wt[wt["name"].replace("/", "_")] = wt
+    active_names = {s["name"] for s in active}
 
     worktrees_already_active: set[str] = set()
 
@@ -358,22 +312,12 @@ def merge_sessions(
         # Attach config path if available
         if s["name"] in config_by_name:
             s["path"] = config_by_name[s["name"]]["path"]
-        # If this active session is a treemux-sanitized worktree, show the branch name
-        wt = sanitized_to_wt.get(s["name"])
-        if wt:
-            s["display_name"] = wt["name"]
-            s["path"]         = wt["path"]
-            worktrees_already_active.add(wt["name"])
 
     # Apply history timestamps
     for s in config:
         s["last_used"] = history.get(s["name"], 0.0)
     for s in worktrees:
-        sanitized = s["name"].replace("/", "_")
-        s["last_used"] = history.get(
-            s["name"],
-            history.get(sanitized, history.get(s["path"], 0.0))
-        )
+        s["last_used"] = history.get(s["name"], history.get(s["path"], 0.0))
 
     # Remove config entries already active
     config_unique = [s for s in config if s["name"] not in active_names]
@@ -382,12 +326,10 @@ def merge_sessions(
     worktrees_visible = [s for s in worktrees if s["name"] not in worktrees_already_active]
 
     # Compute known names for history-only exclusion
-    wt_sanitized = {s["name"].replace("/", "_") for s in worktrees}
     known_names = (
         active_names
         | {s["name"] for s in config}
         | {s["name"] for s in worktrees}
-        | wt_sanitized
     )
     history_only = [
         {
@@ -600,16 +542,10 @@ def _resolve_worktree_path(branch_name: str) -> str:
         data = json.loads(raw)
     except Exception:
         return ""
-    sanitized = branch_name.replace("/", "_")
-    # Look for zoxide entry whose path basename matches the sanitized branch name
-    # or whose name ends with the branch name
     for item in data:
         item_path = item.get("Path", "")
         item_name = item.get("Name", "")
-        if item_path and (
-            os.path.basename(item_path) == sanitized
-            or item_name.endswith(branch_name)
-        ):
+        if item_path and item_name.endswith(branch_name):
             return item_path
     return ""
 
@@ -627,25 +563,7 @@ def connect_session(name: str, path: str, source: str, tmux_client: str = ""):
         _switch(name, tmux_client)
         return
 
-    # Sanitized match: the treemux-sanitized form is already running
-    sanitized = name.replace("/", "_")
-    if sanitized in active_names and sanitized != name:
-        _switch(sanitized, tmux_client)
-        return
-
-    # Worktree (explicit) or slash-named recent entry (worktree branch in history):
-    # Create the tmux session directly so the slash form of the branch name is
-    # preserved as the session name. treemux.sanitizeSessionName() converts "/" → "_"
-    # unconditionally, so we cannot use treemux attach-root and still get
-    # "ianhowell/cleanup-macvtap-stuff" as the session name.
-    #
-    # We replicate the minimal treemux setup:
-    #   1. tmux new-session -d -s <branch> -c <path>   (creates the session)
-    #   2. set @tree_root_name and @tree_root_dir       (treemux metadata)
-    # Then switch to it.
-    #
-    # Slash-named recent entries (source=SRC_RECENT, "/" in name) are worktree
-    # branches stored in history without a path. Resolve via sesh/zoxide.
+    # Worktree or slash-named recent entry: create the session directly
     is_slash_recent = source == SRC_RECENT and "/" in name
     if (source == SRC_WORKTREE and path) or is_slash_recent:
         wt_path = path or _resolve_worktree_path(name)
@@ -655,15 +573,6 @@ def connect_session(name: str, path: str, source: str, tmux_client: str = ""):
             if name not in active_check:
                 subprocess.run(
                     ["tmux", "new-session", "-d", "-s", name, "-c", wt_path],
-                    capture_output=True,
-                )
-                # Set treemux metadata so the session is compatible with treemux tooling
-                subprocess.run(
-                    ["tmux", "set-option", "-t", name, "-s", "@tree_root_name", name],
-                    capture_output=True,
-                )
-                subprocess.run(
-                    ["tmux", "set-option", "-t", name, "-s", "@tree_root_dir", wt_path],
                     capture_output=True,
                 )
             record_session(name)
@@ -710,13 +619,8 @@ def kill_session(name: str, source: str):
         subprocess.run(["tmux", "kill-session", "-t", name], capture_output=True)
     else:
         history = load_history()
-        # Remove both slash-form and sanitized-form from history
-        changed = False
-        for key in [name, name.replace("/", "_")]:
-            if key in history:
-                del history[key]
-                changed = True
-        if changed:
+        if name in history:
+            del history[name]
             save_history(history)
 
 
