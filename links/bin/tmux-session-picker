@@ -530,25 +530,6 @@ def run_picker(
 # Connect action
 # ---------------------------------------------------------------------------
 
-def _resolve_worktree_path(branch_name: str) -> str:
-    """
-    Try to resolve the filesystem path for a worktree branch name via sesh/zoxide.
-    Returns the path string, or "" if not found.
-    """
-    raw = run(["sesh", "list", "-j"])
-    if not raw:
-        return ""
-    try:
-        data = json.loads(raw)
-    except Exception:
-        return ""
-    for item in data:
-        item_path = item.get("Path", "")
-        item_name = item.get("Name", "")
-        if item_path and item_name.endswith(branch_name):
-            return item_path
-    return ""
-
 
 def connect_session(name: str, path: str, source: str, tmux_client: str = ""):
     """
@@ -563,23 +544,26 @@ def connect_session(name: str, path: str, source: str, tmux_client: str = ""):
         _switch(name, tmux_client)
         return
 
-    # Worktree or slash-named recent entry: create the session directly
-    is_slash_recent = source == SRC_RECENT and "/" in name
-    if (source == SRC_WORKTREE and path) or is_slash_recent:
-        wt_path = path or _resolve_worktree_path(name)
-        if wt_path:
-            # Check if session already exists under the slash name
-            active_check = set(run(["tmux", "list-sessions", "-F", "#{session_name}"]).splitlines())
-            if name not in active_check:
-                subprocess.run(
-                    ["tmux", "new-session", "-d", "-s", name, "-c", wt_path],
-                    capture_output=True,
-                )
-            record_session(name)
-            _switch(name, tmux_client)
-            return
-        # Fallback: sesh --switch if path not found
-        subprocess.run(["sesh", "connect", "--switch", name])
+    # Worktree: create the session directly, then switch to it.
+    # TODO: Reconstruct worktree sessions from history. Currently, if a worktree
+    # session was visited before but is no longer running, selecting it from the
+    # "recent" list falls through to `sesh connect` which likely can't recreate it.
+    # The right fix is to persist the worktree path alongside the history timestamp,
+    # e.g. {"ianhowell/foo": {"ts": 1234567890, "path": "/path/to/worktree"}}.
+    # Then connect_session can use the stored path to recreate the session exactly
+    # as it does for live SRC_WORKTREE entries.
+    # NOTE: This requires a history format migration.
+    if source == SRC_WORKTREE and path:
+        active_check = set(
+            run(["tmux", "list-sessions", "-F", "#{session_name}"]).splitlines()
+        )
+        if name not in active_check:
+            subprocess.run(
+                ["tmux", "new-session", "-d", "-s", name, "-c", path],
+                capture_output=True,
+            )
+        record_session(name)
+        _switch(name, tmux_client)
         return
 
     # Config or history-only: sesh.
