@@ -19,7 +19,6 @@ Navigation:
   ↑↓ / j k    — move within list
   Enter        — connect to selected session; closes popup
   Escape / q   — cancel
-  Ctrl-P       — toggle preview pane
   Ctrl-X       — kill selected session (if active) or remove from history
 
 Filtering:
@@ -523,9 +522,8 @@ def run_picker(
         # Ctrl-X: kill session or remove from history, then reload list
         f"--bind=ctrl-x:execute-silent(tmux-session-picker kill {{2}} {{4}})+reload({reload_cmd})",
         "--info=inline-right",
-        "--preview-window=right:45%:hidden:border-left",
+        "--preview-window=bottom:65%:border-top",
         "--preview=sesh preview {2} 2>/dev/null || echo '(no preview available)'",
-        "--bind=ctrl-p:toggle-preview",
     ] + _FZF_COLORS
 
     proc = subprocess.run(
