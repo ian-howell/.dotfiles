@@ -58,12 +58,6 @@
       ],
       "enabled": true,
     },
-    "kanbanflow": {
-      "type": "remote",
-      "url": "http://127.0.0.1:3000/mcp",
-      "oauth": false,
-      "enabled": true,
-    },
   },
   "permission": {
     "bash": {
