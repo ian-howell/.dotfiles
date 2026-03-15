@@ -1,5 +1,0 @@
-#!/bin/bash
-
-tmux rename-window code
-tmux new-window
-tmux rename-window cmd

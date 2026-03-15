@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tx-session-picker: unified tmux session fuzzy picker.
+tmux-session-picker: unified tmux session fuzzy picker.
 
 Sources (merged, deduplicated, sorted by MRU):
   1. Active tmux sessions       — real session_activity timestamps
@@ -48,16 +48,16 @@ Usage: called from tmux keybinding:
   bind C-Space display-popup -w 90% -h 85% -E \\
     -d "\#{pane_current_path}" \\
     -e "TMUX_CLIENT=\#{client_name}" \\
-    "tx-session-picker"
+    "tmux-session-picker"
 
 Sub-commands:
-  tx-session-picker connect <name> <path> <source> [<client>]
+  tmux-session-picker connect <name> <path> <source> [<client>]
       Connect to the named session.
-  tx-session-picker connect-from-file <result_file> <client>
+  tmux-session-picker connect-from-file <result_file> <client>
       Read selection from file and connect.
-  tx-session-picker kill <name> <source>
+  tmux-session-picker kill <name> <source>
       Kill an active session or remove a history entry (used by Ctrl-X binding).
-  tx-session-picker --list-fzf
+  tmux-session-picker --list-fzf
       Print fzf-formatted session list to stdout (used by fzf reload binding).
 """
 
@@ -535,7 +535,7 @@ def run_picker(
     fzf_input = build_fzf_lines(groups)
 
     # reload command: re-run the picker in --list-fzf mode with the same CWD
-    reload_cmd = f"TMUX_POPUP_CWD={cwd} tx-session-picker --list-fzf"
+    reload_cmd = f"TMUX_POPUP_CWD={cwd} tmux-session-picker --list-fzf"
 
     fzf_cmd = [
         "fzf",
@@ -557,7 +557,7 @@ def run_picker(
         "--bind=q:abort",
         "--bind=ctrl-d:delete-char",
         # Ctrl-X: kill session or remove from history, then reload list
-        f"--bind=ctrl-x:execute-silent(tx-session-picker kill {{2}} {{4}})+reload({reload_cmd})",
+        f"--bind=ctrl-x:execute-silent(tmux-session-picker kill {{2}} {{4}})+reload({reload_cmd})",
         "--info=inline-right",
         "--preview-window=right:45%:hidden:border-left",
         "--preview=sesh preview {2} 2>/dev/null || echo '(no preview available)'",
