@@ -49,7 +49,7 @@ Usage: called from tmux keybinding:
 Sub-commands:
   tmux-session-picker kill <name> <source>
       Kill an active session or remove a history entry (used by Ctrl-X binding).
-  tmux-session-picker --list-fzf
+  tmux-session-picker ls
       Print fzf-formatted session list to stdout (used by fzf reload binding).
 """
 
@@ -499,7 +499,7 @@ def run_picker(
     fzf_input = build_fzf_lines(groups)
 
     # reload command: re-run the picker in --list-fzf mode with the same CWD
-    reload_cmd = f"TMUX_POPUP_CWD={cwd} tmux-session-picker --list-fzf"
+    reload_cmd = f"TMUX_POPUP_CWD={cwd} tmux-session-picker ls"
 
     fzf_cmd = [
         "fzf",
@@ -649,7 +649,7 @@ def main():
     # ------------------------------------------------------------------
     # Sub-command: --list-fzf  (used by fzf reload binding)
     # ------------------------------------------------------------------
-    if args and args[0] == "--list-fzf":
+    if args and args[0] == "ls":
         cwd = os.environ.get("TMUX_POPUP_CWD") or os.environ.get("PWD") or os.getcwd()
         groups = collect_groups(cwd)
         print(build_fzf_lines(groups))
