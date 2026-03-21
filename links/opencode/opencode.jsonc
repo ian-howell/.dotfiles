@@ -7,22 +7,55 @@
     "/home/ian/.config/work/opencode/AGENTS.md"
   ],
   "mcp": {
-    "tmux-mcp": {
+    "ado-msazuredev": {
       "type": "local",
       "command": [
-        "npx",
-        "-y",
-        "tmux-mcp"
+        "agency",
+        "mcp",
+        "ado",
+        "--organization",
+        "msazuredev"
       ],
       "enabled": true,
     },
-    "context-server": {
-      "type": "remote",
-      "url": "http://localhost:8080/mcp",
-      "oauth": false,
-      "headers": {
-        "Authorization": "Bearer {file:~/.secrets/context-server-token}"
-      },
+    "ado-msazure": {
+      "type": "local",
+      "command": [
+        "agency",
+        "mcp",
+        "ado",
+        "--organization",
+        "msazure"
+      ],
+      "enabled": true,
+    },
+    "icm": {
+      "type": "local",
+      "command": [
+        "icm-mcp-proxy"
+      ],
+      "enabled": true,
+    },
+    "kusto-dev": {
+      "type": "local",
+      "command": [
+        "agency",
+        "mcp",
+        "kusto",
+        "--service-uri",
+        "https://ncdev-hub.eastus.kusto.windows.net"
+      ],
+      "enabled": true,
+    },
+    "workiq": {
+      "type": "local",
+      // "command": ["workiq", "mcp"], // Use this if the below doesn't work
+      "command": [
+        "npx",
+        "-y",
+        "@microsoft/workiq",
+        "mcp"
+      ],
       "enabled": true,
     },
   },
