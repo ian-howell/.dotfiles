@@ -41,4 +41,36 @@ vim.keymap.set("n", "<leader>fE", function()
   Snacks.explorer({ cwd = LazyVim.root() })
 end, { desc = "Explorer (cwd)" })
 
+-- Yank file path to system clipboard
+-- If you change colorschemes, update the hex values to match your new palette.
+local function set_yank_highlights()
+  vim.api.nvim_set_hl(0, "YankMsg", { fg = "#ffffff", bg = "#ff966c" }) -- white text on bright orange
+end
+set_yank_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = set_yank_highlights,
+})
+
+vim.keymap.set("n", "<leader>yn", function()
+  local name = vim.fn.expand("%:t")
+  vim.fn.setreg("+", name)
+  vim.api.nvim_echo({ { "Yanked: " .. name, "YankMsg" } }, true, {})
+end, { desc = "Yank filename" })
+vim.keymap.set("n", "<leader>yr", function()
+  local rel = vim.fn.expand("%")
+  vim.fn.setreg("+", rel)
+  vim.api.nvim_echo({ { "Yanked: " .. rel, "YankMsg" } }, true, {})
+end, { desc = "Yank relative path" })
+vim.keymap.set("n", "<leader>yp", function()
+  local abs = vim.fn.expand("%:p")
+  vim.fn.setreg("+", abs)
+  vim.api.nvim_echo({ { "Yanked: " .. abs, "YankMsg" } }, true, {})
+end, { desc = "Yank absolute path" })
+
+require("which-key").add({
+  { "<leader>yn", icon = "󰈔" },
+  { "<leader>yr", icon = "󰈔" },
+  { "<leader>yp", icon = "󰈔" },
+})
+
 -- vim: ts=2 sts=2 sw=2 et
