@@ -13,7 +13,7 @@ function is_installed() {
 }
 
 function install_tree_sitter_cli() {
-  sudo npm install -g tree-sitter-cli
+  sudo npm install -g tree-sitter-cli@0.24.7
 }
 
 main
