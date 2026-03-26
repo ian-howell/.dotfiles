@@ -4,9 +4,13 @@ set -euo pipefail
 if [ $# -gt 0 ]; then
     branch="$1"
 else
-    nvim -u NONE -U NONE -i NONE -n -N --cmd "set shortmess+=I laststatus=0 cmdheight=0" --cmd "map <CR> :wq<CR>" --cmd "imap <CR> <esc>:wq<CR>" +startinsert /tmp/new-worktree-name
-    read -r branch < /tmp/new-worktree-name
-    rm /tmp/new-worktree-name
+    # cut is used here to strip leading + and *
+    branch=$(git branch --color=always | fzf --ansi | cut -b3-)
+fi
+
+if [ -z "$branch" ]; then
+    echo "No branch selected, exiting."
+    exit 1
 fi
 
 git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
