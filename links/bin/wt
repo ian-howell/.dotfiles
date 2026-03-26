@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# TODO: Turn this into a "private" script (e.g. _wt), make it output the
+# worktree path, and then have a wrapper function then calls it and cd's into
+# the path. The goal is to reach get a shell in a worktree and in a specific
+# tmux session and in a specific directory all in one command.
+
 if [ $# -gt 0 ]; then
     branch="$1"
 else
@@ -73,3 +78,5 @@ if [ -n "${TMUX:-}" ]; then
 else
     tmux attach-session -t "$session"
 fi
+
+cd $worktree_dir
