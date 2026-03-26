@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# tp: move the current tmux window to another session.
+#
+# Flow:
+#   tp              — opens a display-popup running "tp --pick"
+#   tp --pick       — inside the popup: fzf picks a session, then execs "tp <session>"
+#   tp <session>    — performs the move:
+#                       1. capture the current window ID
+#                       2. link it into the target session
+#                       3. unlink it from the original session (net effect: move)
+#                       4. switch the client to the target session
+
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
+  tmux display-popup -EE "tp --pick"
+  exit 0
+fi
+
+if [ "$1" = "--pick" ]; then
+  session=$(tmux ls | fzf | cut -f1 -d:)
+  [ -n "$session" ] || exit 0
+  exec tp "$session"
+fi
+
+original_window="$(tmux display-message -p '#{window_id}')"
+tmux link-window -s "$original_window" -t "$1"
+tmux unlink-window -t "$original_window"
+tmux switch-client -t "$1"
