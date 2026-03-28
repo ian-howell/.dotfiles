@@ -3,7 +3,9 @@
   "autoshare": false,
   "autoupdate": true,
   "model": "github-copilot/claude-sonnet-4.6",
-  "plugin": ["opencode-dynamic-context-pruning"],
+  "plugin": [
+    "@tarquinen/opencode-dcp@latest"
+  ],
   "instructions": [
     "/home/ian/.config/work/opencode/AGENTS.md"
   ],
