@@ -19,7 +19,7 @@
         "--organization",
         "msazuredev"
       ],
-      "enabled": true,
+      "enabled": false,
     },
     "ado-msazure": {
       "type": "local",
@@ -30,14 +30,14 @@
         "--organization",
         "msazure"
       ],
-      "enabled": true,
+      "enabled": false,
     },
     "icm": {
       "type": "local",
       "command": [
         "icm-mcp-proxy"
       ],
-      "enabled": true,
+      "enabled": false,
     },
     "kusto-dev": {
       "type": "local",
@@ -48,7 +48,7 @@
         "--service-uri",
         "https://ncdev-hub.eastus.kusto.windows.net"
       ],
-      "enabled": true,
+      "enabled": false,
     },
     "workiq": {
       "type": "local",
@@ -59,7 +59,7 @@
         "@microsoft/workiq",
         "mcp"
       ],
-      "enabled": true,
+      "enabled": false,
     },
   },
   "permission": {
