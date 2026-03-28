@@ -1,82 +1,66 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Turn this into a "private" script (e.g. _wt), make it output the
-# worktree path, and then have a wrapper function then calls it and cd's into
-# the path. The goal is to reach get a shell in a worktree and in a specific
-# tmux session and in a specific directory all in one command.
-
 if [ $# -gt 0 ]; then
     branch="$1"
 else
-    # cut is used here to strip leading + and *
-    branch=$(git branch --color=always | fzf --ansi | cut -b3-)
+    # Show all branches (local + remote), strip 'remotes/origin/' prefix,
+    # deduplicate, strip leading whitespace/markers, let user pick with fzf.
+    branch=$(git branch -a --color=always \
+        | sed 's|remotes/origin/||' \
+        | sed 's|^[[:space:]]*[+*[:space:]]*||' \
+        | sort -u \
+        | fzf --ansi)
 fi
 
+# If empty, fall back to current branch
 if [ -z "$branch" ]; then
-    echo "No branch selected, exiting."
-    exit 1
+    if ! branch=$(git rev-parse --abbrev-ref HEAD); then
+        echo "Error: Not in a git repository or unable to determine current branch" >&2
+        exit 1
+    fi
 fi
 
-git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
-repo_root="$(dirname "$git_common_dir")"
-worktree_dir="$repo_root/.worktrees/$branch"
-session="$branch"
-
-mkdir -p "$worktree_dir"
-
-# 1. Determine if remote branch exists
-if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-    remote_exists=true
-else
-    remote_exists=false
-fi
-
-# 2. Determine if local branch exists
-if git rev-parse --verify "$branch" >/dev/null 2>&1; then
-    local_exists=true
-else
-    local_exists=false
-fi
-
-# 3. Create local branch if needed
-if ! $local_exists; then
-    if $remote_exists; then
+# 1. Ensure local branch exists
+if ! git rev-parse --verify "$branch" >/dev/null 2>&1; then
+    # Check if a remote-tracking ref exists
+    if git rev-parse --verify "refs/remotes/origin/$branch" >/dev/null 2>&1; then
         echo "Creating local branch $branch tracking origin/$branch"
-        git branch "$branch" "origin/$branch"
+        git branch "$branch" "refs/remotes/origin/$branch"
     else
         echo "Creating new local branch $branch"
         git branch "$branch"
     fi
 fi
 
-# 4. Ensure upstream is set correctly
-if $remote_exists; then
-    # Only set upstream if not already correct
-    current_upstream="$(git rev-parse --abbrev-ref "$branch"@{upstream} 2>/dev/null || true)"
+# 2. Ensure upstream is set correctly
+if git rev-parse --verify "refs/remotes/origin/$branch" >/dev/null 2>&1; then
+    current_upstream="$(git rev-parse --abbrev-ref "$branch@{upstream}" 2>/dev/null || true)"
     if [ "$current_upstream" != "origin/$branch" ]; then
         echo "Setting upstream for $branch → origin/$branch"
         git branch --set-upstream-to="origin/$branch" "$branch"
     fi
 fi
 
-# 5. Ensure worktree exists
-if ! git worktree list --porcelain | grep -q "worktree $worktree_dir\$"; then
+# 3. Ensure worktree exists
+git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+repo_root="$(dirname "$git_common_dir")"
+worktree_dir="$repo_root/.worktrees/$branch"
+if ! git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
     echo "Creating worktree $worktree_dir"
     git worktree add "$worktree_dir" "$branch"
 fi
 
-# 6. Ensure tmux session exists
+# 4. Ensure tmux session exists
+session="$branch"
 if ! tmux has-session -t "$session" 2>/dev/null; then
     echo "Creating tmux session $session"
     tmux new-session -d -c "$worktree_dir" -s "$session"
 fi
 
-# 7. Attach or switch
+# 5. Switch/attach
 if [ -n "${TMUX:-}" ]; then
     tmux switch-client -t "$session"
 else
     tmux attach-session -t "$session"
 fi
-
-cd $worktree_dir
