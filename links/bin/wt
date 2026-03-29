@@ -45,6 +45,7 @@ fi
 # 3. Ensure worktree exists
 git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
 repo_root="$(dirname "$git_common_dir")"
+repo_name="$(basename "$repo_root")"
 worktree_dir="$repo_root/.worktrees/$branch"
 if ! git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
     echo "Creating worktree $worktree_dir"
@@ -52,15 +53,21 @@ if ! git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
 fi
 
 # 4. Ensure tmux session exists
-session="$branch"
-if ! tmux has-session -t "$session" 2>/dev/null; then
+# Session format: "repo 󰘬 branch" using thin spaces (U+2009) around the
+# nf-md-git glyph (U+F062C). Thin spaces are NOT regular spaces — they avoid
+# word-splitting in unquoted shell expansions while keeping the name readable
+# in tmux status bars and pickers. The '=' prefix on -t targets enforces an
+# exact name match, preventing tmux from interpreting special characters as
+# session:window separators.
+session="${repo_name} 󰘬 ${branch}"
+if ! tmux has-session -t "=$session" 2>/dev/null; then
     echo "Creating tmux session $session"
     tmux new-session -d -c "$worktree_dir" -s "$session"
 fi
 
 # 5. Switch/attach
 if [ -n "${TMUX:-}" ]; then
-    tmux switch-client -t "$session"
+    tmux switch-client -t "=$session"
 else
-    tmux attach-session -t "$session"
+    tmux attach-session -t "=$session"
 fi
