@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#
+# ts - Switch tmux sessions
+#
+# Usage: ts [--list] [query]
+#
+# Opens an fzf picker listing all active tmux sessions.
+# Ctrl-X kills the selected session and reloads the list.
+# An optional query argument pre-fills the fzf search.
+#
+# --list: print the session list and exit (used internally for fzf reload)
+
+set -euo pipefail
+
+if [[ "${1:-}" == "--list" ]]; then
+  tmux list-sessions -F '#{session_name}' 2>/dev/null || true
+  exit 0
+fi
+
+query="${1:-}"
+
+selected=$(
+  tmux list-sessions -F '#{session_name}' 2>/dev/null \
+    | fzf \
+        --ansi \
+        --query="$query" \
+        --prompt="session> " \
+        --no-sort \
+        --header="  Ctrl-X: kill session" \
+        --bind "ctrl-x:execute-silent(tmux kill-session -t '={1}' 2>/dev/null)+reload(ts --list)" \
+        --preview="tmux capture-pane -pt '{1}'" \
+  || true
+)
+
+[[ -z "$selected" ]] && exit 0
+
+tmux-switch "$selected"

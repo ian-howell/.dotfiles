@@ -73,20 +73,6 @@ stealth-toggle() {
   fi
 }
 
-tmux-attach() {
-  local session
-  session=$(tmux ls | fzf | cut -f 1 -d:)
-  if [ -z "$session" ] ; then
-    return
-  fi
-
-  if [ -z $TMUX ] ; then
-    tmux attach -t "$session"
-  else
-    tmux switch -t "$session"
-  fi
-}
-
 append() {
   if (( $# != 1 )); then
     printf "Usage: %s <absolute_path>\n" "$0"
