@@ -33,3 +33,5 @@ links:
     link: ~/.config/opencode
   - file: ~/.dotfiles/links/sesh
     link: ~/.config/sesh
+  - file: ~/.dotfiles/links/television
+    link: ~/.config/television
