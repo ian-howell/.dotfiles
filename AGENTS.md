@@ -18,3 +18,5 @@ Neovim module loading: use `require("module")` directly for both plugins and loc
 silence or wrap errors from `require` calls; missing modules should fail loudly.
 
 When adding scripts to `links/bin`, ensure they are executable (e.g., `chmod +x`).
+
+Forward slashes (/) are valid in tmux session names. Do not suggest that they aren't.
