@@ -23,12 +23,13 @@ selected=$(
   tmux list-sessions -F '#{session_name}' 2>/dev/null \
     | fzf \
         --ansi \
+        --height=100% \
         --query="$query" \
         --prompt="session> " \
         --no-sort \
         --header="  Ctrl-X: kill session" \
-        --bind "ctrl-x:execute-silent(tmux kill-session -t '={1}' 2>/dev/null)+reload(ts --list)" \
-        --preview="tmux capture-pane -pt '{1}'" \
+        --bind 'ctrl-x:execute-silent(target="={1}"; tmux kill-session -t "$target" 2>/dev/null)+reload(ts --list)' \
+        --preview='target="={1}:"; tmux capture-pane -pt "$target"' \
   || true
 )
 

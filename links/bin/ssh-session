@@ -2,16 +2,13 @@
 #
 # ssh-session - Switch to (or create) a tmux session for an SSH host
 #
-# Usage: ssh-session [--list] [query]
+# Usage: ssh-session [query]
 #
 # Parses all hosts from ~/.ssh/config (resolving Include directives, filtering
 # wildcard patterns), opens an fzf picker, and switches to (or creates) a
 # tmux session that runs `ssh <host>`. Session names use the "ssh/<host>"
 # namespace to distinguish them from project sessions.
-# Ctrl-X kills the session for the selected host (if active).
 # An optional query argument pre-fills the fzf search.
-#
-# --list: print the host list and exit (used internally for fzf reload)
 
 set -euo pipefail
 
@@ -46,24 +43,18 @@ annotate() {
   done
 }
 
-if [[ "${1:-}" == "--list" ]]; then
-  list_hosts | annotate
-  exit 0
-fi
-
 query="${1:-}"
 
 selected=$(
   list_hosts | annotate \
     | fzf \
         --ansi \
+        --height=100% \
         --query="$query" \
         --prompt="ssh> " \
         --delimiter=$'\t' \
         --with-nth='1,2' \
-        --header="  Ctrl-X: kill session" \
-        --bind "ctrl-x:execute-silent(tmux kill-session -t =ssh/{1} 2>/dev/null)+reload(ssh-session --list)" \
-        --preview='echo "Host: {1}"; echo; grep -A10 "^Host {1}$" ~/.ssh/config ~/.config/work/ssh/config ~/.config/homelab-ssh-config 2>/dev/null | head -20 || echo "(no config details found)"' \
+        --preview='host={1}; echo "Host: $host"; echo; grep -A10 "^Host $host$" ~/.ssh/config ~/.config/work/ssh/config ~/.config/homelab-ssh-config 2>/dev/null | head -20 || echo "(no config details found)"' \
   || true
 )
 

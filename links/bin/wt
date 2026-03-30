@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+repo_root="$(dirname "$git_common_dir")"
+
 if [ $# -gt 0 ]; then
     branch="$1"
 else
@@ -10,7 +13,20 @@ else
         | sed 's|remotes/origin/||' \
         | sed 's|^[[:space:]]*[+*[:space:]]*||' \
         | sort -u \
-        | fzf --ansi)
+        | fzf --ansi \
+              --height=100% \
+              --prompt="branch> " \
+              --preview='
+                wt_dir="'"$repo_root"'/.worktrees/{1}"
+                if git -C "$wt_dir" rev-parse --git-dir >/dev/null 2>&1; then
+                  echo "worktree: $wt_dir"
+                  echo
+                  git -C "$wt_dir" status --short
+                else
+                  git log --oneline --color=always -20 {1} 2>/dev/null \
+                    || git log --oneline --color=always -20 origin/{1}
+                fi
+              ')
 fi
 
 # If empty, fall back to current branch
@@ -43,9 +59,6 @@ if git rev-parse --verify "refs/remotes/origin/$branch" >/dev/null 2>&1; then
 fi
 
 # 3. Ensure worktree exists
-git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
-repo_root="$(dirname "$git_common_dir")"
-repo_name="$(basename "$repo_root")"
 worktree_dir="$repo_root/.worktrees/$branch"
 if ! git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
     echo "Creating worktree $worktree_dir"
@@ -57,5 +70,6 @@ fi
 # nf-md-git glyph (U+F062C). Thin spaces are NOT regular spaces — they avoid
 # word-splitting in unquoted shell expansions while keeping the name readable
 # in tmux status bars and pickers.
+repo_name="$(basename "$repo_root")"
 session="${repo_name} 󰘬 ${branch}"
 tmux-switch "$session" --dir "$worktree_dir"
