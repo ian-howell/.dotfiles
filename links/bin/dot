@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# dot - Switch to (or create) the dotfiles tmux session
+#
+# Usage: dot
+
+set -euo pipefail
+
+tmux-switch "dotfiles" --dir "$HOME/.dotfiles"

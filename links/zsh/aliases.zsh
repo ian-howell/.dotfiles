@@ -102,9 +102,6 @@ alias grpe='grep'
 # force tmux to use 256 colors (to make vim pretty)
 alias tmux="tmux -2"
 
-# Shortcut to my session manager
-alias t="treemux-session-picker"
-
 #===[ valgrind
 alias valrgind=valgrind
 alias valigrnd=valgrind

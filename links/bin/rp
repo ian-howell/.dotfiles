@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#
+# rp - Switch to a tmux session for a git repo under ~/src
+#
+# Usage: rp [query]
+#
+# Discovers all git repos under ~/src, opens an fzf picker, and switches to
+# (or creates) a tmux session rooted at the selected repo. Session name is the
+# repo's directory basename.
+# An optional query argument pre-fills the fzf search.
+#
+set -euo pipefail
+
+src_root="$HOME/src"
+
+# List repos as "basename\t/full/path"
+# Excludes .worktrees directories to avoid listing worktree pseudo-repos.
+list_repos() {
+  find "$src_root" -mindepth 2 -maxdepth 5 -name '.git' -type d \
+    -not -path '*/.worktrees/*' \
+    2>/dev/null \
+    | sed 's|/.git$||' \
+    | while read -r repo_path; do
+        name=$(basename "$repo_path")
+        printf '%s\t%s\n' "$name" "$repo_path"
+      done \
+    | sort -t$'\t' -k1,1
+}
+
+# Annotate repos: append "(active)" column if a session with that name exists.
+annotate() {
+  local active_sessions
+  active_sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
+  while IFS=$'\t' read -r name path; do
+    if echo "$active_sessions" | grep -qxF "$name"; then
+      printf '%s\t%s\t(active)\n' "$name" "$path"
+    else
+      printf '%s\t%s\t\n' "$name" "$path"
+    fi
+  done
+}
+
+query="${1:-}"
+
+selected=$(
+  list_repos | annotate \
+    | fzf \
+        --ansi \
+        --height=100% \
+        --layout=reverse \
+        --preview-window='bottom,60%' \
+        --query="$query" \
+        --prompt="repo> " \
+        --delimiter=$'\t' \
+        --with-nth='1,3' \
+        --preview='git -C {2} log --oneline --color=always -20 2>/dev/null; echo; git -C {2} branch --color=always 2>/dev/null' \
+  || true
+)
+
+[[ -z "$selected" ]] && exit 0
+
+name=$(printf '%s' "$selected" | cut -f1)
+repo_path=$(printf '%s' "$selected" | cut -f2)
+
+tmux-switch "$name" --dir "$repo_path"

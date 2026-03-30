@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#
+# tmux-switch - Idempotent tmux session create/switch helper
+#
+# Usage: tmux-switch <session-name> [--dir <path>] [--command <cmd>]
+#
+# Creates the named session if it doesn't exist, then switches to it
+# (or attaches if not already inside tmux).
+#
+# Options:
+#   --dir <path>       Working directory for the new session (default: ~)
+#   --command <cmd>    Command to run in the new session's first window
+
+set -euo pipefail
+
+session=""
+dir="$HOME"
+cmd=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dir)     dir="$2"; shift 2 ;;
+    --command) cmd="$2"; shift 2 ;;
+    *)
+      if [[ -z "$session" ]]; then
+        session="$1"; shift
+      else
+        echo "tmux-switch: unexpected argument: $1" >&2; exit 1
+      fi
+      ;;
+  esac
+done
+
+if [[ -z "$session" ]]; then
+  echo "Usage: tmux-switch <session-name> [--dir <path>] [--command <cmd>]" >&2
+  exit 1
+fi
+
+# tmux silently replaces dots with underscores in session names. Apply the same
+# transformation so we use the same string for 'new-session' and 'switch-client'
+session="${session//./_}"
+
+# Create the session if it doesn't exist. new-session exits 1 with "duplicate
+# session" if it already exists; suppress that error silently.
+if [[ -n "$cmd" ]]; then
+  tmux new-session -d -s "$session" -c "$dir" "$cmd" 2>/dev/null || true
+else
+  tmux new-session -d -s "$session" -c "$dir" 2>/dev/null || true
+fi
+
+# Switch to the session (or attach if not already inside tmux).
+if [[ -n "${TMUX:-}" ]]; then
+  tmux switch-client -t "=$session"
+else
+  tmux attach-session -t "=$session"
+fi

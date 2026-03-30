@@ -1,25 +1,111 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ $# -gt 0 ]; then
-    branch="$1"
-else
-    # Show all branches (local + remote), strip 'remotes/origin/' prefix,
-    # deduplicate, strip leading whitespace/markers, let user pick with fzf.
-    branch=$(git branch -a --color=always \
-        | sed 's|remotes/origin/||' \
-        | sed 's|^[[:space:]]*[+*[:space:]]*||' \
-        | sort -u \
-        | fzf --ansi)
-fi
+git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+repo_root="$(dirname "$git_common_dir")"
+# Strip the leading dot for aesthetics - tmux will replace it with '_' otherwise
+repo_name="$(basename "$repo_root")"
+repo_name="${repo_name#.}"
 
-# If empty, fall back to current branch
-if [ -z "$branch" ]; then
-    if ! branch=$(git rev-parse --abbrev-ref HEAD); then
-        echo "Error: Not in a git repository or unable to determine current branch" >&2
+# ── Argument parsing ──────────────────────────────────────────────────────────
+mode="create"
+if [ "${1:-}" = "-d" ]; then
+    if [ -z "${2:-}" ]; then
+        echo "Error: -d requires a branch name" >&2
+        echo "Usage: wt -d <branch>" >&2
         exit 1
     fi
+    mode="delete"
+    branch="$2"
+elif [ "${1:-}" = "-l" ]; then
+    git worktree list --porcelain \
+        | awk '
+            /^worktree / { wt = substr($0, 10) }
+            /^branch /   { br = substr($0, 8); sub("^refs/heads/", "", br) }
+            /^$/         { if (wt != "" && wt != "'"$repo_root"'") print wt "\t" br; wt=""; br="" }
+            END          { if (wt != "" && wt != "'"$repo_root"'") print wt "\t" br }
+          '
+    exit 0
+elif [ $# -gt 0 ]; then
+    branch="$1"
+else
+    # Show existing worktrees (excluding the main checkout), let user pick with fzf.
+    worktree_lines=$(wt -l)
+    if [ -z "$worktree_lines" ]; then
+        echo "Error: no worktrees found (use 'wt <branch>' to create one)" >&2
+        exit 1
+    fi
+    branch=$(echo "$worktree_lines" \
+        | fzf --ansi \
+              --height=100% \
+              --layout=reverse \
+              --preview-window='bottom,60%' \
+              --prompt="worktree> " \
+              --header='ctrl-x: delete' \
+              --with-nth=2 \
+              --delimiter='\t' \
+              --bind 'ctrl-x:execute-silent(wt -d {2})+reload-sync(wt -l)' \
+              --preview='
+                wt_dir={1}
+                echo "==> git status"
+                git -C $wt_dir status
+                echo
+                echo
+                echo "==> recent commits"
+                git -C $wt_dir log --oneline --color=always -20
+              ' \
+        | cut -f2)
 fi
+
+# If empty (e.g. fzf cancelled), exit cleanly
+if [ -z "${branch:-}" ]; then
+    exit 0
+fi
+
+# ── Shared variable derivation ────────────────────────────────────────────────
+worktree_dir="$repo_root/.worktrees/$branch"
+# Session format: "repo 󰘬 branch" using thin spaces (U+2009) around the
+# nf-md-git glyph (U+F062C). Thin spaces avoid word-splitting in unquoted
+# shell expansions while keeping the name readable in tmux status bars.
+# Dots are replaced with underscores — tmux does this silently, so we apply
+# it explicitly for consistency.
+session="${repo_name} 󰘬 ${branch}"
+session="${session//./_}"
+
+# ── Delete mode ───────────────────────────────────────────────────────────────
+if [ "$mode" = "delete" ]; then
+    # Self-session detection — must happen before we kill anything.
+    current_session="$(tmux display-message -p '#S' 2>/dev/null || true)"
+
+    # Step 1: Remove the worktree (most likely to fail; abort if it does).
+    if git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
+        if ! git worktree remove --force "$worktree_dir"; then
+            echo "Error: failed to remove worktree $worktree_dir — aborting" >&2
+            exit 1
+        fi
+    fi
+
+    # Step 2: Delete the local branch (non-fatal if it fails).
+    if ! git branch -D "$branch" 2>/dev/null; then
+        echo "Warning: could not delete local branch '$branch' (may not exist or is checked out elsewhere)" >&2
+    fi
+
+    # Step 3: Kill the tmux session (last — most recoverable).
+    if [ -n "$current_session" ] && [ "$session" = "$current_session" ]; then
+        # We're inside the session we're about to kill — switch away first.
+        other_session="$(tmux list-sessions -F '#S' 2>/dev/null | grep -v "^${session}$" | head -1 || true)"
+        if [ -n "$other_session" ]; then
+            tmux switch-client -t "=$other_session"
+        else
+            tmux detach-client
+        fi
+    fi
+    tmux kill-session -t "=$session" 2>/dev/null || true
+
+    exit 0
+fi
+
+# ── Create / switch mode ──────────────────────────────────────────────────────
 
 # 1. Ensure local branch exists
 if ! git rev-parse --verify "$branch" >/dev/null 2>&1; then
@@ -43,31 +129,10 @@ if git rev-parse --verify "refs/remotes/origin/$branch" >/dev/null 2>&1; then
 fi
 
 # 3. Ensure worktree exists
-git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
-repo_root="$(dirname "$git_common_dir")"
-repo_name="$(basename "$repo_root")"
-worktree_dir="$repo_root/.worktrees/$branch"
 if ! git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
     echo "Creating worktree $worktree_dir"
     git worktree add "$worktree_dir" "$branch"
 fi
 
-# 4. Ensure tmux session exists
-# Session format: "repo 󰘬 branch" using thin spaces (U+2009) around the
-# nf-md-git glyph (U+F062C). Thin spaces are NOT regular spaces — they avoid
-# word-splitting in unquoted shell expansions while keeping the name readable
-# in tmux status bars and pickers. The '=' prefix on -t targets enforces an
-# exact name match, preventing tmux from interpreting special characters as
-# session:window separators.
-session="${repo_name} 󰘬 ${branch}"
-if ! tmux has-session -t "=$session" 2>/dev/null; then
-    echo "Creating tmux session $session"
-    tmux new-session -d -c "$worktree_dir" -s "$session"
-fi
-
-# 5. Switch/attach
-if [ -n "${TMUX:-}" ]; then
-    tmux switch-client -t "=$session"
-else
-    tmux attach-session -t "=$session"
-fi
+# 4. Ensure tmux session exists and switch to it.
+tmux-switch "$session" --dir "$worktree_dir"
