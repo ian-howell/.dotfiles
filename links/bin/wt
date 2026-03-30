@@ -15,6 +15,8 @@ else
         | sort -u \
         | fzf --ansi \
               --height=100% \
+              --layout=reverse \
+              --preview-window='bottom,60%' \
               --prompt="branch> " \
               --preview='
                 wt_dir="'"$repo_root"'/.worktrees/{1}"

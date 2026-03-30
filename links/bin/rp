@@ -47,6 +47,8 @@ selected=$(
     | fzf \
         --ansi \
         --height=100% \
+        --layout=reverse \
+        --preview-window='bottom,60%' \
         --query="$query" \
         --prompt="repo> " \
         --delimiter=$'\t' \

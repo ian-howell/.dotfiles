@@ -12,6 +12,8 @@ selected=$(
     | fzf \
         --ansi \
         --height=100% \
+        --layout=reverse \
+        --preview-window='bottom,60%' \
         --prompt="session> " \
         --no-sort \
         --header="  Ctrl-X: kill session" \
