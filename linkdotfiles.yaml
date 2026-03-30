@@ -31,5 +31,4 @@ links:
     link: ~/.config/vscode-nvim
   - file: ~/.dotfiles/links/opencode
     link: ~/.config/opencode
-  - file: ~/.dotfiles/links/television
-    link: ~/.config/television
+

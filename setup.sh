@@ -32,7 +32,6 @@ install_components() {
     "$HOME/.dotfiles/src/install_docker.sh"
     "$HOME/.dotfiles/src/install_opencode.sh"
     "$HOME/.dotfiles/src/install_stylua.sh"
-    "$HOME/.dotfiles/src/install_television.sh"
     "$HOME/.dotfiles/src/link_dotfiles.sh"
   )
 
