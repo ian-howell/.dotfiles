@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# ts - Switch tmux sessions
+#
+# Opens a fzf picker listing all active tmux sessions.
+# Ctrl-X kills the selected session and reloads the list.
+
+set -euo pipefail
+
+selected=$(
+  tmux list-sessions -F '#{session_name}' 2>/dev/null \
+    | fzf \
+        --ansi \
+        --height=100% \
+        --layout=reverse \
+        --preview-window='bottom,60%' \
+        --prompt="session> " \
+        --no-sort \
+        --header="  Ctrl-X: kill session" \
+        --bind 'ctrl-x:execute-silent(target=\={1}; tmux kill-session -t "$target" 2>/dev/null)+reload-sync(tmux list-sessions -F "#{session_name}")' \
+        --preview='target=\={1}:; tmux capture-pane -p -e -t "$target"' \
+  || true
+)
+
+[[ -z "$selected" ]] && exit 0
+
+tmux-switch "$selected"

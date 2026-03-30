@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#
+# ssh-session - Switch to (or create) a tmux session for an SSH host
+#
+# Usage: ssh-session [query]
+#
+# Parses all hosts from ~/.ssh/config (resolving Include directives, filtering
+# wildcard patterns), opens an fzf picker, and switches to (or creates) a
+# tmux session that runs `ssh <host>`. Session names use the "ssh/<host>"
+# namespace to distinguish them from project sessions.
+# An optional query argument pre-fills the fzf search.
+
+set -euo pipefail
+
+# Resolve all SSH Include directives and extract concrete host names.
+# Expands ~ in Include paths, concatenates all included files with the base
+# config, then filters to Host lines, splits multi-host entries, and removes
+# wildcard patterns.
+list_hosts() {
+  eval cat \
+    "$(awk '/^Include / {print $2}' "$HOME/.ssh/config" | tr '\n' ' ')" \
+    "$HOME/.ssh/config" 2>/dev/null \
+    | grep -E '^Host ' \
+    | tr -s ' ' \
+    | cut -d' ' -f2- \
+    | tr ' ' '\n' \
+    | grep -v '[*?]' \
+    | grep -v '^$' \
+    | sort -u
+}
+
+# Annotate hosts: append "(active)" column if a session named "ssh/<host>" exists.
+annotate() {
+  local active_sessions
+  active_sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
+  while read -r host; do
+    session_name="ssh/${host}"
+    if echo "$active_sessions" | grep -qxF "$session_name"; then
+      printf '%s\t(active)\n' "$host"
+    else
+      printf '%s\t\n' "$host"
+    fi
+  done
+}
+
+query="${1:-}"
+
+selected=$(
+  list_hosts | annotate \
+    | fzf \
+        --ansi \
+        --height=100% \
+        --layout=reverse \
+        --preview-window='bottom,60%' \
+        --query="$query" \
+        --prompt="ssh> " \
+        --delimiter=$'\t' \
+        --with-nth='1,2' \
+        --preview='host={1}; echo "Host: $host"; echo; grep -A10 "^Host $host$" ~/.ssh/config ~/.config/work/ssh/config ~/.config/homelab-ssh-config 2>/dev/null | head -20 || echo "(no config details found)"' \
+  || true
+)
+
+[[ -z "$selected" ]] && exit 0
+
+host=$(printf '%s' "$selected" | cut -f1)
+session_name="ssh/${host}"
+
+tmux-switch "$session_name" --dir "$HOME" --command "ssh $host"
