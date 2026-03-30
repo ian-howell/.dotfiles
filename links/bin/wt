@@ -41,12 +41,13 @@ else
               --with-nth=2 \
               --delimiter='\t' \
               --preview='
-                wt_dir="{1}"
+                wt_dir={1}
                 echo "==> git status"
-                git -C "$wt_dir" status --short
+                git -C $wt_dir status
+                echo
                 echo
                 echo "==> recent commits"
-                git -C "$wt_dir" log --oneline --color=always -20
+                git -C $wt_dir log --oneline --color=always -20
               ' \
         | cut -f2)
 fi
