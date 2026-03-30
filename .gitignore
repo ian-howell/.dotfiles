@@ -19,6 +19,7 @@ links/nvim/swap/
 links/nvim/.netrwhist
 links/nvim/plugged/
 links/nvim/view/
+links/nvim/spell/*.spl
 
 # Ignore everything in the undo directory
 links/nvim/undo/*
