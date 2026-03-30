@@ -20,36 +20,40 @@ if [ "${1:-}" = "-d" ]; then
 elif [ $# -gt 0 ]; then
     branch="$1"
 else
-    # Show all branches (local + remote), strip 'remotes/origin/' prefix,
-    # deduplicate, strip leading whitespace/markers, let user pick with fzf.
-    branch=$(git branch -a --color=always \
-        | sed 's|remotes/origin/||' \
-        | sed 's|^[[:space:]]*[+*[:space:]]*||' \
-        | sort -u \
+    # Show existing worktrees (excluding the main checkout), let user pick with fzf.
+    worktree_lines=$(git worktree list --porcelain \
+        | awk '
+            /^worktree / { wt = substr($0, 10) }
+            /^branch /   { br = substr($0, 8); sub("^refs/heads/", "", br) }
+            /^$/         { if (wt != "" && wt != "'"$repo_root"'") print wt "\t" br; wt=""; br="" }
+            END          { if (wt != "" && wt != "'"$repo_root"'") print wt "\t" br }
+          ')
+    if [ -z "$worktree_lines" ]; then
+        echo "Error: no worktrees found (use 'wt <branch>' to create one)" >&2
+        exit 1
+    fi
+    branch=$(echo "$worktree_lines" \
         | fzf --ansi \
               --height=100% \
               --layout=reverse \
               --preview-window='bottom,60%' \
-              --prompt="branch> " \
+              --prompt="worktree> " \
+              --with-nth=2 \
+              --delimiter='\t' \
               --preview='
-                wt_dir="'"$repo_root"'/.worktrees/{1}"
-                if git -C "$wt_dir" rev-parse --git-dir >/dev/null 2>&1; then
-                  echo "worktree: $wt_dir"
-                  echo
-                  git -C "$wt_dir" status --short
-                else
-                  git log --oneline --color=always -20 {1} 2>/dev/null \
-                    || git log --oneline --color=always -20 origin/{1}
-                fi
-              ')
+                wt_dir="{1}"
+                echo "==> git status"
+                git -C "$wt_dir" status --short
+                echo
+                echo "==> recent commits"
+                git -C "$wt_dir" log --oneline --color=always -20
+              ' \
+        | cut -f2)
 fi
 
-# If empty (e.g. fzf cancelled), fall back to current branch
+# If empty (e.g. fzf cancelled), exit cleanly
 if [ -z "${branch:-}" ]; then
-    if ! branch=$(git rev-parse --abbrev-ref HEAD); then
-        echo "Error: Not in a git repository or unable to determine current branch" >&2
-        exit 1
-    fi
+    exit 0
 fi
 
 # ── Shared variable derivation ────────────────────────────────────────────────
