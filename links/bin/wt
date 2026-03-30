@@ -3,6 +3,9 @@ set -euo pipefail
 
 git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
 repo_root="$(dirname "$git_common_dir")"
+# Strip the leading dot for aesthetics - tmux will replace is with '_' otherwise
+repo_name="$(basename "$repo_root")"
+repo_name="${repo_name#.}"
 
 if [ $# -gt 0 ]; then
     branch="$1"
@@ -72,6 +75,5 @@ fi
 # nf-md-git glyph (U+F062C). Thin spaces are NOT regular spaces — they avoid
 # word-splitting in unquoted shell expansions while keeping the name readable
 # in tmux status bars and pickers.
-repo_name="$(basename "$repo_root")"
 session="${repo_name} 󰘬 ${branch}"
 tmux-switch "$session" --dir "$worktree_dir"

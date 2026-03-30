@@ -36,6 +36,10 @@ if [[ -z "$session" ]]; then
   exit 1
 fi
 
+# tmux silently replaces dots with underscores in session names. Apply the same
+# transformation so we use the same string for 'new-session' and 'switch-client'
+session="${session//./_}"
+
 # Create the session if it doesn't exist. new-session exits 1 with "duplicate
 # session" if it already exists; suppress that error silently.
 if [[ -n "$cmd" ]]; then
