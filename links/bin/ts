@@ -8,7 +8,9 @@
 set -euo pipefail
 
 selected=$(
-  tmux list-sessions -F '#{session_name}' 2>/dev/null \
+  tmux list-sessions -F '#{session_last_attached} #{session_name}' 2>/dev/null \
+    | sort -rn \
+    | cut -d' ' -f2- \
     | fzf \
         --ansi \
         --height=100% \
@@ -17,7 +19,7 @@ selected=$(
         --prompt="session> " \
         --no-sort \
         --header="  Ctrl-X: kill session" \
-        --bind 'ctrl-x:execute-silent(target=\={1}; tmux kill-session -t "$target" 2>/dev/null)+reload-sync(tmux list-sessions -F "#{session_name}")' \
+        --bind 'ctrl-x:execute-silent(target=\={1}; tmux kill-session -t "$target" 2>/dev/null)+reload-sync(tmux list-sessions -F "#{session_last_attached} #{session_name}" | sort -rn | cut -d" " -f2-)' \
         --preview='target=\={1}:; tmux capture-pane -p -e -t "$target"' \
   || true
 )
