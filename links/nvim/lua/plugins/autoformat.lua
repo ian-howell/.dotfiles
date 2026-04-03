@@ -17,7 +17,6 @@ return {
       lua = { "stylua" },
       -- Conform can run multiple formatters sequentially
       go = { "gofmt", "goimports" },
-      python = { "isort", "black" },
     },
   },
 }
