@@ -12,7 +12,8 @@
     }
   },
   "plugin": [
-    "@tarquinen/opencode-dcp@latest"
+    "@tarquinen/opencode-dcp@latest",
+    "superpowers@git+https://github.com/obra/superpowers.git"
   ],
   "instructions": [
     "/home/ian/.config/work/opencode/AGENTS.md"
