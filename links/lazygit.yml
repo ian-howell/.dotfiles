@@ -1,6 +1,5 @@
 # Skip "press enter to return to lazygit" prompt after editing files
 promptToReturnFromSubprocess: false
-
 gui:
   # Tokyonight theme
   theme:
@@ -32,7 +31,6 @@ gui:
   expandFocusedSidePanel: true
   showBottomLine: false
   sidePanelWidth: 0.2 # gives you more space to show things side-by-side
-
 # Keybindings. Changes to defaults are documented
 keybinding:
   universal:
@@ -129,7 +127,7 @@ keybinding:
     viewResetOptions: D
     fetch: f
     toggleTreeView: '`'
-    openMergeTool: M
+    openMergeOptions: M
     openStatusFilter: <c-b>
     copyFileInfoToClipboard: "y"
   branches:
@@ -194,7 +192,6 @@ keybinding:
     bulkMenu: b
   commitMessage:
     commitMenu: <c-o>
-
 # Custom commands
 customCommands:
   - key: "F"
@@ -202,8 +199,7 @@ customCommands:
     context: "localBranches"
     description: "Force push"
     loadingText: "Force pushing"
-
 git:
-  paging:
-    colorArg: always
-    pager: delta --dark --paging=never --side-by-side --line-numbers
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never --side-by-side --line-numbers
