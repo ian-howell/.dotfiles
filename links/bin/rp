@@ -1,30 +1,32 @@
 #!/usr/bin/env bash
 #
-# rp - Switch to a tmux session for a git repo under ~/src
+# rp - Switch to a tmux session for a git repo under ~/src or ~/projects
 #
 # Usage: rp [query]
 #
-# Discovers all git repos under ~/src, opens an fzf picker, and switches to
-# (or creates) a tmux session rooted at the selected repo. Session name is the
-# repo's directory basename.
+# Discovers all git repos under ~/src and ~/projects, opens an fzf picker, and
+# switches to (or creates) a tmux session rooted at the selected repo. Session
+# name is the repo's directory basename.
 # An optional query argument pre-fills the fzf search.
 #
 set -euo pipefail
 
-src_root="$HOME/src"
+src_roots=("$HOME/src" "$HOME/projects")
 
 # List repos as "basename\t/full/path"
 # Excludes .worktrees directories to avoid listing worktree pseudo-repos.
 list_repos() {
-  find "$src_root" -mindepth 2 -maxdepth 5 -name '.git' -type d \
-    -not -path '*/.worktrees/*' \
-    2>/dev/null \
-    | sed 's|/.git$||' \
-    | while read -r repo_path; do
-        name=$(basename "$repo_path")
-        printf '%s\t%s\n' "$name" "$repo_path"
-      done \
-    | sort -t$'\t' -k1,1
+  for src_root in "${src_roots[@]}"; do
+    [[ -d "$src_root" ]] || continue
+    find "$src_root" -mindepth 2 -maxdepth 5 -name '.git' -type d \
+      -not -path '*/.worktrees/*' \
+      2>/dev/null \
+      | sed 's|/.git$||' \
+      | while read -r repo_path; do
+          name=$(basename "$repo_path")
+          printf '%s\t%s\n' "$name" "$repo_path"
+        done
+  done | sort -t$'\t' -k1,1
 }
 
 # Annotate repos: append "(active)" column if a session with that name exists.
