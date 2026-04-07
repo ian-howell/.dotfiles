@@ -6,6 +6,7 @@
   "agent": {
     "plan": {
       "model": "github-copilot/claude-opus-4.6",
+      "variant": "thinking",
     },
     "build": {
       "model": "github-copilot/claude-sonnet-4.6",
