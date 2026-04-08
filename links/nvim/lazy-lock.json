@@ -41,6 +41,7 @@
   "persistence.nvim": { "branch": "main", "commit": "b20b2a7887bd39c1a356980b45e03250f3dce49c" },
   "plenary.nvim": { "branch": "master", "commit": "b9fd5226c2f76c951fc8ed5923d85e4de065e509" },
   "quicker.nvim": { "branch": "master", "commit": "2d3f3276eab9352c7b212821c218aca986929f62" },
+  "ripple-on-save.nvim": { "branch": "main", "commit": "a4ee5bd2b5ff0c88d01cf7a2ef177ef4b750e9ef" },
   "ripple.nvim": { "branch": "main", "commit": "8009919a22bee1ae84b7e6b24c6a05e777644761" },
   "satellite.nvim": { "branch": "main", "commit": "633d60d45d7b266dabcc82261bea51385a972e8b" },
   "screenkey.nvim": { "branch": "main", "commit": "16390931d847b1d5d77098daccac4e55654ac9e2" },
