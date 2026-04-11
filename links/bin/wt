@@ -64,12 +64,13 @@ fi
 
 # ── Shared variable derivation ────────────────────────────────────────────────
 worktree_dir="$repo_root/.worktrees/$branch"
-# Session format: "repo 󰘬 branch" using thin spaces (U+2009) around the
-# nf-md-git glyph (U+F062C). Thin spaces avoid word-splitting in unquoted
-# shell expansions while keeping the name readable in tmux status bars.
-# Dots are replaced with underscores — tmux does this silently, so we apply
+# Session format: "repo⋅󰘬⋅branch" using Dot Operator (smaller) (U+22C5) around
+# the nf-md-git glyph (U+F062C). Dots avoid word-splitting in unquoted shell
+# expansions while keeping the name readable in tmux status bars.
+session="${repo_name}⋅󰘬⋅${branch}"
+
+# Periods are replaced with underscores — tmux does this silently, so we apply
 # it explicitly for consistency.
-session="${repo_name} 󰘬 ${branch}"
 session="${session//./_}"
 
 # ── Delete mode ───────────────────────────────────────────────────────────────
