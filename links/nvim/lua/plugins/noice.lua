@@ -24,6 +24,11 @@ return {
       presets = {
         command_palette = true, -- position the cmdline and popupmenu together
       },
+      views = {
+        mini = {
+          timeout = 10000, -- keep mini messages visible for 10s (default is 2s)
+        },
+      },
     },
     dependencies = {
       "MunifTanjim/nui.nvim",
