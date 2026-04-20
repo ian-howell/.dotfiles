@@ -5,7 +5,7 @@
   "default_agent": "plan",
   "agent": {
     "plan": {
-      "model": "github-copilot/claude-opus-4.7",
+      "model": "github-copilot/claude-opus-4.6",
       "variant": "thinking",
     },
     "build": {
