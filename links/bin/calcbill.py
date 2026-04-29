@@ -84,12 +84,14 @@ def parse_money(money_str):
 
 
 def print_report(report):
+    group_totals = {}
     total = 0
     for group_name in sorted(report):
         group = report[group_name]
         # strip off the string "_group" from the group name and capitalize the group owner name
         group_owner = group_name[: -len("_group")].title()
         group_total = total_for_group(group_name, group)
+        group_totals[group_name] = group_total
         total += group_total
 
         print("==============={: ^10}===============".format(group_owner))
@@ -103,6 +105,15 @@ def print_report(report):
 
     print("=" * 40)
     print("{:.<30} {:>.2f}".format("Total of totals", total))
+
+    print()
+    print("=== copy this into the spreadsheet ===")
+    print(group_totals["ian_group"])
+    print(group_totals["jenna_group"])
+    print(0)
+    print(group_totals["mickey_group"])
+    print(group_totals["anthony_group"])
+    print(group_totals["zac_group"])
 
 
 def total_for_group(group_name, group):
