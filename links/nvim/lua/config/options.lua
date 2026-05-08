@@ -77,4 +77,9 @@ vim.opt.scrolloff = 0
 -- omg swap files are the worst
 vim.opt.swapfile = false
 
+-- vim clipboards are so weird. I love the idea of keeping my vim registers
+-- separate from my system clipboards, but good lord is it annoying to have to
+-- specify every time I want to copy something from a VM
+vim.opt.clipboard = "unnamedplus"
+
 -- vim: ts=2 sts=2 sw=2 et
