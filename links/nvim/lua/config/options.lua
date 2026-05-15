@@ -82,4 +82,8 @@ vim.opt.swapfile = false
 -- specify every time I want to copy something from a VM
 vim.opt.clipboard = "unnamedplus"
 
+-- Honestly, concealed characters in markdown files are obnoxious, specifically,
+-- code fencing (```), which causes "stuttering" while scrolling past them.
+vim.opt.conceallevel = 0
+
 -- vim: ts=2 sts=2 sw=2 et
