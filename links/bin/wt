@@ -75,25 +75,20 @@ session="${session//./_}"
 
 # ── Delete mode ───────────────────────────────────────────────────────────────
 if [ "$mode" = "delete" ]; then
-    # Self-session detection — must happen before we kill anything.
+    # First, make sure we're at the root of the repo. We may have started in the
+    # worktree directory that we're trying to delete, and it's not really possible
+    # to delete a worktree while in it.
+    cd "$repo_root"
+
+    # Remove the worktree.
+    git worktree remove --force "$worktree_dir"
+
+    # Delete the branch.
+    git branch -D "$branch"
+
     current_session="$(tmux display-message -p '#S' 2>/dev/null || true)"
-
-    # Step 1: Remove the worktree (most likely to fail; abort if it does).
-    if git -C "$worktree_dir" rev-parse --git-dir >/dev/null 2>&1; then
-        if ! git worktree remove --force "$worktree_dir"; then
-            echo "Error: failed to remove worktree $worktree_dir — aborting" >&2
-            exit 1
-        fi
-    fi
-
-    # Step 2: Delete the local branch (non-fatal if it fails).
-    if ! git branch -D "$branch" 2>/dev/null; then
-        echo "Warning: could not delete local branch '$branch' (may not exist or is checked out elsewhere)" >&2
-    fi
-
-    # Step 3: Kill the tmux session (last — most recoverable).
     if [ -n "$current_session" ] && [ "$session" = "$current_session" ]; then
-        # We're inside the session we're about to kill — switch away first.
+        # We're inside the session we're about to kill - switch away first.
         other_session="$(tmux list-sessions -F '#S' 2>/dev/null | grep -v "^${session}$" | head -1 || true)"
         if [ -n "$other_session" ]; then
             tmux switch-client -t "=$other_session"
@@ -101,7 +96,8 @@ if [ "$mode" = "delete" ]; then
             tmux detach-client
         fi
     fi
-    tmux kill-session -t "=$session" 2>/dev/null || true
+    # Kill the tmux session.
+    tmux kill-session -t "=$session"
 
     exit 0
 fi
