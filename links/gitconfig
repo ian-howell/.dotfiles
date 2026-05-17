@@ -41,8 +41,9 @@
 	# Replace the a/ and b/ in the diff header output with where the diff is
 	# coming from, so i/ (index), w/ (working directory) or c/ commit.
 	mnemonicPrefix = true
-        # Set nvim as the difftool
-        tool = nvim
+      tool = codediff
+[difftool "codediff"]
+	cmd = nvim \"$LOCAL\" \"$REMOTE\" +\"CodeDiff file $LOCAL $REMOTE\"
 [difftool "nvim"]
         cmd = nvim -d "$LOCAL" "$REMOTE"
         prompt = false
@@ -65,7 +66,9 @@
 [merge]
 	# Include the base when showing mrerge conflicts
 	conflictstyle = diff3
-	tool = nvim
+	tool = codediff
+[mergetool "codediff"]
+	cmd = nvim \"$MERGED\" -c \"CodeDiff merge \\\"$MERGED\\\"\"
 [mergetool "nvim"]
 	cmd = nvim -d $LOCAL $MERGED $REMOTE
 [pull]
