@@ -173,4 +173,14 @@ return {
       },
     },
   },
+  config = function(_, opts)
+    require("codediff").setup(opts)
+
+    vim.api.nvim_create_autocmd("User", {
+      pattern = { "CodeDiffOpen", "CodeDiffFileSelect" },
+      callback = function(args)
+        require("review.ado_pr_comments").setup(args.data.tabpage)
+      end,
+    })
+  end,
 }
