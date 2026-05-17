@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() {
+    echo "review: $*" >&2
+    exit 1
+}
+
+require_cmd() {
+    command -v "$1" >/dev/null 2>&1 || die "missing required command: $1"
+}
+
+strip_heads_ref() {
+    local ref="$1"
+
+    if [[ "$ref" != refs/heads/* ]]; then
+        die "unsupported PR ref '$ref' (expected refs/heads/...)"
+    fi
+
+    printf '%s\n' "${ref#refs/heads/}"
+}
+
+parse_remote_org() {
+    local remote_url="$1"
+
+    if [[ "$remote_url" =~ dev\.azure\.com/([^/]+) ]]; then
+        printf '%s\n' "${BASH_REMATCH[1]}"
+        return 0
+    fi
+
+    printf '%s\n' "unknown-org"
+}
+
+require_cmd az
+require_cmd git
+require_cmd gum
+require_cmd nvim
+require_cmd python3
+require_cmd tmux-switch
+
+input="$(gum input --placeholder 'Azure DevOps PR URL or PR number')"
+input="${input#"${input%%[![:space:]]*}"}"
+input="${input%"${input##*[![:space:]]}"}"
+
+if [[ -z "$input" ]]; then
+    exit 0
+fi
+
+org=""
+pr_id=""
+
+if [[ "$input" =~ ^[0-9]+$ ]]; then
+    pr_id="$input"
+elif [[ "$input" =~ ^https://dev\.azure\.com/([^/]+)/[^/]+/_git/[^/]+/pullrequest/([0-9]+) ]]; then
+    org="${BASH_REMATCH[1]}"
+    pr_id="${BASH_REMATCH[2]}"
+else
+    die "expected a full Azure DevOps PR URL or a bare PR number"
+fi
+
+az_args=(repos pr show --id "$pr_id" --only-show-errors --query '{repo:repository.name,repositoryId:repository.id,project:repository.project.name,remoteUrl:repository.remoteUrl,source:sourceRefName,target:targetRefName}' -o json)
+if [[ -n "$org" ]]; then
+    az_args+=(--org "https://dev.azure.com/$org")
+fi
+
+az_error="$(mktemp -t review-az-error.XXXXXX)"
+trap 'rm -f "$az_error"' EXIT
+
+if ! metadata="$(az "${az_args[@]}" 2>"$az_error")"; then
+    detail="$(<"$az_error")"
+    if [[ -z "$org" ]]; then
+        die "could not load PR $pr_id; provide a full PR URL or configure Azure CLI defaults${detail:+: $detail}"
+    fi
+
+    die "could not load PR $pr_id from org '$org'${detail:+: $detail}"
+fi
+
+if [[ -z "$metadata" ]]; then
+    if [[ -z "$org" ]]; then
+        die "could not load PR $pr_id; provide a full PR URL or configure Azure CLI defaults"
+    fi
+
+    die "could not load PR $pr_id from org '$org'"
+fi
+
+parsed="$(python3 -c '
+import json
+import sys
+
+data = json.load(sys.stdin)
+for key in ("repo", "repositoryId", "project", "remoteUrl", "source", "target"):
+    value = data.get(key)
+    if not value:
+        raise SystemExit(f"missing metadata field: {key}")
+    print(value)
+' <<<"$metadata")" || die "could not parse Azure DevOps PR metadata"
+
+mapfile -t fields <<<"$parsed"
+repo="${fields[0]}"
+repository_id="${fields[1]}"
+project="${fields[2]}"
+remote_url="${fields[3]}"
+source_ref="${fields[4]}"
+target_ref="${fields[5]}"
+
+if [[ -z "$org" ]]; then
+    org="$(parse_remote_org "$remote_url")"
+fi
+
+source_branch="$(strip_heads_ref "$source_ref")"
+target_branch="$(strip_heads_ref "$target_ref")"
+
+repo_dir="/tmp/ado-pr-review/$org/$project/$repo"
+
+if [[ -e "$repo_dir" ]]; then
+    git -C "$repo_dir" rev-parse --git-dir >/dev/null 2>&1 \
+        || die "target path exists but is not a git repo: $repo_dir"
+else
+    mkdir -p "$(dirname "$repo_dir")"
+    git clone "$remote_url" "$repo_dir"
+fi
+
+git -C "$repo_dir" remote set-url origin "$remote_url"
+git -C "$repo_dir" fetch --prune origin \
+    "+refs/heads/$target_branch:refs/remotes/origin/$target_branch" \
+    "+refs/heads/$source_branch:refs/remotes/origin/$source_branch"
+
+iteration_args=(devops invoke --area git --resource pullRequestIterations --route-parameters "project=$project" "repositoryId=$repository_id" "pullRequestId=$pr_id" --org "https://dev.azure.com/$org" --api-version 7.1 --query 'value[-1].{id:id,source:sourceRefCommit.commitId,target:targetRefCommit.commitId}' -o json --only-show-errors)
+if ! iteration_metadata="$(az "${iteration_args[@]}" 2>"$az_error")"; then
+    detail="$(<"$az_error")"
+    die "could not load PR $pr_id iteration metadata${detail:+: $detail}"
+fi
+
+iteration_parsed="$(python3 -c '
+import json
+import sys
+
+data = json.load(sys.stdin)
+for key in ("id", "source", "target"):
+    value = data.get(key)
+    if not value:
+        raise SystemExit(f"missing iteration field: {key}")
+    print(value)
+' <<<"$iteration_metadata")" || die "could not parse Azure DevOps PR iteration metadata"
+
+mapfile -t iteration_fields <<<"$iteration_parsed"
+iteration_id="${iteration_fields[0]}"
+iteration_source_commit="${iteration_fields[1]}"
+iteration_target_commit="${iteration_fields[2]}"
+
+session="review⋅${target_branch}⋅󰘭⋅${source_branch}"
+session="${session//./_}"
+
+diff_arg="+CodeDiff origin/${target_branch}...origin/${source_branch}"
+pr_url="https://dev.azure.com/$org/$project/_git/$repo/pullrequest/$pr_id"
+printf -v nvim_cmd 'ADO_REVIEW_ORG_URL=%q ADO_REVIEW_PROJECT=%q ADO_REVIEW_REPOSITORY_ID=%q ADO_REVIEW_REPO_NAME=%q ADO_REVIEW_PR_ID=%q ADO_REVIEW_PR_URL=%q ADO_REVIEW_TARGET_BRANCH=%q ADO_REVIEW_SOURCE_BRANCH=%q ADO_REVIEW_ITERATION_ID=%q ADO_REVIEW_ITERATION_TARGET_COMMIT=%q ADO_REVIEW_ITERATION_SOURCE_COMMIT=%q nvim %q' \
+    "https://dev.azure.com/$org" \
+    "$project" \
+    "$repository_id" \
+    "$repo" \
+    "$pr_id" \
+    "$pr_url" \
+    "$target_branch" \
+    "$source_branch" \
+    "$iteration_id" \
+    "$iteration_target_commit" \
+    "$iteration_source_commit" \
+    "$diff_arg"
+tmux-switch "$session" --dir "$repo_dir" --command "$nvim_cmd"
