@@ -64,23 +64,6 @@ return {
         map({ "n", "x" }, "<leader>go", function()
           Snacks.gitbrowse({ what = "permalink" })
         end, { desc = "open in browser" })
-        map("n", "<leader>gd-", function()
-          gitsigns.toggle_linehl()
-          gitsigns.toggle_deleted()
-          gitsigns.toggle_numhl()
-        end, { desc = "toggle inline diff" })
-        map("n", "<leader>gd\\", function()
-          vim.cmd("CodeDiff file HEAD")
-        end, { desc = "diff against index" })
-        map("n", "<leader>gD", function()
-          local merge_base = vim.fn.system("git merge-base origin/main HEAD"):gsub("%s+", "")
-          if vim.v.shell_error == 0 and merge_base ~= "" then
-            vim.cmd("CodeDiff file " .. merge_base .. " HEAD")
-          else
-            vim.notify("Could not find merge-base with origin/main", vim.log.levels.WARN)
-          end
-        end, { desc = "diff against merge-base with main" })
-
         -- UI
         -- TODO: figure out where ui-related git bindings should live
         map("n", "<leader>ub", gitsigns.toggle_current_line_blame, { desc = "inline blame" })
