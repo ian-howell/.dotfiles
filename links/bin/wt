@@ -63,7 +63,7 @@ if [ -z "${branch:-}" ]; then
 fi
 
 # ── Shared variable derivation ────────────────────────────────────────────────
-worktree_dir="$repo_root/../$repo_root.worktrees/$branch"
+worktree_dir="$repo_root/../$repo_name.worktrees/$branch"
 # Session format: "repo⋅󰘬⋅branch" using Dot Operator (smaller) (U+22C5) around
 # the nf-md-git glyph (U+F062C). Dots avoid word-splitting in unquoted shell
 # expansions while keeping the name readable in tmux status bars.
