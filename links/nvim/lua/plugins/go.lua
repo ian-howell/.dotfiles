@@ -2,6 +2,10 @@ return {
   { -- Vim-go
     "fatih/vim-go",
     config = function()
+      -- Let Conform handle save-time formatting to avoid duplicate Go formatting passes.
+      vim.g.go_fmt_autosave = 0
+      vim.g.go_imports_autosave = 0
+
       -- The lsp hover popup is soo much cooler with Noice
       vim.g.go_doc_keywordprg_enabled = 0
 
