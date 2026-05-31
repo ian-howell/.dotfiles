@@ -19,8 +19,8 @@ zac_group = {"ZAC"}
 anthony_group = {"ANTHONY"}
 
 TRANSFER_ADJUSTMENTS = {
-    "ian_group": 24.30,
-    "zac_group": -24.30,
+    "ian_group": 13.33,
+    "zac_group": -13.33,
 }
 
 
