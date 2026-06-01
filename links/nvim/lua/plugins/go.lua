@@ -1,10 +1,19 @@
 return {
   { -- Vim-go
     "fatih/vim-go",
+    init = function()
+      -- LazyVim/native LSP owns gopls. Keep vim-go for helper commands, but do
+      -- not let it start a second Go LSP client or install its completion layer.
+      vim.g.go_gopls_enabled = 0
+      vim.g.go_code_completion_enabled = 0
+    end,
     config = function()
       -- Let Conform handle save-time formatting to avoid duplicate Go formatting passes.
       vim.g.go_fmt_autosave = 0
       vim.g.go_imports_autosave = 0
+
+      -- We use a custom "go to definition"
+      vim.g.go_def_mapping_enabled = 0
 
       -- The lsp hover popup is soo much cooler with Noice
       vim.g.go_doc_keywordprg_enabled = 0
