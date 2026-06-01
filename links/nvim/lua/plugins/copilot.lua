@@ -3,12 +3,29 @@ return {
     "zbirenbaum/copilot.lua",
     opts = {
       suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        trigger_on_accept = true,
         keymap = {
-          -- NOTE: accept_word and accept_line won't work util https://github.com/Saghen/blink.cmp/issues/1498 is addressed
+          accept = "<C-y>",
+          accept_word = "<C-f>",
+          accept_line = "<C-l>",
         },
+      },
+      panel = {
+        enabled = true,
+        auto_refresh = true,
       },
       filetypes = {
         ["*"] = true,
+      },
+      server_opts_overrides = {
+        flags = {
+          -- Work around Neovim 0.12.2 incremental sync assertions in Copilot buffers.
+          -- Copilot still receives document updates; Neovim sends full text changes
+          -- instead of incremental diffs for this client only.
+          allow_incremental_sync = false,
+        },
       },
       nes = {
         enabled = false,
@@ -16,6 +33,46 @@ return {
     },
 
     init = function()
+      local function copilot_accept(method, fallback)
+        return function()
+          local suggestion = require("copilot.suggestion")
+          if suggestion.is_visible() then
+            suggestion[method]()
+            return ""
+          end
+
+          return vim.api.nvim_replace_termcodes(fallback, true, false, true)
+        end
+      end
+
+      -- copilot.lua can show ghost text before its buffer-local accept mappings are
+      -- installed. Install our own small passthrough mappings when the Copilot LSP
+      -- client attaches so <C-y>/<C-f>/<C-l> always work with visible suggestions.
+      -- TODO: I'm pretty sure that I don't need this, but it should stick
+      -- around until I've cleared out LayzVim
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("user_copilot_keymaps", { clear = true }),
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if not client or client.name ~= "copilot" then
+            return
+          end
+
+          local map = function(lhs, method, desc)
+            vim.keymap.set("i", lhs, copilot_accept(method, lhs), {
+              buffer = args.buf,
+              desc = desc,
+              expr = true,
+              silent = true,
+            })
+          end
+
+          map("<C-y>", "accept", "Accept Copilot suggestion")
+          map("<C-f>", "accept_word", "Accept Copilot word")
+          map("<C-l>", "accept_line", "Accept Copilot line")
+        end,
+      })
+
       -- TODO: This just doesn't work. It doesn't even appear to work when I run the command directly. It
       -- works more like 'Copilot disable'
       -- vim.keymap.set('n', '<leader>tc', '<cmd>Copilot toggle<CR>', { desc = 'Toggle Copilot' })
