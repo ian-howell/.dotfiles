@@ -3,30 +3,19 @@
 REPO_DIR="$HOME/.config/src/neovim"
 
 function main() {
-  if [ ! -d "$REPO_DIR" ]; then
-    install
-  else
-    upgrade
-  fi
-}
-
-function install() {
-  mkdir -p "$REPO_DIR"
   install_dependencies
-  clone_repo
+  clone_or_fetch_repo
+  checkout_latest_stable
   build
 }
 
-function upgrade() {
-  if pull_latest_code; then
-    build
+function clone_or_fetch_repo() {
+  if [ ! -d "$REPO_DIR/.git" ]; then
+    git clone https://github.com/neovim/neovim "$REPO_DIR"
   else
-    echo "Up to date"
+    cd "$REPO_DIR" || exit 1
+    git fetch origin --tags --force
   fi
-}
-
-function clone_repo() {
-  git clone https://github.com/neovim/neovim "$REPO_DIR"
 }
 
 function install_dependencies() {
@@ -39,11 +28,23 @@ function build() {
   sudo make install
 }
 
-# Pull the latest code from the repo
-function pull_latest_code() {
+function checkout_latest_stable() {
   cd "$REPO_DIR" || exit 1
-  git fetch --tags --force
-  git checkout nightly
+
+  local before tag
+  before="$(git rev-parse HEAD)"
+  tag="$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)"
+
+  if [ -z "$tag" ]; then
+    echo "Could not find latest stable tag" >&2
+    exit 1
+  fi
+
+  git checkout "$tag"
+
+  if [ "$before" != "$(git rev-parse HEAD)" ]; then
+    sudo make distclean
+  fi
 }
 
 main
