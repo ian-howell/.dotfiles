@@ -1,7 +1,0 @@
-return {
-  { "akinsho/bufferline.nvim", enabled = false },
-  { "nvim-mini/mini.pairs", enabled = false },
-  { "rafamadriz/friendly-snippets", enabled = false },
-  { "mfussenegger/nvim-lint", enabled = false },
-  { "Saghen/blink.cmp", enabled = false },
-}

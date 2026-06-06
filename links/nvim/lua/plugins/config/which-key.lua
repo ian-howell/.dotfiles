@@ -1,0 +1,50 @@
+-- which-key configuration and group labels.
+
+local which_key = require("which-key")
+
+which_key.setup({
+  icons = {
+    mappings = vim.g.have_nerd_font or false,
+    keys = vim.g.have_nerd_font and {} or {
+      Up = "<Up> ",
+      Down = "<Down> ",
+      Left = "<Left> ",
+      Right = "<Right> ",
+      C = "<C-...> ",
+      M = "<M-...> ",
+      D = "<D-...> ",
+      S = "<S-...> ",
+      CR = "<CR> ",
+      Esc = "<Esc> ",
+      ScrollWheelDown = "<ScrollWheelDown> ",
+      ScrollWheelUp = "<ScrollWheelUp> ",
+      NL = "<NL> ",
+      BS = "<BS> ",
+      Space = "<Space> ",
+      Tab = "<Tab> ",
+      F1 = "<F1>",
+      F2 = "<F2>",
+      F3 = "<F3>",
+      F4 = "<F4>",
+      F5 = "<F5>",
+      F6 = "<F6>",
+      F7 = "<F7>",
+      F8 = "<F8>",
+      F9 = "<F9>",
+      F10 = "<F10>",
+      F11 = "<F11>",
+      F12 = "<F12>",
+    },
+    separator = "┝",
+  },
+  spec = {
+    { "<leader>a", group = "ai", mode = { "n", "x" } },
+    { "<leader>c", group = "code", mode = { "n", "x" } },
+    { "<leader>f", group = "find" },
+    { "<leader>g", group = "git", mode = { "n", "v" } },
+    { "<leader>G", group = "go", mode = { "n", "v" } },
+    { "<leader>q", group = "quickfix" },
+    { "<leader>u", group = "ui" },
+    { "<leader>y", group = "yank" },
+  },
+})

@@ -1,0 +1,68 @@
+{
+  "plugins": {
+    "codediff": {
+      "rev": "de91a62733db59d0755bdfefa50dcfd669002453",
+      "src": "https://github.com/esmuellert/codediff.nvim"
+    },
+    "conform": {
+      "rev": "c2526f1",
+      "src": "https://github.com/stevearc/conform.nvim"
+    },
+    "copilot": {
+      "rev": "3faffef",
+      "src": "https://github.com/zbirenbaum/copilot.lua"
+    },
+    "flash": {
+      "rev": "fcea7ff883235d9024dc41e638f164a450c14ca2",
+      "src": "https://github.com/folke/flash.nvim"
+    },
+    "gitsigns": {
+      "rev": "abf82a6",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "mini.surround": {
+      "rev": "9fd5ebef2b34cc4ac3c0f1811a6726ea6d92fa91",
+      "src": "https://github.com/nvim-mini/mini.surround"
+    },
+    "nvim-lspconfig": {
+      "rev": "229b79051b380377664edc4cbd534930154921a1",
+      "src": "https://github.com/neovim/nvim-lspconfig"
+    },
+    "nvim-treesitter": {
+      "rev": "45a07f86",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "ripple": {
+      "rev": "8009919a22bee1ae84b7e6b24c6a05e777644761",
+      "src": "https://github.com/ian-howell/ripple.nvim"
+    },
+    "ripple-on-save": {
+      "rev": "a4ee5bd",
+      "src": "https://github.com/ian-howell/ripple-on-save.nvim"
+    },
+    "snacks": {
+      "rev": "fe7cfe9",
+      "src": "https://github.com/folke/snacks.nvim"
+    },
+    "tokyonight": {
+      "rev": "5da1b76",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "vim-go": {
+      "rev": "f4b4ba17035aebcd222df90375c1cbb1dc4d8c5b",
+      "src": "https://github.com/fatih/vim-go"
+    },
+    "vim-sleuth": {
+      "rev": "be69bff",
+      "src": "https://github.com/tpope/vim-sleuth"
+    },
+    "vim-tmux-navigator": {
+      "rev": "e41c431",
+      "src": "https://github.com/christoomey/vim-tmux-navigator"
+    },
+    "which-key": {
+      "rev": "3aab214",
+      "src": "https://github.com/folke/which-key.nvim"
+    }
+  }
+}
