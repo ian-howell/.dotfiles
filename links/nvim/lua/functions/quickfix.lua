@@ -1,33 +1,25 @@
 local M = {}
 
--- openInSplit opens the current quickfix entry in a split window.
--- It is intended to be called from within a quickfix window.
-function M.openInSplit()
-  local qf = vim.fn.getqflist()
-  if not qf or #qf == 0 then
+local function open_current_entry(command)
+  local list = vim.fn.getqflist()
+  if not list or #list == 0 then
     return
   end
-  local entry = qf[vim.fn.line(".")]
+
+  local entry = list[vim.fn.line(".")]
   if not entry or not entry.bufnr then
     return
   end
-  -- go back to the previous window, split it, and open the buffer to the quickfix entry
-  vim.cmd(string.format("wincmd p | split | buffer %d | %d | cclose", entry.bufnr, entry.lnum))
+
+  vim.cmd(string.format("wincmd p | %s | buffer %d | %d | cclose", command, entry.bufnr, entry.lnum))
 end
 
--- openInVsplit opens the current quickfix entry in a vsplit window.
--- It is intended to be called from within a quickfix window.
-function M.openInVsplit()
-  local qf = vim.fn.getqflist()
-  if not qf or #qf == 0 then
-    return
-  end
-  local entry = qf[vim.fn.line(".")]
-  if not entry or not entry.bufnr then
-    return
-  end
-  -- go back to the previous window, vsplit it, and open the buffer to the quickfix entry
-  vim.cmd(string.format("wincmd p | vsplit | buffer %d | %d | cclose", entry.bufnr, entry.lnum))
+function M.open_in_split()
+  open_current_entry("split")
+end
+
+function M.open_in_vsplit()
+  open_current_entry("vsplit")
 end
 
 return M

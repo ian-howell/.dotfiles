@@ -9,10 +9,8 @@ Work-related OpenCode configs (including custom commands/agents) should live und
 "~/.config/work/opencode" and be referenced via the OPENCODE_CONFIG_DIR environment variable.
 Do not manage those paths via linkdotfiles.yaml.
 
-The primary Neovim configuration lives in the "links/nvim" directory (lazyvim-based). An
-experimental configuration lives in "links/experimental-neovim" and is not symlinked. The user is
-migrating back to the lazyvim-based setup, incorporating learnings from the experimental config.
-Use the `evim` alias to launch the experimental config.
+The primary Neovim configuration lives in the "links/nvim" directory and uses Neovim's built-in
+package manager.
 
 Neovim module loading: use `require("module")` directly for both plugins and local modules. Do not
 silence or wrap errors from `require` calls; missing modules should fail loudly.

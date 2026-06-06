@@ -82,7 +82,6 @@ alias ls="ls --color=auto"
 
 #===[ vim
 alias vim="nvim"
-alias evim="NVIM_APPNAME=experimental-neovim XDG_CONFIG_HOME=$HOME/.dotfiles/links nvim"
 
 alias :q=exit
 alias :wq=exit
