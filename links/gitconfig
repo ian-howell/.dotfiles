@@ -42,8 +42,6 @@
 	# coming from, so i/ (index), w/ (working directory) or c/ commit.
 	mnemonicPrefix = true
       tool = codediff
-[difftool "codediff"]
-	cmd = nvim \"$LOCAL\" \"$REMOTE\" +\"CodeDiff file $LOCAL $REMOTE\"
 [difftool "nvim"]
         cmd = nvim -d "$LOCAL" "$REMOTE"
         prompt = false
@@ -67,8 +65,6 @@
 	# Include the base when showing mrerge conflicts
 	conflictstyle = diff3
 	tool = codediff
-[mergetool "codediff"]
-	cmd = nvim \"$MERGED\" -c \"CodeDiff merge \\\"$MERGED\\\"\"
 [mergetool "nvim"]
 	cmd = nvim -d $LOCAL $MERGED $REMOTE
 [pull]
@@ -118,3 +114,10 @@
 [credential "azrepos:org/mariner-org"]
 	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
 	username = ianhowell@microsoft.com
+
+# These are left at the bottom intentionally because they break syntax
+# highlighting for everything below them in vim and that annoys me.
+[mergetool "codediff"]
+	cmd = nvim \"$MERGED\" -c \"CodeDiff merge \\\"$MERGED\\\"\"
+[difftool "codediff"]
+	cmd = nvim \"$LOCAL\" \"$REMOTE\" +\"CodeDiff file $LOCAL $REMOTE\"
