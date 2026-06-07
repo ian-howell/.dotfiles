@@ -28,7 +28,6 @@ install_components() {
     "$HOME/.dotfiles/src/install_gh.sh"
     "$HOME/.dotfiles/src/install_neovim.sh"
     "$HOME/.dotfiles/src/install_tmux.sh"
-    "$HOME/.dotfiles/src/install_treemux.sh"
     "$HOME/.dotfiles/src/install_zoxide.sh"
     "$HOME/.dotfiles/src/install_ohmyposh.sh"
     "$HOME/.dotfiles/src/install_docker.sh"
