@@ -8,6 +8,13 @@ local groups = {
   filetype_settings = vim.api.nvim_create_augroup("filetype-settings", { clear = true }),
 }
 
+-- Treat bare gitconfig files like .gitconfig.
+vim.filetype.add({
+  filename = {
+    gitconfig = "gitconfig",
+  },
+})
+
 vim.api.nvim_create_autocmd("BufWinEnter", {
   desc = "Start empty git commit messages in insert mode",
   group = vim.api.nvim_create_augroup("gitcommit-insert", { clear = true }),
