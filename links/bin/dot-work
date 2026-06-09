@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# dot-work - Switch to (or create) the dotfiles tmux session for work
+#
+# Usage: dot-work
+
+set -euo pipefail
+
+tmux-switch "work-dotfiles" --dir "$HOME/.config/work"
