@@ -104,6 +104,16 @@ vim.api.nvim_create_autocmd("CmdlineEnter", {
   end,
 })
 
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "Briefly highlight yanked text",
+  group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
+  callback = function()
+    -- TODO: switch to vim.hl.hl_op() once on Neovim 0.13+, where
+    -- vim.hl.on_yank() becomes deprecated in its favor.
+    vim.hl.on_yank()
+  end,
+})
+
 local function set_autoformat(pattern, enabled)
   vim.api.nvim_create_autocmd("FileType", {
     desc = "Set buffer autoformat preference",
