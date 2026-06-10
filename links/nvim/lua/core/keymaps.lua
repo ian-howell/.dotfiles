@@ -26,31 +26,18 @@ vim.keymap.set("n", "<leader>gc", function()
   vim.cmd("startinsert")
 end, { desc = "Git commit" })
 
-local function set_yank_highlights()
-  vim.api.nvim_set_hl(0, "YankMsg", { fg = "#ffffff", bg = "#ff966c" })
-end
-
-set_yank_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", {
-  desc = "Reset yank notification highlight",
-  callback = set_yank_highlights,
-})
-
-local function yank_to_clipboard(value)
-  vim.fn.setreg("+", value)
-  vim.api.nvim_echo({ { "Yanked: " .. value, "YankMsg" } }, true, {})
-end
+local yank = require("core.yank")
 
 vim.keymap.set("n", "<leader>yn", function()
-  yank_to_clipboard(vim.fn.expand("%:t"))
+  yank.to_clipboard(vim.fn.expand("%:t"))
 end, { desc = "Yank filename" })
 
 vim.keymap.set("n", "<leader>yr", function()
-  yank_to_clipboard(vim.fn.expand("%"))
+  yank.to_clipboard(vim.fn.expand("%"))
 end, { desc = "Yank relative path" })
 
 vim.keymap.set("n", "<leader>yp", function()
-  yank_to_clipboard(vim.fn.expand("%:p"))
+  yank.to_clipboard(vim.fn.expand("%:p"))
 end, { desc = "Yank absolute path" })
 
 vim.keymap.set({ "n", "x" }, "<leader>at", function()
