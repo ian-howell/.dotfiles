@@ -26,6 +26,36 @@ vim.keymap.set("n", "<leader>gc", function()
   vim.cmd("startinsert")
 end, { desc = "Git commit" })
 
+-- Smart line-edge motions: H/L jump to the first/last non-blank character when
+-- the cursor is in the middle of the line, and fall back to their native
+-- screen-edge behavior once already at that edge (or when a count is given).
+local function smart_home()
+  if vim.v.count > 0 then
+    return "H"
+  end
+  local line = vim.fn.getline(".")
+  local first_nonblank = vim.fn.match(line, "\\S") -- 0-indexed byte, -1 when blank
+  if first_nonblank < 0 or (vim.fn.col(".") - 1) <= first_nonblank then
+    return "H"
+  end
+  return "_"
+end
+
+local function smart_end()
+  if vim.v.count > 0 then
+    return "L"
+  end
+  local trimmed = (vim.fn.getline("."):gsub("%s+$", ""))
+  local last_nonblank = #trimmed -- 1-indexed byte col of last non-blank, 0 when blank
+  if last_nonblank == 0 or vim.fn.col(".") >= last_nonblank then
+    return "L"
+  end
+  return "g_"
+end
+
+vim.keymap.set({ "n", "x" }, "H", smart_home, { expr = true, desc = "First non-blank char / top of screen" })
+vim.keymap.set({ "n", "x" }, "L", smart_end, { expr = true, desc = "Last non-blank char / bottom of screen" })
+
 local yank = require("core.yank")
 
 vim.keymap.set("n", "<leader>yn", function()
