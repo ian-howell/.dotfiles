@@ -34,6 +34,29 @@ local specs = require("plugins.specs")
 
 vim.pack.add(specs, { load = true })
 
+vim.api.nvim_create_user_command("PackClean", function()
+  local orphans = vim.iter(vim.pack.get())
+    :filter(function(p)
+      return not p.active
+    end)
+    :map(function(p)
+      return p.spec.name
+    end)
+    :totable()
+
+  if vim.tbl_isempty(orphans) then
+    vim.notify("No unused plugins to remove", vim.log.levels.INFO)
+    return
+  end
+
+  local prompt = "Remove unused plugins?\n  " .. table.concat(orphans, "\n  ")
+  vim.ui.select({ "Yes", "No" }, { prompt = prompt }, function(choice)
+    if choice == "Yes" then
+      vim.pack.del(orphans)
+    end
+  end)
+end, { desc = "Remove plugins not in the current spec list" })
+
 require("lsp")
 require("plugins.config.tokyonight")
 require("plugins.config.tmux-navigator")
