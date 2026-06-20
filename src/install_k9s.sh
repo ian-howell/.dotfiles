@@ -32,7 +32,7 @@ function get_current_version() {
   if ! command -v k9s >/dev/null; then
     return
   fi
-  k9s version --short | grep -oP 'Version:\s+v\K[^\s]+'
+  k9s version --short | grep -oP 'Version\s+v\K[^\s]+'
 }
 
 function install_k9s() {
