@@ -31,4 +31,6 @@ links:
     link: ~/.config/vscode-nvim
   - file: ~/.dotfiles/links/opencode
     link: ~/.config/opencode
+  - file: ~/.dotfiles/links/k9s
+    link: ~/.config/k9s
 

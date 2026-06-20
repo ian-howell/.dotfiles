@@ -1,0 +1,129 @@
+# -----------------------------------------------------------------------------
+# TokyoNight Moon skin for k9s
+#
+# Structure adapted from RickTimmer/k9s-tokyonight (itself based on
+# axkirillov/k9s-tokyonight); palette anchors swapped to the official
+# tokyonight-moon values to match nvim/kitty/tmux.
+#   https://github.com/RickTimmer/k9s-tokyonight
+#   https://github.com/folke/tokyonight.nvim (style: moon)
+# -----------------------------------------------------------------------------
+foreground: &foreground "#c8d3f5"
+background: &background "#222436"
+current_line: &current_line "#ffc777"
+selection: &selection "#545c7e"
+comment: &comment "#82aaff"
+cyan: &cyan "#86e1fc"
+green: &green "#4fd6be"
+yellow: &yellow "#ffc777"
+orange: &orange "#ff966c"
+magenta: &magenta "#c099ff"
+pink: &pink "#fca7ea"
+blue: &blue "#82aaff"
+red: &red "#ff757f"
+white: &white "#c8d3f5"
+
+k9s:
+  # General K9s styles
+  body:
+    fgColor: *foreground
+    bgColor: default
+    logoColor: *orange
+  # Command prompt styles
+  prompt:
+    fgColor: *foreground
+    bgColor: *background
+    suggestColor: *orange
+  # ClusterInfoView styles.
+  info:
+    fgColor: *orange
+    sectionColor: *foreground
+  # Dialog styles.
+  dialog:
+    fgColor: *foreground
+    bgColor: default
+    buttonFgColor: *foreground
+    buttonBgColor: *green
+    buttonFocusFgColor: *background
+    buttonFocusBgColor: *foreground
+    labelFgColor: *comment
+    fieldFgColor: *foreground
+  frame:
+    # Borders styles.
+    border:
+      fgColor: *selection
+      focusColor: *foreground
+    menu:
+      fgColor: *foreground
+      keyColor: *blue
+      # Used for favorite namespaces
+      numKeyColor: *blue
+    # CrumbView attributes for history navigation.
+    crumbs:
+      fgColor: *orange
+      bgColor: default
+      activeColor: *selection
+    # Resource status and update styles
+    status:
+      newColor: *blue
+      modifyColor: *yellow
+      addColor: *white
+      errorColor: *red
+      highlightcolor: *orange
+      killColor: *magenta
+      completedColor: *comment
+    # Border title styles.
+    title:
+      fgColor: *foreground
+      bgColor: default
+      highlightColor: *blue
+      counterColor: *green
+      filterColor: *magenta
+  views:
+    # Charts skins...
+    charts:
+      bgColor: default
+      defaultDialColors:
+        - *blue
+        - *red
+      defaultChartColors:
+        - *blue
+        - *red
+    # TableView attributes.
+    table:
+      fgColor: *foreground
+      bgColor: default
+      cursorFgColor: *white
+      cursorBgColor: *background
+      markColor: *pink
+      # Header row styles.
+      header:
+        fgColor: *foreground
+        bgColor: default
+        sorterColor: *cyan
+    # Xray view attributes.
+    xray:
+      fgColor: *foreground
+      bgColor: default
+      cursorColor: *current_line
+      graphicColor: *blue
+      showIcons: false
+    # YAML info styles.
+    yaml:
+      keyColor: *green
+      colonColor: *blue
+      valueColor: *foreground
+    # Logs styles.
+    logs:
+      fgColor: *foreground
+      bgColor: default
+      indicator:
+        fgColor: *foreground
+        bgColor: *selection
+        toggleOnColor: *cyan
+        toggleOffColor: *foreground
+    help:
+      fgColor: *foreground
+      bgColor: default
+      indicator:
+        fgColor: *red
+        bgColor: default
