@@ -52,7 +52,7 @@ Snacks.setup({
           },
         },
       },
-      files = { hidden = true },
+      files = { hidden = true, focus = "input" },
       grep = { focus = "input" },
       grep_buffers = { focus = "input" },
       grep_word = { focus = "input" },
