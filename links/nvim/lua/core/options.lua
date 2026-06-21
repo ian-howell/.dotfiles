@@ -79,3 +79,6 @@ vim.opt.completeopt = { "menuone", "popup", "noinsert" }
 
 -- floating windows should have a borderby default
 vim.o.winborder = "rounded"
+
+-- Hide the command line when not in use
+vim.opt.cmdheight = 0
