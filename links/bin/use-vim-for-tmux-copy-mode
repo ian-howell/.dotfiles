@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+# use-vim-for-tmux-copy-mode — open the current tmux pane's contents in neovim.
+#
+# Snapshots the active pane to a temp file and opens it in neovim (configured by
+# ~/.config/tmux/vi-mode.lua), giving vim motions/search/yank over a pane's
+# scrollback or a full-screen TUI, as a richer alternative to tmux copy-mode.
+#
+# Capture strategy depends on the pane:
+#   - Alternate-screen TUIs (lazygit, k9s, opencode, pagers): capture ONLY the
+#     visible screen. Pulling history (-S) here prepends the pre-TUI shell
+#     scrollback and overflows the view.
+#   - Normal shells: capture full scrollback (-S -32768) so you can scroll back.
+#   -p = write to stdout, -e = keep colour/attribute escape sequences.
+#
+# Runs the editor in a NEW tmux window (full tmux navigation; popups are modal).
+# The temp file is removed by the new window AFTER neovim exits — a trap here
+# would delete it before neovim reads it, since this script returns immediately.
+# The first argument selects what happens once nvim opens (see vi-mode.lua):
+#   flash  — start flash.nvim immediately (jump to any visible target)
+#   search — start an interactive forward search (/)
+#   normal — just restore the cursor and stay in normal mode (default)
+action=${1:-normal}
+tmpfile=$(mktemp)
+
+# Capture the pane's cursor position and height so vi-mode.lua can restore the
+# cursor in the editor. The visible screen is the last pane_height rows of the
+# capture, so the editor's row = (scrollback above the screen) + cursor_y.
+eval "$(tmux display -p 'cx=#{cursor_x} cy=#{cursor_y} ph=#{pane_height}')"
+
+if [ "$(tmux display -p '#{alternate_on}')" = 1 ]; then
+  tmux capture-pane -pe >"$tmpfile"            # TUI: just the visible screen
+else
+  tmux capture-pane -peS -32768 >"$tmpfile"    # shell: include scrollback
+fi
+
+tmux new-window -n panecapture \
+  "VICOPY_ACTION='$action' VICOPY_CX='$cx' VICOPY_CY='$cy' VICOPY_PH='$ph' \
+   nvim '+luafile $HOME/.config/tmux/vi-mode.lua' '$tmpfile'; rm -f '$tmpfile'"
