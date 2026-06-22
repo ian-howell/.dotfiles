@@ -67,6 +67,12 @@ setopt PROMPT_SUBST
 export EDITOR='nvim'
 export VISUAL='nvim'
 
+# Set default browser to wslview, which will open links in the default Windows browser
+if [[ -x "/usr/bin/wslview" ]]; then
+    export BROWSER="/usr/bin/wslview"
+    export GH_BROWSER="/usr/bin/wslview"
+fi
+
 # Don't share a history between shells. That's weird.
 unsetopt share_history
 setopt no_share_history
