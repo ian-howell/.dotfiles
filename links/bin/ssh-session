@@ -16,9 +16,10 @@ set -euo pipefail
 # Expands ~ in Include paths, concatenates all included files with the base
 # config, then filters to Host lines, splits multi-host entries, and removes
 # wildcard patterns.
+# Note that Include directives can be nested, so we allow leading spaces.
 list_hosts() {
   eval cat \
-    "$(awk '/^Include / {print $2}' "$HOME/.ssh/config" | tr '\n' ' ')" \
+    "$(awk '/^[[:space:]]*Include / {print $2}' "$HOME/.ssh/config" | tr '\n' ' ')" \
     "$HOME/.ssh/config" 2>/dev/null \
     | grep -E '^Host ' \
     | tr -s ' ' \
