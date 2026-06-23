@@ -1,6 +1,6 @@
 require("mini.surround").setup({
   mappings = {
-    add = "ys",
+    add = "S",
     delete = "ds",
     find = "",
     find_left = "",
@@ -12,5 +12,3 @@ require("mini.surround").setup({
   },
   search_method = "cover_or_next",
 })
-
-vim.keymap.set("n", "yss", "ys_", { remap = true, desc = "Surround line" })
