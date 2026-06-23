@@ -52,7 +52,18 @@ vim.keymap.set("n", "q", "<cmd>qa!<cr>", { silent = true, buffer = buf })
 -- so does <Esc> in normal mode, but not in visual mode.
 vim.keymap.set("n", "<Esc>", "<cmd>qa!<cr>", { silent = true, buffer = buf })
 -- and enter in visual mode copies then quits, just like the default tmux copy-mode binding.
-vim.keymap.set("x", "<cr>", '"+y<cmd>qa!<cr>', { silent = true, buffer = buf })
+vim.keymap.set("x", "<cr>", function()
+  vim.cmd('normal! "vy') -- yank the visual selection
+
+  -- The below is required to avoid a race condition: `"+y` hands the text to
+  -- nvim's clipboard provider, which launches the clipboard tool (e.g. xclip)
+  -- as a background job and returns IMMEDIATELY — it does not wait. The
+  -- following `:qa!` then kills nvim's child jobs, including that tool. If the
+  -- kill wins the race the copy is lost.
+  -- To fix this, we hand the selection to `tmux load-buffer`, which blocks.
+  vim.fn.system({ "tmux", "load-buffer", "-w", "-" }, vim.fn.getreg("v"))
+  vim.cmd("qa!")
+end, { silent = true, buffer = buf })
 
 vim.opt_local.cursorline = true
 
