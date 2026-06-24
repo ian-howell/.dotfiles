@@ -21,6 +21,13 @@ vim.keymap.set("n", "<leader>uw", function()
   vim.opt_local.wrap = not vim.opt_local.wrap:get()
 end, { desc = "Toggle wrap" })
 
+vim.keymap.set(
+  "n",
+  "<leader>ur",
+  "<Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>",
+  { desc = "Redraw / Clear hlsearch / Diff Update" }
+)
+
 vim.keymap.set("n", "<leader>gc", function()
   vim.cmd("terminal git commit")
   vim.cmd("startinsert")
