@@ -61,10 +61,11 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
 -- Quickfix
 -- ---------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
-  desc = "Quickfix window maps",
+  desc = "Quickfix window maps and Cfilter/Lfilter commands",
   group = groups.quickfix,
   pattern = "qf",
   callback = function(args)
+    vim.cmd.packadd("cfilter")
     local quickfix = require("functions.quickfix")
     vim.keymap.set("n", "q", "<cmd>q<CR>", { buffer = args.buf, silent = true })
     vim.keymap.set("n", "-", quickfix.open_in_split, {

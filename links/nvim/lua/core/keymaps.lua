@@ -10,6 +10,15 @@ vim.keymap.set("i", "<C-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", { desc = "Fix the last
 vim.keymap.set("n", "<C-n>", "<cmd>bnext<CR>", { desc = "Go to next buffer" })
 vim.keymap.set("n", "<C-p>", "<cmd>bprevious<CR>", { desc = "Go to previous buffer" })
 
+local quickfix = require("functions.quickfix")
+vim.keymap.set("n", "<leader>qq", quickfix.toggle, { desc = "Toggle quickfix list" })
+vim.keymap.set("n", "<leader>qf", function()
+  quickfix.filter("quickfix", false)
+end, { desc = "Cfilter quickfix list" })
+vim.keymap.set("n", "<leader>qF", function()
+  quickfix.filter("quickfix", true)
+end, { desc = "Cfilter quickfix (keep non-matching)" })
+
 vim.g.cursorcolumn = vim.opt.cursorcolumn:get()
 vim.keymap.set("n", "<leader>ux", function()
   vim.g.cursorcolumn = not vim.g.cursorcolumn
