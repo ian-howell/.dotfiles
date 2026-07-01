@@ -20,6 +20,10 @@
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "mini.ai": {
+      "rev": "cb20f298ebf5ae91924cd0c6c310712de2ef4086",
+      "src": "https://github.com/nvim-mini/mini.ai"
+    },
     "mini.surround": {
       "rev": "9fd5ebef2b34cc4ac3c0f1811a6726ea6d92fa91",
       "src": "https://github.com/nvim-mini/mini.surround"
@@ -31,6 +35,10 @@
     "nvim-treesitter": {
       "rev": "45a07f86",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "nvim-treesitter-textobjects": {
+      "rev": "851e865342e5a4cb1ae23d31caf6e991e1c99f1e",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
     },
     "ripple": {
       "rev": "8009919a22bee1ae84b7e6b24c6a05e777644761",

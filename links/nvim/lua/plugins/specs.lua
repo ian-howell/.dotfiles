@@ -63,6 +63,14 @@ return {
     name = "mini.surround",
   },
   {
+    src = "https://github.com/nvim-mini/mini.ai",
+    name = "mini.ai",
+  },
+  {
+    src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects",
+    name = "nvim-treesitter-textobjects",
+  },
+  {
     src = "https://github.com/fatih/vim-go",
     name = "vim-go",
   },
