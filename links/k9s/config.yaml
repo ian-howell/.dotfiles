@@ -1,6 +1,5 @@
 k9s:
   liveViewAutoRefresh: false
-  gpuVendors: {}
   screenDumpDir: /home/ian/.local/state/k9s/screen-dumps
   refreshRate: 2
   apiServerTimeout: 2m0s
