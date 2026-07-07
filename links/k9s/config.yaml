@@ -10,11 +10,11 @@ k9s:
   portForwardAddress: localhost
   ui:
     skin: tokyonight-moon
-    enableMouse: false
+    enableMouse: true
     headless: false
-    logoless: false
+    logoless: true
     crumbsless: false
-    splashless: false
+    splashless: true
     reactive: false
     noIcons: false
     defaultsToFullScreen: false
