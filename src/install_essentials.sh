@@ -37,4 +37,4 @@ sudo apt-get install -y -q \
   ripgrep \
   ;
 
-sudo ln -s /usr/bin/batcat /usr/bin/bat
+sudo ln -f -s /usr/bin/batcat /usr/bin/bat
