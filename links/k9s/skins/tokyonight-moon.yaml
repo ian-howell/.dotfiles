@@ -92,7 +92,7 @@ k9s:
     table:
       fgColor: *foreground
       bgColor: default
-      cursorFgColor: *white
+      cursorFgColor: *black
       cursorBgColor: *background
       markColor: *pink
       # Header row styles.
