@@ -1,0 +1,15 @@
+# Pi runtime state and secrets — never commit these.
+# ~/.pi/agent is symlinked to this directory (see linkdotfiles.yaml).
+auth.json
+trust.json
+sessions/
+history.json
+keybindings.migrated
+# Installed pi packages (reinstalled automatically from settings.json "packages")
+npm/
+git/
+node_modules/
+package-lock.json
+# Extension-local dependency installs
+extensions/**/node_modules/
+extensions/**/package-lock.json

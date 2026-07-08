@@ -1,0 +1,10 @@
+{
+  "app.editor.external": ["ctrl+g"],
+  "app.session.new": ["ctrl+alt+n"],
+  "app.session.resume": ["ctrl+alt+s"],
+  "app.session.tree": ["ctrl+alt+t"],
+  "tui.select.up": ["up", "ctrl+p"],
+  "tui.select.down": ["down", "ctrl+n"],
+  "app.session.toggleNamedFilter": ["alt+n"],
+  "app.session.togglePath": ["alt+p"]
+}

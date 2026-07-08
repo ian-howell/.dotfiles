@@ -1,0 +1,38 @@
+{
+  "$schema": "https://pi.dev/schema/settings.json",
+  "defaultProvider": "github-copilot",
+  "defaultModel": "claude-opus-4.8",
+  "defaultThinkingLevel": "high",
+  "theme": "tokyonight",
+  "enabledModels": [
+    "github-copilot/claude-opus-4.8",
+    "github-copilot/claude-sonnet-4.6",
+    "github-copilot/claude-haiku-4.5"
+  ],
+  "defaultProjectTrust": "ask",
+  "sessionDir": "~/.local/share/pi/sessions",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 20000
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  },
+  "enableSkillCommands": true,
+  "skills": [
+    "/home/ian/.config/opencode/skills",
+    "/home/ian/.config/work/opencode/skills"
+  ],
+  "prompts": [
+    "/home/ian/.config/work/pi/prompts"
+  ],
+  "extensions": [],
+  "packages": [
+    "npm:pi-subagents",
+    "npm:pi-mcp-adapter"
+  ],
+  "lastChangelogVersion": "0.80.3",
+  "hideThinkingBlock": false
+}
