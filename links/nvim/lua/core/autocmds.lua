@@ -33,7 +33,6 @@ vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
   desc = "Hide focused-only UI when window loses focus",
   group = groups.focus_leave,
   callback = function()
-    vim.opt_local.number = false
     vim.opt_local.signcolumn = "no"
     vim.opt_local.cursorline = false
     vim.opt_local.cursorcolumn = false
@@ -49,7 +48,6 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
     if filetype == "snacks_picker_list" then
       return
     end
-    vim.opt_local.number = true
     vim.opt_local.signcolumn = "yes"
     vim.opt_local.cursorline = true
     vim.opt_local.cursorcolumn = vim.g.cursorcolumn
