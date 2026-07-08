@@ -10,13 +10,13 @@ k9s:
   ui:
     skin: tokyonight-moon
     enableMouse: true
-    headless: false
+    headless: true
     logoless: true
     crumbsless: false
     splashless: true
     reactive: false
     noIcons: false
-    defaultsToFullScreen: false
+    defaultsToFullScreen: true
     useFullGVRTitle: false
   skipLatestRevCheck: false
   disablePodCounting: false
