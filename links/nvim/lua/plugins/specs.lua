@@ -74,4 +74,8 @@ return {
     src = "https://github.com/fatih/vim-go",
     name = "vim-go",
   },
+  {
+    src = "https://github.com/stevearc/quicker.nvim",
+    name = "quicker",
+  },
 }
