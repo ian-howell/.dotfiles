@@ -40,6 +40,10 @@
       "rev": "851e865342e5a4cb1ae23d31caf6e991e1c99f1e",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
     },
+    "quicker": {
+      "rev": "4a6883cb13fe097a20a046eb55f6dffd239276e3",
+      "src": "https://github.com/stevearc/quicker.nvim"
+    },
     "ripple": {
       "rev": "8009919a22bee1ae84b7e6b24c6a05e777644761",
       "src": "https://github.com/ian-howell/ripple.nvim"
