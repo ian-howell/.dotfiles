@@ -20,6 +20,8 @@ local git_layout = {
 Snacks.setup({
   picker = {
     focus = "list",
+    hidden = true,
+    ignored = true,
     layout = {
       fullscreen = true,
       layout = { width = 0, height = 0 },
@@ -52,7 +54,7 @@ Snacks.setup({
           },
         },
       },
-      files = { hidden = true, focus = "input" },
+      files = { focus = "input" },
       grep = { focus = "input" },
       grep_buffers = { focus = "input" },
       grep_word = { focus = "input" },
