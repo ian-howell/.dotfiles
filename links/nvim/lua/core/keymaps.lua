@@ -10,6 +10,10 @@ vim.keymap.set("i", "<C-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", { desc = "Fix the last
 vim.keymap.set("n", "<C-n>", "<cmd>bnext<CR>", { desc = "Go to next buffer" })
 vim.keymap.set("n", "<C-p>", "<cmd>bprevious<CR>", { desc = "Go to previous buffer" })
 
+-- Move by display lines, but stay count-aware (e.g. 5j still jumps 5 real lines).
+vim.keymap.set({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Down (display line)" })
+vim.keymap.set({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "Up (display line)" })
+
 local quickfix = require("functions.quickfix")
 vim.keymap.set("n", "<leader>qq", quickfix.toggle, { desc = "Toggle quickfix list" })
 vim.keymap.set("n", "<leader>qf", function()
