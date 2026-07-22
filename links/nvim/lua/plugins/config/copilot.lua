@@ -3,10 +3,14 @@ require("copilot").setup({
     enabled = true,
     auto_trigger = true,
     trigger_on_accept = true,
+    -- blink.cmp's keymap layer (plugins/config/completion.lua) dispatches
+    -- <C-y>/<C-f>/<C-l>/<C-e> to Copilot when its ghost text is visible, so
+    -- Copilot must not install its own buffer-local mappings for these keys.
     keymap = {
-      accept = "<C-y>",
-      accept_word = "<C-f>",
-      accept_line = "<C-l>",
+      accept = false,
+      accept_word = false,
+      accept_line = false,
+      dismiss = false,
     },
   },
   panel = {
@@ -25,42 +29,6 @@ require("copilot").setup({
   nes = {
     enabled = false,
   },
-})
-
-local function copilot_accept(method, fallback)
-  return function()
-    local suggestion = require("copilot.suggestion")
-    if suggestion.is_visible() then
-      suggestion[method]()
-      return ""
-    end
-
-    return vim.api.nvim_replace_termcodes(fallback, true, false, true)
-  end
-end
-
-vim.api.nvim_create_autocmd("LspAttach", {
-  desc = "Install Copilot accept fallback mappings",
-  group = vim.api.nvim_create_augroup("user-copilot-keymaps", { clear = true }),
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if not client or client.name ~= "copilot" then
-      return
-    end
-
-    local function map(lhs, method, desc)
-      vim.keymap.set("i", lhs, copilot_accept(method, lhs), {
-        buffer = args.buf,
-        desc = desc,
-        expr = true,
-        silent = true,
-      })
-    end
-
-    map("<C-y>", "accept", "Accept Copilot suggestion")
-    map("<C-f>", "accept_word", "Accept Copilot word")
-    map("<C-l>", "accept_line", "Accept Copilot line")
-  end,
 })
 
 vim.keymap.set("n", "<leader>ad", "<cmd>Copilot disable<CR>", { desc = "Disable Copilot" })

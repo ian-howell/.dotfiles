@@ -79,20 +79,11 @@ vim.lsp.config("lua_ls", {
 vim.lsp.enable({ "gopls", "bashls", "lua_ls" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
-  desc = "LSP keymaps and manual completion",
+  desc = "LSP keymaps",
   group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
   callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-
     vim.keymap.set("n", "gd", function()
       require("lsp.goto-definition").definition_or_implementation_picker()
     end, { buffer = args.buf, desc = "Definition" })
-
-    if client and vim.lsp.completion then
-      vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = false })
-      vim.keymap.set("i", "<C-Space>", function()
-        vim.lsp.completion.get()
-      end, { buffer = args.buf, desc = "Trigger LSP completion" })
-    end
   end,
 })

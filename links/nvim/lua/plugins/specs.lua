@@ -39,6 +39,11 @@ return {
     name = "copilot",
   },
   {
+    src = "https://github.com/saghen/blink.cmp",
+    name = "blink.cmp",
+    version = vim.version.range("1"),
+  },
+  {
     src = "https://github.com/tpope/vim-sleuth",
     name = "vim-sleuth",
   },
