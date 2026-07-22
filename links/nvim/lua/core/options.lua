@@ -79,3 +79,10 @@ vim.opt.completeopt = { "menuone", "popup", "noinsert" }
 
 -- floating windows should have a borderby default
 vim.o.winborder = "rounded"
+
+-- Treesitter-based folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevelstart = 99 -- open all folds when opening a file
+vim.opt.foldenable = true
+vim.opt.foldtext = "" -- preserve syntax highlighting on the fold line
