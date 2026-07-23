@@ -31,7 +31,18 @@ end, { desc = "Show diagnostics at cursor" })
 -- Map escape to close floating windows, like diagnostics and hover previews
 local open_floating_preview = vim.lsp.util.open_floating_preview
 vim.lsp.util.open_floating_preview = function(contents, syntax, opts, ...)
+  opts = opts or {}
+  opts.max_width = opts.max_width or math.floor(vim.o.columns * 0.8)
+  opts.max_height = opts.max_height or math.floor(vim.o.lines * 0.8)
+  opts.wrap = false
   local bufnr, winid = open_floating_preview(contents, syntax, opts, ...)
+  -- Core returns early when focusing an already-open float, so re-assert the
+  -- window options here to cover both the create and focus (repeat K) paths.
+  if winid and vim.api.nvim_win_is_valid(winid) then
+    vim.wo[winid].wrap = false -- honor nowrap even after focusing in
+    vim.wo[winid].conceallevel = 1 -- core forces 2; we prefer 1
+    vim.wo[winid].concealcursor = "n" -- keep markdown concealed on the cursor line
+  end
   vim.keymap.set("n", "<Esc>", "<cmd>close<CR>", { buffer = bufnr })
   return bufnr, winid
 end
