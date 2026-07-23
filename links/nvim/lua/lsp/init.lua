@@ -24,6 +24,10 @@ vim.keymap.set("n", "]d", function()
   vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
 end, { desc = "Next error diagnostic" })
 
+vim.keymap.set("n", "<leader>K", function()
+  vim.diagnostic.open_float()
+end, { desc = "Show diagnostics at cursor" })
+
 -- Map escape to close floating windows, like diagnostics and hover previews
 local open_floating_preview = vim.lsp.util.open_floating_preview
 vim.lsp.util.open_floating_preview = function(contents, syntax, opts, ...)
