@@ -4,7 +4,7 @@ vim.diagnostic.config({
   underline = {
     severity = { min = vim.diagnostic.severity.ERROR },
   },
-  virtual_text = {
+  virtual_lines = {
     severity = { min = vim.diagnostic.severity.ERROR },
     source = "if_many",
   },
