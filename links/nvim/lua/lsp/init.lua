@@ -24,24 +24,37 @@ vim.keymap.set("n", "]d", function()
   vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
 end, { desc = "Next error diagnostic" })
 
-vim.keymap.set("n", "<leader>K", function()
-  vim.diagnostic.open_float()
-end, { desc = "Show diagnostics at cursor" })
-
-local open_floating_preview = vim.lsp.util.open_floating_preview
-vim.lsp.util.open_floating_preview = function(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.wrap = false
-  -- Make sure markdown fits. neovim doesn't seem to want to do this itself.
-  opts.height = 3
-  opts.width = 80
-  -- But make sure it doesn't get *too* big.
-  -- TODO: neovim doesn't seem to want to "fill" the float, so these settings
-  -- aren't really doing anything right now.
-  opts.max_height = 20
-  opts.max_width = 200
-  return open_floating_preview(contents, syntax, opts, ...)
+-- Two-stage float: the first press uses Neovim's default opener; a second press
+-- enlarges it to ~80% of the editor and moves the cursor inside. This is needed
+-- to work around the differences in how markdown is rendered in the first vs.
+-- second float
+local function hover_or_enlarge(open_default)
+  local buf = vim.api.nvim_get_current_buf()
+  local win = vim.b[buf].lsp_floating_preview
+  if win and vim.api.nvim_win_is_valid(win) then
+    local width = math.floor(vim.o.columns * 0.8)
+    local height = math.floor(vim.o.lines * 0.8)
+    vim.api.nvim_win_set_config(win, {
+      relative = "editor",
+      row = math.floor((vim.o.lines - height) / 2),
+      col = math.floor((vim.o.columns - width) / 2),
+      width = width,
+      height = height,
+      border = "rounded",
+    })
+    vim.wo[win].wrap = true
+    vim.wo[win].conceallevel = 0
+    vim.api.nvim_set_current_win(win)
+  else
+    open_default()
+  end
 end
+
+vim.keymap.set("n", "<leader>K", function()
+  hover_or_enlarge(function()
+    vim.diagnostic.open_float()
+  end)
+end, { desc = "Show diagnostics at cursor (press again to enlarge)" })
 
 vim.lsp.config("gopls", {
   settings = {
@@ -96,5 +109,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "gd", function()
       require("lsp.goto-definition").definition_or_implementation_picker()
     end, { buffer = args.buf, desc = "Definition" })
+
+    vim.keymap.set("n", "K", function()
+      hover_or_enlarge(function()
+        vim.lsp.buf.hover()
+      end)
+    end, { buffer = args.buf, desc = "Hover (press again to enlarge)" })
   end,
 })
