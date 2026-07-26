@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 #
-# rp - Switch to a tmux session for a git repo under ~/src or ~/projects
+# rp - Switch to a tmux session for a git repo under a set of source roots
 #
 # Usage: rp [query]
 #
-# Discovers all git repos under ~/src and ~/projects, opens an fzf picker, and
-# switches to (or creates) a tmux session rooted at the selected repo. Session
-# name is the repo's directory basename.
+# Discovers all git repos under the configured source roots, opens an fzf
+# picker, and switches to (or creates) a tmux session rooted at the selected
+# repo. Session name is the repo's directory basename.
 # An optional query argument pre-fills the fzf search.
+#
+# Source roots come from rp.d/defaults.conf (one path per line). Additional
+# machine-specific roots can be supplied via the RP_SRC_ROOTS environment
+# variable, colon-separated like $PATH (so directory names may not contain
+# colons), e.g. RP_SRC_ROOTS="$HOME/work/repos:$HOME/clients/acme".
 #
 set -euo pipefail
 
@@ -29,6 +34,12 @@ if [[ -r "$defaults_file" ]]; then
   done <"$defaults_file"
 fi
 
+# Layer in machine-specific roots from the environment (colon-separated).
+if [[ -n "${RP_SRC_ROOTS:-}" ]]; then
+  IFS=: read -ra env_roots <<<"$RP_SRC_ROOTS"
+  candidate_roots+=("${env_roots[@]}")
+fi
+
 # Expand each candidate, drop roots that don't exist, and dedupe by resolved
 # path so aliased/symlinked roots aren't searched twice.
 src_roots=()
@@ -45,7 +56,9 @@ for candidate in "${candidate_roots[@]}"; do
 done
 
 if ((${#src_roots[@]} == 0)); then
-  printf 'rp: no existing source roots (checked %s)\n' "$defaults_file" >&2
+  # shellcheck disable=SC2016  # literal $RP_SRC_ROOTS in the message is intentional
+  printf 'rp: no existing source roots (checked %s and $RP_SRC_ROOTS)\n' \
+    "$defaults_file" >&2
   exit 1
 fi
 
