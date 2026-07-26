@@ -75,7 +75,7 @@ list_repos() {
           name=$(basename "$repo_path")
           printf '%s\t%s\n' "$name" "$repo_path"
         done
-  done | sort -t$'\t' -k1,1
+  done | sort -t$'\t' -k1,1 | awk -F'\t' '!seen[$2]++'
 }
 
 # Annotate repos: append "(active)" column if a session with that name exists.
