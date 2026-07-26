@@ -11,7 +11,43 @@
 #
 set -euo pipefail
 
-src_roots=("$HOME/src" "$HOME/projects")
+# rp lives in bin/rp.d/ and is symlinked from bin/, so resolve the real path
+# to locate defaults.conf regardless of how it was invoked.
+script_dir=$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && pwd)
+defaults_file="$script_dir/defaults.conf"
+
+# Gather candidate roots from defaults.conf (comments/blank lines stripped).
+candidate_roots=()
+if [[ -r "$defaults_file" ]]; then
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"                        # strip trailing comment
+    line="${line#"${line%%[![:space:]]*}"}"   # trim leading whitespace
+    line="${line%"${line##*[![:space:]]}"}"   # trim trailing whitespace
+    if [[ -n "$line" ]]; then
+      candidate_roots+=("$line")
+    fi
+  done <"$defaults_file"
+fi
+
+# Expand each candidate, drop roots that don't exist, and dedupe by resolved
+# path so aliased/symlinked roots aren't searched twice.
+src_roots=()
+declare -A seen_roots=()
+for candidate in "${candidate_roots[@]}"; do
+  expanded="${candidate/#\~/$HOME}"
+  expanded="${expanded//\$HOME/$HOME}"
+  [[ -d "$expanded" ]] || continue
+  resolved=$(readlink -f -- "$expanded")
+  if [[ -z "${seen_roots[$resolved]:-}" ]]; then
+    seen_roots["$resolved"]=1
+    src_roots+=("$resolved")
+  fi
+done
+
+if ((${#src_roots[@]} == 0)); then
+  printf 'rp: no existing source roots (checked %s)\n' "$defaults_file" >&2
+  exit 1
+fi
 
 # List repos as "basename\t/full/path"
 # Excludes .worktrees directories to avoid listing worktree pseudo-repos.
