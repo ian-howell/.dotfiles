@@ -11,6 +11,14 @@ return {
     name = "snacks",
   },
   {
+    src = "https://github.com/FylerOrg/fyler.nvim",
+    name = "fyler",
+  },
+  {
+    src = "https://github.com/nvim-mini/mini.icons",
+    name = "mini.icons",
+  },
+  {
     src = "https://github.com/christoomey/vim-tmux-navigator",
     name = "vim-tmux-navigator",
   },
