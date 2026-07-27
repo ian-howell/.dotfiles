@@ -35,25 +35,6 @@ Snacks.setup({
       },
     },
     sources = {
-      explorer = {
-        jump = { close = true },
-        layout = {
-          fullscreen = true,
-          preview = true,
-          layout = {
-            width = 0,
-            height = 0,
-            box = "horizontal",
-            {
-              box = "vertical",
-              width = 0.35,
-              { win = "input", height = 1, border = true, title = "{title} {live} {flags}", title_pos = "center" },
-              { win = "list", border = "none" },
-            },
-            { win = "preview", title = "{preview}", border = "left", width = 0.65 },
-          },
-        },
-      },
       files = { focus = "input" },
       grep = { focus = "input" },
       grep_buffers = { focus = "input" },
@@ -159,11 +140,3 @@ end, { desc = "Grep root" })
 vim.keymap.set({ "n", "x" }, "<leader>*", function()
   Snacks.picker.grep_word()
 end, { desc = "Grep word" })
-
-vim.keymap.set("n", "<leader>fe", function()
-  Snacks.explorer({ cwd = vim.uv.cwd() })
-end, { desc = "Explorer cwd" })
-
-vim.keymap.set("n", "<leader>fE", function()
-  Snacks.explorer({ cwd = root.get() })
-end, { desc = "Explorer root" })
