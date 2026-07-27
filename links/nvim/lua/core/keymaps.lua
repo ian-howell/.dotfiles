@@ -83,7 +83,7 @@ vim.keymap.set("n", "<leader>yn", function()
 end, { desc = "Yank filename" })
 
 vim.keymap.set("n", "<leader>yr", function()
-  yank.to_clipboard(vim.fn.expand("%"))
+  yank.to_clipboard(vim.fn.expand("%:."))
 end, { desc = "Yank relative path" })
 
 vim.keymap.set("n", "<leader>yp", function()
