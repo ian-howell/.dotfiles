@@ -14,9 +14,6 @@
     }
   },
   "plugin": [],
-  "instructions": [
-    "/home/ian/.config/work/opencode/AGENTS.md"
-  ],
   "permission": {
     "bash": {
       "ssh": "ask",
