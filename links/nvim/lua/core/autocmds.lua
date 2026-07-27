@@ -29,10 +29,20 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 -- ---------------------------------------------------------------------------
 -- Focus UI
 -- ---------------------------------------------------------------------------
+-- Filetypes whose windows manage their own UI. The focus-UI autocmds leave
+-- these alone so plugin-owned gutters and highlights are not clobbered.
+local focus_ui_ignore = {
+  fyler_finder = true,
+  snacks_picker_list = true,
+}
+
 vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
   desc = "Hide focused-only UI when window loses focus",
   group = groups.focus_leave,
   callback = function()
+    if focus_ui_ignore[vim.bo.filetype] then
+      return
+    end
     vim.opt_local.signcolumn = "no"
     vim.opt_local.cursorline = false
     vim.opt_local.cursorcolumn = false
@@ -44,8 +54,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
   desc = "Show focused-only UI when window gains focus",
   group = groups.focus_enter,
   callback = function()
-    local filetype = vim.bo.filetype
-    if filetype == "snacks_picker_list" then
+    if focus_ui_ignore[vim.bo.filetype] then
       return
     end
     vim.opt_local.signcolumn = "yes"

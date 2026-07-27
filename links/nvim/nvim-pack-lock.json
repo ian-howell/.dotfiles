@@ -21,6 +21,10 @@
       "rev": "fcea7ff883235d9024dc41e638f164a450c14ca2",
       "src": "https://github.com/folke/flash.nvim"
     },
+    "fyler": {
+      "rev": "bc1f8e420f566dd3b3db1f0aff2e6932947bdd71",
+      "src": "https://github.com/FylerOrg/fyler.nvim"
+    },
     "gitsigns": {
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
@@ -28,6 +32,10 @@
     "mini.ai": {
       "rev": "cb20f298ebf5ae91924cd0c6c310712de2ef4086",
       "src": "https://github.com/nvim-mini/mini.ai"
+    },
+    "mini.icons": {
+      "rev": "98faae31e9be1cc054ae63485e58ceb185efcad0",
+      "src": "https://github.com/nvim-mini/mini.icons"
     },
     "mini.surround": {
       "rev": "9fd5ebef2b34cc4ac3c0f1811a6726ea6d92fa91",
