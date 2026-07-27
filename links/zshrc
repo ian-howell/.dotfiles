@@ -56,8 +56,13 @@ autoload -U +X bashcompinit && bashcompinit
 az_completions_file="/etc/bash_completion.d/azure-cli"
 [[ -f "$az_completions_file" ]] && source "$az_completions_file"
 
-# Set Kubernetes config file location
+# Set Kubernetes config file location, merging in any drop-in configs from ~/.kube/config.d
 export KUBECONFIG="$HOME/.kube/config"
+# The (N.) glob qualifier means: N = skip loop if no matches, . = regular files only
+for _kubeconfig in "$HOME/.kube/config.d/"*(N.); do
+    KUBECONFIG="$KUBECONFIG:$_kubeconfig"
+done
+unset _kubeconfig
 
 #===[ Unsorted
 # Allow proper substitution in the prompt
