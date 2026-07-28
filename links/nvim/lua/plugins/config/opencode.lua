@@ -13,10 +13,33 @@ require("opencode").setup({
       -- key here, so it should never be swallowed by the completion menu.
       ["<tab>"] = { "switch_mode", mode = { "n", "i" } },
     },
+    editor = {
+      -- swap_position sets ui.position to 'left'/'right' and reopens, which
+      -- would permanently kick the UI out of float mode for the session.
+      ["<leader>ox"] = false,
+      -- toggle_zoom shrinks the float to ui.zoom_width; meaningless when the
+      -- UI is already full-screen.
+      ["<leader>oz"] = false,
+    },
   },
   ui = {
-    position = "right",
-    window_width = 0.40,
+    -- Full-screen overlay instead of a vertical split.
+    position = "float",
+    float = {
+      -- width == columns, so border must be "none": a border sits outside the
+      -- window and would push it past the screen edge.
+      width = 1.0,
+      -- Absolute (not a ratio): a ratio of 1.0 resolves to vim.o.lines, one row
+      -- more than floats can occupy, which clips the bottom of the prompt. Kept
+      -- in sync by the VimResized autocmd below.
+      height = vim.o.lines - vim.o.cmdheight,
+      row = 0,
+      col = 0,
+      border = "none",
+      -- Default gap of 1 would show a strip of the buffer underneath between
+      -- the output and the prompt.
+      gap = 0,
+    },
 
     input = {
       -- Makes the plugin set wrap + linebreak on the input window, so long
@@ -28,6 +51,14 @@ require("opencode").setup({
 })
 
 local group = vim.api.nvim_create_augroup("user-opencode", { clear = true })
+
+vim.api.nvim_create_autocmd("VimResized", {
+  desc = "Keep the opencode float sized to the full editor",
+  group = group,
+  callback = function()
+    require("opencode.config").ui.float.height = vim.o.lines - vim.o.cmdheight
+  end,
+})
 
 vim.api.nvim_create_autocmd("FileType", {
   desc = "Markdown highlighting in opencode windows",
