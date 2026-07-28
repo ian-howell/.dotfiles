@@ -34,6 +34,9 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 local focus_ui_ignore = {
   fyler_finder = true,
   snacks_picker_list = true,
+  opencode = true,
+  opencode_output = true,
+  opencode_footer = true,
 }
 
 vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
@@ -186,5 +189,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     vim.fn.winrestview(view)
   end,
 })
+
+groups.focus_ui_ignore = focus_ui_ignore
 
 return groups
