@@ -36,6 +36,10 @@ vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
   desc = "Dim the window when it loses focus",
   group = groups.focus_leave,
   callback = function()
+    if groups.focus_ui_ignore[vim.bo.filetype] then
+      return
+    end
+
     -- If I've left the window for *any* reason (whether it's to switch buffers or to switch tmux panes),
     -- I want the window to be dimmed.
     vim.opt_local.winhighlight = "Normal:InactiveWindow,NormalNC:InactiveWindow"
@@ -46,6 +50,9 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
   desc = "Highlight the window when it gains focus",
   group = groups.focus_enter,
   callback = function()
+    if groups.focus_ui_ignore[vim.bo.filetype] then
+      return
+    end
     vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
   end,
 })

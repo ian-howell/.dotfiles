@@ -91,4 +91,8 @@ return {
     src = "https://github.com/stevearc/quicker.nvim",
     name = "quicker",
   },
+  {
+    src = "https://github.com/sudo-tee/opencode.nvim",
+    name = "opencode",
+  },
 }
