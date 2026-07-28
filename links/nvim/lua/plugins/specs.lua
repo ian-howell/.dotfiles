@@ -95,4 +95,8 @@ return {
     src = "https://github.com/sudo-tee/opencode.nvim",
     name = "opencode",
   },
+  {
+    src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
+    name = "render-markdown",
+  },
 }
