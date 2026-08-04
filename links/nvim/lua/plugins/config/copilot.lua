@@ -17,9 +17,7 @@ require("copilot").setup({
     enabled = true,
     auto_refresh = true,
   },
-  filetypes = {
-    ["*"] = true,
-  },
+  filetypes = {},
   server_opts_overrides = {
     flags = {
       -- Work around Neovim 0.12.2 incremental sync assertions in Copilot buffers.
