@@ -1,6 +1,6 @@
-AGENTS.md is a living document that is heavily under construction. This is the most important
-guidance here: aggressively seek improvements to this document and make suggestions as you work
-through tasks. This includes suggesting structural changes to the document itself.
+AGENTS.md is a living document. When you notice a real gap or an out-of-date rule while working,
+suggest an improvement, including structural changes to the document itself. Do not editorialize
+about the document on every task.
 
 The files in the "links" directory are symlinked to files according to the content of the
 "linkdotfiles.yaml" file in the root of this repository.
