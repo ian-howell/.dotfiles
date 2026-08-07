@@ -3,10 +3,8 @@
   "autoshare": false,
   "autoupdate": true,
   "default_agent": "ask",
+  "model": "github-copilot/claude-opus-5",
   "agent": {
-    "plan": {
-      "model": "github-copilot/claude-opus-5",
-    },
     "build": {
       "model": "github-copilot/claude-opus-4.8-fast",
     }
