@@ -1,8 +1,8 @@
 -- mini.ai configuration
 --
 -- Textobjects:
---   `af`/`if` - function call (mini.ai builtin, Lua-pattern based)
---   `aF`/`iF` - function definition (treesitter @function.outer/inner)
+--   `af`/`if` - function definition (treesitter @function.outer/inner)
+--   `aF`/`iF` - function call (mini.ai builtin, Lua-pattern based)
 --   `ac`      - comment block: consecutive line comments are merged into one
 --               block (a `/* */` block is already a single node)
 --   `ic`      - inner content of a single comment node (treesitter @comment.inner)
@@ -52,7 +52,8 @@ end
 
 ai.setup({
   custom_textobjects = {
-    F = ts({ a = "@function.outer", i = "@function.inner" }),
+    f = ts({ a = "@function.outer", i = "@function.inner" }),
+    F = ai.gen_spec.function_call(),
     c = comment_block,
   },
   mappings = {
