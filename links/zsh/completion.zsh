@@ -27,3 +27,7 @@ fi
 
 # Case insensitive
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Completion's trailing space is an auto-removable suffix; by default `&` and `|`
+# eat it. Keep removal for space/tab/newline/`;`, but not for pipes/backgrounding.
+ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;'
