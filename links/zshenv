@@ -1,2 +1,7 @@
 # I'll roll my own settings, thank you ubuntu
 setopt noglobalrcs
+
+# AI agents run non-interactive `zsh -c` and trip over unmatched globs, which
+# abort the entire command line. Let patterns pass through there; keep the
+# stricter "no matches found" check for shells I'm typing into.
+[[ -o interactive ]] || setopt nonomatch
