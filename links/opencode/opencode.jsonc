@@ -3,12 +3,7 @@
   "autoshare": false,
   "autoupdate": true,
   "default_agent": "ask",
-  "model": "github-copilot/claude-opus-5",
-  "agent": {
-    "build": {
-      "model": "github-copilot/claude-opus-4.8-fast",
-    }
-  },
+  "model": "github-copilot/gpt-5.6-sol",
   "plugin": [],
   "permission": {
     "bash": {
