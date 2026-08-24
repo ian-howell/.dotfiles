@@ -9,6 +9,10 @@ vim.keymap.set("n", "<leader><leader>", "<C-6>", { desc = "Swap to the last buff
 vim.keymap.set("i", "<C-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", { desc = "Fix the last misspelling" })
 vim.keymap.set("n", "<C-n>", "<cmd>bnext<CR>", { desc = "Go to next buffer" })
 vim.keymap.set("n", "<C-p>", "<cmd>bprevious<CR>", { desc = "Go to previous buffer" })
+vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Go to next tab" })
+vim.keymap.set("n", "[t", "<cmd>tabprevious<CR>", { desc = "Go to previous tab" })
+vim.keymap.set("n", "]T", "<cmd>tablast<CR>", { desc = "Go to last tab" })
+vim.keymap.set("n", "[T", "<cmd>tabfirst<CR>", { desc = "Go to first tab" })
 
 -- Move by display lines, but stay count-aware (e.g. 5j still jumps 5 real lines).
 vim.keymap.set({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Down (display line)" })
