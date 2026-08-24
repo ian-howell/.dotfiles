@@ -68,6 +68,10 @@ vim.keymap.set("n", "<leader>ff", function()
   Snacks.picker.files({ cwd = vim.uv.cwd() })
 end, { desc = "Files cwd" })
 
+vim.keymap.set("n", "<leader>fb", function()
+  Snacks.picker.buffers()
+end, { desc = "Buffers" })
+
 vim.keymap.set("n", "<leader>fF", function()
   Snacks.picker.files({ cwd = root.get() })
 end, { desc = "Files root" })
