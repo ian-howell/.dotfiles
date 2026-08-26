@@ -39,6 +39,8 @@ Snacks.setup({
       grep = { focus = "input" },
       grep_buffers = { focus = "input" },
       grep_word = { focus = "input" },
+      git_status = { ignored = false },
+      git_diff = { ignored = false },
     },
   },
   dashboard = { enabled = false },
