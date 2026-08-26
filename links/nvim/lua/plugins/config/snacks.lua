@@ -107,6 +107,10 @@ vim.keymap.set("n", "<leader>fG", function()
   Snacks.picker.git_diff(opts)
 end, { desc = "Git diff vs merge-base" })
 
+vim.keymap.set("n", "<leader>gg", function()
+  Snacks.lazygit({ cwd = vim.fs.root(0, ".git") or vim.uv.cwd() })
+end, { desc = "Lazygit" })
+
 vim.keymap.set("n", "<leader>gl", function()
   Snacks.picker.git_log(git_layout)
 end, { desc = "Git log" })
