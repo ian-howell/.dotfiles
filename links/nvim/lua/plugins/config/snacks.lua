@@ -63,6 +63,34 @@ Snacks.setup({
         openDirInEditor = '[ -z "$NVIM" ] && (nvim -- {{dir}}) || (nvim --server "$NVIM" --remote-send "q" && nvim --server "$NVIM" --remote {{dir}})',
       },
     },
+    win = {
+      keys = {
+        lazygit_next_block = {
+          "<c-j>",
+          function()
+            return "<c-j>"
+          end,
+          mode = "t",
+          expr = true,
+        },
+        lazygit_prev_block = {
+          "<c-k>",
+          function()
+            return "<c-k>"
+          end,
+          mode = "t",
+          expr = true,
+        },
+        lazygit_open_log = {
+          "<c-l>",
+          function()
+            return "<c-l>"
+          end,
+          mode = "t",
+          expr = true,
+        },
+      },
+    },
   },
 })
 
