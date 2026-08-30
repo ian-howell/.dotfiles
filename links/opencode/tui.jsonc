@@ -5,7 +5,12 @@
     "editor_open": "<leader>ctrl+e",
     "session_new": "<leader>ctrl+n",
     "session_list": "<leader>ctrl+s",
+    // Interrupt takes four Ctrl-x taps in total, so mash away.
+    "session_interrupt": "<leader>ctrl+x",
+    "command_list": "<leader>ctrl+p",
     "messages_copy": "<leader>ctrl+y",
+    "messages_next": "ctrl+n",
+    "messages_previous": "ctrl+p",
     "messages_line_up": "ctrl+shift+y",
     "messages_line_down": "ctrl+shift+e",
     "messages_half_page_up": "ctrl+shift+u",
