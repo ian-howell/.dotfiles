@@ -9,6 +9,9 @@ local terminal_opts = {
   win = {
     position = "right",
     width = 0.45,
+    on_buf = function(win)
+      vim.bo[win.buf].buflisted = true
+    end,
   },
 }
 
@@ -20,17 +23,24 @@ require("opencode.config").opts.events.permissions.enabled = false
 
 local opencode = require("opencode")
 
-local function toggle_terminal()
-  require("snacks.terminal").toggle(opencode_cmd, terminal_opts)
+local function maximize_terminal()
+  local terminal = require("snacks.terminal").get(opencode_cmd, terminal_opts)
+  terminal:show():focus()
+  vim.cmd.stopinsert()
+  vim.cmd.only()
 end
 
-vim.keymap.set("n", "<leader>ot", toggle_terminal, { desc = "Toggle OpenCode terminal" })
+vim.keymap.set("n", "<leader>oo", maximize_terminal, { desc = "Maximize OpenCode terminal" })
 
-vim.keymap.set({ "n", "x" }, "<leader>oa", function()
+vim.keymap.set({ "n", "x" }, "<leader>ot", function()
   opencode.ask("@this: ")
-end, { desc = "Ask OpenCode about this" })
+end, { desc = "Send this to OpenCode" })
 
-vim.keymap.set({ "n", "x" }, "<leader>om", function()
+vim.keymap.set("n", "<leader>oi", function()
+  opencode.ask()
+end, { desc = "Send a message to OpenCode" })
+
+vim.keymap.set({ "n", "x" }, "<leader>op", function()
   opencode.select()
 end, { desc = "OpenCode menu" })
 
@@ -55,8 +65,6 @@ vim.keymap.set("n", "<leader>os", function()
     end)
 end, { desc = "Select OpenCode session" })
 
-map_command("<leader>on", "session.new", "New OpenCode session")
-map_command("<leader>oi", "session.interrupt", "Interrupt OpenCode session")
 map_command("<leader>ou", "session.undo", "Undo OpenCode action")
 map_command("<leader>or", "session.redo", "Redo OpenCode action")
 map_command("<leader>og", "session.first", "First OpenCode message")
