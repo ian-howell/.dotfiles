@@ -5,6 +5,11 @@
     "editor_open": "<leader>ctrl+e",
     "session_new": "<leader>ctrl+n",
     "session_list": "<leader>ctrl+s",
-    "messages_copy": "<leader>ctrl+y"
+    "messages_copy": "<leader>ctrl+y",
+    "messages_line_up": "ctrl+shift+y",
+    "messages_line_down": "ctrl+shift+e",
+    "messages_half_page_up": "ctrl+shift+u",
+    "messages_half_page_down": "ctrl+shift+d",
+    "messages_last": "ctrl+shift+g,end"
   }
 }

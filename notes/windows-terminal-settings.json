@@ -4,6 +4,41 @@
     "actions": 
     [
         {
+            "command": {
+                "action": "sendInput",
+                "input": "\u001b[121;6u"
+            },
+            "keys": "ctrl+shift+y"
+        },
+        {
+            "command": {
+                "action": "sendInput",
+                "input": "\u001b[101;6u"
+            },
+            "keys": "ctrl+shift+e"
+        },
+        {
+            "command": {
+                "action": "sendInput",
+                "input": "\u001b[117;6u"
+            },
+            "keys": "ctrl+shift+u"
+        },
+        {
+            "command": {
+                "action": "sendInput",
+                "input": "\u001b[100;6u"
+            },
+            "keys": "ctrl+shift+d"
+        },
+        {
+            "command": {
+                "action": "sendInput",
+                "input": "\u001b[103;6u"
+            },
+            "keys": "ctrl+shift+g"
+        },
+        {
             "command": "find",
             "keys": "ctrl+shift+f"
         },
