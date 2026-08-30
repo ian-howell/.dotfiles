@@ -40,7 +40,21 @@ local function map_command(key, command, desc)
   end, { desc = desc })
 end
 
-map_command("<leader>os", "session.select", "Select OpenCode session")
+vim.keymap.set("n", "<leader>os", function()
+  require("opencode.server.discovery")
+    .get()
+    :next(function(server)
+      return require("opencode.ui.select_session").select_session(server):next(function(session)
+        return server:select_session(session.id)
+      end)
+    end)
+    :catch(function(err)
+      if err then
+        vim.notify(err, vim.log.levels.ERROR, { title = "opencode" })
+      end
+    end)
+end, { desc = "Select OpenCode session" })
+
 map_command("<leader>on", "session.new", "New OpenCode session")
 map_command("<leader>oi", "session.interrupt", "Interrupt OpenCode session")
 map_command("<leader>ou", "session.undo", "Undo OpenCode action")
