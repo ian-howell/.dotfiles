@@ -2,6 +2,7 @@
 
 local opencode_cmd = { "opencode", "--port", "--continue", "--auto" }
 local terminal_opts = {
+  auto_insert = false,
   env = {
     EDITOR = "nvim",
     VISUAL = "nvim",

@@ -100,7 +100,14 @@ vim.keymap.set("n", "<leader>ff", function()
 end, { desc = "Files cwd" })
 
 vim.keymap.set("n", "<leader>fb", function()
-  Snacks.picker.buffers()
+  Snacks.picker.buffers({
+    confirm = function(picker, item, action)
+      if item and item.buftype == "terminal" then
+        item.pos = nil
+      end
+      require("snacks.picker.actions").confirm(picker, item, action)
+    end,
+  })
 end, { desc = "Buffers" })
 
 vim.keymap.set("n", "<leader>fF", function()
