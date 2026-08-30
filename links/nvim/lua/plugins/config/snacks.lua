@@ -19,6 +19,27 @@ local git_layout = {
 
 Snacks.setup({
   input = { enabled = true },
+  terminal = {
+    win = {
+      keys = {
+        term_normal = {
+          "<esc>",
+          function(self)
+            self.esc_timer = self.esc_timer or vim.uv.new_timer()
+            if self.esc_timer:is_active() then
+              self.esc_timer:stop()
+              return "<C-\\><C-n>"
+            end
+            self.esc_timer:start(200, 0, function() end)
+            return "<esc>"
+          end,
+          mode = "t",
+          expr = true,
+          desc = "Double escape to normal mode",
+        },
+      },
+    },
+  },
   picker = {
     focus = "list",
     hidden = true,
