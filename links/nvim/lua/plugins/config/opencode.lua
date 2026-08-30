@@ -16,6 +16,8 @@ require("opencode.config").opts.server.start = function()
   require("snacks.terminal").open(opencode_cmd, terminal_opts)
 end
 
+require("opencode.config").opts.events.permissions.enabled = false
+
 local opencode = require("opencode")
 
 local function toggle_terminal()
