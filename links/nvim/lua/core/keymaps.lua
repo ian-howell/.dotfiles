@@ -94,7 +94,9 @@ vim.keymap.set("n", "<leader>yp", function()
   yank.to_clipboard(vim.fn.expand("%:p"))
 end, { desc = "Yank absolute path" })
 
-vim.keymap.set({ "n", "x" }, "<leader>at", function()
+local text_location_ns = vim.api.nvim_create_namespace("text-location-yank")
+
+vim.keymap.set({ "n", "x" }, "<leader>yt", function()
   local path = vim.fn.expand("%:p")
   local mode = vim.fn.mode()
 
@@ -112,18 +114,30 @@ vim.keymap.set({ "n", "x" }, "<leader>at", function()
 
     local text
     if srow == erow then
-      text = string.format("@%s :L%d:C%d-C%d", path, srow, scol, ecol)
+      text = string.format("%s: line %d, columns %d-%d", path, srow, scol, ecol)
     else
-      text = string.format("@%s :L%d:C%d-L%d:C%d", path, srow, scol, erow, ecol)
+      text = string.format("%s: lines %d-%d", path, srow, erow)
     end
 
     vim.fn.setreg("+", text)
+    vim.hl.range(0, text_location_ns, "IncSearch", { srow - 1, scol - 1 }, { erow - 1, ecol - 1 }, {
+      regtype = mode,
+      inclusive = true,
+      priority = vim.hl.priorities.user,
+      timeout = 150,
+    })
+    vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nx", false)
     return
   end
 
   local pos = vim.api.nvim_win_get_cursor(0)
   local row = pos[1]
-  local col = pos[2] + 1
-  local text = string.format("@%s :L%d:C%d", path, row, col)
+  local text = string.format("%s:%d", path, row)
   vim.fn.setreg("+", text)
+  vim.hl.range(0, text_location_ns, "IncSearch", { row - 1, 0 }, { row - 1, -1 }, {
+    regtype = "V",
+    inclusive = true,
+    priority = vim.hl.priorities.user,
+    timeout = 150,
+  })
 end, { desc = "Copy line and column info" })
