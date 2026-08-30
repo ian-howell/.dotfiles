@@ -18,6 +18,7 @@ local git_layout = {
 }
 
 Snacks.setup({
+  input = { enabled = true },
   picker = {
     focus = "list",
     hidden = true,

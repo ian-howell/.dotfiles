@@ -92,8 +92,9 @@ return {
     name = "quicker",
   },
   {
-    src = "https://github.com/sudo-tee/opencode.nvim",
-    name = "opencode",
+    src = "https://github.com/nickjvandyke/opencode.nvim",
+    name = "opencode.nvim",
+    version = vim.version.range("*"),
   },
   {
     src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",

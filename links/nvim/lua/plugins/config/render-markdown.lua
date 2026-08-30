@@ -2,7 +2,7 @@
 -- and callouts.
 
 require("render-markdown").setup({
-  file_types = { "markdown", "opencode_output" },
+  file_types = { "markdown" },
 
   -- I don't use latex, so I don't install latex parsers.
   -- Without this, checkhealth will complain about missing parsers.
