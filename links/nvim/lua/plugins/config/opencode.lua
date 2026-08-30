@@ -20,7 +20,16 @@ require("opencode.config").opts.server.start = function()
   require("snacks.terminal").open(opencode_cmd, terminal_opts)
 end
 
-require("opencode.config").opts.events.permissions.enabled = false
+local opencode_config = require("opencode.config").opts
+opencode_config.events.permissions.enabled = false
+opencode_config.ask.snacks.win.relative = "editor"
+opencode_config.ask.snacks.win.width = 150
+opencode_config.ask.snacks.win.max_width = 150
+opencode_config.ask.snacks.win.height = 8
+opencode_config.ask.snacks.win.wo = {
+  wrap = true,
+  linebreak = false,
+}
 
 local opencode = require("opencode")
 
