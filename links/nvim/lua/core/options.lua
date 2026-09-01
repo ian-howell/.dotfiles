@@ -18,12 +18,23 @@ vim.opt.mouse = "a"
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
--- Enable break indent
+-- Wrap lines by default.
+-- NOTE: This is required; copilot's suggestions can be very long,
+-- and they force the screen to jump around if wrap is disabled.
+vim.opt.wrap = true
+-- But never break a line mid-word
+vim.opt.linebreak = true
+-- And maintain a consistent level of indentation for wrapped lines
 vim.opt.breakindent = true
 
--- Wrap lines. This is needed because copilot's suggestions can be very long, and they force the
--- screen to jump around if wrap is disabled.
-vim.opt.wrap = true
+-- When scrolling vertically, the cursor should reach the
+-- top/bottom of the screen
+vim.opt.scrolloff = 0
+-- But it should never reach the right side of the screen;
+-- that's reserved for the "extends" character
+vim.opt.sidescrolloff = 1
+-- And sideways scrolling should feel smooth
+vim.opt.sidescroll = 1
 
 -- Save undo history
 vim.opt.undofile = true
@@ -52,7 +63,13 @@ vim.opt.splitkeep = "cursor"
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'` and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = "| ", trail = "·", nbsp = "␣" }
+vim.opt.listchars = {
+  tab = "| ",
+  trail = "·",
+  nbsp = "␣",
+  precedes = "«",
+  extends = "»",
+}
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
@@ -72,7 +89,7 @@ vim.opt.expandtab = true
 
 -- omg swap files are the worst
 vim.opt.swapfile = false
-vim.opt.scrolloff = 0
+
 vim.opt.conceallevel = 0
 
 vim.opt.completeopt = { "menuone", "popup", "noinsert" }
