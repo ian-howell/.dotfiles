@@ -36,6 +36,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_kubectl.sh"
     "$HOME/.dotfiles/src/install_k9s.sh"
     "$HOME/.dotfiles/src/link_dotfiles.sh"
+    "$HOME/.dotfiles/src/install_calcbill.sh"
   )
 
   log_dir=$(mktemp -d /tmp/setup_logs.XXXXXX)
