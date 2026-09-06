@@ -2,6 +2,13 @@ AGENTS.md is a living document. When you notice a real gap or an out-of-date rul
 suggest an improvement, including structural changes to the document itself. Do not editorialize
 about the document on every task.
 
+For command-heavy or long-running work, agents may create a uniquely named session directory under
+`/tmp/opencode/evidence/` and store command output, logs, downloaded metadata, and intermediate
+analysis there. When doing so, tell the user that an evidence directory was created and provide its
+path. In the final response, mention that the evidence exists, identify the relevant files, and
+summarize key findings. Treat evidence as temporary, keep secrets out where possible, restrict
+permissions for sensitive output, and never commit it.
+
 The files in the "links" directory are symlinked to files according to the content of the
 "linkdotfiles.yaml" file in the root of this repository.
 
