@@ -3,7 +3,7 @@
   "autoshare": false,
   "autoupdate": true,
   "default_agent": "ask",
-  "model": "github-copilot/gpt-5.6-sol-fast",
+  "model": "github-copilot/gpt-6-astra",
   "plugin": [],
   "permission": {
     "bash": {
