@@ -25,3 +25,16 @@
 - Do not say "foot gun"; name the concrete failure mode instead.
 - Substituting a synonym does not satisfy these rules; cut the sentence instead. This
   does not apply to the punctuation and foot-gun rules above, which call for rephrasing.
+
+## Go Tests
+
+- Prefer `map[string]struct{ ... }` over `[]struct{ ... }` for table-driven
+  tests. Use descriptive map keys as subtest names with `t.Run`. Cases must
+  be independent and must not rely on map iteration order.
+- Prefer `github.com/stretchr/testify` assertions over hand-written
+  checks using `t.Error`, `t.Errorf`, `t.Fatal`, or `t.Fatalf`.
+  Continue using the standard library's `testing` package as the test runner.
+- Use `require` for prerequisites: stop the current test or subtest when
+  failure would make subsequent checks unsafe or meaningless.
+- Use `assert` for behavior and expected-result checks so independent
+  failures can be reported together.
