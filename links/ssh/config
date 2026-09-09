@@ -1,0 +1,12 @@
+# Keep includes before any Host or Match blocks so they are not conditional on
+# those blocks. SSH generally uses the first value obtained for each option,
+# so included host-specific settings take precedence over the defaults below.
+
+Include ~/.config/nc-devbox/ssh/*
+Include ~/.config/homelab-ssh-config
+Include ~/.config/work/ssh/config
+
+Host *
+    ControlMaster auto
+    ControlPath /run/user/%i/ssh-%C
+    ControlPersist 10m
