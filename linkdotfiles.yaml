@@ -27,10 +27,11 @@ links:
     link: ~/.config/lazygit/config.yml
   - file: ~/.dotfiles/links/shellcheckrc
     link: ~/.shellcheckrc
+  - file: ~/.dotfiles/links/ssh/config
+    link: ~/.ssh/config
   - file: ~/.dotfiles/links/vscode-nvim
     link: ~/.config/vscode-nvim
   - file: ~/.dotfiles/links/opencode
     link: ~/.config/opencode
   - file: ~/.dotfiles/links/k9s
     link: ~/.config/k9s
-
