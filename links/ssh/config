@@ -8,5 +8,5 @@ Include ~/.config/work/ssh/config
 
 Host *
     ControlMaster auto
-    ControlPath /run/user/%i/ssh-%C
-    ControlPersist 10m
+    ControlPath /run/user/%i/ssh-%n-%C
+    ControlPersist 60m
