@@ -63,7 +63,7 @@
       "src": "https://github.com/stevearc/quicker.nvim"
     },
     "render-markdown": {
-      "rev": "f422cb5c6855f150e2ddcfaf44e7157b98b34f6a",
+      "rev": "a778444a73080301a50c4a6f58c90d7e094dd59e",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
     "ripple": {
