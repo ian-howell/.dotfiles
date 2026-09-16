@@ -38,6 +38,8 @@ vim.keymap.set("n", "<leader>uw", function()
   vim.opt_local.wrap = not vim.opt_local.wrap:get()
 end, { desc = "Toggle wrap" })
 
+vim.keymap.set("n", "<leader>uz", require("core.focus").toggle, { desc = "Toggle reading focus" })
+
 vim.keymap.set(
   "n",
   "<leader>ur",

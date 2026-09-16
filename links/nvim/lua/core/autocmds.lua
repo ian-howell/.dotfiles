@@ -43,7 +43,7 @@ vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
   desc = "Hide focused-only UI when window loses focus",
   group = groups.focus_leave,
   callback = function()
-    if focus_ui_ignore[vim.bo.filetype] then
+    if vim.w.reading_focus or focus_ui_ignore[vim.bo.filetype] then
       return
     end
     vim.opt_local.signcolumn = "no"
@@ -57,7 +57,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FocusGained" }, {
   desc = "Show focused-only UI when window gains focus",
   group = groups.focus_enter,
   callback = function()
-    if focus_ui_ignore[vim.bo.filetype] then
+    if vim.w.reading_focus or focus_ui_ignore[vim.bo.filetype] then
       return
     end
     vim.opt_local.signcolumn = "yes"
