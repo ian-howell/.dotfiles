@@ -11,8 +11,8 @@
   - Trivial or single-file edit: 1-2 sentences.
   - Multi-file or non-obvious change: brief rationale.
   - Design, planning, or tradeoff questions: full reasoning, no artificial trimming.
-- Prefer semicolons, colons, or hyphens over em-dashes; rephrase into two sentences
-  where that reads better.
+- Prefer semicolons, colons, or space-delimited hyphens over em-dashes; rephrase into
+  two sentences where that reads better.
 
 ## Avoid these
 
