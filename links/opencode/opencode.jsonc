@@ -13,5 +13,6 @@
     "external_directory": {
       "/tmp/**": "allow"
     }
-  }
+  },
+  "shell": "/usr/bin/bash"
 }
