@@ -9,9 +9,15 @@ local git_layout = {
       width = 0,
       height = 0,
       box = "vertical",
-      { win = "input", height = 1 },
-      { win = "list", height = 0.3 },
-      { win = "preview", height = 0.7 },
+      {
+        box = "vertical",
+        height = 0.2,
+        border = true,
+        title = "{title} {live} {flags}",
+        { win = "input", height = 1, border = "bottom" },
+        { win = "list", border = "none" },
+      },
+      { win = "preview", title = "{preview}", border = true },
     },
   },
   focus = "list",
@@ -57,6 +63,23 @@ Snacks.setup({
       },
     },
     sources = {
+      qflist = {
+        layout = {
+          preset = "default",
+          layout = {
+            box = "vertical",
+            {
+              box = "vertical",
+              height = 0.2,
+              border = true,
+              title = "{title} {live} {flags}",
+              { win = "input", height = 1, border = "bottom" },
+              { win = "list", border = "none" },
+            },
+            { win = "preview", title = "{preview}", border = true },
+          },
+        },
+      },
       files = { focus = "input" },
       grep = { focus = "input" },
       grep_buffers = { focus = "input" },
@@ -191,6 +214,15 @@ end, { desc = "Quickfix list" })
 vim.keymap.set("n", "<leader>fQ", function()
   Snacks.picker.qflist()
 end, { desc = "Quickfix list prev" })
+
+vim.keymap.set("n", "grr", function()
+  vim.lsp.buf.references(nil, {
+    on_list = function(list)
+      vim.fn.setqflist({}, " ", list)
+      Snacks.picker.qflist()
+    end,
+  })
+end, { desc = "LSP references (quickfix picker)" })
 
 vim.keymap.set("n", "<leader>fl", function()
   Snacks.picker.lines()
