@@ -15,20 +15,22 @@ local function yank_line_commit()
 
   local line = vim.fn.line(".")
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-  local result = vim.system({
-    "git",
-    "blame",
-    "--porcelain",
-    "--contents",
-    "-",
-    "-L",
-    line .. "," .. line,
-    "--",
-    file,
-  }, {
-    cwd = vim.fn.fnamemodify(file, ":h"),
-    stdin = table.concat(lines, "\n") .. "\n",
-  }):wait()
+  local result = vim
+    .system({
+      "git",
+      "blame",
+      "--porcelain",
+      "--contents",
+      "-",
+      "-L",
+      line .. "," .. line,
+      "--",
+      file,
+    }, {
+      cwd = vim.fn.fnamemodify(file, ":h"),
+      stdin = table.concat(lines, "\n") .. "\n",
+    })
+    :wait()
 
   if result.code ~= 0 then
     vim.notify("git blame failed: " .. (result.stderr or ""), vim.log.levels.ERROR)
@@ -57,7 +59,7 @@ gitsigns.setup({
     topdelete = { text = "‾" },
     changedelete = { text = "~" },
   },
-  current_line_blame = true,
+  current_line_blame = false,
   current_line_blame_opts = {
     virt_text = true,
     virt_text_pos = "eol",
