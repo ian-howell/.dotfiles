@@ -19,13 +19,13 @@ tokyonight.setup({
   end,
 })
 
-vim.cmd.colorscheme("tokyonight")
+require("core.theme").setup()
 
 -- Background colors for active vs inactive windows
 -- vim.cmd.hi("link ActiveWindow Normal")
 
 -- InactiveWindow is the background color for tokyonight
-vim.cmd.hi("InactiveWindow guibg=#1a1b26")
+-- ActiveWindow/InactiveWindow are refreshed by core.theme on ColorScheme.
 
 -- Normally, this would be good enough (and it's still required for startup with multiple splits)...
 -- vim.opt.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"

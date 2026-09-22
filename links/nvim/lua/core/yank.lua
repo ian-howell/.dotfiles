@@ -3,7 +3,8 @@
 local M = {}
 
 local function set_highlights()
-  vim.api.nvim_set_hl(0, "YankMsg", { fg = "#ffffff", bg = "#ff966c" })
+  local light = vim.o.background == "light"
+  vim.api.nvim_set_hl(0, "YankMsg", { fg = "#ffffff", bg = light and "#b15c00" or "#ff966c" })
 end
 
 set_highlights()
