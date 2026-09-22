@@ -16,6 +16,25 @@ palette:
   terminal-white: "#c0caf5"
   terminal-yellow: "#e0af68"
   white-blue: "#a9b1d6"
+palettes:
+  template: '{{ if eq .Env.DOTFILES_THEME "light" }}day{{ end }}'
+  list:
+    day:
+      blue-bell: "#6172b0"
+      blue-black: "#68709a"
+      celeste-blue: "#2e5857"
+      light-sky-blue: "#007197"
+      main-bg: "#e1e2e7"
+      pastal-grey: "#6172b0"
+      pistachio-green: "#587539"
+      terminal-black: "#b4b5b9"
+      terminal-blue: "#2e7de9"
+      terminal-green: "#387068"
+      terminal-magenta: "#9854f1"
+      terminal-red: "#f52a65"
+      terminal-white: "#3760bf"
+      terminal-yellow: "#8c6c3e"
+      white-blue: "#3760bf"
 secondary_prompt:
   template: ">    "
 transient_prompt:
