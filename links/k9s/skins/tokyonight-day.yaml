@@ -1,0 +1,102 @@
+# Tokyo Night Day, using the same layout as tokyonight-moon.yaml.
+foreground: &foreground "#3760bf"
+background: &background "#e1e2e7"
+current_line: &current_line "#8c6c3e"
+selection: &selection "#68709a"
+comment: &comment "#2e7de9"
+cyan: &cyan "#007197"
+green: &green "#387068"
+yellow: &yellow "#8c6c3e"
+orange: &orange "#b15c00"
+magenta: &magenta "#9854f1"
+pink: &pink "#d20065"
+blue: &blue "#2e7de9"
+red: &red "#f52a65"
+white: &white "#3760bf"
+
+k9s:
+  body:
+    fgColor: *foreground
+    bgColor: default
+    logoColor: *orange
+  prompt:
+    fgColor: *foreground
+    bgColor: *background
+    suggestColor: *orange
+  info:
+    fgColor: *orange
+    sectionColor: *foreground
+  dialog:
+    fgColor: *foreground
+    bgColor: default
+    buttonFgColor: *foreground
+    buttonBgColor: *green
+    buttonFocusFgColor: *background
+    buttonFocusBgColor: *foreground
+    labelFgColor: *comment
+    fieldFgColor: *foreground
+  frame:
+    border:
+      fgColor: *selection
+      focusColor: *foreground
+    menu:
+      fgColor: *foreground
+      keyColor: *blue
+      numKeyColor: *blue
+    crumbs:
+      fgColor: *orange
+      bgColor: default
+      activeColor: *selection
+    status:
+      newColor: *blue
+      modifyColor: *yellow
+      addColor: *white
+      errorColor: *red
+      highlightcolor: *orange
+      killColor: *magenta
+      completedColor: *comment
+    title:
+      fgColor: *foreground
+      bgColor: default
+      highlightColor: *blue
+      counterColor: *green
+      filterColor: *magenta
+  views:
+    charts:
+      bgColor: default
+      defaultDialColors: [*blue, *red]
+      defaultChartColors: [*blue, *red]
+    table:
+      fgColor: *foreground
+      bgColor: default
+      cursorFgColor: *foreground
+      cursorBgColor: *background
+      markColor: *pink
+      header:
+        fgColor: *foreground
+        bgColor: default
+        sorterColor: *cyan
+    xray:
+      fgColor: *foreground
+      bgColor: default
+      cursorColor: *current_line
+      graphicColor: *blue
+      showIcons: false
+    yaml:
+      keyColor: *green
+      colonColor: *blue
+      valueColor: *foreground
+    logs:
+      fgColor: *foreground
+      bgColor: default
+      indicator:
+        fgColor: *foreground
+        bgColor: *selection
+        toggleOnColor: *cyan
+        toggleOffColor: *foreground
+    help:
+      fgColor: *foreground
+      bgColor: default
+      indicator:
+        fgColor: *red
+        bgColor: default

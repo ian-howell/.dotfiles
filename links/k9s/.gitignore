@@ -1,3 +1,6 @@
 # runtime/cluster state
 clusters/
 benchmarks/
+
+# Selected shared theme, linked by src/theme/install.py.
+skins/dotfiles.yaml

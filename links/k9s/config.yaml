@@ -14,7 +14,7 @@ k9s:
     logoless: true
     crumbsless: false
     splashless: true
-    reactive: false
+    reactive: true
     noIcons: false
     defaultsToFullScreen: true
     useFullGVRTitle: false
