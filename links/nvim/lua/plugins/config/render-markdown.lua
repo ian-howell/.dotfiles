@@ -11,6 +11,6 @@ require("render-markdown").setup({
 
 -- Tone down the inline code background (default links to a fairly loud
 -- ColorColumn). Use a muted background close to the editor background.
-vim.api.nvim_set_hl(0, "RenderMarkdownCodeInline", { bg = "#2a2b3c" })
+require("core.theme").highlights()
 
 vim.keymap.set("n", "<leader>um", "<cmd>RenderMarkdown buf_toggle<cr>", { desc = "markdown rendering" })
