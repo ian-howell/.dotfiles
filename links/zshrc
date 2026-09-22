@@ -9,6 +9,8 @@ source "$HOME/.dotfiles/links/zsh/completion.zsh"
 
 # Turn on colors
 autoload -U colors && colors
+# Advertise RGB support to TUIs such as lazygit, including in existing tmux servers.
+export COLORTERM=truecolor
 
 #===[ History
 # TODO: clean this up too

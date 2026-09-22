@@ -1,0 +1,27 @@
+[delta]
+  # Syntax theme is installed via links/bat; rebuild with `bat cache --build`.
+  syntax-theme                  = tokyonight_moon
+  dark                          = true
+  true-color                    = always
+  tabs                          = 4
+
+  minus-style                   = syntax "#4b2a3d"
+  minus-non-emph-style           = syntax "#4b2a3d"
+  minus-emph-style               = syntax "#6b2e43"
+  minus-empty-line-marker-style  = syntax "#4b2a3d"
+  line-numbers-minus-style       = "#e26a75"
+  plus-style                    = syntax "#2a4556"
+  plus-non-emph-style            = syntax "#2a4556"
+  plus-emph-style                = syntax "#305f6f"
+  plus-empty-line-marker-style   = syntax "#2a4556"
+  line-numbers-plus-style        = "#b8db87"
+  line-numbers-zero-style       = "#3b4261"
+  line-numbers-left-style        = "#3b4261"
+  line-numbers-right-style       = "#3b4261"
+
+  file-style                    = "#82aaff"
+  file-decoration-style         = "#3b4261" ul
+  hunk-header-style             = line-number syntax
+  hunk-header-decoration-style  = none
+  hunk-header-line-number-style = "#636da6"
+  hunk-header-file-style         = "#82aaff"

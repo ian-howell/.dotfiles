@@ -55,7 +55,7 @@
         autocorrect = prompt
 [include]
 	path = ~/.dotfiles/local_gitconfig
-	path = ~/.dotfiles/links/delta/tokyonigh_storm.gitconfig
+	path = ~/.dotfiles/links/delta/tokyonight_moon.gitconfig
 	path = ~/.config/work/.gitconfig
 [init]
 	defaultBranch = main
