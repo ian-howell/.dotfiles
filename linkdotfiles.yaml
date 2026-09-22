@@ -1,4 +1,6 @@
 links:
+  - file: ~/.dotfiles/links/bat
+    link: ~/.config/bat
   - file: ~/.dotfiles/links/azure/config
     link: ~/.azure/config
   - file: ~/.dotfiles/links/bin

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-go run github.com/ian-howell/linkdotfiles@main
+go run github.com/ian-howell/linkdotfiles@main &&
+  bat cache --build
