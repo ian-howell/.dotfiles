@@ -43,3 +43,7 @@ opencodetmp
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Installed by the work OpenCode theme plugin (runtime copies).
+links/opencode/themes/dotfiles-dark.json
+links/opencode/themes/dotfiles-light.json
