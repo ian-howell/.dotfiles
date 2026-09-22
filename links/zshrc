@@ -95,6 +95,7 @@ fi
 # Set up zoxide
 eval "$(zoxide init --cmd cd zsh)"
 
+source "$HOME/.dotfiles/links/zsh/theme.zsh"
 source "$HOME/.dotfiles/links/zsh/prompt.zsh"
 
 #===[ Plugins
