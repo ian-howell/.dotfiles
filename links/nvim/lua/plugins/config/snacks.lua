@@ -1,6 +1,79 @@
 local Snacks = require("snacks")
 local root = require("core.root")
 
+local symbol_groups = {
+  { name = "constants", key = "c", kinds = { "Constant", "Variable" }, enabled = false },
+  { name = "types", key = "t", kinds = { "Class", "Struct", "Interface", "Enum" } },
+  { name = "members", key = "m", kinds = { "Field", "Property" }, enabled = false },
+  { name = "functions", key = "f", kinds = { "Function", "Method" } },
+}
+
+local lsp_symbols = {
+  toggles = {
+    -- These file-search flags aren't useful in a symbol outline.
+    follow = false,
+    hidden = false,
+    ignored = false,
+    modified = false,
+    regex = false,
+  },
+  win = { input = { keys = {} }, list = { keys = {} } },
+  on_show = function(picker)
+    -- Snacks only renders active {flags}. Customize this picker's title redraw
+    -- so all symbol shortcuts remain visible, including after layout changes.
+    local update_titles = picker.update_titles
+    picker.update_titles = function(self)
+      update_titles(self)
+      local title = { { " " .. self.title .. " ", "FloatTitle" } }
+      for _, group in ipairs(symbol_groups) do
+        local enabled = self.opts["symbols_" .. group.name]
+        local label = "(" .. group.key .. ")" .. group.name:sub(2)
+        title[#title + 1] = { " " .. label .. " ", enabled and "SnacksPickerToggle" or "Comment" }
+      end
+      local wins = { self.layout.root }
+      vim.list_extend(wins, vim.tbl_values(self.layout.wins))
+      vim.list_extend(wins, vim.tbl_values(self.layout.box_wins))
+      for _, win in ipairs(wins) do
+        local template = win.meta.title_tpl or win.opts.title
+        template = type(template) == "string" and { { template } } or template or {}
+        for _, chunk in ipairs(template) do
+          if chunk[1]:find("{flags}", 1, true) then
+            win:set_title(title)
+            break
+          end
+        end
+      end
+    end
+    picker:update_titles()
+  end,
+  finder = function(opts, ctx)
+    local kinds = {}
+    for _, group in ipairs(symbol_groups) do
+      if opts["symbols_" .. group.name] then
+        vim.list_extend(kinds, group.kinds)
+      end
+    end
+    -- Filter in the LSP finder so hidden parents don't hide visible children.
+    -- Replace filetype overrides too, keeping every group under filter control.
+    return require("snacks.picker.source.lsp").symbols(
+      vim.tbl_extend("force", {}, opts, { filter = { default = kinds } }),
+      ctx
+    )
+  end,
+}
+
+for _, group in ipairs(symbol_groups) do
+  local name = "symbols_" .. group.name
+  local key = "<a-" .. group.key .. ">"
+  local action = "toggle_" .. name
+  local desc = "Toggle " .. group.name
+  lsp_symbols[name] = group.enabled ~= false
+  -- Retain Snacks' generated toggle actions and resume state, but render labels above.
+  lsp_symbols.toggles[name] = { enabled = false }
+  lsp_symbols.win.input.keys[key] = { action, mode = { "n", "i" }, desc = desc }
+  lsp_symbols.win.list.keys[key] = { action, desc = desc }
+end
+
 local git_layout = {
   layout = {
     fullscreen = true,
@@ -63,6 +136,7 @@ Snacks.setup({
       },
     },
     sources = {
+      lsp_symbols = lsp_symbols,
       qflist = {
         layout = {
           preset = "default",
