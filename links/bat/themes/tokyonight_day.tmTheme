@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>name</key><string>Tokyo Night Day</string>
+  <!-- Tokyo Night Day palette (folke/tokyonight.nvim), matching our Moon scopes. -->
+  <key>settings</key><array>
+    <dict><key>settings</key><dict>
+      <key>foreground</key><string>#3760bf</string>
+      <key>background</key><string>#e1e2e7</string>
+      <key>caret</key><string>#3760bf</string>
+      <key>selection</key><string>#b7c1e3</string>
+      <key>lineHighlight</key><string>#c4c8da</string>
+    </dict></dict>
+    <dict><key>scope</key><string>comment, punctuation.definition.comment</string><key>settings</key><dict><key>foreground</key><string>#848cb5</string><key>fontStyle</key><string>italic</string></dict></dict>
+    <dict><key>scope</key><string>string, punctuation.definition.string</string><key>settings</key><dict><key>foreground</key><string>#587539</string></dict></dict>
+    <dict><key>scope</key><string>constant.numeric, constant.other</string><key>settings</key><dict><key>foreground</key><string>#b15c00</string></dict></dict>
+    <dict><key>scope</key><string>constant.language, constant.character.escape, constant.other.placeholder</string><key>settings</key><dict><key>foreground</key><string>#07879d</string></dict></dict>
+    <dict><key>scope</key><string>keyword, storage.type, storage.modifier</string><key>settings</key><dict><key>foreground</key><string>#9854f1</string></dict></dict>
+    <dict><key>scope</key><string>keyword.control.flow, keyword.control.return</string><key>settings</key><dict><key>foreground</key><string>#d20065</string><key>fontStyle</key><string>italic</string></dict></dict>
+    <dict><key>scope</key><string>keyword.operator</string><key>settings</key><dict><key>foreground</key><string>#006a83</string></dict></dict>
+    <dict><key>scope</key><string>punctuation</string><key>settings</key><dict><key>foreground</key><string>#6172b0</string></dict></dict>
+    <dict><key>scope</key><string>variable, support.variable</string><key>settings</key><dict><key>foreground</key><string>#3760bf</string></dict></dict>
+    <dict><key>scope</key><string>variable.parameter</string><key>settings</key><dict><key>foreground</key><string>#8c6c3e</string></dict></dict>
+    <dict><key>scope</key><string>variable.other.member, variable.other.property, variable.other.object.property, support.variable.property, meta.object-literal.key, entity.other.attribute-name</string><key>settings</key><dict><key>foreground</key><string>#387068</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.type, support.type, support.class</string><key>settings</key><dict><key>foreground</key><string>#007197</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.function, support.function</string><key>settings</key><dict><key>foreground</key><string>#2e7de9</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.tag</string><key>settings</key><dict><key>foreground</key><string>#f52a65</string></dict></dict>
+    <dict><key>scope</key><string>markup.heading</string><key>settings</key><dict><key>foreground</key><string>#2e7de9</string><key>fontStyle</key><string>bold</string></dict></dict>
+    <dict><key>scope</key><string>markup.inserted</string><key>settings</key><dict><key>foreground</key><string>#4197a4</string></dict></dict>
+    <dict><key>scope</key><string>markup.deleted, invalid</string><key>settings</key><dict><key>foreground</key><string>#c64343</string></dict></dict>
+  </array>
+</dict></plist>
