@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Move the invoking window to a selected session (or a named session argument).
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+picker_require tmux python3
+picker_init
+[[ -n "$PICKER_SOURCE_PANE" ]] || { printf 'tp: run inside tmux\n' >&2; exit 1; }
+source_window=$(tmux display-message -p -t "$PICKER_SOURCE_PANE" '#{window_id}')
+target=${1:-}
+if [[ -z "$target" || "$target" == --pick ]]; then
+  rows=$("$script_dir/lib/session-list")
+  picker_popup "$rows" "$@"
+  selected=$(picker_choose --prompt='move window> ' --no-sort --delimiter=$'\t' --with-nth=2 <<<"$rows")
+  [[ -n "$selected" ]] || exit 0
+  target=${selected%%$'\t'*}
+else
+  tmux has-session -t "=$target"
+  target=$(tmux display-message -p -t "=$target:" '#{session_id}')
+fi
+[[ "$target" != "$PICKER_SOURCE_SESSION" ]] || exit 0
+# Move, rather than link/unlink with an ambiguous source-session context.
+tmux move-window -s "$PICKER_SOURCE_SESSION:$source_window" -t "$target:"
+tmux switch-client -t "$target"

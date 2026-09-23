@@ -25,9 +25,11 @@ silence or wrap errors from `require` calls; missing modules should fail loudly.
 When adding scripts to `links/bin`, ensure they are executable (e.g., `chmod +x`).
 
 When a `links/bin` script needs sibling data or config files, put the script and its
-companions in a `links/bin/<name>.d/` directory and add a relative symlink at
-`links/bin/<name>` pointing to `<name>.d/<name>`. The script should locate its own directory
-via `readlink -f "${BASH_SOURCE[0]}"` so it finds its companions regardless of how it was
-invoked. See `links/bin/rp` / `links/bin/rp.d/` for the reference implementation.
+companions in a `links/bin/<name>.d/` directory. Related commands that share helpers
+may instead use a tool-family directory, such as `links/bin/pickers/`. Expose entry
+points through relative symlinks in `links/bin`; keep libraries, preview helpers,
+config, and tests inside the bundle, off PATH. Scripts should locate their own
+directory via `readlink -f "${BASH_SOURCE[0]}"` so companions resolve through symlinks.
+See `links/bin/theme.d/` and `links/bin/pickers/` for examples.
 
 Forward slashes (/) are valid in tmux session names. Do not suggest that they aren't.

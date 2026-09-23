@@ -1,32 +1,18 @@
-#!/bin/bash
-
-# Temporarily turn off window renumbering - it doesn't allow "holding cells"
-tmux set renumber-windows off
-trap 'tmux set renumber-windows on' EXIT
-
-current_window=$(tmux list-windows | grep "\*" | cut -d: -f1)
-target_window=$1
-
-# Put our current window into a "holding cell"
-tmux move-window -t 0
-
-if (( current_window > target_window )); then
-  # Shift the "middle" windows right
-  while (( current_window > target_window )); do
-    tmux move-window -s "$((current_window - 1))" -t "$current_window"
-    (( current_window -= 1 ))
-  done
+#!/usr/bin/env bash
+# Insert the current window at an existing index, shifting the intervening windows.
+set -euo pipefail
+[[ ${1:-} =~ ^[0-9]+$ ]] || { printf 'Usage: tmux-insert-window INDEX\n' >&2; exit 1; }
+target=$((10#$1))
+source=$(tmux display-message -p '#{session_id}:#{window_id}')
+session=${source%%:*}
+current=$(tmux display-message -p -t "$source" '#{window_index}')
+[[ "$current" != "$target" ]] || exit 0
+target_id=$(tmux list-windows -t "$session" -F '#{window_index} #{window_id}' \
+  | awk -v target="$target" '$1 == target {print $2}')
+[[ -n "$target_id" ]] || { printf 'No window at index %s\n' "$target" >&2; exit 1; }
+if ((current > target)); then
+  tmux move-window -b -s "$source" -t "$session:$target"
 else
-  # Shift the "middle" windows right
-  while (( current_window < target_window )); do
-    tmux move-window -s "$((current_window + 1))" -t "$current_window"
-    (( current_window += 1 ))
-  done
+  tmux move-window -a -s "$source" -t "$session:$target"
 fi
-
-# Move our window from its "holding cell" to the target location
-tmux move-window -s 0 -t "$target_window"
-
-# This shouldn't be necessary, but If I did something stupid like specify an out
-# of bounds target, this will ensure that windows are renumbered correctly.
-tmux move-window -r
+tmux move-window -r -t "$session:"
