@@ -9,11 +9,12 @@ _dotfiles_theme_refresh() {
   local state="$HOME/.local/state/dotfiles/theme/mode"
   [[ -r $state ]] && read -r selected < "$state"
   export DOTFILES_THEME=$selected
-  # fzf-tab supplies explicit colors after the options file; override those too.
-  if [[ $selected == light ]]; then
-    zstyle ':fzf-tab:*' fzf-flags --color=light,hl:#9854f1,hl+:#9854f1
-  else
-    zstyle ':fzf-tab:*' fzf-flags --color=hl:188,hl+:255
+  # fzf-tab supplies explicit colors after the options file. Reapply our
+  # single-line, color-only palette after those flags as well.
+  local palette
+  if [[ -r $FZF_DEFAULT_OPTS_FILE ]]; then
+    read -r palette < "$FZF_DEFAULT_OPTS_FILE"
+    zstyle ':fzf-tab:*' fzf-flags "$palette"
   fi
 }
 autoload -Uz add-zsh-hook

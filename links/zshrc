@@ -100,7 +100,7 @@ source "$HOME/.dotfiles/links/zsh/prompt.zsh"
 
 #===[ Plugins
 
-source "$HOME/.dotfiles/links/zsh/fzf-git.sh/fzf-git.sh"
+source "$HOME/.dotfiles/links/zsh/fzf-git.zsh"
 
 # Fish-like autosuggestions
 bindkey '^y' autosuggest-accept
