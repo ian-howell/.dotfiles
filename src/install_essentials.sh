@@ -30,6 +30,7 @@ sudo apt-get install -y -q \
   silversearcher-ag \
   tmux \
   tree \
+  eza \
   xclip \
   shellcheck \
   bat \
