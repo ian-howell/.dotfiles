@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="3.5a"
+VERSION="3.6b"
 
 main() {
   if ! command -v tmux || [ "$(tmux -V | cut -d ' ' -f 2)" != "$VERSION" ]; then
