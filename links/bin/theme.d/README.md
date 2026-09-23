@@ -35,7 +35,7 @@ and JSONC editor live with its integration under `src/theme/windows-terminal/`.
 | K9s | `links/k9s/skins/tokyonight-{moon,day}.yaml` |
 | Neovim | Tokyo Night's Moon/Day themes; `links/nvim/lua/core/theme.lua` |
 | Oh My Posh | Dark/Day palettes in `links/ohmyposh/tokyonight.omp.yaml` |
-| OpenCode | Work-config templates in `src/theme/opencode/` |
+| OpenCode | Shared TUI plugin and palettes in `links/opencode/tui-plugins/` |
 | Windows Terminal | Day scheme in `src/theme/windows-terminal/light.json`; preserves live dark schemes |
 
 Mode and selected palette copies live in `~/.local/state/dotfiles/theme/`, outside
@@ -75,11 +75,12 @@ Subsequent switches edit only Terminal's top-level `theme`, preserving JSONC
 comments and unrelated settings. This changes Terminal chrome across its windows,
 but not Windows' system-wide theme preference.
 
-The installer links the K9s skin, rebuilds bat's cache, and installs the OpenCode
-TUI plugin and its palettes under `$OPENCODE_CONFIG_DIR` (default:
-`~/.config/work/opencode`). Work configuration is not managed by the link manifest.
+The installer links the K9s skin and rebuilds bat's cache. The OpenCode TUI plugin
+and its palettes live in `links/opencode/tui-plugins/`, exposed by the existing
+`~/.config/opencode` symlink and registered in the base `tui.jsonc`. They load with
+or without a work overlay; the installer does not write to `$OPENCODE_CONFIG_DIR`.
 OpenCode also installs runtime theme copies under `~/.config/opencode/themes/`,
-ignored by Git. Rerun installation after changing those plugin/palette templates.
+ignored by Git. Restart OpenCode after changing the plugin or palettes.
 
 The controller/installer need Python 3's standard library. The OpenCode plugin
 was verified with 1.18.32. `DOTFILES_THEME_STATE` overrides the controller/editor

@@ -3,7 +3,7 @@ import { homedir } from "node:os"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 
-// TUI plugin, registered in the work tui.json (not a server plugin).
+// TUI plugin, registered in the base tui.jsonc (not a server plugin).
 // Fixed-color themes avoid dependence on terminal color queries through tmux.
 export default {
   id: "dotfiles-theme",
