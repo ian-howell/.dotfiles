@@ -12,9 +12,9 @@ LINKS = Path(__file__).resolve().parents[2]
 STATE = Path(os.environ.get("DOTFILES_THEME_STATE", Path.home() / ".local/state/dotfiles/theme"))
 ADAPTERS = {
     "Windows Terminal": LINKS.parent / "src/theme/windows-terminal/refresh.py",
+    "K9s": LINKS / "k9s/refresh.py",
     "tmux": LINKS / "tmux/themes/refresh.py",
     "Kitty": LINKS / "kitty/themes/refresh.py",
-    "K9s": LINKS / "k9s/refresh.py",
 }
 
 
@@ -43,25 +43,27 @@ def get():
 def select(mode):
     variant = "day" if mode == "light" else "moon"
     files = {
-        "tmux.conf": f"tmux/themes/{mode}.conf",
         "kitty.conf": f"kitty/themes/{mode}.conf",
         "delta.gitconfig": f"delta/tokyonight_{variant}.gitconfig",
-        "bat.conf": f"bat/{mode}.conf",
-        "fzf.conf": f"zsh/fzf-themes/{mode}.conf",
-        "lazygit.yml": f"lazygit/themes/{mode}.yml",
-        "k9s/skins/dotfiles.yaml": f"k9s/skins/tokyonight-{variant}.yaml",
     }
-    # Read all assets before publishing anything. No parsing or recoloring.
-    contents = {name: (LINKS / source).read_text() for name, source in files.items()}
-    for name, text in contents.items():
-        write(STATE / name, text)
+    # Select checked-in files; never generate or copy palettes.
+    for source in files.values():
+        if not (LINKS / source).is_file():
+            raise FileNotFoundError(LINKS / source)
+    for name, source in files.items():
+        link(STATE / name, LINKS / source)
     write(STATE / "mode", mode + "\n")
 
 
-def run(args):
-    result = subprocess.run(args, text=True, capture_output=True, timeout=15)
-    if result.returncode:
-        raise RuntimeError(result.stderr.strip() or f"{args[0]} exited {result.returncode}")
+def link(path, target):
+    """Atomically select a static palette, including migration from old copies."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".theme-{os.getpid()}")
+    try:
+        temporary.symlink_to(target)
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def refresh(adapter, mode):
