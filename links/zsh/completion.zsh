@@ -15,11 +15,16 @@ if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     # set list-colors to enable filename colorizing
     zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-    # preview directory's content with ls when completing cd
-    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always ${(Q)realpath}'
-
-    # magic previews for files and directories
-    zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat --color=always ${(Q)realpath}'
+    # Preview directories one level deep, or show regular-file contents.
+    zstyle ':fzf-tab:complete:*:*' fzf-preview '
+        if [[ -d "$realpath" ]]; then
+            eza --tree --level=1 --long --icons=always --color=always \
+                --group-directories-first --all --ignore-glob=.git \
+                --no-permissions --no-user --no-time -- "$realpath/"
+        elif [[ -f "$realpath" ]]; then
+            bat --color=always --paging=never -- "$realpath"
+        fi
+    '
 
     # show environment variable contents
     zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
