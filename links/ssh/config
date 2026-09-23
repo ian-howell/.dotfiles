@@ -10,3 +10,5 @@ Host *
     ControlMaster auto
     ControlPath /run/user/%i/ssh-%n-%C
     ControlPersist 60m
+    ServerAliveInterval 15
+    ServerAliveCountMax 3
