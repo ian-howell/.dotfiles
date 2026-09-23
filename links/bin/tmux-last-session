@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Switch back, falling back to the most recently attached surviving session.
+# Explicit socket and client keep this tied to the client invoking the binding.
+set -euo pipefail
+if (($# != 2)); then
+  printf 'Usage: tmux-last-session SOCKET CLIENT\n' >&2
+  exit 1
+fi
+tmux=(tmux -S "$1")
+client=$2
+
+# Preserve tmux's client-specific last-session toggle whenever it is available.
+if "${tmux[@]}" switch-client -c "$client" -l 2>/dev/null; then
+  exit 0
+fi
+
+# display-message -c selects where to show a message, not its format context.
+clients=$("${tmux[@]}" list-clients -F '#{session_id} #{client_name}')
+current=''
+while read -r id name; do
+  if [[ "$name" == "$client" ]]; then
+    current=$id
+    break
+  fi
+done <<< "$clients"
+if [[ -z "$current" ]]; then
+  printf 'Tmux client is no longer attached: %s\n' "$client" >&2
+  exit 1
+fi
+sessions=$("${tmux[@]}" list-sessions -F '#{session_id} #{session_last_attached}')
+target=''
+latest=-1
+while read -r id attached; do
+  [[ "$id" != "$current" ]] || continue
+  if ((attached > latest)); then
+    target=$id
+    latest=$attached
+  fi
+done <<< "$sessions"
+
+if [[ -z "$target" ]]; then
+  # run-shell shows stdout in the pane; stderr would hide the useful error.
+  printf 'No other tmux session.\n'
+  exit 1
+fi
+exec "${tmux[@]}" switch-client -c "$client" -t "$target"
