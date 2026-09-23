@@ -12,9 +12,28 @@ permissions for sensitive output, and never commit it.
 The files in the "links" directory are symlinked to files according to the content of the
 "linkdotfiles.yaml" file in the root of this repository.
 
-Work-related OpenCode configs (including custom commands/agents) should live under
-"~/.config/work/opencode" and be referenced via the OPENCODE_CONFIG_DIR environment variable.
-Do not manage those paths via linkdotfiles.yaml.
+## Base configuration and work overlay
+
+This repository is the complete, general-purpose, open source base configuration.
+`~/.config/work` is a separate repository containing only work-specific additions
+layered on top. Choose ownership by what a feature does, not where it was developed,
+which session requested it, or the current value of an environment variable.
+
+- General OpenCode plugins, agents, commands, skills, and themes belong in
+  `links/opencode`, linked to `~/.config/opencode`. Tmux integration, retitling,
+  explanation agents, theme switching, and general Git policy are base features.
+- Only work-specific OpenCode additions belong in `~/.config/work/opencode`, loaded
+  through `OPENCODE_CONFIG_DIR`. It augments the base; it is not a generic install target.
+- Base installers must not copy shared features into or edit the work overlay.
+  Do not manage work paths through `linkdotfiles.yaml` or require the work repo for
+  the base configuration to function.
+- Split mixed features into shared base functionality and distinct work extensions;
+  do not duplicate or shadow the base skill/plugin under the same name.
+- Azure/lab/simdev tooling, ADO work-item policy, Teams/work TODO integration, and
+  `repo-catalog` are intentionally work-owned. Keep work inventory and private data there.
+- When a change spans the repositories, identify both scopes before editing and
+  preserve unrelated changes in each. Commit/push authorization remains separate
+  from implementation authorization.
 
 The primary Neovim configuration lives in the "links/nvim" directory and uses Neovim's built-in
 package manager.

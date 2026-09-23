@@ -75,6 +75,19 @@ class ThemeTests(unittest.TestCase):
         after = {p.relative_to(self.state): p.read_bytes() for p in self.state.rglob("*") if p.is_file()}
         self.assertEqual(before, after)
 
+    def test_app_install_does_not_write_to_work_overlay(self):
+        config = Path(self.temp.name) / "config"
+        overlay = Path(self.temp.name) / "work/opencode"
+        overlay.mkdir(parents=True)
+        tui = overlay / "tui.json"
+        original = '{"plugin":["./work-only.mjs"]}\n'
+        tui.write_text(original)
+        with patch.dict(os.environ, {"XDG_CONFIG_HOME": str(config), "OPENCODE_CONFIG_DIR": str(overlay)}), patch.object(install.shutil, "which", return_value=None):
+            install.apps()
+        self.assertEqual(tui.read_text(), original)
+        self.assertEqual(list(overlay.iterdir()), [tui])
+        self.assertTrue((config / "k9s/skins/dotfiles.yaml").is_symlink())
+
     def test_integration_failure_does_not_block_others(self):
         with patch.object(theme, "refresh", side_effect=[OSError("unavailable"), None, None, None]) as refresh, patch.dict(os.environ, {"TMUX": ""}):
             self.assertEqual(theme.set_mode("light"), 1)

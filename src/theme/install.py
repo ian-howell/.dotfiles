@@ -27,19 +27,7 @@ def apps():
     else:
         skin.symlink_to(target)
 
-    work = Path(os.environ.get("OPENCODE_CONFIG_DIR", Path.home() / ".config/work/opencode"))
-    for name in ("theme-sync.mjs", "dotfiles-dark.json", "dotfiles-light.json"):
-        theme.write(work / name, (HERE / "opencode" / name).read_text())
-    tui = work / ("tui.jsonc" if (work / "tui.jsonc").exists() else "tui.json")
-    original = tui.read_text() if tui.exists() else '{"$schema":"https://opencode.ai/tui.json"}\n'
-    doc = Document(original)
-    specs = doc.value.get("plugin", [])
-    spec = (work / "theme-sync.mjs").as_uri()
-    if spec not in specs:
-        if tui.exists() and not (theme.STATE / "opencode-tui.before.jsonc").exists():
-            theme.write(theme.STATE / "opencode-tui.before.jsonc", original)
-        doc.set(("plugin",), specs + [spec])
-        theme.write(tui, doc.text)
+    # OpenCode's plugin and palettes are managed directly by links/opencode.
     if shutil.which("bat"):
         theme.run(["bat", "cache", "--build"])
 

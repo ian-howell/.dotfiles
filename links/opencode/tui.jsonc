@@ -1,6 +1,10 @@
 {
   "$schema": "https://opencode.ai/tui.json",
   "theme": "tokyonight",
+  "plugin": [
+    "./tui-plugins/theme-sync.mjs",
+    "./tui-plugins/tmux-status.mjs"
+  ],
   "keybinds": {
     "editor_open": "<leader>ctrl+e",
     "session_new": "<leader>ctrl+n",
