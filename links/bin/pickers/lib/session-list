@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+"""Emit stable-ID session rows, ordered by most recently attached."""
+import os
+import subprocess
+
+result = subprocess.run(
+    ["tmux", "list-sessions", "-F",
+     "#{session_last_attached}\t#{session_id}\t#{session_name}"],
+    capture_output=True, text=True,
+)
+if result.returncode:
+    # No server is a normal empty state, but surface other failures.
+    if not any(message in result.stderr for message in ("no server running", "No such file or directory", "no sessions")):
+        raise SystemExit(result.stderr.strip())
+    raise SystemExit(0)
+rows = [line.split("\t", 2) for line in result.stdout.splitlines()]
+for _, session_id, name in sorted(rows, key=lambda row: int(row[0] or 0), reverse=True):
+    current = "●" if session_id == os.environ.get("PICKER_SOURCE_SESSION") else " "
+    print(f"{session_id}\t{current} {name}")

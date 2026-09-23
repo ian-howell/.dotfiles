@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# ssh-session [query] — concrete aliases from SSH configuration and includes.
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+source "$script_dir/lib/sessions.sh"
+picker_require tmux ssh python3
+picker_init
+hosts=$(python3 "$script_dir/lib/discovery.py" hosts)
+[[ -n "$hosts" ]] || { printf 'ssh-session: no concrete SSH hosts found\n'; exit 0; }
+picker_popup "$hosts" "$@"
+sessions_load
+rows=""
+while IFS= read -r host; do
+  session_name "ssh/$host"
+  active=' '
+  if session_find "ssh:$host" "$REPLY" "$HOME"; then active='●'; fi
+  rows+="$host"$'\t'"$active $host"$'\n'
+done <<<"$hosts"
+selected=$(picker_choose --prompt='ssh> ' --query="${1:-}" \
+  --delimiter=$'\t' --with-nth=2 <<<"${rows%$'\n'}")
+[[ -n "$selected" ]] || exit 0
+host=${selected%%$'\t'*}
+exec "$script_dir/tmux-switch" "ssh/$host" --dir "$HOME" --identity "ssh:$host" -- ssh -- "$host"

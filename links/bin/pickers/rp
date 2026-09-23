@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# rp [query] — repositories beneath config/repo-roots.conf and RP_SRC_ROOTS.
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+source "$script_dir/lib/sessions.sh"
+picker_require tmux git python3
+picker_init
+repos=$(python3 "$script_dir/lib/discovery.py" repos "$script_dir/config/repo-roots.conf")
+[[ -n "$repos" ]] || { printf 'rp: no repositories found\n'; exit 0; }
+picker_popup "$repos" "$@"
+sessions_load
+rows=""
+while IFS=$'\t' read -r name path label; do
+  session_name "$name"
+  active=' '
+  if session_find "repo:$path" "$REPLY" "$path"; then active='●'; fi
+  rows+="$path"$'\t'"$active $label"$'\n'
+done <<<"$repos"
+selected=$(picker_choose --prompt='repo> ' --query="${1:-}" \
+  --delimiter=$'\t' --with-nth=2 <<<"${rows%$'\n'}")
+[[ -n "$selected" ]] || exit 0
+path=${selected%%$'\t'*}
+exec "$script_dir/tmux-switch" "${path##*/}" --dir "$path" --identity "repo:$path"

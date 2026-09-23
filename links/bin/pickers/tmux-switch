@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# tmux-switch NAME [--dir PATH] [--identity KEY] [--command SHELL-COMMAND]
+# tmux-switch NAME [--dir PATH] [--identity KEY] -- PROGRAM [ARG...]
+# tmux-switch --session-id ID  (switch only; never recreate a vanished session)
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/sessions.sh"
+
+die() { printf 'tmux-switch: %s\n' "$*" >&2; exit 1; }
+session="" dir="$HOME" identity="" cmd="" id=""
+argv=()
+while (($#)); do
+  case "$1" in
+    --dir|--identity|--command|--session-id)
+      (($# >= 2)) || die "$1 requires a value"
+      case "$1" in
+        --dir) dir=$2 ;; --identity) identity=$2 ;;
+        --command) cmd=$2 ;; --session-id) id=$2 ;;
+      esac
+      shift 2 ;;
+    --) shift; argv=("$@"); break ;;
+    -*) die "unknown option: $1" ;;
+    *) [[ -z "$session" ]] || die "unexpected argument: $1"; session=$1; shift ;;
+  esac
+done
+if [[ -n "$id" ]]; then
+  [[ "$id" =~ ^\$[0-9]+$ ]] || die "invalid session ID: $id"
+  session_switch "$id"
+  exit
+fi
+[[ -n "$session" ]] || die 'usage: tmux-switch NAME [--dir PATH] [--identity KEY] [-- PROGRAM ARG...]'
+[[ -d "$dir" ]] || die "directory does not exist: $dir"
+dir=$(readlink -f -- "$dir")
+[[ -z "$cmd" || ${#argv[@]} == 0 ]] || die 'use --command or -- PROGRAM, not both'
+identity=${identity:-"directory:$dir:name:$session"}
+session_name "$session"
+session=$REPLY
+sessions_load
+if session_find "$identity" "$session" "$dir"; then
+  id=$REPLY
+  tmux set-option -t "$id" @picker_identity "$identity"
+else
+  # A stable suffix only appears when the friendly name is already occupied.
+  # Identity is still checked after choosing the suffix; hashes are not proof.
+  if tmux has-session -t "=$session" 2>/dev/null; then
+    digest=$(printf '%s' "$identity" | sha256sum)
+    session+="~${digest:0:10}"
+  fi
+  if tmux has-session -t "=$session" 2>/dev/null; then
+    [[ "$(tmux display-message -p -t "=$session:" '#{@picker_identity}')" == "$identity" ]] \
+      || die "session name collision: $session"
+    id=$(tmux display-message -p -t "=$session:" '#{session_id}')
+  else
+    args=(new-session -d -P -F '#{session_id}' -s "$session" -c "$dir")
+    if [[ -n "$cmd" ]]; then args+=("$cmd"); else args+=("${argv[@]}"); fi
+    # Preserve diagnostics. Do not treat every creation failure as a duplicate.
+    id=$(tmux "${args[@]}")
+    tmux set-option -t "$id" @picker_identity "$identity"
+  fi
+fi
+session_switch "$id"

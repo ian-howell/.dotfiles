@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# wt [branch] | wt -l | wt -d [--force] branch
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+source "$script_dir/lib/sessions.sh"
+picker_require git python3
+die() { printf 'wt: %s\n' "$*" >&2; exit 1; }
+git_common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+repo_root=$(dirname "$git_common_dir")
+repo_name=${repo_root##*/}
+repo_name=${repo_name#.}
+mode=create force=0 branch="" worktree_dir=""
+case "${1:-}" in
+  -l) python3 "$script_dir/lib/discovery.py" worktrees "$repo_root"; exit ;;
+  -d)
+    mode=delete; shift
+    if [[ "${1:-}" == --force ]]; then force=1; shift; fi
+    [[ $# == 1 && -n "$1" ]] || die 'usage: wt -d [--force] branch'
+    branch=$1 ;;
+  '')
+    picker_require tmux
+    picker_init
+    rows=$(python3 "$script_dir/lib/discovery.py" worktrees "$repo_root")
+    [[ -n "$rows" ]] || { printf 'wt: no worktrees (use wt <branch> to create one)\n'; exit 0; }
+    picker_popup "$rows"
+    picker_command "$script_dir/wt"
+    self=$REPLY
+    selected=$(picker_choose --prompt='worktree> ' --delimiter=$'\t' --with-nth=4 \
+      --footer='Ctrl-X: delete clean, merged worktree' \
+      --bind="ctrl-x:execute($self -d {2})+reload-sync($self -l)" <<<"$rows")
+    [[ -n "$selected" ]] || exit 0
+    worktree_dir=${selected%%$'\t'*}
+    rest=${selected#*$'\t'}
+    branch=${rest%%$'\t'*} ;;
+  -*) die "unknown option: $1" ;;
+  *) [[ $# == 1 ]] || die 'usage: wt [branch]'; branch=$1 ;;
+esac
+
+if [[ -n "$branch" ]]; then
+  git check-ref-format "refs/heads/$branch" >/dev/null || die "invalid branch: $branch"
+  [[ "$branch" != -* ]] || die "invalid branch: $branch"
+  rows=$(python3 "$script_dir/lib/discovery.py" worktrees "$repo_root")
+  while IFS= read -r row; do
+    rest=${row#*$'\t'}
+    if [[ "${rest%%$'\t'*}" == "$branch" ]]; then worktree_dir=${row%%$'\t'*}; break; fi
+  done <<<"$rows"
+fi
+
+if [[ "$mode" == delete ]]; then
+  [[ -n "$worktree_dir" ]] || die "no worktree for branch: $branch"
+  # Check merge safety before removing the directory. Git branch -d checks its
+  # upstream when set, and HEAD otherwise; use that same basis here.
+  if (( ! force )); then
+    base=$(git rev-parse --verify "$branch@{upstream}" 2>/dev/null || git -C "$repo_root" rev-parse HEAD)
+    git merge-base --is-ancestor "refs/heads/$branch" "$base" \
+      || die "branch is not merged: $branch (explicit override: wt -d --force <branch>)"
+  fi
+  cd "$repo_root"
+  remove_args=(worktree remove)
+  (( ! force )) || remove_args+=(--force)
+  git "${remove_args[@]}" -- "$worktree_dir"
+  if (( force )); then git branch -D -- "$branch"; else git branch -d -- "$branch"; fi
+  # Resolve by identity/path, including legacy sessions, rather than trusting
+  # the branch-derived name to identify the session we are about to destroy.
+  if command -v tmux >/dev/null; then
+    sessions_load
+    session_name "${repo_name}⋅󰘬⋅${branch}"
+    if session_find "worktree:$worktree_dir" "$REPLY" "$worktree_dir"; then
+      tmux kill-session -t "$REPLY"
+    fi
+  fi
+  exit 0
+fi
+
+if [[ -z "$worktree_dir" ]]; then
+  # Select the main checkout too when an explicit branch is already there.
+  main_branch=$(git -C "$repo_root" symbolic-ref --quiet --short HEAD || true)
+  if [[ "$branch" == "$main_branch" ]]; then
+    worktree_dir=$repo_root
+  else
+    worktree_dir="$repo_root/../$repo_name.worktrees/$branch"
+    if ! git show-ref --verify --quiet "refs/heads/$branch"; then
+      if git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+        git branch --track -- "$branch" "refs/remotes/origin/$branch"
+      else
+        git branch -- "$branch"
+      fi
+    fi
+    git worktree add -- "$worktree_dir" "$branch"
+  fi
+fi
+worktree_dir=$(readlink -f -- "$worktree_dir")
+session="${repo_name}⋅󰘬⋅${branch:-detached}"
+exec "$script_dir/tmux-switch" "$session" --dir "$worktree_dir" --identity "worktree:$worktree_dir"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Pick an existing session. Names are display text; actions use session IDs.
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+picker_require tmux python3
+picker_init
+picker_command "$script_dir/lib/session-list"
+list_command=$REPLY
+rows=$("$script_dir/lib/session-list")
+[[ -n "$rows" ]] || { printf 'ts: no tmux sessions\n'; exit 0; }
+picker_popup "$rows" "$@"
+selected=$(picker_choose --prompt='session> ' --query="${1:-}" --no-sort \
+  --delimiter=$'\t' --with-nth=2.. \
+  --footer='Ctrl-X: delete session' \
+  --bind="ctrl-x:execute(tmux kill-session -t {1})+reload-sync($list_command)" <<<"$rows")
+[[ -n "$selected" ]] || exit 0
+exec "$script_dir/tmux-switch" --session-id "${selected%%$'\t'*}"

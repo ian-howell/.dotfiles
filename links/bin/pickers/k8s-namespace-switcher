@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+picker_require kubectl
+picker_init
+context=$(kubectl config current-context)
+picker_command kubectl "--context=$context" get namespaces -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{end}'
+list_command=$REPLY
+namespaces=$(kubectl --context="$context" get namespaces -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{end}')
+[[ -n "$namespaces" ]] || { printf 'No namespaces found in %s\n' "$context"; exit 0; }
+picker_popup "$namespaces" "$@"
+selected=$(picker_choose --prompt='namespace> ' \
+  --footer='Ctrl-R: reload namespaces' \
+  --bind="ctrl-r:reload($list_command)" <<<"$namespaces")
+[[ -n "$selected" ]] || exit 0
+# A different terminal may have changed current-context during selection.
+kubectl config set-context "$context" --namespace="$selected"

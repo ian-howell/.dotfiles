@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+source "$script_dir/lib/picker.sh"
+picker_require kubectl
+picker_init
+current=$(kubectl config view -o 'jsonpath={.current-context}')
+contexts=$(kubectl config get-contexts -o name)
+[[ -n "$contexts" ]] || { printf 'No Kubernetes contexts configured\n'; exit 0; }
+picker_popup "$contexts" "$@"
+rows=""
+while IFS= read -r context; do
+  marker=' '
+  [[ "$context" != "$current" ]] || marker='●'
+  rows+="$context"$'\t'"$marker $context"$'\n'
+done <<<"$contexts"
+selected=$(picker_choose --prompt='context> ' --delimiter=$'\t' --with-nth=2 <<<"${rows%$'\n'}")
+[[ -n "$selected" ]] || exit 0
+kubectl config use-context "${selected%%$'\t'*}"
