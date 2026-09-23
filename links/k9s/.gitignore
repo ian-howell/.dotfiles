@@ -2,5 +2,5 @@
 clusters/
 benchmarks/
 
-# Selected shared theme, linked by src/theme/install.py.
+# Selected shared theme, linked by the theme command.
 skins/dotfiles.yaml

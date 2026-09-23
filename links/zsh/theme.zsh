@@ -1,14 +1,17 @@
-# Files are read at invocation time, so shells don't retain a stale palette.
-export BAT_CONFIG_PATH="$HOME/.local/state/dotfiles/theme/bat.conf"
-export FZF_DEFAULT_OPTS_FILE="$HOME/.local/state/dotfiles/theme/fzf.conf"
-export LG_CONFIG_FILE="$HOME/.dotfiles/links/lazygit.yml,$HOME/.local/state/dotfiles/theme/lazygit.yml"
-export K9S_SKIN=dotfiles
-
 _dotfiles_theme_refresh() {
   local selected=dark
   local state="$HOME/.local/state/dotfiles/theme/mode"
   [[ -r $state ]] && read -r selected < "$state"
+  [[ $selected == light || $selected == dark ]] || selected=dark
   export DOTFILES_THEME=$selected
+  # Static palettes work immediately after linking, without runtime state.
+  local links="$HOME/.dotfiles/links"
+  export BAT_CONFIG_PATH="$links/bat/$selected.conf"
+  export FZF_DEFAULT_OPTS_FILE="$links/zsh/fzf-themes/$selected.conf"
+  export LG_CONFIG_FILE="$links/lazygit.yml,$links/lazygit/themes/$selected.yml"
+  export K9S_SKIN=tokyonight-moon
+  [[ $selected == light ]] && export K9S_SKIN=tokyonight-day
+  [[ -r ${XDG_CONFIG_HOME:-$HOME/.config}/k9s/skins/dotfiles.yaml ]] && export K9S_SKIN=dotfiles
   # fzf-tab supplies explicit colors after the options file. Reapply our
   # single-line, color-only palette after those flags as well.
   local palette
