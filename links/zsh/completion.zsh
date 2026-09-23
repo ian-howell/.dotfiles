@@ -9,18 +9,42 @@ compinit
 if [[ -s "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh" ]]; then
     source "$HOME/.dotfiles/links/zsh/fzf/fzf-tab.plugin.zsh"
 
-    zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-    zstyle ':fzf-tab:*' popup-pad 80 0
+    # Use fzf's native popup sizing; --height is the fallback outside tmux.
+    _dotfiles_completion_fzf() {
+        fzf "$@" --tmux=center,90%,50% --height=50% --border=rounded \
+            --info=hidden --no-scrollbar --no-separator \
+            --preview-window=right,50%,border-left,noinfo,nowrap
+    }
+    zstyle ':fzf-tab:*' fzf-command _dotfiles_completion_fzf
 
     # set list-colors to enable filename colorizing
     zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-    # Preview directories one level deep, or show regular-file contents.
+    # Preview immediate directory contents, or show regular-file contents.
     zstyle ':fzf-tab:complete:*:*' fzf-preview '
         if [[ -d "$realpath" ]]; then
-            eza --tree --level=1 --long --icons=always --color=always \
-                --group-directories-first --all --ignore-glob=.git \
-                --no-permissions --no-user --no-time -- "$realpath/"
+            {
+                printf "\033[2m%s\033[0m\n\n" "$realpath"
+                eza --oneline --icons=always --color=always --classify=always \
+                    --group-directories-first --all --ignore-glob=.git -- "$realpath/"
+            } | {
+                # Hold the last visible row until we know whether more follows.
+                integer height=${FZF_PREVIEW_LINES:-0} row=0
+                local line last
+                while IFS= read -r line; do
+                    (( ++row ))
+                    if (( height <= 0 || row < height )); then
+                        print -r -- "$line"
+                    elif (( row == height )); then
+                        last=$line
+                    elif (( row == height + 1 )); then
+                        printf "\033[2m…\033[0m\n"
+                    fi
+                done
+                if (( height > 0 && row == height )); then
+                    print -r -- "$last"
+                fi
+            }
         elif [[ -f "$realpath" ]]; then
             bat --color=always --paging=never -- "$realpath"
         fi
