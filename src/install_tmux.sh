@@ -1,6 +1,7 @@
 #!/bin/bash
 
-VERSION="3.6b"
+# Includes the fragmented palette-response fixes (tmux/tmux#4793).
+VERSION="3.7c"
 
 main() {
   if ! command -v tmux || [ "$(tmux -V | cut -d ' ' -f 2)" != "$VERSION" ]; then
