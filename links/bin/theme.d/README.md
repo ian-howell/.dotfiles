@@ -30,7 +30,7 @@ and JSONC editor live with its integration under `src/theme/windows-terminal/`.
 | Kitty | `links/kitty/themes/{dark,light}.conf` |
 | Delta | `links/delta/tokyonight_{moon,day}.gitconfig` |
 | bat | `links/bat/{dark,light}.conf` and `themes/` |
-| fzf | `links/zsh/fzf-themes/{dark,light}.conf` |
+| fzf | Tokyo Night Moon/Day in `links/zsh/fzf-themes/{dark,light}.conf` |
 | Lazygit | `links/lazygit/themes/{dark,light}.yml` |
 | K9s | `links/k9s/skins/tokyonight-{moon,day}.yaml` |
 | Neovim | Tokyo Night's Moon/Day themes; `links/nvim/lua/core/theme.lua` |
@@ -43,6 +43,13 @@ Git. File replacement is atomic and concurrent setters are serialized. Neovim an
 OpenCode watch the saved mode; shells read it before commands/prompts. Apps with
 their own hooks read the file directly to avoid repeatedly spawning the CLI.
 Glow's `md` wrapper uses `theme get` to select its built-in light or Tokyo Night style.
+
+fzf palettes are single-line, color-only options files, including explicit backgrounds.
+Shell and tmux pickers read the selected palette through `FZF_DEFAULT_OPTS_FILE`.
+`links/zsh/theme.zsh` also reapplies it after fzf-tab's own highlight flags;
+`links/zsh/fzf-git.zsh` lets Git picker labels inherit the palette while keeping
+the plugin's header text attributes. Open a new shell to load changes to these
+integrations, or source both files in an existing Zsh session.
 
 The command refreshes the invoking tmux server (the default when outside tmux).
 Hook-enabled editors under this user follow the shared state. Other machines and
@@ -118,6 +125,7 @@ restoring the entire backup. Remove runtime state only after removing its hooks.
 python3 links/bin/theme.d/test_theme.py -v
 shellcheck links/bin/theme.d/theme links/bin/md src/link_dotfiles.sh src/install_theme.sh
 zsh -n links/zsh/theme.zsh
+zsh -n links/zsh/fzf-git.zsh
 ```
 
 Regression tests cover JSONC preservation, installation idempotence, palette
