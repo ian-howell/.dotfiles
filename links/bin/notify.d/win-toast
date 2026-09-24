@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Show a Windows toast notification from WSL. Usage: win-toast <title> [body]
+# Silently does nothing outside WSL or when PowerShell is unavailable.
+set -u
+
+PS=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe
+[[ -n "${WSL_DISTRO_NAME:-}" && -x "$PS" ]] || exit 0
+[[ $# -ge 1 ]] || { echo "usage: win-toast <title> [body]" >&2; exit 2; }
+
+# Text travels via environment variables (forwarded by WSLENV), never via the
+# script source, so quotes and $ in titles cannot inject PowerShell.
+export TOAST_TITLE="$1" TOAST_BODY="${2:-}"
+export WSLENV="${WSLENV:+$WSLENV:}TOAST_TITLE:TOAST_BODY"
+
+read -r -d '' SCRIPT <<'PS1'
+$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
+$null = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
+$e = { param($s) [Security.SecurityElement]::Escape($s) }
+$xml = New-Object Windows.Data.Xml.Dom.XmlDocument
+$xml.LoadXml("<toast scenario='reminder'><visual><binding template='ToastGeneric'><text>$(& $e $env:TOAST_TITLE)</text><text>$(& $e $env:TOAST_BODY)</text></binding></visual><actions><action activationType='system' arguments='dismiss' content=''/></actions></toast>")
+$app = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show([Windows.UI.Notifications.ToastNotification]::new($xml))
+PS1
+
+# -EncodedCommand expects base64 UTF-16LE; avoids all quoting issues.
+ENC=$(printf '%s' "$SCRIPT" | iconv -t UTF-16LE | base64 -w0)
+cd /mnt/c 2>/dev/null || true  # avoid UNC cwd warnings
+# PowerShell emits CLIXML progress noise; only surface output on failure.
+out=$(timeout 20 "$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand "$ENC" 2>&1)
+rc=$?
+(( rc == 0 )) || printf 'win-toast failed (rc=%d): %s\n' "$rc" "$out" >&2
+exit "$rc"
