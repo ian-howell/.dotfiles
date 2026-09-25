@@ -3,7 +3,7 @@
   "autoshare": false,
   "autoupdate": true,
   "default_agent": "ask",
-  "model": "github-copilot/claude-opus-5.5",
+  "model": "github-copilot/gpt-6-astra",
   "plugin": [],
   "permission": {
     "bash": {
