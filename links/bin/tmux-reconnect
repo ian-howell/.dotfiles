@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Reconnect the invoking terminal without restarting the server or its programs.
+set -euo pipefail
+if (($# != 3)); then
+  printf 'Usage: tmux-reconnect SOCKET CLIENT SESSION_ID\n' >&2
+  exit 1
+fi
+socket=$1
+client=$2
+session=$3
+
+# detach-client -E runs through the client's default shell. Use portable single
+# quotes, including embedded apostrophes, rather than Bash-only shell escapes.
+shell_quote() {
+  printf "'%s'" "${1//\'/\'\\\'\'}"
+}
+reconnect="exec tmux -S $(shell_quote "$socket") attach-session -t $(shell_quote "$session")"
+exec tmux -S "$socket" detach-client -t "$client" -E "$reconnect"
