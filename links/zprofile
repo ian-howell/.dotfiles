@@ -1,10 +1,9 @@
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin":/home/ian/.config/agency/CurrentVersion
 
 # Add go to the environment
-export GOROOT="/usr/local/go"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
-export PATH=$GOROOT/bin:$PATH
+export PATH=/usr/local/go/bin:$PATH
 export PATH=$GOBIN:$PATH
 
 # Start the ssh agent if it isn't already running
