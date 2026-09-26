@@ -124,6 +124,80 @@ local opts = {
 
 require("codediff").setup(opts)
 
+-- Extend the action itself so CodeDiff's file/layout keymap rebuilds retain the
+-- toggle. Weak session keys keep return panes tab-local without leaking sessions.
+local lifecycle = require("codediff.ui.lifecycle")
+local panes = require("codediff.ui.view.actions.panes")
+local focus_explorer = panes.focus_explorer
+local return_windows = setmetatable({}, { __mode = "k" })
+
+local function hide_explorer(explorer)
+  if not explorer.is_hidden then
+    require("codediff.ui.explorer").toggle_visibility(explorer)
+  end
+end
+
+panes.focus_explorer = function(ctx)
+  local session = lifecycle.get_session(ctx.tabpage)
+  local explorer = lifecycle.get_panel_view(ctx.tabpage)
+  local current = vim.api.nvim_get_current_win()
+  local explorer_win = explorer and explorer.split and explorer.split.winid
+
+  if session and current == explorer_win then
+    hide_explorer(explorer)
+    -- The saved pane may have disappeared after a layout or conflict change.
+    for _, win in ipairs({
+      return_windows[session] or false,
+      session.result_win or false,
+      session.modified_win or false,
+      session.original_win or false,
+    }) do
+      if
+        win
+        and win ~= explorer_win
+        and vim.api.nvim_win_is_valid(win)
+        and vim.api.nvim_win_get_tabpage(win) == ctx.tabpage
+      then
+        vim.api.nvim_set_current_win(win)
+        return
+      end
+    end
+    return
+  end
+
+  if session then
+    return_windows[session] = current
+  end
+  focus_explorer(ctx)
+end
+
+-- Keep the built-in selection/folding behavior, but hide the panel when Enter
+-- selects a file. Install through CodeDiff so it still owns keymap cleanup.
+local explorer_keymaps = require("codediff.ui.explorer.keymaps")
+local setup_explorer_keymaps = explorer_keymaps.setup
+explorer_keymaps.setup = function(explorer)
+  setup_explorer_keymaps(explorer)
+  local select = vim.api.nvim_buf_call(explorer.bufnr, function()
+    return vim.fn.maparg(opts.keymaps.explorer.select, "n", false, true).callback
+  end)
+  lifecycle.set_buf_keymap(
+    explorer.tabpage,
+    explorer.bufnr,
+    "n",
+    opts.keymaps.explorer.select,
+    function()
+      local node = explorer.tree:get_node()
+      local is_file = node and node.data and node.data.type ~= "group" and node.data.type ~= "directory"
+      select()
+      if is_file then
+        hide_explorer(explorer)
+      end
+    end,
+    { desc = "Select file and hide explorer / toggle folder", silent = true, nowait = true },
+    { suspendable = false }
+  )
+end
+
 vim.keymap.set("n", "<leader>gd", "<cmd>CodeDiff<CR>", { desc = "Git diff" })
 vim.keymap.set("n", "<leader>gD", function()
   local merge_base = vim.fn.system("git merge-base origin/main HEAD"):gsub("%s+", "")
