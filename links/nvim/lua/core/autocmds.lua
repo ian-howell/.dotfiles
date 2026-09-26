@@ -32,6 +32,7 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 -- Filetypes whose windows manage their own UI. The focus-UI autocmds leave
 -- these alone so plugin-owned gutters and highlights are not clobbered.
 local focus_ui_ignore = {
+  ["codediff-explorer"] = true,
   fyler_finder = true,
   snacks_picker_list = true,
   opencode = true,
