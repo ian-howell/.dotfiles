@@ -2,6 +2,7 @@
 # those blocks. SSH generally uses the first value obtained for each option,
 # so included host-specific settings take precedence over the defaults below.
 
+Include ~/.ssh/config.local
 Include ~/.config/nc-devbox/ssh/*
 Include ~/.config/homelab-ssh-config
 Include ~/.config/work/ssh/config
