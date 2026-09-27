@@ -100,4 +100,12 @@ return {
     src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
     name = "render-markdown",
   },
+  {
+    src = "https://github.com/selimacerbas/live-server.nvim",
+    name = "live-server.nvim",
+  },
+  {
+    src = "https://github.com/selimacerbas/markdown-preview.nvim",
+    name = "markdown-preview.nvim",
+  },
 }

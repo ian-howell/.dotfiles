@@ -29,6 +29,14 @@
       "rev": "abf82a6",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "live-server.nvim": {
+      "rev": "c0cf9f5114eabc18d7e59b208c9e73d9d403d865",
+      "src": "https://github.com/selimacerbas/live-server.nvim"
+    },
+    "markdown-preview.nvim": {
+      "rev": "3e0dc6f133b7ebb4c0438309cde40cb66bcf68e1",
+      "src": "https://github.com/selimacerbas/markdown-preview.nvim"
+    },
     "mini.ai": {
       "rev": "cb20f298ebf5ae91924cd0c6c310712de2ef4086",
       "src": "https://github.com/nvim-mini/mini.ai"

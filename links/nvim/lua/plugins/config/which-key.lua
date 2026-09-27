@@ -43,6 +43,8 @@ which_key.setup({
     { "<leader>f", group = "find" },
     { "<leader>g", group = "git", mode = { "n", "v" } },
     { "<leader>G", group = "go", mode = { "n", "v" } },
+    { "<leader>m", group = "markdown" },
+    { "<leader>mp", group = "preview" },
     { "<leader>o", group = "opencode", mode = { "n", "x" } },
     { "<leader>q", group = "quickfix" },
     { "<leader>u", group = "ui" },
