@@ -163,29 +163,27 @@ set_textwidth("sh", 80)
 -- On Save
 -- ---------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("BufWritePre", {
-  desc = "Strip Windows CRLF characters on save",
+  desc = "Strip trailing whitespace on save",
   group = groups.on_save,
   callback = function(args)
     if vim.bo[args.buf].buftype ~= "" then
       return
     end
 
-    local has_cr = false
-    for _, line in ipairs(vim.api.nvim_buf_get_lines(args.buf, 0, -1, true)) do
-      if line:find("\r", 1, true) then
-        has_cr = true
-        break
+    local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, true)
+    local changed = false
+    for index, line in ipairs(lines) do
+      local trimmed = line:gsub("%s+$", "")
+      if trimmed ~= line then
+        lines[index] = trimmed
+        changed = true
       end
     end
-    if not has_cr then
+    if not changed then
       return
     end
 
     local view = vim.fn.winsaveview()
-    local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, true)
-    for index, line in ipairs(lines) do
-      lines[index] = line:gsub("\r", "")
-    end
     vim.api.nvim_buf_set_lines(args.buf, 0, -1, true, lines)
     vim.fn.winrestview(view)
   end,
