@@ -12,6 +12,9 @@ autoload -U colors && colors
 # Advertise RGB support to TUIs such as lazygit, including in existing tmux servers.
 export COLORTERM=truecolor
 
+# Visually separate user messages from responses in Copilot CLI (including Agency).
+export COPILOT_PROMPT_FRAME=1
+
 #===[ History
 # TODO: clean this up too
 # History file configuration
