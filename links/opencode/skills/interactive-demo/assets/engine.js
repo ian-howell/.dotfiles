@@ -582,27 +582,54 @@
   //   cams: { name: { t, o } }, spots: { name: [x, y, scale] }, snips: { key: snip }, file: 'name.go',
   //   finaleKey: 'finale', text?(ctx), spotFor?(ctx), hint?(ctx),
   //   resolve?(state) → event               an event Next must apply before advancing (e.g. restart a crashed process)
-  //   play: { cam, intro, events: [{ ev, key, label | label(s), enabled(s) }], presets: { id: { label, make() } }, tape?(ev, state) }
+  //   play: { cam, intro, events: [{ ev, key, label | label(s), enabled(s) }], presets: { id: { label, events: [ev…] | events() } }, tape?(ev, state) }
   // }
+  // A preset is the event path from initial() to the scenario, not a finished state. Loading it
+  // replaces the history with the stable start plus one chip per event, so every step leading to
+  // the scenario can be inspected and undone. Entering the playground from a scene does the same
+  // with the scene path, including any in-scene interactions.
   // The playground keeps a timeline of states: Undo/Redo (Z / Shift+Z, Ctrl+Z / Ctrl+Y, ← / →) and
   // clickable history chips travel through it; a new event after travelling back discards the
   // undone branch. Travel renders with ctx.animated = false, so objects glide without replaying
   // effects. Keys z, y and the arrows are reserved in the playground.
   // ctx = { prev, s, sc, idx, play, intro, animated, api } — animate choreography only when ctx.animated.
   function story(cfg) {
-    let mode = 'story', idx = 0, state = cfg.initial(), shown = null, cine = false;
+    let mode = 'story', idx = 0, state = cfg.initial(), shown = null, cine = false, interactions = [];
     let line = [], pos = 0, fresh = false; // playground timeline: [{ label, s }], current index
     const scenes = cfg.scenes;
     const snapshot = i => { let s = cfg.initial(); for (let n = 0; n <= i; n += 1) for (const e of scenes[n].ev || []) s = cfg.step(s, e); return s; };
     const codeAround = i => scenes.slice(0, i).some(s => s.code) && scenes.slice(i + 1).some(s => s.code);
     const api = {
       get state() { return structuredClone(state); }, get idx() { return idx; }, get mode() { return mode; },
-      scenes, snapshot, go, next, back, act, interact, setMode, render, undo, redo, travel,
+      initial: cfg.initial, scenes, snapshot, go, next, back, act, interact, setMode, render, undo, redo, travel,
       get timeline() { return { pos, labels: line.map(e => e.label) }; },
     };
 
-    // Timeline: record() after a change, begin() when a fresh playground starts.
-    function begin(label) { line = [{ label, s: structuredClone(state) }]; pos = 0; fresh = false; }
+    // Timeline: record() after a change; replay() starts a fresh history from initial().
+    const tapeLabel = (ev, before, after) => {
+      if (cfg.play.tape) return cfg.play.tape(ev, after);
+      const def = (cfg.play.events || []).find(e => e.ev === ev);
+      return `${def?.icon || '•'} ${typeof def?.label === 'function' ? def.label(before) : def?.label || ev}`;
+    };
+    function replay(label, events) {
+      let s = cfg.initial();
+      line = [{ label: `◇ ${label}`, s: structuredClone(s) }];
+      for (const ev of events) {
+        const before = s;
+        s = cfg.step(s, ev);
+        line.push({ label: tapeLabel(ev, before, s), s: structuredClone(s) });
+      }
+      pos = line.length - 1;
+      state = structuredClone(s);
+      fresh = true;
+      cine = false;
+    }
+    // Narrate the playground's opening entry; the stored snapshot keeps undo/redo exact.
+    function introduce() {
+      if (!cfg.play.intro) return;
+      state.last = { ...(state.last || {}), text: cfg.play.intro };
+      line[pos].s = structuredClone(state);
+    }
     function record(label) { line = line.slice(0, pos + 1); line.push({ label, s: structuredClone(state) }); pos = line.length - 1; fresh = true; }
     function travel(i) {
       if (mode !== 'play' || i < 0 || i >= line.length || i === pos) return;
@@ -670,9 +697,7 @@
       presetSel.addEventListener('change', e => {
         const p = cfg.play.presets[e.target.value];
         if (!p) return;
-        state = p.make();
-        state.last = { ...(state.last || {}), text: `Loaded: ${p.label}. Change something, or step the system.` };
-        record(`◇ ${p.label.toLowerCase()}`);
+        replay(p.label.toLowerCase(), typeof p.events === 'function' ? p.events() : p.events);
         e.target.value = '';
         render();
       });
@@ -718,8 +743,8 @@
       i = Math.max(0, Math.min(scenes.length - 1, i));
       mode = 'story';
       const forward = i === idx + 1;
-      if (i === idx && !cfg.resolve?.(state) && !state.interacted) return;
-      idx = i; state = snapshot(i); cine = forward;
+      if (i === idx && !cfg.resolve?.(state) && !interactions.length) return;
+      idx = i; state = snapshot(i); cine = forward; interactions = [];
       render();
     }
     function next() {
@@ -730,7 +755,7 @@
     }
     function back() { if (mode === 'story' && idx > 0) go(idx - 1); }
     // An in-scene interaction (story mode): apply an event without leaving the scene.
-    function interact(ev) { state = cfg.step(state, ev); state.interacted = true; cine = true; render(); }
+    function interact(ev) { state = cfg.step(state, ev); interactions.push(ev); cine = true; render(); }
     function act(ev) {
       if (mode !== 'play') return;
       const def = (cfg.play.events || []).find(e => e.ev === ev);
@@ -738,7 +763,7 @@
       const before = state;
       state = cfg.step(state, ev);
       if (state === before) return;
-      record(cfg.play.tape ? cfg.play.tape(ev, state) : `${def?.icon || '•'} ${typeof def?.label === 'function' ? def.label(before) : def?.label || ev}`);
+      record(tapeLabel(ev, before, state));
       cine = true;
       render();
     }
@@ -746,9 +771,9 @@
       if (m === mode || (m === 'play' && !cfg.play)) return;
       mode = m;
       if (m === 'play') {
-        if (cfg.play.intro) state.last = { ...(state.last || {}), text: cfg.play.intro };
-        begin(`from scene ${idx}`);
-      } else state = snapshot(idx);
+        replay(`scene ${idx}`, [...scenes.slice(0, idx + 1).flatMap(sc => sc.ev || []), ...interactions]);
+        introduce();
+      } else { state = snapshot(idx); interactions = []; }
       render();
     }
 
@@ -794,7 +819,7 @@
     addEventListener('resize', () => fit());
     fit();
     const hash = location.hash.slice(1);
-    if (hash === 'play' && cfg.play) { mode = 'play'; state = cfg.initial(); if (cfg.play.intro) state.last = { ...(state.last || {}), text: cfg.play.intro }; begin('start'); }
+    if (hash === 'play' && cfg.play) { mode = 'play'; replay('start', []); introduce(); }
     else if (/^\d+$/.test(hash)) { idx = Math.min(scenes.length - 1, +hash); state = snapshot(idx); }
     render();
     $('#ctaReplay')?.addEventListener('click', e => { e.stopPropagation(); go(0); });

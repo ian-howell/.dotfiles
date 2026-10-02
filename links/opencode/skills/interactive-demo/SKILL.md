@@ -46,7 +46,10 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
      with ids in `#wires` for comets.
    - **Render:** make every object match `ctx.s` (keyed objects breathe in/out, values tween,
      state cards morph); choreograph only when `ctx.animated`, by diffing `ctx.prev` and `ctx.s`.
-   - **Snippets, cameras, spotlights, finale cards, playground events and presets.**
+   - **Snippets, cameras, spotlights, finale cards, playground events and presets.** A preset
+     is `{ label, events: [...] }`: the event path from `initial()`. Loading it replays each
+     event into the history, so every step that led to the scenario can be undone. Never build
+     a preset as a finished state.
    - **Playground footer:** keep the template's two rows: actions/presets above, Undo/Redo and
      a horizontally scrollable event timeline below. The engine fits the stage to the footer's
      measured height; keep this when customizing the layout.
