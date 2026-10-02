@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEMO TITLE</title>
+<link rel="stylesheet" href="engine.css">
+<style>
+/* Demo-specific world styles. Coordinates are in the 1600×900 camera space. */
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<svg id="skyline" aria-hidden="true" viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax slice"></svg>
+
+<header class="top">
+  <div class="brand"><span class="logo">◇</span>DEMO TITLE<small>one-line context · design status</small></div>
+  <div class="top-right">
+    <div class="seg" aria-label="Mode"><button id="modeStory" class="on" aria-pressed="true">Story</button><button id="modePlay" aria-pressed="false">Playground</button></div>
+    <button class="icon" id="notesBtn" title="Notes (?)" aria-label="Notes">?</button>
+    <button class="icon" id="fsBtn" title="Fullscreen (F)" aria-label="Toggle fullscreen">⤢</button>
+  </div>
+</header>
+
+<main id="stage" aria-label="DEMO TITLE">
+  <div id="world">
+    <div id="camera">
+      <svg id="wires" width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true">
+        <!-- Paths for comets (class="beam"), frames, tethers. Give each path an id. -->
+        <g id="comets"></g>
+      </svg>
+      <!-- World objects: absolutely positioned in camera coordinates. -->
+      <div id="spot"></div>
+      <div id="fxCam"></div>
+    </div>
+    <div id="hud">
+      <div id="kicker" class="mm"></div>
+      <div id="headline" class="mm"></div>
+      <div id="subline" class="mm"></div>
+      <div id="code" aria-label="Source excerpt">
+        <div class="code-inner" id="codeInner">
+          <div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span id="codeFile" class="mm"></span><span id="codeBadge"></span></div>
+          <div id="codeBody" class="mm"></div>
+          <div class="code-foot" id="codeFoot"></div>
+        </div>
+        <div class="code-chip" id="codeChip"></div>
+      </div>
+      <!-- Summary cards: data-from is a selector in the world they fly out of. -->
+      <article class="fcard" data-from="#camera"><div class="n" style="color:var(--magenta)">01 · STEP</div><h3>Principle</h3><p>One sentence.</p></article>
+      <div id="finaleCtas" class="live"><button class="primary" id="ctaPlay">Open the playground →</button><button id="ctaReplay">↺ Replay</button></div>
+      <div id="hint"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="bar" id="storyBar">
+    <button class="nav" id="back" aria-label="Previous scene">←</button>
+    <nav id="dots" aria-label="Scenes"></nav>
+    <span class="count" id="count"></span>
+    <button class="nav primary" id="next">Next →</button>
+  </div>
+  <div class="bar" id="playBar" hidden>
+    <div id="playDock"></div>
+    <select id="preset" aria-label="Load a scenario"><option value="">Load a scenario…</option></select>
+    <div id="tape" aria-label="Event history"></div>
+  </div>
+</footer>
+
+<dialog id="notes">
+  <button class="close" id="closeNotes">Close</button>
+  <h2>Notes</h2>
+  <p>What this models, what it leaves out, where code excerpts come from, and what is still under discussion.</p>
+</dialog>
+
+<script src="engine.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
