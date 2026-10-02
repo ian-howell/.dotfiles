@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Circuit breaker · interactive demo</title>
+<link rel="stylesheet" href="engine.css">
+<style>
+/* Client */
+#client { position: absolute; left: 262px; top: 452px; width: 136px; height: 136px; border-radius: 50%; display: grid; place-items: center; opacity: 0; }
+#client .core { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; font-size: 34px; color: #1a1b26; background: radial-gradient(circle at 35% 30%, #cfe0ff, #7aa2f7 50%, #565f89 120%); box-shadow: 0 0 0 6px #7aa2f71a, 0 0 50px #7aa2f755; }
+#client svg { position: absolute; inset: 0; overflow: visible; }
+#client circle { fill: none; stroke: #7aa2f744; stroke-width: 1.2; stroke-dasharray: 3 9; transform-origin: 68px 68px; animation: spin 40s linear infinite; }
+#client .label { left: -60px; top: 150px; width: 256px; text-align: center; }
+#client.hot { cursor: pointer; }
+#client.hot .core { animation: nudge 2.4s ease-in-out infinite; }
+
+/* Breaker */
+#breaker { position: absolute; left: 690px; top: 440px; width: 220px; height: 160px; opacity: 0; }
+#breaker .box { position: absolute; inset: 0; border-radius: 22px; background: linear-gradient(160deg, #2b3050, #1f2335 70%); border: 1px solid #9ece6a99; box-shadow: 0 22px 54px #0008, 0 0 50px #9ece6a1f; transition: border-color .9s, box-shadow .9s; }
+#breaker.open .box { border-color: #f7768ebb; box-shadow: 0 22px 54px #0008, 0 0 60px #f7768e33; }
+#breaker.half .box { border-color: #e0af68bb; box-shadow: 0 22px 54px #0008, 0 0 60px #e0af6833; }
+#breaker .switch { position: absolute; inset: 0; overflow: visible; }
+.contact { fill: #c0caf5; }
+.wire { stroke: #565f89; stroke-width: 3; stroke-linecap: round; }
+#lever { stroke: #9ece6a; stroke-width: 6; stroke-linecap: round; transform-box: view-box; transform-origin: 60px 80px; filter: drop-shadow(0 0 8px currentColor); color: #9ece6a; transition: stroke .8s, color .8s; }
+#breaker.open #lever { stroke: #f7768e; color: #f7768e; }
+#breaker.half #lever { stroke: #e0af68; color: #e0af68; }
+.bk-state { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font: 600 13px var(--mono); letter-spacing: .24em; color: var(--green); text-transform: uppercase; transition: color .8s; }
+#breaker.open .bk-state { color: var(--red); } #breaker.half .bk-state { color: var(--yellow); }
+#breaker .label { left: -20px; top: -30px; width: 260px; text-align: center; }
+.ring { position: absolute; left: -10px; top: -10px; width: 240px; height: 180px; overflow: visible; pointer-events: none; }
+.ring rect { fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.ring .track { stroke: #41486844; }
+.ring .prog { stroke: var(--yellow); stroke-dasharray: 100 100; stroke-dashoffset: 100; filter: drop-shadow(0 0 7px #e0af68aa); }
+#cool { position: absolute; left: 690px; top: 628px; width: 220px; text-align: center; font: 13px var(--mono); color: var(--yellow); opacity: 0; }
+
+/* Persisted breaker state */
+#record { left: 590px; top: 236px; width: 420px; opacity: 0; }
+
+/* Service instances (keyed by generation) */
+.svc { position: absolute; left: 1160px; top: 445px; width: 220px; height: 150px; }
+.svc .inner { position: absolute; inset: 0; border-radius: 20px; background: linear-gradient(160deg, #2b3050, #1f2335 70%); border: 1px solid #7dcfff88; box-shadow: 0 22px 54px #0008; transition: border-color 1s, box-shadow 1s; }
+.svc.failing .inner { border-color: #f7768ebb; box-shadow: 0 22px 54px #0008, 0 0 60px #f7768e2a; }
+.svc .top { position: absolute; left: 16px; right: 12px; top: 13px; display: flex; align-items: center; gap: 8px; font: 600 11px var(--mono); letter-spacing: .2em; color: var(--muted); }
+.svc .chip { margin-left: auto; font: 600 13px/1.6 var(--mono); letter-spacing: 0; }
+.svc .health { position: absolute; left: 16px; top: 58px; font: 600 26px var(--sans); color: var(--green); display: flex; align-items: center; gap: 12px; transition: color 1s; }
+.svc .health i { width: 12px; height: 12px; border-radius: 50%; background: currentColor; box-shadow: 0 0 14px currentColor; animation: breathe 1.6s ease-in-out infinite; }
+.svc.failing .health { color: var(--red); }
+.svc .stat { position: absolute; left: 16px; bottom: 14px; font: 13px var(--mono); color: var(--fg-dim); }
+#svcLabel { left: 1120px; top: 615px; width: 300px; text-align: center; }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<svg id="skyline" aria-hidden="true" viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax slice"></svg>
+
+<header class="top">
+  <div class="brand"><span class="logo">⏻</span>Circuit breaker<small>an interactive-demo example</small></div>
+  <div class="top-right">
+    <div class="seg" aria-label="Mode"><button id="modeStory" class="on" aria-pressed="true">Story</button><button id="modePlay" aria-pressed="false">Playground</button></div>
+    <button class="icon" id="notesBtn" title="Notes (?)" aria-label="Notes">?</button>
+    <button class="icon" id="fsBtn" title="Fullscreen (F)" aria-label="Toggle fullscreen">⤢</button>
+  </div>
+</header>
+
+<main id="stage" aria-label="Circuit breaker demo">
+  <div id="world">
+    <div id="camera">
+      <svg id="wires" width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true">
+        <path id="beamA" class="beam" d="M398 520 C500 500 590 500 690 520" opacity="0"/>
+        <path id="beamB" class="beam" d="M910 520 C1010 500 1070 500 1160 520" opacity="0"/>
+        <path id="pinA" class="beam" d="M800 316 L800 440" opacity="0"/>
+        <g id="comets"></g>
+      </svg>
+      <div class="statecard" id="record"><div class="cap"><span>breaker state</span><span>in memory, per client</span></div><div class="body mm" id="recordBody"></div></div>
+      <div id="client"><svg viewBox="0 0 136 136"><circle cx="68" cy="68" r="64"/></svg><div class="core">◎</div><div class="label">client<b>GET /orders</b></div></div>
+      <div id="breaker">
+        <div class="box"></div>
+        <svg class="ring" viewBox="0 0 240 180"><rect class="track" x="1.25" y="1.25" width="237.5" height="177.5" rx="28"/><rect class="prog" x="1.25" y="1.25" width="237.5" height="177.5" rx="28" pathLength="100"/></svg>
+        <svg class="switch" viewBox="0 0 220 160"><line class="wire" x1="0" y1="80" x2="60" y2="80"/><line class="wire" x1="160" y1="80" x2="220" y2="80"/><line id="lever" x1="60" y1="80" x2="160" y2="80"/><circle class="contact" cx="60" cy="80" r="7"/><circle class="contact" cx="160" cy="80" r="7"/></svg>
+        <div class="bk-state" id="bkState">closed</div>
+      </div>
+      <div id="cool">cooldown 0 / 30 s</div>
+      <div id="services"></div>
+      <div class="label" id="svcLabel" style="opacity:0">orders service</div>
+      <div id="spot"></div>
+      <div id="fxCam"></div>
+    </div>
+    <div id="hud">
+      <div id="kicker" class="mm"></div>
+      <div id="headline" class="mm"></div>
+      <div id="subline" class="mm"></div>
+      <div id="code" aria-label="Source excerpt">
+        <div class="code-inner" id="codeInner">
+          <div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span id="codeFile" class="mm"></span><span id="codeBadge"></span></div>
+          <div id="codeBody" class="mm"></div>
+          <div class="code-foot" id="codeFoot"></div>
+        </div>
+        <div class="code-chip" id="codeChip"></div>
+      </div>
+      <article class="fcard" data-from="#record"><div class="n" style="color:var(--yellow)">01 · COUNT</div><h3>Count failures</h3><p>Consecutive failures are counted. A success resets the count.</p></article>
+      <article class="fcard" data-from="#breaker"><div class="n" style="color:var(--red)">02 · OPEN</div><h3>Fail fast while open</h3><p>At the threshold, calls return immediately and the service gets room to recover.</p></article>
+      <article class="fcard" data-from="#breaker"><div class="n" style="color:var(--green)">03 · PROBE</div><h3>Probe after the cooldown</h3><p>One trial call decides: success closes the breaker, failure reopens it.</p></article>
+      <div id="finaleCtas" class="live"><button class="primary" id="ctaPlay">Open the playground →</button><button id="ctaReplay">↺ Replay</button></div>
+      <div id="hint"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="bar" id="storyBar">
+    <button class="nav" id="back" aria-label="Previous scene">←</button>
+    <nav id="dots" aria-label="Scenes"></nav>
+    <span class="count" id="count"></span>
+    <button class="nav primary" id="next">Next →</button>
+  </div>
+  <div class="bar" id="playBar" hidden>
+    <div id="playDock"></div>
+    <select id="preset" aria-label="Load a scenario"><option value="">Load a scenario…</option></select>
+    <div id="tape" aria-label="Event history"></div>
+  </div>
+</footer>
+
+<dialog id="notes">
+  <button class="close" id="closeNotes">Close</button>
+  <h2>Notes</h2>
+  <p>An invented example for the <code>interactive-demo</code> skill: a consecutive-failure circuit breaker with a threshold of 3 and a 30-second cooldown.</p>
+  <ul>
+    <li>The Go excerpts come from a small illustrative <code>breaker.go</code> written for this demo, not from a real library.</li>
+    <li>Half-open allows exactly one trial call. Real breakers often allow several, and track failure rates rather than consecutive failures.</li>
+    <li>Time only moves when the story or the playground advances it.</li>
+  </ul>
+</dialog>
+
+<script src="engine.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
