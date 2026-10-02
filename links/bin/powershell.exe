@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Expose Windows PowerShell to WSL apps when Windows directories aren't on PATH.
+# OpenCode uses this command to read screenshot images from the Windows clipboard.
+set -euo pipefail
+
+powershell=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe
+if [[ ! -x "$powershell" ]]; then
+  printf 'powershell.exe: Windows PowerShell is unavailable at %s\n' "$powershell" >&2
+  exit 127
+fi
+
+exec "$powershell" "$@"
