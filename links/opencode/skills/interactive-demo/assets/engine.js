@@ -5,7 +5,8 @@
 //
 // Page contract (see template.html): #sky, #skyline, #stage > #world > (#camera > #wires(#comets),
 // #spot, #fxCam) + #hud(#kicker, #headline, #subline, #code, .fcard*, #finaleCtas, #hint);
-// footer #storyBar(#back, #dots, #count, #next) and #playBar(#playDock, #preset, #tape);
+// footer #storyBar(#back, #dots, #count, #next) and #playBar with two rows:
+// .play-actions(#playDock, #preset), .history-row(#tape; runner adds Undo/Redo);
 // header #modeStory, #modePlay, #notesBtn, #fsBtn; dialog #notes(#closeNotes).
 //
 // Layers: a pure model (initial, step) → scenes (event lists replayed from initial) → the demo's
@@ -474,7 +475,7 @@
   })();
 
   // ───────────── Stage pieces driven by the story runner ─────────────
-  function fit(top = 62, bottom = 92) {
+  function fit(top = 62, bottom = ($('footer')?.offsetHeight ?? 86) + 6) {
     const aw = innerWidth - 24, ah = innerHeight - top - bottom;
     const k = Math.min(aw / W, ah / H);
     $('#world').style.transform = `translate(${(innerWidth - W * k) / 2}px, ${top + (ah - H * k) / 2}px) scale(${k})`;
@@ -656,8 +657,10 @@
     }
     const hist = document.createElement('div');
     hist.className = 'hist';
+    hist.setAttribute('role', 'group');
+    hist.setAttribute('aria-label', 'History controls');
     hist.innerHTML = '<button id="undo" title="Undo (Z)">↶ Undo<kbd>Z</kbd></button><button id="redo" title="Redo (Shift+Z)">↷ Redo<kbd>⇧Z</kbd></button>';
-    $('#playBar').prepend(hist);
+    $('#playBar .history-row').prepend(hist);
     $('#undo').addEventListener('click', undo);
     $('#redo').addEventListener('click', redo);
     const presetSel = $('#preset');
@@ -696,16 +699,19 @@
       }
       $('#undo').disabled = pos <= 0;
       $('#redo').disabled = pos >= line.length - 1;
-      const from = Math.max(0, Math.min(pos - 6, line.length - 9));
-      $('#tape').replaceChildren(...line.slice(from, from + 9).map((e, j) => {
-        const i = from + j, b = document.createElement('button');
+      $('#tape').replaceChildren(...line.map((e, i) => {
+        const b = document.createElement('button');
         b.textContent = e.label;
         b.className = i === pos ? `now${fresh ? ' fresh' : ''}` : i > pos ? 'future' : '';
+        b.setAttribute('aria-current', i === pos ? 'step' : 'false');
         b.title = i === pos ? 'Current state' : i > pos ? 'Undone — click to redo up to here' : 'Click to go back to this point';
         b.addEventListener('click', () => travel(i));
         return b;
       }));
+      if (play) $('#tape .now')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      fresh = false;
       history.replaceState(null, '', play ? '#play' : `#${idx}`);
+      fit();
     }
 
     function go(i) {

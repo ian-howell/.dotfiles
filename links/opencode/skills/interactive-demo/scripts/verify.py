@@ -99,16 +99,47 @@ with sync_playwright() as p:
                 if page.evaluate("demo.timeline.pos") != len(page.evaluate("demo.timeline.labels")) - 1:
                     problems.append("a new event after undo did not discard the undone branch")
             page.wait_for_timeout(args.settle)
-        else:
+        elif page.locator("#playDock button").count():
             problems.append("playground timeline did not record events")
+        else:
+            print("SKIP: history actions; this scaffold has no playground event controls")
         page.locator("#modeStory").click()
 
     # Layout at other sizes.
+    has_play = page.locator("#modePlay").is_visible()
+    if has_play:
+        page.locator("#modePlay").click()
+        # Keep enough entries to exercise horizontal scrolling and old-entry access.
+        for _ in range(15):
+            enabled = [b for b in page.locator("#playDock button").all() if b.is_enabled()]
+            if enabled:
+                enabled[0].click()
+        if page.locator("#tape button").count() != len(page.evaluate("demo.timeline.labels")):
+            problems.append("history entries were omitted instead of remaining scrollable")
     for w, h in [(1920, 1080), (1280, 720), (390, 844)]:
         page.set_viewport_size({"width": w, "height": h})
         page.wait_for_timeout(300)
         if not page.evaluate("document.documentElement.scrollWidth <= innerWidth"):
             problems.append(f"horizontal overflow at {w}x{h}")
+        if has_play:
+            actions = page.locator(".play-actions").bounding_box()
+            row = page.locator(".history-row").bounding_box()
+            if row["y"] < actions["y"] + actions["height"]:
+                problems.append(f"timeline is not below the action controls at {w}x{h}")
+            for name in ("#undo", "#redo"):
+                box = page.locator(name).bounding_box()
+                if box["x"] < 0 or box["x"] + box["width"] > w or box["y"] + box["height"] > h:
+                    problems.append(f"{name} is clipped at {w}x{h}")
+            stage = page.locator("#world").bounding_box()
+            footer = page.locator("footer").bounding_box()
+            if stage["y"] + stage["height"] > footer["y"] + 1:
+                problems.append(f"stage overlaps the footer at {w}x{h}")
+            page.screenshot(path=str(out / f"playground-{w}.png"))
+    if has_play:
+        page.locator("#tape button").first.click()
+        if page.evaluate("demo.timeline.pos") != 0:
+            problems.append("oldest history entry is not reachable")
+        page.locator("#modeStory").click()
 
     # Reduced motion.
     page.set_viewport_size({"width": 1440, "height": 900})

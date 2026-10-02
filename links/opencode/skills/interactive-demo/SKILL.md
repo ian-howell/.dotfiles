@@ -47,6 +47,9 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
    - **Render:** make every object match `ctx.s` (keyed objects breathe in/out, values tween,
      state cards morph); choreograph only when `ctx.animated`, by diffing `ctx.prev` and `ctx.s`.
    - **Snippets, cameras, spotlights, finale cards, playground events and presets.**
+   - **Playground footer:** keep the template's two rows: actions/presets above, Undo/Redo and
+     a horizontally scrollable event timeline below. The engine fits the stage to the footer's
+     measured height; keep this when customizing the layout.
 6. **Verify:** run `scripts/verify.py <url> --out <dir>` with a Python that has Playwright
    (`"$(dirname "$(readlink -f "$(command -v playwright)")")/python"` when Playwright is a uv
    tool). It must PASS. Then **look at the screenshots** — overlap, clipping, unreadable code,
