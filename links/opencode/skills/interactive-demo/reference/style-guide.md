@@ -37,6 +37,12 @@ when the user asks or the subject clearly demands it, and say so.
   something, go back, and try something else. Travelling back glides objects to the earlier
   state without replaying effects. Don't bind z, y, or the arrows to demo events. The playground must run the same model as
   the story, so edge cases the audience asks about can be shown live.
+- **Two-row playground footer.** Put event/action controls and the scenario selector on the
+  upper row. Put Undo/Redo at the left of a separate lower row, with the clickable event
+  timeline taking the remaining width. Keep Undo/Redo visible; let the actions and timeline
+  scroll horizontally within their own rows on narrow screens. Keep the current history entry
+  in view and all earlier entries reachable. Measure the footer height when fitting the stage
+  so the extra row never covers the world or its hint.
 - The URL hash keeps the scene (`#4`, `#play`) so a refresh after an edit lands in the same place.
 
 ## Motion

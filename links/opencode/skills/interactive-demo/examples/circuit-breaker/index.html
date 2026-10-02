@@ -116,9 +116,13 @@
     <button class="nav primary" id="next">Next →</button>
   </div>
   <div class="bar" id="playBar" hidden>
-    <div id="playDock"></div>
-    <select id="preset" aria-label="Load a scenario"><option value="">Load a scenario…</option></select>
-    <div id="tape" aria-label="Event history"></div>
+    <div class="play-actions">
+      <div id="playDock"></div>
+      <select id="preset" aria-label="Load a scenario"><option value="">Load a scenario…</option></select>
+    </div>
+    <div class="history-row">
+      <nav id="tape" aria-label="Event history"></nav>
+    </div>
   </div>
 </footer>
 
