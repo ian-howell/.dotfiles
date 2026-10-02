@@ -235,11 +235,12 @@
         { ev: 'health', key: 'h', label: s => (s.healthy ? '✕ Service fails' : '✚ Service recovers'), icon: '⇅' },
         { ev: 'tick', key: 't', label: '⏱ +10 s', icon: '⏱', enabled: s => s.breaker === 'open' },
       ],
-      tape: (ev, s) => (ev === 'request' ? `→ ${s.outcomes[s.outcomes.length - 1]}` : ev === 'health' ? (s.healthy ? '✚ healed' : '✕ failing') : '⏱ +10 s'),
+      // Label every model event: replayed scenes and presets may include events with no button.
+      tape: (ev, s) => (ev === 'request' ? `→ ${s.outcomes[s.outcomes.length - 1]}` : ev === 'tick' ? '⏱ +10 s' : s.healthy ? '✚ healed' : '✕ failing'),
       presets: {
-        failing: { label: 'Service failing', make: () => step(initial(), 'fail') },
-        open: { label: 'Breaker open', make: () => ['fail', 'request', 'request', 'request'].reduce(step, initial()) },
-        cooled: { label: 'Cooldown elapsed, still failing', make: () => ['fail', 'request', 'request', 'request', 'tick', 'tick', 'tick'].reduce(step, initial()) },
+        failing: { label: 'Service failing', events: ['fail'] },
+        open: { label: 'Breaker open', events: ['fail', 'request', 'request', 'request'] },
+        cooled: { label: 'Cooldown elapsed, still failing', events: ['fail', 'request', 'request', 'request', 'tick', 'tick', 'tick'] },
       },
     },
   });

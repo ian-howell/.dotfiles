@@ -105,6 +105,23 @@ with sync_playwright() as p:
             print("SKIP: history actions; this scaffold has no playground event controls")
         page.locator("#modeStory").click()
 
+    # Scenarios replay their full path from the stable initial state.
+    if page.locator("#modePlay").is_visible():
+        page.locator("#modePlay").click()
+        initial = page.evaluate("JSON.stringify(demo.initial())")
+        for value in page.locator("#preset option").evaluate_all("os => os.map(o => o.value).filter(Boolean)"):
+            page.locator("#preset").select_option(value)
+            page.locator("#preset").evaluate("el => el.blur()")
+            page.wait_for_timeout(200)
+            tl = page.evaluate("demo.timeline")
+            if tl["pos"] != len(tl["labels"]) - 1:
+                problems.append(f"scenario {value} did not end at its final step")
+            page.locator("#tape button").first.click()
+            page.wait_for_timeout(200)
+            if page.evaluate("JSON.stringify(demo.state)") != initial:
+                problems.append(f"scenario {value} history does not start at the stable initial state")
+        page.locator("#modeStory").click()
+
     # Layout at other sizes.
     has_play = page.locator("#modePlay").is_visible()
     if has_play:

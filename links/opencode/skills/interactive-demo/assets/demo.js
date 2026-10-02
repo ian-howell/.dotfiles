@@ -46,6 +46,8 @@
       events: [
         // { ev: 'step', key: 'r', label: '⟳ Step', icon: '⟳', primary: true, enabled: s => true },
       ],
+      // Scenarios are event paths from initial(): { id: { label, events: ['ev', …] } }.
+      // Loading one replays every step into the history so each can be undone.
       presets: {},
     },
   });

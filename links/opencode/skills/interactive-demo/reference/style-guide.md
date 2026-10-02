@@ -32,10 +32,15 @@ when the user asks or the subject clearly demands it, and say so.
 - In-scene interactions (`scene.interact`) let the presenter click a world object to trigger an
   event ("crash the operator", "send another call") without leaving the scene.
 - **Story** is a fixed sequence; **Playground** exposes the model's events as buttons with
-  keyboard shortcuts, plus presets, plus an event history. The playground is a branching
+  keyboard shortcuts, plus scenarios, plus an event history. The playground is a branching
   timeline: Undo/Redo (Z / Shift+Z, ← / →) and clickable history chips let people try
   something, go back, and try something else. Travelling back glides objects to the earlier
-  state without replaying effects. Don't bind z, y, or the arrows to demo events. The playground must run the same model as
+  state without replaying effects.
+- **Scenarios replay their path.** A scenario is the list of events that leads from the stable
+  initial state to it, not a ready-made state. Loading one starts a fresh history at the stable
+  state and records one chip per event, so the audience can step back through how the system got
+  there. Entering the playground from a story scene replays that scene's path the same way. Give
+  every model event a tape label, including events with no playground button. Don't bind z, y, or the arrows to demo events. The playground must run the same model as
   the story, so edge cases the audience asks about can be shown live.
 - **Two-row playground footer.** Put event/action controls and the scenario selector on the
   upper row. Put Undo/Redo at the left of a separate lower row, with the clickable event
