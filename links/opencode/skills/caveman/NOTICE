@@ -1,0 +1,13 @@
+Caveman
+Copyright 2026 Julius Brussee
+
+Before Caveman 3.0.0, the parts of the upstream repository outside the
+Engine-linked runtime were licensed under the MIT License. Contributions
+made to those parts before 3.0.0 were received under the MIT License and remain
+available under it. Its copyright and permission notice is retained in
+LICENSE-MIT.
+
+This distribution contains only the core caveman skill, adapted for standalone
+OpenCode use. Unrelated runtime and third-party software notices are omitted.
+Source: https://github.com/JuliusBrussee/caveman
+Revision: 6571943370f7c9d4de1946481177ee7b306cd8e8
