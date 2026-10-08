@@ -663,6 +663,14 @@
       shown = { s: structuredClone(state) };
     }
 
+    // A pointer click should not leave a focused button behind: the next arrow key
+    // would otherwise paint a focus ring on it. Keyboard activation (detail 0)
+    // keeps focus so keyboard users still see where they are.
+    addEventListener('click', e => {
+      const button = e.target.closest?.('button');
+      if (button && e.detail > 0) button.blur();
+    }, true);
+
     // Footer, header, dock
     const dots = $('#dots');
     scenes.forEach((sc, i) => {
