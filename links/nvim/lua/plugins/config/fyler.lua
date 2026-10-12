@@ -113,6 +113,9 @@ fyler.setup({
   -- `q` close.
   mappings = {
     n = {
+      -- Hide the sidebar after opening a file, like the CodeDiff explorer.
+      -- Directories still just toggle.
+      ["<CR>"] = { action = "select", args = { pick = true, close = true } },
       ["<leader>-"] = { action = "select", args = { split = true } },
       ["<leader>\\"] = { action = "select", args = { vsplit = true } },
     },
@@ -138,10 +141,22 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Focus the explorer, opening a new split if necessary
+-- Focus the explorer, opening a new split if necessary. From inside the
+-- explorer, return to the window it was focused from and leave it open
+-- (matching the CodeDiff explorer in codediff.lua).
+local return_win
 vim.keymap.set("n", "<leader>e", function()
+  if vim.bo.filetype == "fyler_finder" then
+    if return_win and vim.api.nvim_win_is_valid(return_win) and return_win ~= vim.api.nvim_get_current_win() then
+      vim.api.nvim_set_current_win(return_win)
+    else
+      vim.cmd.wincmd("p")
+    end
+    return
+  end
+  return_win = vim.api.nvim_get_current_win()
   fyler.open({ root_path = vim.uv.cwd() })
-end, { desc = "Explorer focus" })
+end, { desc = "Explorer focus / return" })
 
 -- Toggle the explorer split
 vim.keymap.set("n", "<leader>E", function()

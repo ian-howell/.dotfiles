@@ -34,7 +34,13 @@ local opts = {
     indent_markers = true,
     initial_focus = "explorer",
     view_mode = "tree",
-    flatten_dirs = true,
+    -- REQUIRED: keep flatten_dirs = false. Do not re-enable it while upstream
+    -- codediff.nvim still has this bug (present through v4.0.6).
+    -- Its flatten_tree() (ui/explorer/nodes.lua) adds and removes keys in a
+    -- table while iterating it with pairs(), which Lua leaves undefined. Each
+    -- auto-refresh can then merge single-child directories differently, so the
+    -- explorer visibly flickers between nested and flat-looking trees.
+    flatten_dirs = false,
     file_filter = { ignore = { ".git/**" } },
     focus_on_select = true,
     status_right_margin = 1,
@@ -144,8 +150,8 @@ panes.focus_explorer = function(ctx)
   local explorer_win = explorer and explorer.split and explorer.split.winid
 
   if session and current == explorer_win then
-    hide_explorer(explorer)
-    -- The saved pane may have disappeared after a layout or conflict change.
+    -- Jump back but leave the explorer open. The saved pane may have
+    -- disappeared after a layout or conflict change.
     for _, win in ipairs({
       return_windows[session] or false,
       session.result_win or false,
