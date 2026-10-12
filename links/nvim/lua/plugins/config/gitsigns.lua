@@ -76,8 +76,17 @@ gitsigns.setup({
       vim.keymap.set(mode, lhs, rhs, opts)
     end
 
+    -- CodeDiff's modified pane is the real file, so gitsigns attaches there and
+    -- these buffer-local maps would shadow CodeDiff's ]h/[h. Defer to CodeDiff
+    -- in its tabs so both panes navigate the same way and never wrap.
+    local function in_codediff()
+      return require("codediff.ui.lifecycle").get_session(vim.api.nvim_get_current_tabpage()) ~= nil
+    end
+
     map("n", "]h", function()
-      if vim.wo.diff then
+      if in_codediff() then
+        require("codediff").next_hunk()
+      elseif vim.wo.diff then
         vim.cmd.normal({ "]h", bang = true })
       else
         gitsigns.nav_hunk("next")
@@ -85,7 +94,9 @@ gitsigns.setup({
     end, { desc = "Jump to next git hunk" })
 
     map("n", "[h", function()
-      if vim.wo.diff then
+      if in_codediff() then
+        require("codediff").prev_hunk()
+      elseif vim.wo.diff then
         vim.cmd.normal({ "[h", bang = true })
       else
         gitsigns.nav_hunk("prev")

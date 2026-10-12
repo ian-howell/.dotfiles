@@ -21,6 +21,8 @@ local opts = {
     conflict_result_position = "bottom",
     conflict_result_height = 30,
     conflict_result_width_ratio = { 1, 1, 1 },
+    -- Never wrap hunk navigation (]h/[h). gitsigns.lua defers to CodeDiff in
+    -- the modified pane so this applies to both sides.
     cycle_next_hunk = false,
     cycle_next_file = false,
     jump_to_first_change = false,
