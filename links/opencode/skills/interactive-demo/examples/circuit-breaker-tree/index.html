@@ -34,9 +34,10 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 .edge { fill: none; stroke-width: 3; stroke-linecap: round; }
 .edge.dim { stroke: #3b4261 !important; stroke-width: 2.5; }
 .comet { filter: drop-shadow(0 0 10px currentColor); }
-.elabel { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font: 600 22px var(--sans); padding: 8px 18px; border-radius: 999px; background: #16161ef0; border: 1.5px solid currentColor; box-shadow: 0 0 26px color-mix(in srgb, currentColor 25%, transparent); transition: opacity .5s; }
+.elabel { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font: 600 22px var(--sans); padding: 8px 18px; border-radius: 999px; background: #16161ef0; border: 1.5px solid currentColor; box-shadow: 0 0 26px color-mix(in srgb, currentColor 25%, transparent); transition: filter .5s; }
 .elabel small { display: block; font: 13px var(--mono); color: var(--muted); text-align: center; margin-bottom: 2px; }
-.elabel.dim { opacity: .4; }
+/* Labels stay opaque so edges always pass behind them; dimming darkens instead of fading. */
+.elabel.dim { filter: brightness(.45); }
 
 /* Header chrome */
 header.top { position: fixed; top: 0; left: 0; right: 0; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; z-index: 5; pointer-events: none; }
@@ -54,7 +55,7 @@ header.top > * { pointer-events: auto; }
 
 /* Card shell */
 .node { position: absolute; width: 1180px; height: 760px; border-radius: 34px; border: 1.5px solid #414868; background: #1d1f2ce6; box-shadow: 0 40px 120px #0009; transition: border-color .6s, box-shadow .6s, opacity .5s; cursor: pointer; }
-.node.sel { border-color: var(--accent); box-shadow: 0 40px 120px #000a, 0 0 0 1px var(--accent), 0 0 90px color-mix(in srgb, var(--accent) 22%, transparent); cursor: default; }
+.node.sel { z-index: 1; border-color: var(--accent); box-shadow: 0 40px 120px #000a, 0 0 0 1px var(--accent), 0 0 90px color-mix(in srgb, var(--accent) 22%, transparent); cursor: default; }
 .node.far { opacity: .62; }
 .mach { position: absolute; left: 0; top: 0; width: 760px; height: 100%; }
 .mtop { position: absolute; left: 34px; right: 30px; top: 30px; display: flex; justify-content: space-between; align-items: baseline; }
@@ -172,7 +173,6 @@ svg.flow .end .shape { stroke: var(--accent); stroke-width: 2.4; filter: drop-sh
 /* Morph */
 .node.snap, .node.snap * { transition: none !important; }
 @property --gc { syntax: '<color>'; inherits: true; initial-value: #9ece6a; }
-.node.ghost { pointer-events: none; border-color: var(--accent); }
 .gate, .gate-l { transition: --gc .9s; }
 .gate .lever { transform-box: view-box; transform-origin: 50px 80px; transition: transform .9s cubic-bezier(.65,0,.35,1); }
 .gate .cool { stroke-dasharray: 100 100; transition: stroke-dashoffset .9s cubic-bezier(.65,0,.35,1), opacity .6s; }
@@ -187,6 +187,9 @@ svg.flow .end .shape { stroke: var(--accent); stroke-width: 2.4; filter: drop-sh
 @keyframes bump { 0% { filter: brightness(2.2); } 100% { filter: none; } }
 .oc.new { display: inline-block; animation: pop .6s cubic-bezier(.2,1.6,.4,1); }
 @keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+/* .info fills the side panel, so its swap transform (which makes it the flowchart's
+   containing block) never moves the bottom-anchored chart. */
+.info { position: absolute; inset: 0; padding: inherit; }
 .info.swap { animation: swap .6s ease-out; }
 @keyframes swap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
@@ -213,7 +216,7 @@ body.play #help .story { opacity: 0; visibility: hidden; }
     <button type="button" id="resetBtn">New tree</button>
   </div>
 </header>
-<p id="help"><span class="story">Drag to pan · scroll to zoom · click a card to fly to it<br><kbd>→</kbd> next step <kbd>←</kbd> back <kbd>↑</kbd><kbd>↓</kbd> sibling · <kbd>P</kbd> show controls</span><span class="play">Drag to pan · scroll to zoom · click a card to fly to it<br><kbd>→</kbd> next step <kbd>←</kbd> back <kbd>↑</kbd><kbd>↓</kbd> sibling · <kbd>C</kbd> send call · <kbd>T</kbd> wait 10 s · <kbd>P</kbd> hide controls</span></p>
+<p id="help"><span class="story">Drag to pan · scroll to zoom · click a card to fly to it<br><kbd>→</kbd> next step <kbd>←</kbd> back <kbd>↑</kbd><kbd>↓</kbd> choose branch · <kbd>P</kbd> show controls</span><span class="play">Drag to pan · scroll to zoom · click a card to fly to it<br><kbd>→</kbd> next step <kbd>←</kbd> back <kbd>↑</kbd><kbd>↓</kbd> choose branch · <kbd>C</kbd> send call · <kbd>T</kbd> wait 10 s · <kbd>P</kbd> hide controls</span></p>
 <canvas id="mini" aria-label="Minimap of the state tree; click a tile to fly to it"></canvas>
 <script>
 (() => {
@@ -378,8 +381,8 @@ body.play #help .story { opacity: 0; visibility: hidden; }
 
   // ───────────── Morph ─────────────
   // Stepping to a child keeps the card where it is on screen: the child card starts
-  // looking exactly like its parent, a ghost of the parent fades and slides back to
-  // its place in the tree, the components act out what happened, and the card
+  // looking exactly like its parent, the parent card itself slides back out from under
+  // it into its slot in the tree, the components act out what happened, and the card
   // morphs into the child's state.
   let morph = null;
   function finishMorph() {
@@ -387,7 +390,7 @@ body.play #help .story { opacity: 0; visibility: hidden; }
     const m = morph;
     morph = null;
     m.timers.forEach(clearTimeout);
-    m.ghost?.remove();
+    if (m.p.slide) { m.p.slide = null; m.p.x = m.p.tx; m.p.y = m.p.ty; }
     m.n.ui.pkt.getAnimations().forEach(a => a.cancel());
     m.n.ui.pkt.style.opacity = '0';
     m.n.morphing = false;
@@ -408,27 +411,25 @@ body.play #help .story { opacity: 0; visibility: hidden; }
     // Keep screen continuity: the child takes the parent's place, then the camera settles.
     cam.x += n.tx - p.x; cam.y += n.ty - p.y;
     flyTo(n, isNew);
-    const g = p.el.cloneNode(true);
-    g.classList.add('ghost'); g.classList.remove('far', 'sel');
-    g.querySelectorAll('[data-r]').forEach(e => e.removeAttribute('data-r'));
-    g.style.transform = `translate(${n.tx - NW / 2}px, ${n.ty - NH / 2}px)`;
-    // Behind every card, so the child's choreography stays in front.
-    world.insertBefore(g, edgesSvg.nextSibling);
     const ms = v => (RM.matches ? 0 : v);
+    // No copy of the parent: the real parent card starts exactly under the child,
+    // slides back along the edge's curve, and settles into its slot. The edge and
+    // its label fade in behind it as the gap opens.
+    p.x = n.tx; p.y = n.ty;
+    p.slide = { from: { x: n.tx, y: n.ty }, t0: performance.now(), dur: ms(1100) || 1 };
+    const fade = (el, kf, delay = 0) => el?.animate(kf, { duration: ms(900) || 1, delay: ms(delay), easing: 'ease-out', fill: 'backwards' });
+    fade(n.edge, [{ opacity: 0 }, {}], 350);
+    fade(n.label, [{ opacity: 0, filter: 'brightness(0)' }, {}], 450);
     // The camera jumped with the layout, so every other card is suddenly somewhere
-    // new on screen: fade them in, mirroring the parent fading out.
+    // new on screen: fade them in.
     for (const o of nodes) {
-      if (o === n) continue;
-      o.el.animate([{ opacity: 0 }, {}], { duration: ms(1100) || 1, easing: 'ease-out' });
-      o.label?.animate([{ opacity: 0 }, {}], { duration: ms(1100) || 1, easing: 'ease-out' });
+      if (o === n || o === p) continue;
+      fade(o.el, [{ opacity: 0 }, {}]);
+      fade(o.label, [{ filter: 'brightness(0)' }, {}]);
+      fade(o.edge, [{ opacity: 0 }, {}]);
     }
-    g.animate([
-      { transform: g.style.transform, opacity: 0.9 },
-      { transform: `translate(${p.tx - NW / 2}px, ${p.ty - NH / 2}px) scale(.9)`, opacity: 0 },
-    ], { duration: ms(1100) || 1, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
-    morph = { n, ghost: g, timers: [] };
+    morph = { n, p, timers: [] };
     const later = (t, fn) => morph.timers.push(setTimeout(fn, ms(t)));
-    later(1100, () => { g.remove(); if (morph) morph.ghost = null; });
     const at = choreograph(n, p, later, ms);
     later(at, () => paint(n, n.state, n, true));
     later(at + 900, () => { n.morphing = false; if (morph?.n === n) morph = null; });
@@ -598,8 +599,11 @@ body.play #help .story { opacity: 0; visibility: hidden; }
   }
 
   function renderAll() {
-    const hot = new Set();
-    for (let p = sel; p; p = p.parent) hot.add(p);
+    rememberPath();
+    // The main view lights only where you are and where → goes; the way you came
+    // dims. The minimap keeps the whole path from the root lit.
+    const nx = sel.children.length ? nextOf(sel) : null;
+    const hot = new Set(nx ? [sel, nx] : [sel]);
     for (const n of nodes) {
       if (!n.morphing) paint(n, n.state, n, false);
       n.ui.note.textContent = n.children.length
@@ -610,10 +614,10 @@ body.play #help .story { opacity: 0; visibility: hidden; }
       if (n.label) {
         const col = KIND_COLOR[n.kind];
         n.label.style.color = col;
-        n.label.classList.toggle('dim', !hot.has(n));
+        n.label.classList.toggle('dim', n !== nx);
         n.label.innerHTML = n.via === 'call' ? `<small>call</small>${esc(n.reason)}` : `<small>${n.via}</small>${esc(n.viaLabel)}`;
         n.edge.style.stroke = col;
-        n.edge.classList.toggle('dim', !hot.has(n));
+        n.edge.classList.toggle('dim', n !== nx);
         n.comet.style.fill = col; n.comet.style.color = col;
       }
     }
@@ -652,8 +656,7 @@ body.play #help .story { opacity: 0; visibility: hidden; }
     const X = n => MP + tileX(n) - mpos.x, Y = n => tileY(n) - mpos.y;
     mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     mctx.clearRect(0, 0, w, h);
-    const hot = new Set();
-    for (let q = sel; q; q = q.parent) hot.add(q);
+    const hot = hotSet();
     for (const n of nodes) {
       if (!n.parent || n.grow <= 0) continue;
       const ax = X(n.parent) + TW, ay = Y(n.parent) + TH / 2, bx = X(n), by = Y(n) + TH / 2, mx = (ax + bx) / 2;
@@ -752,8 +755,16 @@ body.play #help .story { opacity: 0; visibility: hidden; }
   function frame(now) {
     stepFlight(now);
     for (const n of nodes) {
-      n.x += (n.tx - n.x) * 0.12; n.y += (n.ty - n.y) * 0.12;
-      n.el.style.transform = `translate(${n.x - NW / 2}px, ${n.y - NH / 2}px)`;
+      let sc = '';
+      if (n.slide) {
+        // Slide back along the S-curve the edges use, settling from slightly small.
+        const f = n.slide.from, t = Math.min(1, (now - n.slide.t0) / n.slide.dur), e = ease(t), mx = (f.x + n.tx) / 2;
+        const q = bez([f, { x: mx, y: f.y }, { x: mx, y: n.ty }, { x: n.tx, y: n.ty }], e);
+        n.x = q.x; n.y = q.y;
+        sc = ` scale(${0.93 + 0.07 * e})`;
+        if (t >= 1) n.slide = null;
+      } else { n.x += (n.tx - n.x) * 0.12; n.y += (n.ty - n.y) * 0.12; }
+      n.el.style.transform = `translate(${n.x - NW / 2}px, ${n.y - NH / 2}px)${sc}`;
     }
     for (const n of nodes) {
       if (!n.parent) continue;
@@ -768,7 +779,11 @@ body.play #help .story { opacity: 0; visibility: hidden; }
       n.comet.style.opacity = n.grow > 0 && n.grow < 1 ? '1' : '0';
       const m = bez(pts, 0.5);
       n.label.style.left = `${m.x}px`; n.label.style.top = `${m.y}px`;
-      n.label.style.opacity = n.grow > 0.5 ? '' : '0';
+      // The label lands first and the edge draws in underneath it.
+      const shown = n.grow > 0;
+      if (shown && !n.labelShown && n.grow < 1) n.label.animate([{ transform: 'translate(-50%, -50%) scale(.6)', filter: 'brightness(0)' }, {}], { duration: RM.matches ? 1 : 450, easing: 'cubic-bezier(.2,1.4,.4,1)' });
+      n.labelShown = shown;
+      n.label.style.opacity = shown ? '' : '0';
     }
     world.style.transform = `translate(${innerWidth / 2 - cam.x * cam.z}px, ${(innerHeight - MINI_H) / 2 + 30 - cam.y * cam.z}px) scale(${cam.z})`;
     drawSky(now);
@@ -795,6 +810,24 @@ body.play #help .story { opacity: 0; visibility: hidden; }
   // ───────────── Input ─────────────
   const stage = document.getElementById('stage');
   const nodeOf = el => { const e = el.closest('.node'); return e && nodes.find(n => n.el === e); };
+  // Every node remembers which branch → follows (its pick). Reaching a node by any
+  // route makes it its parent's pick, so ← then → returns the way you came.
+  const nextOf = n => n.children[Math.min(n.pick ?? 0, n.children.length - 1)];
+  function rememberPath() { for (let p = sel; p.parent; p = p.parent) p.parent.pick = p.parent.children.indexOf(p); }
+  // Lit: the path from the root to the selection, plus the branch → will take.
+  function hotSet() {
+    const h = new Set();
+    for (let p = sel; p; p = p.parent) h.add(p);
+    const nx = sel.children.length ? nextOf(sel) : null;
+    if (nx) h.add(nx);
+    return h;
+  }
+  function cyclePick(d) {
+    const k = sel.children.length;
+    if (k < 2) return;
+    sel.pick = ((sel.pick ?? 0) + d + k) % k;
+    renderAll();
+  }
   const go = n => {
     if (!n) return;
     finishMorph();
@@ -849,12 +882,11 @@ body.play #help .story { opacity: 0; visibility: hidden; }
     cam.x = wx - (e.clientX - ox) / cam.z; cam.y = wy - (e.clientY - oy) / cam.z;
   }, { passive: false });
   addEventListener('keydown', e => {
-    const sib = d => { const p = sel.parent; return p && p.children[p.children.indexOf(sel) + d]; };
     switch (e.key) {
       case 'ArrowLeft': go(sel.parent); break;
-      case 'ArrowRight': go(sel.children[0]); break;
-      case 'ArrowUp': go(sib(-1)); break;
-      case 'ArrowDown': go(sib(1)); break;
+      case 'ArrowRight': if (sel.children.length) go(nextOf(sel)); break;
+      case 'ArrowUp': cyclePick(-1); break;
+      case 'ArrowDown': cyclePick(1); break;
       case 'p': case 'P': setPlay(!playing); break;
       case 'c': case 'C': if (playing) doCall(sel); break;
       case 'f': case 'F': fitAll(); break;

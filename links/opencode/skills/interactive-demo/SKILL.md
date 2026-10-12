@@ -29,7 +29,7 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
 - `reference/state-tree.md` — rules for the state-tree explorer format.
 - `examples/circuit-breaker-tree/` — reference state-tree explorer (single file; copy it to start).
 - `scripts/new-demo.sh` — scaffold a demo directory (copies the engine into it).
-- `scripts/serve.sh` — serve a directory on localhost in the background.
+- `scripts/serve.sh` — serve a directory on localhost in the background, with live reload.
 - `scripts/verify.py` — browser smoke test with per-scene screenshots.
 
 ## Workflow
@@ -40,9 +40,15 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
 2. **Scaffold** into a stable location (default `/tmp/opencode/demos/<name>/`, or where the user
    says): `scripts/new-demo.sh <dir>` (or `--example circuit-breaker` to start from the example).
    Each demo owns its copy of the engine.
-3. **Serve once, keep the URL stable:** `scripts/serve.sh /tmp/opencode/demos` (default port
-   8765) and give the user `http://localhost:8765/<name>/` — a real URL, never a filesystem path.
-   Always overwrite the same files so the user can just refresh; the hash keeps their scene.
+3. **Serve once, keep the URL stable:** `scripts/serve.sh <dir>` (default port 8765; pass a
+   second port for another root) and open `http://localhost:8765/<file-or-dir>/` in the user's
+   browser **once**. The server injects a live-reload snippet into served HTML, so every save
+   reloads that same tab; don't reopen it after each edit. On WSL, open the URL in the Windows
+   browser (`cd /mnt/c && /mnt/c/Windows/explorer.exe "http://localhost:8765/…"`); localhost
+   is forwarded. Always overwrite the same files; the hash keeps the scene.
+   **The deliverable is the plain HTML file, never the server.** Reload is injected only into
+   the HTTP response, so the file on disk stays self-contained and works from `file://` and as
+   an attachment. Never add reload code, server URLs, or fetches to the demo itself.
 4. **Style check (optional, when the user wants to choose a look or the subject is new
    territory):** before building interactions, render 2–3 static mockups of the *same* key scene
    in one HTML file with `?style=` variants, screenshot them, inspect the screenshots yourself,

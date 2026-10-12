@@ -77,8 +77,9 @@ Moving to a child — a new action, or → onto an existing child — plays the 
 
 - The child card takes the parent's place on screen (the camera jumps by the layout offset, so
   nothing visibly moves) and starts painted with the **parent's** state and explanation.
-- A ghost clone of the parent fades and slides back to the parent's place in the tree (behind
-  every card), drawing the eye along the new edge.
+- The real parent card (never a clone — two copies of one node on screen reads as a glitch)
+  starts exactly under the child and slides back along the edge's S-curve into its slot,
+  settling from slightly small. The new edge and its label fade in behind it as the gap opens.
 - Every other card and edge label fades in at the same time. After the camera jump they sit in
   new screen positions, and showing them solid at once is jarring.
 - The components **act out the step**: a call packet travels client → breaker → service and back
@@ -112,7 +113,12 @@ Moving to a child — a new action, or → onto an existing child — plays the 
   gesture and the release never arrives), and `setPointerCapture`. End the drag on `pointerup`,
   `pointercancel`, `lostpointercapture`, window `blur`, and any `pointermove` with `buttons === 0`.
   The same applies to the minimap. Fit-all zooms out to the whole tree on purpose; Focus returns.
-- Keys: ←/→ parent/child, ↑/↓ siblings, H root, F fit, Space focus, plus the action keys.
+- **The next branch is lit.** Each node remembers a pick: the child → goes to. In the main view only
+  the selection and the picked child (card, edge, label) are bright — the way you came dims; the
+  minimap keeps the root path lit plus the pick; with one child
+  that child is lit too, so → is always predictable. ↑/↓ cycle the pick (wrapping) without moving;
+  reaching a node by any route makes it its parent's pick, so ← then → returns the way you came.
+- Keys: ←/→ parent/picked child, ↑/↓ cycle branch, H root, F fit, Space focus, plus the action keys.
 
 ## Minimap
 
