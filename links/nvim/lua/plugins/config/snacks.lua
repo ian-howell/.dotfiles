@@ -96,6 +96,28 @@ local git_layout = {
   focus = "list",
 }
 
+local git_side_layout = {
+  layout = {
+    fullscreen = true,
+    preset = "default",
+    layout = {
+      width = 0,
+      height = 0,
+      box = "horizontal",
+      {
+        box = "vertical",
+        width = 0.25,
+        border = true,
+        title = "{title} {live} {flags}",
+        { win = "input", height = 1, border = "bottom" },
+        { win = "list", border = "none" },
+      },
+      { win = "preview", title = "{preview}", border = true },
+    },
+  },
+  focus = "list",
+}
+
 Snacks.setup({
   input = { enabled = true },
   terminal = {
@@ -254,12 +276,12 @@ vim.keymap.set("n", "<leader>fr", function()
 end, { desc = "Recent files" })
 
 vim.keymap.set("n", "<leader>fg", function()
-  Snacks.picker.git_status(git_layout)
+  Snacks.picker.git_status(git_side_layout)
 end, { desc = "Git status" })
 
 vim.keymap.set("n", "<leader>fG", function()
   local base = vim.trim(vim.fn.system("git merge-base origin/main HEAD") or "")
-  local opts = vim.tbl_deep_extend("force", {}, git_layout)
+  local opts = vim.tbl_deep_extend("force", {}, git_side_layout)
   if base ~= "" then
     opts.base = base
   end
