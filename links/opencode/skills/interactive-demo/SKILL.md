@@ -9,6 +9,14 @@ Produces a self-contained web page (HTML + CSS + JS, no build, no network) that 
 scenes and lets people poke at edge cases in a playground. A reusable engine does the motion; each
 demo supplies a model, scenes, world markup, and choreography.
 
+Two formats share the look:
+
+- **Story** (default): fixed scenes plus a playground, built on the engine below.
+- **State-tree explorer**: the audience grows a branching tree of immutable state snapshots by
+  applying world changes, waits, and the system's step from any node, with a gliding camera and
+  a full-width minimap. Use it when the point is exploring "what happens if…" across many paths.
+  Read `reference/state-tree.md` for its rules.
+
 Read `reference/style-guide.md` before writing anything — it is the locked-in look, voice, and
 motion vocabulary. Study `examples/circuit-breaker/` for a complete, working demo.
 
@@ -18,6 +26,8 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
   night sky, code card, story/playground runner). API is documented at the top of `engine.js`.
 - `assets/template.html`, `assets/demo.js` — a blank demo: page contract + model/scenes/render stub.
 - `examples/circuit-breaker/` — reference demo built only on the engine.
+- `reference/state-tree.md` — rules for the state-tree explorer format.
+- `examples/circuit-breaker-tree/` — reference state-tree explorer (single file; copy it to start).
 - `scripts/new-demo.sh` — scaffold a demo directory (copies the engine into it).
 - `scripts/serve.sh` — serve a directory on localhost in the background.
 - `scripts/verify.py` — browser smoke test with per-scene screenshots.

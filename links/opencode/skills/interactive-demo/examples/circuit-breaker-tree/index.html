@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A state-tree explorer for an invented circuit breaker: fail the service, wait, send calls, and branch from any point.">
+<title>Circuit breaker explorer</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #1a1b26; --bg-dark: #16161e; --bg-hi: #292e42; --surface: #24283b; --line: #414868;
+  --fg: #c0caf5; --fg-dim: #a9b1d6; --muted: #737aa2; --comment: #565f89;
+  --blue: #7aa2f7; --cyan: #7dcfff; --magenta: #bb9af7; --orange: #ff9e64;
+  --yellow: #e0af68; --green: #9ece6a; --teal: #73daca; --red: #f7768e; --op: #89ddff;
+  --sans: "Segoe UI Variable Display", "Segoe UI", Inter, system-ui, sans-serif;
+  --mono: "Cascadia Code", "JetBrains Mono", "Fira Code", Consolas, "DejaVu Sans Mono", monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background:
+    radial-gradient(1100px 650px at 72% 4%, #2a2f4a66, transparent 62%),
+    radial-gradient(900px 600px at 6% 96%, #bb9af70c, transparent 60%),
+    var(--bg);
+  color: var(--fg); font-family: var(--sans);
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+#sky { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#stage { position: fixed; inset: 0; overflow: hidden; cursor: grab; touch-action: none; }
+#stage.drag { cursor: grabbing; }
+#world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+#edges { position: absolute; left: 0; top: 0; overflow: visible; }
+.edge { fill: none; stroke-width: 3; stroke-linecap: round; }
+.edge.dim { stroke: #3b4261 !important; stroke-width: 2.5; }
+.comet { filter: drop-shadow(0 0 10px currentColor); }
+.elabel { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font: 600 22px var(--sans); padding: 8px 18px; border-radius: 999px; background: #16161ef0; border: 1.5px solid currentColor; box-shadow: 0 0 26px color-mix(in srgb, currentColor 25%, transparent); transition: opacity .5s; }
+.elabel small { display: block; font: 13px var(--mono); color: var(--muted); text-align: center; margin-bottom: 2px; }
+.elabel.dim { opacity: .4; }
+
+/* Header chrome */
+header.top { position: fixed; top: 0; left: 0; right: 0; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; z-index: 5; pointer-events: none; }
+header.top > * { pointer-events: auto; }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+.logo { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: var(--magenta); border: 1px solid #bb9af766; box-shadow: 0 0 18px #bb9af733; font-size: 17px; }
+.brand small { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
+.tools { display: flex; gap: 8px; }
+.tools button { border: 1px solid #41486877; background: #16161ecc; border-radius: 9px; padding: 6px 13px; font-size: 13px; color: var(--fg-dim); }
+.tools button:hover { color: var(--fg); border-color: var(--blue); }
+#mini { position: fixed; left: 0; right: 0; bottom: 0; width: 100%; height: 176px; z-index: 5; border-top: 1px solid #41486899; background: linear-gradient(#16161ee0, #16161ef8); box-shadow: 0 -14px 40px #0006; cursor: pointer; }
+#mini.drag { cursor: grabbing; }
+#help { position: fixed; top: 60px; right: 26px; z-index: 5; font-size: 12px; color: var(--comment); text-align: right; margin: 0; }
+#help kbd { font-family: var(--mono); background: var(--bg-hi); border-radius: 4px; padding: 1px 5px; color: var(--fg-dim); }
+
+/* Card shell */
+.node { position: absolute; width: 1180px; height: 760px; border-radius: 34px; border: 1.5px solid #414868; background: #1d1f2ce6; box-shadow: 0 40px 120px #0009; transition: border-color .6s, box-shadow .6s, opacity .5s; cursor: pointer; }
+.node.sel { border-color: var(--accent); box-shadow: 0 40px 120px #000a, 0 0 0 1px var(--accent), 0 0 90px color-mix(in srgb, var(--accent) 22%, transparent); cursor: default; }
+.node.far { opacity: .62; }
+.mach { position: absolute; left: 0; top: 0; width: 760px; height: 100%; }
+.mtop { position: absolute; left: 34px; right: 30px; top: 30px; display: flex; justify-content: space-between; align-items: baseline; }
+.mlabel { font: 600 12px var(--mono); letter-spacing: .2em; color: var(--muted); }
+.mlabel b { color: var(--fg-dim); letter-spacing: .02em; font: 500 16px var(--sans); margin-left: 10px; }
+.mlabel i { font-style: normal; font: 12px var(--mono); color: var(--comment); letter-spacing: .04em; margin-left: 12px; }
+.clock { font: 12px var(--mono); letter-spacing: .08em; color: var(--muted); }
+.clock b { font: 500 16px var(--mono); color: var(--blue); margin-left: 8px; letter-spacing: 0; }
+
+.memory { position: absolute; left: 48px; right: 48px; top: 74px; min-height: 80px; padding: 10px 20px 12px; border-radius: 14px; border: 1px dashed #41486899; transition: border-color .9s, background-color .9s, box-shadow .9s; }
+.memory.solid { border-style: solid; border-color: #bb9af788; background: #24283bf2; box-shadow: 0 0 0 1px #bb9af71f, 0 18px 50px #0007, 0 0 46px #bb9af71c; }
+.mem-cap { font: 11px var(--mono); color: var(--muted); display: flex; justify-content: space-between; }
+.mem-cap i { font-style: normal; color: var(--comment); }
+.memory.solid .mem-cap i { color: var(--magenta); }
+.mem-body { margin-top: 6px; font: 20px/1.5 var(--mono); white-space: pre; }
+.mute { color: var(--comment); font-style: italic; }
+.p { color: var(--op); } .key { color: var(--blue); } .n { color: var(--orange); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border-radius: 999px; border: 1px solid currentColor; background: color-mix(in srgb, currentColor 14%, transparent); font-weight: 600; box-shadow: 0 0 16px color-mix(in srgb, currentColor 22%, transparent); }
+
+
+/* Breaker card */
+.mach svg.wires { position: absolute; inset: 0; width: 760px; height: 760px; pointer-events: none; overflow: visible; }
+.wires .w { fill: none; stroke: #7aa2f7aa; stroke-width: 3; stroke-linecap: round; }
+.wires .w.cut { stroke: #f7768e88; stroke-dasharray: 6 9; }
+.wires .w.trial { stroke: #e0af68aa; stroke-dasharray: 10 6; }
+.wires .pkt { filter: drop-shadow(0 0 8px currentColor); }
+.client { position: absolute; left: 40px; top: 254px; width: 140px; height: 112px; border-radius: 18px; border: 1px solid #7aa2f766; background: linear-gradient(160deg, #262a44, #1f2335); display: grid; place-items: center; text-align: center; font: 15px var(--sans); color: var(--fg-dim); }
+.client b { display: block; font: 600 11px var(--mono); letter-spacing: .2em; color: var(--muted); margin-bottom: 6px; }
+.client span { display: block; margin-top: 4px; font: 12px var(--mono); color: var(--comment); }
+.gate { position: absolute; left: 255px; top: 230px; width: 160px; height: 160px; }
+.gate svg { width: 160px; height: 160px; overflow: visible; }
+.gate .disc { fill: #1f2335; stroke: var(--gc); stroke-width: 2.5; filter: drop-shadow(0 0 18px color-mix(in srgb, var(--gc) 45%, transparent)); }
+.gate .track { fill: none; stroke: #41486855; stroke-width: 4; }
+.gate .cool { fill: none; stroke: var(--yellow); stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 6px #e0af68aa); }
+.gate .pin { fill: var(--gc); }
+.gate .lever { stroke: var(--gc); stroke-width: 6; stroke-linecap: round; }
+.gate .lever.dash { stroke-dasharray: 7 6; }
+.gate-l { position: absolute; left: 230px; top: 396px; width: 210px; text-align: center; font: 600 12px var(--mono); letter-spacing: .2em; color: var(--gc); }
+.gate-l span { display: block; font: 12px var(--sans); letter-spacing: 0; color: var(--muted); margin-top: 4px; font-weight: 400; }
+.svc { position: absolute; left: 478px; top: 214px; width: 248px; height: 192px; }
+.svc-inner { position: absolute; inset: 0; border-radius: 20px; background: linear-gradient(160deg, #2b3050, #1f2335 70%); border: 1px solid #e0af6899; box-shadow: inset 0 1px 0 #ffffff0d, 0 22px 54px #0008; }
+.svc-glow { position: absolute; inset: 0; border-radius: 20px; background: radial-gradient(circle at 50% 48%, #9ece6a3a, transparent 66%); opacity: 0; }
+.svc.ok .svc-inner { border-color: #9ece6aaa; box-shadow: inset 0 1px 0 #ffffff0d, 0 22px 54px #0008, 0 0 70px #9ece6a33; }
+.svc.ok .svc-glow { opacity: 1; }
+.svc.bad .svc-inner { border-color: #f7768eaa; box-shadow: inset 0 1px 0 #ffffff0d, 0 22px 54px #0008, 0 0 60px #f7768e2a; }
+/* The alarm pulse runs all the time on its own layer; health only fades the layer. */
+.svc-alarm { position: absolute; inset: 0; border-radius: 20px; opacity: 0; transition: opacity 1s; animation: breathe 1.7s ease-in-out infinite; pointer-events: none; }
+.svc.bad .svc-alarm { opacity: 1; }
+@keyframes breathe { 0%, 100% { box-shadow: 0 0 0 #f7768e00; } 50% { box-shadow: 0 0 40px #f7768e33; } }
+.svc-top { position: absolute; left: 16px; right: 12px; top: 14px; display: flex; align-items: center; gap: 10px; }
+.svc-kind { font: 600 11px var(--mono); letter-spacing: .2em; color: var(--muted); }
+.svc .chip { margin-left: auto; font: 600 13px/1.6 var(--mono); }
+.ekg { position: absolute; left: 20px; top: 62px; width: 208px; height: 60px; overflow: visible; }
+.ekg path { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+/* Both traces are always drawn and running; health crossfades between them, so a
+   change never swaps a path or restarts an animation mid-sweep. */
+.ekg g { transition: opacity 1s ease-in-out; }
+.ekg .base { stroke-opacity: .3; stroke-width: 2; }
+.ekg .sweep { stroke-width: 2.8; stroke-dasharray: 16 84; animation: sweep 2.8s linear infinite; }
+.ekg .bad path { stroke: var(--red); }
+.ekg .bad .sweep { filter: drop-shadow(0 0 5px #f7768eaa); }
+.ekg .ok path { stroke: var(--green); }
+.ekg .ok .sweep { animation-duration: 1.4s; filter: drop-shadow(0 0 6px #9ece6acc); }
+.svc.ok .ekg .bad, .svc.bad .ekg .ok { opacity: 0; }
+@keyframes sweep { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+.svc-foot { position: absolute; left: 16px; right: 16px; bottom: 14px; font: 14px var(--sans); color: var(--fg-dim); }
+.svc-foot b { display: inline-grid; font-weight: 600; }
+.svc-foot b > span { grid-area: 1 / 1; transition: opacity .9s; }
+.svc-foot .bad { color: var(--red); } .svc-foot .ok { color: var(--green); }
+.svc.ok .svc-foot .bad, .svc.bad .svc-foot .ok { opacity: 0; }
+.calls { position: absolute; left: 40px; right: 40px; top: 470px; }
+.calls .cap { font: 11px var(--mono); color: var(--muted); letter-spacing: .04em; margin-bottom: 8px; }
+.calls .row { display: flex; gap: 8px; min-height: 30px; align-items: center; }
+.calls .row .none { font: italic 13px var(--mono); color: var(--comment); }
+.oc { font: 600 12px var(--mono); padding: 4px 10px; border-radius: 999px; border: 1px solid currentColor; background: color-mix(in srgb, currentColor 12%, transparent); }
+.cfg { position: absolute; left: 40px; top: 560px; display: flex; gap: 40px; }
+.cfg > div { font: 11px var(--mono); color: var(--muted); letter-spacing: .04em; }
+.step { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.step button { width: 28px; height: 28px; border-radius: 8px; border: 1px solid #41486899; background: var(--surface); padding: 0; }
+.step button:hover { border-color: var(--cyan); }
+.step b { font: 600 16px var(--mono); color: var(--fg); min-width: 46px; text-align: center; }
+.pips { display: flex; gap: 5px; margin-top: 6px; }
+.pips i { width: 18px; height: 8px; border-radius: 4px; background: #41486888; }
+.pips i.used { background: var(--orange); box-shadow: 0 0 8px #ff9e6688; }
+
+.ops { position: absolute; left: 30px; right: 30px; bottom: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
+.ops button { border: 1px solid #41486899; background: #24283bcc; border-radius: 10px; padding: 8px 13px; font-size: 14px; color: var(--fg-dim); }
+.ops button:hover:not(:disabled) { border-color: var(--yellow); color: var(--fg); }
+.ops button:disabled { opacity: .3; cursor: not-allowed; }
+.ops .sep { flex-basis: 100%; height: 0; }
+
+/* Decision side */
+.side { position: absolute; left: 760px; top: 0; right: 0; bottom: 0; border-left: 1px solid #41486866; padding: 30px 30px 24px; }
+.kick { font: 600 12px var(--mono); letter-spacing: .18em; color: var(--muted); text-transform: uppercase; }
+.reason { font: 650 25px/1.15 var(--sans); margin: 8px 0 8px; letter-spacing: -.01em; color: var(--accent); overflow-wrap: anywhere; }
+.why { font: 15px/1.5 var(--sans); color: var(--fg-dim); margin: 0; }
+svg.flow { position: absolute; left: 24px; bottom: 112px; width: calc(100% - 48px); }
+svg.flow text { font-family: var(--sans); font-size: 11px; fill: var(--fg-dim); text-anchor: middle; dominant-baseline: middle; }
+svg.flow .lbl { font-size: 9.5px; fill: var(--comment); }
+svg.flow .shape { fill: var(--surface); stroke: var(--line); }
+svg.flow line { stroke: #3b4261; stroke-width: 1.2; }
+svg.flow line.on { stroke: var(--cyan); stroke-width: 2.4; filter: drop-shadow(0 0 4px #7dcfff88); }
+svg.flow .on .shape { stroke: var(--cyan); fill: #2a3a52; }
+svg.flow .on text { fill: var(--fg); }
+svg.flow .end .shape { stroke: var(--accent); stroke-width: 2.4; filter: drop-shadow(0 0 8px var(--accent)); }
+.acts { position: absolute; left: 30px; right: 30px; bottom: 26px; display: flex; gap: 10px; }
+.wait { flex: 1; white-space: nowrap; height: 58px; border-radius: 14px; border: 1.5px solid #7dcfff88; background: #7dcfff14; font: 600 17px var(--sans); color: var(--cyan); }
+.wait:hover { background: #7dcfff26; }
+.wait small { font: 12px var(--mono); opacity: .7; margin-left: 8px; }
+.go { flex: 1.3; height: 58px; border: 0; border-radius: 14px; font: 650 18px var(--sans); color: #16161e; background: linear-gradient(90deg, #7aa2f7, #bb9af7); box-shadow: 0 0 40px #bb9af744; }
+.go:hover { filter: brightness(1.1); }
+.go small { font: 12px var(--mono); opacity: .7; margin-left: 8px; }
+.branchnote { position: absolute; left: 30px; right: 30px; bottom: 90px; font: 12px var(--sans); color: var(--comment); text-align: center; }
+
+/* Morph */
+.node.snap, .node.snap * { transition: none !important; }
+@property --gc { syntax: '<color>'; inherits: true; initial-value: #9ece6a; }
+.node.ghost { pointer-events: none; border-color: var(--accent); }
+.gate, .gate-l { transition: --gc .9s; }
+.gate .lever { transform-box: view-box; transform-origin: 50px 80px; transition: transform .9s cubic-bezier(.65,0,.35,1); }
+.gate .cool { stroke-dasharray: 100 100; transition: stroke-dashoffset .9s cubic-bezier(.65,0,.35,1), opacity .6s; }
+.wires .w { transition: stroke .8s; }
+.svc-inner { transition: border-color .9s, box-shadow .9s; }
+.svc-glow { transition: opacity 1s; }
+.pips i { transition: background .6s, box-shadow .6s; }
+.pkt { position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; opacity: 0; pointer-events: none; box-shadow: 0 0 18px currentColor, 0 0 40px currentColor; transition: opacity .25s; z-index: 2; }
+.hit { animation: hit .7s ease-out; }
+@keyframes hit { 30% { filter: drop-shadow(0 0 22px var(--hit)) brightness(1.25); } 100% { filter: none; } }
+.bump { animation: bump .6s ease-out; }
+@keyframes bump { 0% { filter: brightness(2.2); } 100% { filter: none; } }
+.oc.new { display: inline-block; animation: pop .6s cubic-bezier(.2,1.6,.4,1); }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+.info.swap { animation: swap .6s ease-out; }
+@keyframes swap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Story mode (default) hides every control; playground mode fades them in. */
+.ops, .acts, .branchnote, .step button, #resetBtn, #help .play { transition: opacity .5s, visibility .5s; }
+body:not(.play) :is(.ops, .acts, .branchnote, .step button, #resetBtn, #help .play) { opacity: 0; visibility: hidden; }
+#help .story, #help .play { grid-area: 1 / 1; }
+#help { display: grid; }
+#help .story { transition: opacity .5s, visibility .5s; }
+body.play #help .story { opacity: 0; visibility: hidden; }
+#playBtn[aria-pressed="true"] { color: var(--fg); border-color: var(--blue); }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div id="stage"><div id="world"><svg id="edges" width="1" height="1" aria-hidden="true"></svg></div></div>
+<header class="top">
+  <div class="brand"><span class="logo">⏻</span><span>Circuit breaker<small>state-tree explorer</small></span></div>
+  <div class="tools">
+    <button type="button" id="fitBtn">Fit all (F)</button>
+    <button type="button" id="focusBtn">Focus (Space)</button>
+    <button type="button" id="rootBtn">Root (H)</button>
+    <button type="button" id="playBtn" aria-pressed="false">Show controls (P)</button>
+    <button type="button" id="resetBtn">New tree</button>
+  </div>
+</header>
+<p id="help"><span class="story">Drag to pan · scroll to zoom · click a card to fly to it<br><kbd>→</kbd> next step <kbd>←</kbd> back <kbd>↑</kbd><kbd>↓</kbd> sibling · <kbd>P</kbd> show controls</span><span class="play">Drag to pan · scroll to zoom · click a card to fly to it<br><kbd>→</kbd> next step <kbd>←</kbd> back <kbd>↑</kbd><kbd>↓</kbd> sibling · <kbd>C</kbd> send call · <kbd>T</kbd> wait 10 s · <kbd>P</kbd> hide controls</span></p>
+<canvas id="mini" aria-label="Minimap of the state tree; click a tile to fly to it"></canvas>
+<script>
+(() => {
+  'use strict';
+  const RM = matchMedia('(prefers-reduced-motion: reduce)');
+  const TICK = 10;
+  const NW = 1180, NH = 760, GX = 380, GY = 150;
+  const IDS = [
+    { short: '7f3', glyph: '◆', color: '#7dcfff' }, { short: 'c19', glyph: '●', color: '#73daca' },
+    { short: 'a42', glyph: '▲', color: '#bb9af7' }, { short: 'e08', glyph: '■', color: '#ff9e64' },
+  ];
+  const idOf = gen => IDS[gen % IDS.length];
+  const CFG_RANGE = { threshold: [1, 6], cooldown: [10, 60] };
+
+  // ───────────── Model ─────────────
+  // An invented circuit breaker: count consecutive failures while closed, open at
+  // the threshold, fail fast while open, and let one trial call through once the
+  // cooldown has elapsed.
+  const initial = () => ({
+    clock: 0, breaker: 'closed', failures: 0, since: 0, healthy: true, gen: 0, outcomes: [],
+    cfg: { threshold: 3, cooldown: 30 },
+  });
+  const OPS = {
+    tick: { label: () => `Wait ${TICK} s`, can: () => true, apply: s => { s.clock += TICK; if (s.breaker === 'open') s.since += TICK; } },
+    health: {
+      label: s => (s.healthy ? 'Service starts failing' : 'Replace with a healthy instance'),
+      can: () => true,
+      apply: s => { if (s.healthy) s.healthy = false; else { s.healthy = true; s.gen += 1; } },
+    },
+    threshold: { label: (s, v) => `threshold ${v}`, can: () => true, apply: (s, v) => { s.cfg.threshold = v; } },
+    cooldown: { label: (s, v) => `cooldown ${v}s`, can: () => true, apply: (s, v) => { s.cfg.cooldown = v; } },
+  };
+
+  // One call through the breaker.
+  function call(prev) {
+    const s = structuredClone(prev);
+    const path = ['call', 'open'];
+    const out = (kind, reason, text, oc) => { s.outcomes = [...s.outcomes, oc].slice(-8); return { state: s, kind, reason, text, path }; };
+    if (s.breaker === 'open') {
+      path.push('cooled');
+      if (s.since < s.cfg.cooldown) { path.push('reject', 'done'); return out('reject', 'Rejected', `The breaker is open (${s.since} of ${s.cfg.cooldown} cooldown seconds). The call fails immediately; the service never sees it.`, 'reject'); }
+      path.push('tok');
+      if (s.healthy) { path.push('close', 'done'); s.breaker = 'closed'; s.failures = 0; s.since = 0; return out('close', 'TrialSucceeded', 'The cooldown has elapsed. One trial call goes through and succeeds, so the breaker closes.', 'trial ok'); }
+      path.push('trip', 'done'); s.since = 0; s.failures += 1;
+      return out('trip', 'TrialFailed', 'The trial call fails. The breaker stays open and the cooldown starts again.', 'trial fail');
+    }
+    path.push('forward', 'fok');
+    if (s.healthy) { path.push('reset', 'done'); s.failures = 0; return out('ok', 'Succeeded', 'The call goes through and succeeds. The consecutive-failure count resets to zero.', 'ok'); }
+    s.failures += 1;
+    path.push('count', 'limit');
+    if (s.failures >= s.cfg.threshold) { path.push('trip', 'done'); s.breaker = 'open'; s.since = 0; return out('trip', 'Tripped', `Failure ${s.failures} of ${s.cfg.threshold} in a row. The breaker opens; calls fail fast until the cooldown has elapsed.`, 'trip'); }
+    path.push('done');
+    return out('fail', 'Failed', `The call fails. ${s.failures} of ${s.cfg.threshold} consecutive failures; the breaker stays closed.`, 'fail');
+  }
+
+  const KIND_COLOR = {
+    start: '#7aa2f7', change: '#e0af68', wait: '#7dcfff', ok: '#9ece6a', fail: '#ff9e64',
+    trip: '#f7768e', reject: '#bb9af7', close: '#73daca',
+  };
+  const OC_COLOR = { ok: '#9ece6a', fail: '#ff9e64', trip: '#f7768e', reject: '#bb9af7', 'trial ok': '#73daca', 'trial fail': '#f7768e' };
+
+  // ───────────── Tree ─────────────
+  // A node is an immutable snapshot, reached from its parent by exactly one
+  // world change, one wait, or one call.
+  let nodes, root, sel;
+  const world = document.getElementById('world');
+  const edgesSvg = document.getElementById('edges');
+  const SVGNS = 'http://www.w3.org/2000/svg';
+
+  function makeNode(parent, via, base, info) {
+    const n = {
+      id: nodes.length, parent, children: [], depth: parent ? parent.depth + 1 : 0,
+      via, state: base,
+      kind: info.kind, reason: info.reason, text: info.text, path: info.path ?? [], viaLabel: info.viaLabel,
+      x: parent ? parent.x : 0, y: parent ? parent.y : 0, tx: 0, ty: 0, grow: 1,
+    };
+    n.el = document.createElement('div');
+    n.el.className = 'node';
+    world.appendChild(n.el);
+    buildCard(n);
+    if (parent) {
+      n.edge = document.createElementNS(SVGNS, 'path');
+      n.edge.setAttribute('class', 'edge');
+      n.edge.setAttribute('pathLength', '1');
+      edgesSvg.appendChild(n.edge);
+      n.comet = document.createElementNS(SVGNS, 'circle');
+      n.comet.setAttribute('r', '12');
+      n.comet.setAttribute('class', 'comet');
+      edgesSvg.appendChild(n.comet);
+      n.label = document.createElement('div');
+      n.label.className = 'elabel';
+      world.appendChild(n.label);
+    }
+    nodes.push(n);
+    if (parent) parent.children.push(n);
+    return n;
+  }
+
+  // What one action does to a node's state, as the child's state and edge info.
+  function act(from, action, v) {
+    if (action === 'call') { const r = call(from.state); return { via: 'call', state: r.state, info: { ...r, viaLabel: 'call' } }; }
+    const label = OPS[action].label(from.state, v);
+    const s = structuredClone(from.state);
+    OPS[action].apply(s, v);
+    const wait = action === 'tick';
+    return {
+      via: wait ? 'wait' : 'change', state: s,
+      info: { kind: wait ? 'wait' : 'change', reason: label, viaLabel: label, text: wait ? 'Time passes. No call has been made since.' : 'The world changed. No call has gone through the breaker since; send one to see what it does.' },
+    };
+  }
+
+  // The preloaded tree: the main story first (so → walks it), side branches after.
+  const STORY = ['call', 'health', 'call', 'call', 'call', 'call', 'tick', 'tick', 'tick', 'call', 'tick', 'tick', 'tick', 'health', 'call', 'call'];
+  const BRANCHES = [{ from: 3, actions: ['health', 'call'] }];
+  function seed() {
+    let at = root;
+    for (const a of STORY) { const r = act(at, a); at = makeNode(at, r.via, r.state, r.info); }
+    for (const br of BRANCHES) {
+      let b = nodes[br.from];
+      for (const a of br.actions) { const r = act(b, a); b = makeNode(b, r.via, r.state, r.info); }
+    }
+  }
+
+  function reset() {
+    finishMorph();
+    world.querySelectorAll('.node, .elabel').forEach(e => e.remove());
+    edgesSvg.replaceChildren();
+    nodes = [];
+    root = makeNode(null, 'root', initial(), { kind: 'start', reason: 'Closed', text: 'The breaker is closed and the service is healthy. Press → to step through the story, or change something, wait, or send a call from any card.' });
+    seed();
+    sel = root;
+    layout(true);
+    renderAll();
+    cam = { x: 0, y: 0, z: focusZoom() };
+    flight = null;
+    miniFollow(); mpos.x = mpos.tx; mpos.y = mpos.ty;
+  }
+
+  function layout(snap) {
+    let row = 0;
+    const walk = n => {
+      n.tx = n.depth * (NW + GX);
+      if (!n.children.length) { n.ty = row * (NH + GY); row += 1; return; }
+      n.children.forEach(walk);
+      n.ty = (n.children[0].ty + n.children[n.children.length - 1].ty) / 2;
+    };
+    walk(root);
+    const dy = root.ty;
+    for (const n of nodes) { n.ty -= dy; if (snap) { n.x = n.tx; n.y = n.ty; } }
+  }
+
+  function grow(from, action, v) {
+    const r = act(from, action, v);
+    const n = makeNode(from, r.via, r.state, r.info);
+    n.grow = 0;
+    layout(false);
+    n.x = n.tx; n.y = n.ty;
+    morphTo(n, true);
+  }
+  const doCall = n => grow(n, 'call');
+  const doOp = (n, id, v) => grow(n, id, v);
+
+  // ───────────── Morph ─────────────
+  // Stepping to a child keeps the card where it is on screen: the child card starts
+  // looking exactly like its parent, a ghost of the parent fades and slides back to
+  // its place in the tree, the components act out what happened, and the card
+  // morphs into the child's state.
+  let morph = null;
+  function finishMorph() {
+    if (!morph) return;
+    const m = morph;
+    morph = null;
+    m.timers.forEach(clearTimeout);
+    m.ghost?.remove();
+    m.n.ui.pkt.getAnimations().forEach(a => a.cancel());
+    m.n.ui.pkt.style.opacity = '0';
+    m.n.morphing = false;
+    paint(m.n, m.n.state, m.n, false);
+    if (m.n.grow < 1) m.n.grow = 1;
+  }
+  function morphTo(n, isNew) {
+    finishMorph();
+    const p = n.parent;
+    sel = n;
+    n.morphing = true;
+    // Snap the card to the parent's look (no transitions), so the step animates from there.
+    n.el.classList.add('snap');
+    paint(n, p.state, p, false);
+    void n.el.offsetWidth;
+    n.el.classList.remove('snap');
+    renderAll();
+    // Keep screen continuity: the child takes the parent's place, then the camera settles.
+    cam.x += n.tx - p.x; cam.y += n.ty - p.y;
+    flyTo(n, isNew);
+    const g = p.el.cloneNode(true);
+    g.classList.add('ghost'); g.classList.remove('far', 'sel');
+    g.querySelectorAll('[data-r]').forEach(e => e.removeAttribute('data-r'));
+    g.style.transform = `translate(${n.tx - NW / 2}px, ${n.ty - NH / 2}px)`;
+    // Behind every card, so the child's choreography stays in front.
+    world.insertBefore(g, edgesSvg.nextSibling);
+    const ms = v => (RM.matches ? 0 : v);
+    // The camera jumped with the layout, so every other card is suddenly somewhere
+    // new on screen: fade them in, mirroring the parent fading out.
+    for (const o of nodes) {
+      if (o === n) continue;
+      o.el.animate([{ opacity: 0 }, {}], { duration: ms(1100) || 1, easing: 'ease-out' });
+      o.label?.animate([{ opacity: 0 }, {}], { duration: ms(1100) || 1, easing: 'ease-out' });
+    }
+    g.animate([
+      { transform: g.style.transform, opacity: 0.9 },
+      { transform: `translate(${p.tx - NW / 2}px, ${p.ty - NH / 2}px) scale(.9)`, opacity: 0 },
+    ], { duration: ms(1100) || 1, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+    morph = { n, ghost: g, timers: [] };
+    const later = (t, fn) => morph.timers.push(setTimeout(fn, ms(t)));
+    later(1100, () => { g.remove(); if (morph) morph.ghost = null; });
+    const at = choreograph(n, p, later, ms);
+    later(at, () => paint(n, n.state, n, true));
+    later(at + 900, () => { n.morphing = false; if (morph?.n === n) morph = null; });
+  }
+
+  // Act out one step on the card. Returns when the final state should land (ms).
+  function choreograph(n, p, later, ms) {
+    if (n.via !== 'call') return 250;
+    const u = n.ui, oc = n.state.outcomes[n.state.outcomes.length - 1];
+    const C = [180, 310], G = [335, 310], S = [602, 310];
+    const trial = p.state.breaker === 'open';
+    const goCol = trial ? '#e0af68' : '#7aa2f7';
+    const backCol = { ok: '#9ece6a', 'trial ok': '#73daca', fail: '#ff9e64', trip: '#f7768e', 'trial fail': '#f7768e', reject: '#bb9af7' }[oc];
+    const pos = ([x, y]) => `translate(${x - 9}px, ${y - 9}px)`;
+    const run = (from, to, col, dur) => { u.pkt.style.background = col; u.pkt.style.color = col; u.pkt.style.opacity = '1'; u.pkt.animate([{ transform: pos(from) }, { transform: pos(to) }], { duration: ms(dur) || 1, easing: 'cubic-bezier(.45,0,.55,1)', fill: 'forwards' }); };
+    const hit = (el, col) => { el.style.setProperty('--hit', col); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); };
+    const t0 = 350;
+    if (oc === 'reject') {
+      later(t0, () => run(C, G, goCol, 450));
+      later(t0 + 450, () => { hit(u.gate, backCol); run(G, C, backCol, 450); });
+      later(t0 + 900, () => { u.pkt.style.opacity = '0'; hit(u.client, backCol); });
+      return t0 + 900;
+    }
+    later(t0, () => run(C, S, goCol, 800));
+    later(t0 + 800, () => { hit(u.svc, backCol); run(S, C, backCol, 800); });
+    later(t0 + 1600, () => { u.pkt.style.opacity = '0'; hit(u.client, backCol); });
+    return t0 + 1250;
+  }
+
+  // ───────────── Rendering ─────────────
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const EKG_OK = 'M0 30 L72 30 L84 22 L96 40 L108 0 L120 54 L132 30 L208 30';
+  const EKG_BAD = 'M0 30 L40 30 L52 44 L64 14 L76 50 L88 30 L130 30 L142 46 L154 16 L166 30 L208 30';
+
+  function recordHTML(s) {
+    const kv = (k, v) => `<span class="key">"${k}"</span><span class="p">: </span>${v}`;
+    const parts = [kv('state', `<span class="chip" style="color:${s.breaker === 'open' ? '#f7768e' : '#9ece6a'}">${s.breaker}</span>`)];
+    if (s.breaker === 'open') parts.push(kv('openFor', `<span class="n">${s.since}</span><span class="p">s</span>`));
+    else parts.push(kv('failures', `<span class="n">${s.failures}</span>`));
+    return `<span class="p">{ </span>${parts.join('<span class="p">, </span>')}<span class="p"> }</span>`;
+  }
+
+  const FN = {
+    call: [180, 14, 'Call arrives', 'r'], open: [180, 54, 'Breaker open?', 'd'],
+    forward: [60, 98, 'Forward call', 'r'], cooled: [300, 98, 'Cooldown over?', 'd'],
+    fok: [60, 142, 'Service ok?', 'd'], reject: [300, 142, 'Fail fast', 'r'],
+    reset: [60, 190, 'Reset count', 'r'], count: [180, 190, 'Count failure', 'r'], tok: [300, 190, 'Trial ok?', 'd'],
+    limit: [180, 236, 'At threshold?', 'd'], close: [300, 236, 'Close breaker', 'r'],
+    trip: [180, 280, 'Open breaker', 'r'], done: [180, 322, 'Return', 'c'],
+  };
+  const FE = [
+    ['call', 'open'], ['open', 'forward', 'no'], ['open', 'cooled', 'yes'], ['forward', 'fok'],
+    ['fok', 'reset', 'yes'], ['fok', 'count', 'no'], ['count', 'limit'], ['limit', 'trip', 'yes'], ['limit', 'done', 'no'],
+    ['cooled', 'reject', 'no'], ['cooled', 'tok', 'yes'], ['tok', 'close', 'yes'], ['tok', 'trip', 'no'],
+    ['reset', 'done'], ['reject', 'done'], ['close', 'done'], ['trip', 'done'],
+  ];
+  function flowSVG(path) {
+    const on = new Set(path);
+    const pairs = new Set(path.slice(1).map((p, i) => `${path[i]}>${p}`));
+    const last = path[path.length - 2];
+    let h = '<svg class="flow" viewBox="0 -4 360 350" role="img" aria-label="Path this call took through the breaker">';
+    for (const [a, b, l] of FE) {
+      const [x1, y1] = FN[a], [x2, y2] = FN[b];
+      h += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${pairs.has(`${a}>${b}`) ? 'on' : ''}"/>`;
+      if (l) h += `<text class="lbl" x="${(x1 + x2) / 2 + 9}" y="${(y1 + y2) / 2 - 6}">${l}</text>`;
+    }
+    for (const [k, [x, y, t, shape]] of Object.entries(FN)) {
+      h += `<g class="${k === last ? 'on end' : on.has(k) ? 'on' : ''}">`;
+      h += shape === 'c' ? `<circle class="shape" cx="${x}" cy="${y}" r="20"/>` : `<rect class="shape" x="${x - 52}" y="${y - 13}" width="104" height="26" rx="${shape === 'd' ? 13 : 5}"/>`;
+      h += `<text x="${x}" y="${y}">${t}</text></g>`;
+    }
+    return `${h}</svg>`;
+  }
+
+  function stepper(key, label, d) {
+    return `${label}<span class="step"><button type="button" data-cfg="${key}" data-d="-${d}" aria-label="Lower ${label}">−</button><b data-r="${key}"></b><button type="button" data-cfg="${key}" data-d="${d}" aria-label="Raise ${label}">+</button></span>`;
+  }
+
+  // Each card is built once and then painted in place, so a step can morph it:
+  // CSS transitions carry the lever, rings, colours, and glows between states.
+  function buildCard(n) {
+    n.el.innerHTML = `
+      <div class="mach">
+        <div class="mtop"><span class="mlabel">BREAKER<b>orders-api</b><i>#${n.id}</i></span><span class="clock">clock<b data-r="clock"></b></span></div>
+        <div class="memory solid"><div class="mem-cap"><span>breaker state</span><i>● in memory</i></div><div class="mem-body" data-r="record"></div></div>
+        <svg class="wires" viewBox="0 0 760 760" aria-hidden="true"><path class="w" d="M180 310 L279 310"/><path class="w" data-r="wire" d="M391 310 L478 310"/></svg>
+        <div class="client" data-r="client"><div><b>CLIENT</b>checkout<span>calls orders-api</span></div></div>
+        <div class="gate" data-r="gate"><svg viewBox="0 0 160 160" aria-hidden="true">
+          <circle class="track" cx="80" cy="80" r="70"/>
+          <circle class="cool" data-r="cool" cx="80" cy="80" r="70" pathLength="100" transform="rotate(-90 80 80)"/>
+          <circle class="disc" cx="80" cy="80" r="52"/>
+          <line class="lever" data-r="lever" x1="50" y1="80" x2="110" y2="80"/>
+          <circle class="pin" cx="50" cy="80" r="7"/><circle class="pin" cx="110" cy="80" r="7"/>
+        </svg></div>
+        <div class="gate-l" data-r="gatel"></div>
+        <div class="svc" data-r="svc">
+          <div class="svc-inner"></div><div class="svc-glow"></div><div class="svc-alarm"></div>
+          <div class="svc-top"><span class="svc-kind">SERVICE</span><span class="chip" data-r="inst"></span></div>
+          <svg class="ekg" viewBox="0 0 208 60"><g class="ok"><path class="base" d="${EKG_OK}" pathLength="100"/><path class="sweep" d="${EKG_OK}" pathLength="100"/></g><g class="bad"><path class="base" d="${EKG_BAD}" pathLength="100"/><path class="sweep" d="${EKG_BAD}" pathLength="100"/></g></svg>
+          <div class="svc-foot">service · <b><span class="ok">healthy</span><span class="bad">returning errors</span></b></div>
+        </div>
+        <div class="pkt" data-r="pkt"></div>
+        <div class="calls"><div class="cap">recent calls</div><div class="row" data-r="calls"></div></div>
+        <div class="cfg">
+          <div>${stepper('threshold', 'threshold', 1)}<span class="pips" data-r="pips"></span></div>
+          <div>${stepper('cooldown', 'cooldown', 10)}</div>
+        </div>
+        <div class="ops"><button type="button" data-op="health" data-r="healthOp"></button></div>
+      </div>
+      <div class="side">
+        <div class="info" data-r="info"></div>
+        <div class="branchnote" data-r="note"></div>
+        <div class="acts"><button type="button" class="wait" data-op="tick">Wait ${TICK} s<small>T</small></button><button type="button" class="go" data-go="1">Send call<small>C</small></button></div>
+      </div>`;
+    n.ui = {};
+    n.el.querySelectorAll('[data-r]').forEach(e => { n.ui[e.dataset.r] = e; });
+  }
+
+  function infoHTML(m) {
+    const kick = { root: 'start', call: 'call result', change: 'world change', wait: 'time passes' }[m.via];
+    return `<div class="kick">${kick}</div><div class="reason" style="color:${KIND_COLOR[m.kind]}">${esc(m.reason)}</div><p class="why">${esc(m.text)}</p>${m.via === 'call' ? flowSVG(m.path) : ''}`;
+  }
+
+  // Paint card n with state s and the explanation of node m (its parent while a step plays).
+  function paint(n, s, m, animate) {
+    const u = n.ui;
+    const set = (el, html) => {
+      if (el.innerHTML === html) return;
+      el.innerHTML = html;
+      if (animate) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+    };
+    const open = s.breaker === 'open', ready = open && s.since >= s.cfg.cooldown;
+    const gc = !open ? '#9ece6a' : ready ? '#e0af68' : '#f7768e';
+    set(u.clock, `T+${s.clock} s`);
+    set(u.record, recordHTML(s));
+    u.wire.setAttribute('class', `w ${open ? (ready ? 'trial' : 'cut') : ''}`);
+    u.gate.style.setProperty('--gc', gc);
+    u.gatel.style.setProperty('--gc', gc);
+    u.lever.style.transform = `rotate(${!open ? 0 : ready ? -24 : -52}deg)`;
+    u.lever.classList.toggle('dash', ready);
+    u.cool.style.strokeDashoffset = String(open ? 100 - Math.min(100, (s.since / s.cfg.cooldown) * 100) : 100);
+    u.cool.style.opacity = open ? '1' : '0';
+    u.gatel.innerHTML = `${!open ? 'CLOSED' : ready ? 'OPEN · READY' : 'OPEN'}<span>${!open ? 'calls pass through' : ready ? 'next call is a trial' : `cooling ${Math.min(s.since, s.cfg.cooldown)} / ${s.cfg.cooldown} s`}</span>`;
+    u.svc.classList.toggle('ok', s.healthy);
+    u.svc.classList.toggle('bad', !s.healthy);
+    const id = idOf(s.gen);
+    u.inst.style.color = id.color;
+    set(u.inst, `${id.glyph} orders-${id.short}`);
+    const key = s.outcomes.join();
+    if (u.calls.dataset.k !== key) {
+      u.calls.dataset.k = key;
+      u.calls.innerHTML = s.outcomes.length
+        ? s.outcomes.map((o, i) => `<span class="oc${animate && i === s.outcomes.length - 1 ? ' new' : ''}" style="color:${OC_COLOR[o]}">${o}</span>`).join('')
+        : '<span class="none">no calls yet</span>';
+    }
+    const shown = s.breaker === 'closed' ? s.failures : s.cfg.threshold;
+    u.pips.innerHTML = Array.from({ length: s.cfg.threshold }, (_, i) => `<i class="${i < shown ? 'used' : ''}"></i>`).join('');
+    u.threshold.textContent = s.cfg.threshold;
+    u.cooldown.textContent = `${s.cfg.cooldown}s`;
+    u.healthOp.textContent = OPS.health.label(s);
+    if (u.info.dataset.id !== String(m.id)) {
+      u.info.dataset.id = String(m.id);
+      u.info.innerHTML = infoHTML(m);
+      if (animate) { u.info.classList.remove('swap'); void u.info.offsetWidth; u.info.classList.add('swap'); }
+    }
+    n.el.style.setProperty('--accent', KIND_COLOR[m.kind]);
+  }
+
+  function renderAll() {
+    const hot = new Set();
+    for (let p = sel; p; p = p.parent) hot.add(p);
+    for (const n of nodes) {
+      if (!n.morphing) paint(n, n.state, n, false);
+      n.ui.note.textContent = n.children.length
+        ? `${n.children.length} branch${n.children.length > 1 ? 'es' : ''} grow from here; another action adds one more.`
+        : 'Each change, wait, or call grows a new node from here.';
+      n.el.classList.toggle('sel', n === sel);
+      n.el.classList.toggle('far', !hot.has(n));
+      if (n.label) {
+        const col = KIND_COLOR[n.kind];
+        n.label.style.color = col;
+        n.label.classList.toggle('dim', !hot.has(n));
+        n.label.innerHTML = n.via === 'call' ? `<small>call</small>${esc(n.reason)}` : `<small>${n.via}</small>${esc(n.viaLabel)}`;
+        n.edge.style.stroke = col;
+        n.edge.classList.toggle('dim', !hot.has(n));
+        n.comet.style.fill = col; n.comet.style.color = col;
+      }
+    }
+  }
+
+  // ───────────── Minimap ─────────────
+  // A strip across the bottom: every snapshot as a readable tile laid out like the
+  // tree, the path to the selection lit. It follows the selection; scroll it with the
+  // wheel, click a tile to fly there.
+  const mini = document.getElementById('mini'), mctx = mini.getContext('2d');
+  const TW = 186, TH = 58, TGX = 34, TGY = 12, MP = 14;
+  const mpos = { x: 0, y: 0, tx: 0, ty: 0, manual: false };
+  const tileX = n => n.depth * (TW + TGX);
+  const tileY = n => (n.y / (NH + GY)) * (TH + TGY);
+  const miniSize = () => ({ w: mini.clientWidth, h: mini.clientHeight });
+  function miniFollow() {
+    const { w, h } = miniSize();
+    mpos.tx = tileX(sel) + TW / 2 - w / 2;
+    // Centre the whole tree vertically when it fits; otherwise keep the selection centred.
+    const ys = nodes.map(n => (n.ty / (NH + GY)) * (TH + TGY));
+    const top = Math.min(...ys), bot = Math.max(...ys) + TH;
+    mpos.ty = bot - top <= h - TGY ? (top + bot) / 2 - h / 2 : (sel.ty / (NH + GY)) * (TH + TGY) - h / 2 + TH / 2;
+    mpos.manual = false;
+  }
+  function miniState(s) {
+    const b = s.breaker === 'open' ? `open ${Math.min(s.since, s.cfg.cooldown)}/${s.cfg.cooldown}s` : `closed ${s.failures}/${s.cfg.threshold}`;
+    return `T+${s.clock}s · ${b} · ${s.healthy ? 'svc ok' : 'svc down'}`;
+  }
+  function trunc(t, max) { if (mctx.measureText(t).width <= max) return t; while (t.length > 1 && mctx.measureText(`${t}…`).width > max) t = t.slice(0, -1); return `${t}…`; }
+  function drawMini() {
+    const { w, h } = miniSize();
+    const dpr = devicePixelRatio || 1;
+    if (mini.width !== Math.round(w * dpr) || mini.height !== Math.round(h * dpr)) { mini.width = Math.round(w * dpr); mini.height = Math.round(h * dpr); }
+    if (!mpos.manual && !flight) miniFollow();
+    if (!mpos.manual) { mpos.x += (mpos.tx - mpos.x) * 0.12; mpos.y += (mpos.ty - mpos.y) * 0.12; }
+    const X = n => MP + tileX(n) - mpos.x, Y = n => tileY(n) - mpos.y;
+    mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mctx.clearRect(0, 0, w, h);
+    const hot = new Set();
+    for (let q = sel; q; q = q.parent) hot.add(q);
+    for (const n of nodes) {
+      if (!n.parent || n.grow <= 0) continue;
+      const ax = X(n.parent) + TW, ay = Y(n.parent) + TH / 2, bx = X(n), by = Y(n) + TH / 2, mx = (ax + bx) / 2;
+      mctx.strokeStyle = hot.has(n) ? KIND_COLOR[n.kind] : '#3b4261';
+      mctx.lineWidth = hot.has(n) ? 2 : 1.2;
+      mctx.beginPath(); mctx.moveTo(ax, ay); mctx.bezierCurveTo(mx, ay, mx, by, bx, by); mctx.stroke();
+    }
+    for (const n of nodes) {
+      const x = X(n), y = Y(n);
+      if (x > w || x + TW < 0 || y > h || y + TH < 0) continue;
+      const col = KIND_COLOR[n.kind];
+      mctx.globalAlpha = hot.has(n) ? 1 : 0.5;
+      mctx.beginPath(); mctx.roundRect(x, y, TW, TH, 8);
+      mctx.fillStyle = n === sel ? '#292e42' : '#1f2335'; mctx.fill();
+      mctx.lineWidth = n === sel ? 2 : 1; mctx.strokeStyle = n === sel ? col : hot.has(n) ? `${col}88` : '#414868'; mctx.stroke();
+      mctx.fillStyle = col; mctx.fillRect(x, y + 8, 3, TH - 16);
+      mctx.textBaseline = 'alphabetic';
+      mctx.font = '10px Cascadia Code, Consolas, monospace'; mctx.fillStyle = '#737aa2';
+      mctx.fillText(trunc(`#${n.id} · ${n.via === 'root' ? 'start' : n.via}`, TW - 20), x + 12, y + 16);
+      mctx.font = '600 13px Segoe UI, system-ui, sans-serif'; mctx.fillStyle = col;
+      mctx.fillText(trunc(n.reason, TW - 20), x + 12, y + 33);
+      mctx.font = '10.5px Cascadia Code, Consolas, monospace'; mctx.fillStyle = '#a9b1d6';
+      mctx.fillText(trunc(miniState(n.state), TW - 20), x + 12, y + 49);
+    }
+    mctx.globalAlpha = 1;
+  }
+  // Drag to pan the strip; a press that doesn't move is a click on a tile.
+  let mdrag = null;
+  const endMiniDrag = () => { mdrag = null; mini.classList.remove('drag'); };
+  mini.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    if (e.button !== 0) return;
+    e.preventDefault();
+    mdrag = { x: e.clientX, y: e.clientY, px: mpos.x, py: mpos.y, moved: false };
+    mini.setPointerCapture(e.pointerId);
+  });
+  mini.addEventListener('pointercancel', endMiniDrag);
+  mini.addEventListener('lostpointercapture', endMiniDrag);
+  mini.addEventListener('pointermove', e => {
+    if (!mdrag) return;
+    if (e.buttons === 0) { endMiniDrag(); return; }
+    const dx = e.clientX - mdrag.x, dy = e.clientY - mdrag.y;
+    if (!mdrag.moved && Math.hypot(dx, dy) > 4) { mdrag.moved = true; mpos.manual = true; mini.classList.add('drag'); }
+    if (mdrag.moved) { mpos.x = mdrag.px - dx; mpos.y = mdrag.py - dy; }
+  });
+  mini.addEventListener('pointerup', e => {
+    e.stopPropagation();
+    if (mdrag && !mdrag.moved) {
+      const r = mini.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      const hitN = nodes.find(n => { const x = MP + tileX(n) - mpos.x, y = tileY(n) - mpos.y; return mx >= x && mx <= x + TW && my >= y && my <= y + TH; });
+      if (hitN) go(hitN);
+    }
+    mdrag = null; mini.classList.remove('drag');
+  });
+  mini.addEventListener('wheel', e => {
+    e.preventDefault(); e.stopPropagation();
+    mpos.manual = true;
+    if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) mpos.x += e.deltaX || e.deltaY; else mpos.y += e.deltaY;
+  }, { passive: false });
+
+  // ───────────── Camera ─────────────
+  let cam = { x: 0, y: 0, z: 1 }, flight = null;
+  const MINI_H = 176;
+  const focusZoom = () => Math.min((innerHeight - MINI_H - 110) / NH, (innerWidth - 60) / NW);
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
+  function flyTo(n, grow) {
+    const dist = Math.hypot(n.tx - cam.x, n.ty - cam.y);
+    const dur = RM.matches ? 1 : Math.min(1800, 700 + dist * 0.3);
+    flight = { node: n, from: { ...cam }, to: { x: n.tx, y: n.ty, z: focusZoom() }, t0: performance.now(), dur, grow };
+    if (grow) n.grow = 0;
+    miniFollow();
+  }
+  function fitAll() {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const n of nodes) { x0 = Math.min(x0, n.tx - NW / 2); x1 = Math.max(x1, n.tx + NW / 2); y0 = Math.min(y0, n.ty - NH / 2); y1 = Math.max(y1, n.ty + NH / 2); }
+    const z = Math.min(focusZoom(), (innerWidth - 80) / (x1 - x0), (innerHeight - MINI_H - 120) / (y1 - y0));
+    flight = { node: null, from: { ...cam }, to: { x: (x0 + x1) / 2, y: (y0 + y1) / 2, z }, t0: performance.now(), dur: RM.matches ? 1 : 1000 };
+  }
+  function settle() { if (flight?.grow) flight.node.grow = 1; flight = null; }
+
+  function stepFlight(now) {
+    if (!flight) return;
+    const f = flight, t = Math.min(1, (now - f.t0) / f.dur), e = ease(t);
+    // Glide along the same S-curve the edges use: leave horizontally, arrive horizontally.
+    const mx = (f.from.x + f.to.x) / 2;
+    const p = bez([f.from, { x: mx, y: f.from.y }, { x: mx, y: f.to.y }, f.to], e);
+    cam.x = p.x; cam.y = p.y;
+    cam.z = f.from.z + (f.to.z - f.from.z) * e;
+    if (f.grow) f.node.grow = Math.min(1, e * 1.05);
+    if (t >= 1) settle();
+  }
+
+  const bez = (p, t) => { const u = 1 - t; return { x: u ** 3 * p[0].x + 3 * u * u * t * p[1].x + 3 * u * t * t * p[2].x + t ** 3 * p[3].x, y: u ** 3 * p[0].y + 3 * u * u * t * p[1].y + 3 * u * t * t * p[2].y + t ** 3 * p[3].y }; };
+
+  function frame(now) {
+    stepFlight(now);
+    for (const n of nodes) {
+      n.x += (n.tx - n.x) * 0.12; n.y += (n.ty - n.y) * 0.12;
+      n.el.style.transform = `translate(${n.x - NW / 2}px, ${n.y - NH / 2}px)`;
+    }
+    for (const n of nodes) {
+      if (!n.parent) continue;
+      const p = n.parent;
+      const a = { x: p.x + NW / 2, y: p.y }, b = { x: n.x - NW / 2, y: n.y }, mx = (a.x + b.x) / 2;
+      const pts = [a, { x: mx, y: a.y }, { x: mx, y: b.y }, b];
+      n.edge.setAttribute('d', `M${a.x} ${a.y} C${mx} ${a.y} ${mx} ${b.y} ${b.x} ${b.y}`);
+      n.edge.style.strokeDasharray = '1 1';
+      n.edge.style.strokeDashoffset = String(1 - n.grow);
+      const h = bez(pts, n.grow);
+      n.comet.setAttribute('cx', h.x); n.comet.setAttribute('cy', h.y);
+      n.comet.style.opacity = n.grow > 0 && n.grow < 1 ? '1' : '0';
+      const m = bez(pts, 0.5);
+      n.label.style.left = `${m.x}px`; n.label.style.top = `${m.y}px`;
+      n.label.style.opacity = n.grow > 0.5 ? '' : '0';
+    }
+    world.style.transform = `translate(${innerWidth / 2 - cam.x * cam.z}px, ${(innerHeight - MINI_H) / 2 + 30 - cam.y * cam.z}px) scale(${cam.z})`;
+    drawSky(now);
+    drawMini();
+    requestAnimationFrame(frame);
+  }
+
+  // ───────────── Stars ─────────────
+  const sky = document.getElementById('sky'), sctx = sky.getContext('2d');
+  const stars = Array.from({ length: 220 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.3 + 0.2, d: Math.random() * 0.6 + 0.1, p: Math.random() * 6 }));
+  function drawSky(now) {
+    if (sky.width !== innerWidth || sky.height !== innerHeight) { sky.width = innerWidth; sky.height = innerHeight; }
+    const w = sky.width, h = sky.height;
+    sctx.clearRect(0, 0, w, h);
+    sctx.fillStyle = '#c0caf5';
+    for (const s of stars) {
+      const x = ((s.x * w - cam.x * cam.z * s.d * 0.05) % w + w) % w;
+      const y = ((s.y * h - cam.y * cam.z * s.d * 0.05) % h + h) % h;
+      sctx.globalAlpha = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(now / 900 + s.p));
+      sctx.beginPath(); sctx.arc(x, y, s.r, 0, Math.PI * 2); sctx.fill();
+    }
+  }
+
+  // ───────────── Input ─────────────
+  const stage = document.getElementById('stage');
+  const nodeOf = el => { const e = el.closest('.node'); return e && nodes.find(n => n.el === e); };
+  const go = n => {
+    if (!n) return;
+    finishMorph();
+    if (n.parent && n.parent === sel) { morphTo(n, false); return; }
+    sel = n; renderAll(); flyTo(n);
+  };
+  // Capture the pointer so the release always comes back here, and end the drag on
+  // every way a gesture can finish: release, cancel (the browser took over, e.g. a
+  // native text/image drag), lost capture, or a move with no button held.
+  let drag = null;
+  const endDrag = () => { drag = null; stage.classList.remove('drag'); };
+  stage.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || e.target.closest('button')) return;
+    e.preventDefault();
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false, target: e.target };
+    stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (e.buttons === 0) { endDrag(); return; }
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; stage.classList.add('drag'); settle(); }
+    if (drag.moved) { cam.x = drag.cx - dx / cam.z; cam.y = drag.cy - dy / cam.z; }
+  });
+  stage.addEventListener('pointerup', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.moved) { const n = nodeOf(drag.target); if (n && n !== sel) go(n); }
+    endDrag();
+  });
+  stage.addEventListener('pointercancel', endDrag);
+  stage.addEventListener('lostpointercapture', endDrag);
+  stage.addEventListener('dragstart', e => e.preventDefault());
+  addEventListener('blur', endDrag);
+  stage.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b || b.disabled) return;
+    const n = nodeOf(b);
+    if (!n) return;
+    if (b.dataset.op) doOp(n, b.dataset.op);
+    else if (b.dataset.cfg) {
+      const k = b.dataset.cfg, cur = n.state.cfg[k], [lo, hi] = CFG_RANGE[k];
+      const v = Math.max(lo, Math.min(hi, cur + Number(b.dataset.d)));
+      if (v !== cur) doOp(n, k, v);
+    } else if (b.dataset.go) doCall(n);
+  });
+  stage.addEventListener('wheel', e => {
+    e.preventDefault();
+    settle();
+    const ox = innerWidth / 2, oy = (innerHeight - MINI_H) / 2 + 30;
+    const wx = (e.clientX - ox) / cam.z + cam.x, wy = (e.clientY - oy) / cam.z + cam.y;
+    cam.z = Math.max(0.03, Math.min(2.5, cam.z * Math.exp(-e.deltaY * 0.0015)));
+    cam.x = wx - (e.clientX - ox) / cam.z; cam.y = wy - (e.clientY - oy) / cam.z;
+  }, { passive: false });
+  addEventListener('keydown', e => {
+    const sib = d => { const p = sel.parent; return p && p.children[p.children.indexOf(sel) + d]; };
+    switch (e.key) {
+      case 'ArrowLeft': go(sel.parent); break;
+      case 'ArrowRight': go(sel.children[0]); break;
+      case 'ArrowUp': go(sib(-1)); break;
+      case 'ArrowDown': go(sib(1)); break;
+      case 'p': case 'P': setPlay(!playing); break;
+      case 'c': case 'C': if (playing) doCall(sel); break;
+      case 'f': case 'F': fitAll(); break;
+      case 'h': case 'H': go(root); break;
+      case ' ': flyTo(sel); break;
+      case 't': case 'T': if (playing) doOp(sel, 'tick'); break;
+      default: return;
+    }
+    e.preventDefault();
+  });
+  document.getElementById('fitBtn').onclick = fitAll;
+  document.getElementById('focusBtn').onclick = () => flyTo(sel);
+  document.getElementById('rootBtn').onclick = () => go(root);
+  document.getElementById('resetBtn').onclick = reset;
+  // Story mode (default) is for walking the preloaded tree; playground mode shows
+  // the controls for changing the world and growing new branches.
+  let playing = false;
+  const playBtn = document.getElementById('playBtn');
+  function setPlay(on) {
+    playing = on;
+    document.body.classList.toggle('play', on);
+    playBtn.setAttribute('aria-pressed', String(on));
+    playBtn.textContent = `${on ? 'Hide' : 'Show'} controls (P)`;
+  }
+  playBtn.onclick = () => setPlay(!playing);
+  addEventListener('resize', () => { if (!flight) cam.z = Math.min(cam.z, focusZoom()); });
+
+  reset();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
