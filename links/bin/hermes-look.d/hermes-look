@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Capture what the user is looking at in a tmux pane, then start Hermes voice
+# recording in the Hermes pane without moving focus.
+#
+# Usage: hermes-look [source-pane-id]   (defaults to the active pane)
+# Context is written to ~/.hermes/cache/look.md.
+set -euo pipefail
+
+here=$(dirname -- "$(readlink -f "${BASH_SOURCE[0]}")")
+
+src="${1:-$(tmux display -p '#{pane_id}')}"
+out="$HOME/.hermes/cache/look.md"
+mkdir -p "${out%/*}"
+
+pane_fmt() { tmux display -p -t "$src" "$1"; }
+
+# Find the nvim server socket for a process tree rooted at the pane's shell.
+nvim_socket() {
+	local pid=$1 child sock
+	sock="${XDG_RUNTIME_DIR:-/tmp}/nvim.$pid.0"
+	[[ -S $sock ]] && { echo "$sock"; return; }
+	for child in $(pgrep -P "$pid"); do
+		nvim_socket "$child" && return
+	done
+	return 1
+}
+
+{
+	echo "# What Ian is looking at"
+	echo
+	echo "Captured: $(date -Iseconds)"
+	echo "tmux: session $(pane_fmt '#{session_name}'), window $(pane_fmt '#{window_index}'), pane $src"
+	echo "Program: $(pane_fmt '#{pane_current_command}'), cwd $(pane_fmt '#{pane_current_path}')"
+	echo
+
+	if sock=$(nvim_socket "$(pane_fmt '#{pane_pid}')"); then
+		nvim --server "$sock" --remote-expr "luaeval('dofile(\"$here/nvim-context.lua\")')"
+	else
+		echo "Visible pane contents:"
+		echo '```'
+		tmux capture-pane -p -J -t "$src"
+		echo '```'
+	fi
+} >"$out"
+
+# Prefer a Hermes pane in the same window, else any Hermes pane.
+win=$(pane_fmt '#{window_id}')
+hermes=$(tmux list-panes -a -F '#{window_id} #{pane_id} #{pane_pid} #{window_activity}' |
+	while read -r w p pid act; do
+		[[ $p == "$src" ]] && continue
+		ps -o args= --ppid "$pid" 2>/dev/null | grep -q 'hermes_cli.main' || continue
+		[[ $w == "$win" ]] && echo "0 $((-act)) $p" || echo "1 $((-act)) $p"
+	done | sort -n -k1,1 -k2,2 | head -1 | cut -d' ' -f3)
+
+if [[ -z $hermes ]]; then
+	tmux display-message "hermes-look: no Hermes pane found (context saved to $out)"
+	exit 0
+fi
+
+tmux send-keys -t "$hermes" C-b
+tmux display-message "Hermes is listening (context from $src)"
