@@ -60,6 +60,9 @@ autoload -U +X bashcompinit && bashcompinit
 az_completions_file="/etc/bash_completion.d/azure-cli"
 [[ -f "$az_completions_file" ]] && source "$az_completions_file"
 
+# Hermes Agent completions (needs compinit, and PATH extensions above for ~/.local/bin)
+(( $+commands[hermes] )) && eval "$(hermes completion zsh)"
+
 # Set Kubernetes config file location, merging in any drop-in configs from ~/.kube/config.d
 export KUBECONFIG="$HOME/.kube/config"
 # The (N.) glob qualifier means: N = skip loop if no matches, . = regular files only
