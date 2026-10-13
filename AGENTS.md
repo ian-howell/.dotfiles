@@ -19,8 +19,11 @@ This repository is the complete, general-purpose, open source base configuration
 layered on top. Choose ownership by what a feature does, not where it was developed,
 which session requested it, or the current value of an environment variable.
 
-- General OpenCode plugins, agents, commands, skills, and themes belong in
-  `links/opencode`, linked to `~/.config/opencode`. Tmux integration, retitling,
+- Agent skills shared by every agent tool (OpenCode, Hermes) belong in
+  `links/agents/skills`, linked to `~/.agents/skills`. Hermes creates new skills there
+  (`skills.create_dir`), so review new or changed skills with `git status` before committing.
+- General OpenCode plugins, agents, commands, and themes belong in `links/opencode`,
+  linked to `~/.config/opencode`. Tmux integration, retitling,
   explanation agents, theme switching, and general Git policy are base features.
 - Only work-specific OpenCode additions belong in `~/.config/work/opencode`, loaded
   through `OPENCODE_CONFIG_DIR`. It augments the base; it is not a generic install target.
