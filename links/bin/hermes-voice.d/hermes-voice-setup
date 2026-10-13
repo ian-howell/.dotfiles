@@ -35,4 +35,6 @@ hermes config set --force tts.providers.kokoro.command 'kokoro-tts {input_path} 
 hermes config set --force tts.providers.kokoro.voice af_bella >/dev/null
 hermes config set --force tts.providers.kokoro.format wav >/dev/null
 hermes config set --force tts.provider kokoro >/dev/null
+# The thinking pulse shares the audio device with speech and makes playback stutter on WSL.
+hermes config set --force voice.thinking_sound false >/dev/null
 echo "Done; restart Hermes."
