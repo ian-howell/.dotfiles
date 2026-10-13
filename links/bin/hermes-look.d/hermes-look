@@ -6,9 +6,26 @@
 # Context is written to ~/.hermes/cache/look.md.
 set -euo pipefail
 
+# --trail PANE: append a one-line "where Ian went" entry (tmux focus hook).
+trail="$HOME/.hermes/cache/look-trail.log"
+if [[ ${1:-} == --trail ]]; then
+	line=$(tmux display -p -t "$2" '#{session_name}:#{window_index} #{pane_id} #{pane_current_command} #{pane_current_path}')
+	printf '%s %s\n' "$(date +%T)" "$line" >>"$trail"
+	tail -n 200 "$trail" >"$trail.tmp" && mv "$trail.tmp" "$trail"
+	exit 0
+fi
+
 here=$(dirname -- "$(readlink -f "${BASH_SOURCE[0]}")")
 
 src="${1:-$(tmux display -p '#{pane_id}')}"
+is_hermes() { ps -o args= --ppid "$(tmux display -p -t "$1" '#{pane_pid}')" 2>/dev/null | grep -q 'hermes_cli.main'; }
+# Pressed from Hermes itself: record here, and show Hermes the previously used pane.
+hermes=
+if is_hermes "$src"; then
+	hermes=$src
+	last=$(awk -v h="$hermes" '$3 != h { p = $3 } END { print p }' "$trail" 2>/dev/null)
+	src=${last:-$hermes}
+fi
 out="$HOME/.hermes/cache/look.md"
 mkdir -p "${out%/*}"
 
@@ -41,16 +58,21 @@ nvim_socket() {
 		tmux capture-pane -p -J -t "$src"
 		echo '```'
 	fi
+	echo
+	echo "Recent movement (oldest first):"
+	tail -n 15 "$trail" 2>/dev/null || true
 } >"$out"
 
 # Prefer a Hermes pane in the same window, else any Hermes pane.
+[[ -n $hermes ]] || {
 win=$(pane_fmt '#{window_id}')
 hermes=$(tmux list-panes -a -F '#{window_id} #{pane_id} #{pane_pid} #{window_activity}' |
 	while read -r w p pid act; do
 		[[ $p == "$src" ]] && continue
-		ps -o args= --ppid "$pid" 2>/dev/null | grep -q 'hermes_cli.main' || continue
+		is_hermes "$p" || continue
 		[[ $w == "$win" ]] && echo "0 $((-act)) $p" || echo "1 $((-act)) $p"
 	done | sort -n -k1,1 -k2,2 | head -1 | cut -d' ' -f3)
+}
 
 if [[ -z $hermes ]]; then
 	tmux display-message "hermes-look: no Hermes pane found (context saved to $out)"
