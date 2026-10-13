@@ -36,11 +36,11 @@ colors:
   shell_dollar: "#2563EB"
   voice_status_bg: "#E5EDF8"
 # User messages (ui_label) use the tmux accent_fg in links/tmux/themes/{dark,light}.conf;
-# replies (ui_response, a hermes-voice.patch addition) use Tokyo Night green, as in the Neovim
-# logo; other text, including tool output, keeps the base ui_text.
+# replies (ui_response, a hermes-voice.patch addition) use Tokyo Night purple;
+# other text, including tool output, keeps the base ui_text.
 dark_colors:
   ui_label: "#ff966c"
-  ui_response: "#c3e88d"
+  ui_response: "#c099ff"
 light_colors:
   ui_label: "#b15c00"
-  ui_response: "#587539"
+  ui_response: "#7847bd"
