@@ -55,3 +55,8 @@ directory via `readlink -f "${BASH_SOURCE[0]}"` so companions resolve through sy
 See `links/bin/theme.d/` and `links/bin/pickers/` for examples.
 
 Forward slashes (/) are valid in tmux session names. Do not suggest that they aren't.
+
+Hermes voice mode (local Whisper STT, Kokoro TTS with the Bella voice, and patches to
+Hermes's code) is set up by `links/bin/hermes-voice.d/hermes-voice-setup`, which is
+idempotent. Rerun it after every Hermes update. To change the patches, edit
+`~/.hermes/hermes-agent` and regenerate `hermes-voice.d/hermes-voice.patch` with `git diff`.

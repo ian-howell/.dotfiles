@@ -1,0 +1,94 @@
+diff --git i/tools/voice_mode.py w/tools/voice_mode.py
+index d1d6323aac..7c813693a8 100644
+--- i/tools/voice_mode.py
++++ w/tools/voice_mode.py
+@@ -449,18 +449,16 @@ def thinking_sound_enabled() -> bool:
+ 
+ 
+ def _synth_thinking_blip(np, frequency: float) -> Any:
+-    """One soft 'blub': short sine with a downward glide and a click-free envelope."""
+-    duration = 0.16
++    """One soft breathing pulse: a low sine that swells in and fades out over 1.6s."""
++    duration = 1.6
+     n = int(SAMPLE_RATE * duration)
+     t = np.linspace(0, duration, n, endpoint=False)
+-    glide = np.linspace(1.0, 0.72, n)  # water-drop feel: freq → 0.72*freq
+-    phase = 2 * np.pi * np.cumsum(frequency * glide) / SAMPLE_RATE
+-    tone = 0.8 * np.sin(phase) + 0.2 * np.sin(phase / 2.0)  # octave-down softens harmonics
+-    attack = int(0.02 * SAMPLE_RATE)
+-    env = np.ones(n)
+-    env[:attack] = np.linspace(0.0, 1.0, attack)
+-    env *= np.exp(-t * 14.0)
+-    volume = _get_beep_volume() * 0.5  # deliberately quieter than the beeps
++    tone = np.sin(2 * np.pi * frequency * t)
++    attack = int(0.6 * SAMPLE_RATE)
++    env = np.exp(-t * 1.2)
++    env[:attack] *= np.linspace(0.0, 1.0, attack)
++    env *= np.sin(np.linspace(0, np.pi, n))
++    volume = _get_beep_volume() * 0.4  # deliberately quieter than the beeps
+     return (tone * env * volume * 32767).astype(np.int16)
+ 
+ 
+@@ -475,7 +473,7 @@ def _thinking_sound_loop(stop: threading.Event, should_play) -> None:
+     except (ImportError, OSError):
+         return
+     import random
+-    blips = [_synth_thinking_blip(np, p) for p in (392.0, 329.6)]  # G4 / E4
++    blips = [_synth_thinking_blip(np, 220.0)]  # A3
+     i = 0
+     while not stop.is_set():
+         try:
+diff --git i/tui_gateway/methods_voice.py w/tui_gateway/methods_voice.py
+index 49803cdb5b..6d5ce6df87 100644
+--- i/tui_gateway/methods_voice.py
++++ w/tui_gateway/methods_voice.py
+@@ -778,6 +778,18 @@ def _(rid, params: dict) -> dict:
+         return _err(rid, 5025, str(e))
+ 
+ 
++@method("voice.shush")
++def _(rid, params: dict) -> dict:
++    """Silence the reply being spoken without leaving voice mode."""
++    from tools.voice_mode import stop_playback
++    _tts_stream_stop(user_barge=False)
++    with _fd_listener_lock:
++        for _stop, _done in _fd_speak_pipelines:
++            _stop.set()
++    stop_playback()
++    return _ok(rid, {"status": "silenced"})
++
++
+ @method("voice.tts")
+ def _(rid, params: dict) -> dict:
+     text = params.get("text", "")
+diff --git i/tui_gateway/prompt_turn.py w/tui_gateway/prompt_turn.py
+index 0cc90dee8a..6934d032c6 100644
+--- i/tui_gateway/prompt_turn.py
++++ w/tui_gateway/prompt_turn.py
+@@ -731,6 +731,10 @@ def _prepare_turn_input(sid: str, session: dict, st: _TurnRun, text: Any, images
+     run_message = _prepend_note(run_message, _pending_reaction_notes(session))
+     run_message = _prepend_note(run_message, _pending_tool_retry_notes(session))
+     agent._voice_turn_pending = bool(session.pop("voice_turn", False))  # auxiliary.voice_chat route
++    if agent._voice_turn_pending:
++        run_message = _prepend_note(run_message, (
++            "[Voice input: the user spoke this and the reply is read aloud. Do the full work, "
++            "but reply conversationally in 1-2 short sentences; no code blocks or markdown.]"))
+     return prompt, _prepend_note(run_message, _hud_surface_note(session)), cols, streamer
+ 
+ 
+diff --git i/ui-tui/src/app/useInputHandlers.ts w/ui-tui/src/app/useInputHandlers.ts
+index 4a783cc11a..ba4d94b407 100644
+--- i/ui-tui/src/app/useInputHandlers.ts
++++ w/ui-tui/src/app/useInputHandlers.ts
+@@ -428,6 +428,11 @@ export function useInputHandlers(ctx: InputHandlerContext): InputHandlerResult {
+       if (isVoiceToggleKey(key, ch, voice.recordKey)) {
+         lastEscRef.current = 0
+       } else {
++        if (voice.enabled) {
++          // Esc silences the reply being spoken; voice mode stays on.
++          gateway.gw.request('voice.shush', {}).catch(() => {})
++        }
++
+         const now = Date.now()
+         const isDouble = now - lastEscRef.current <= DOUBLE_ESC_MS
+ 

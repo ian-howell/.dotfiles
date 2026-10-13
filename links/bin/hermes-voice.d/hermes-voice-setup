@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Reinstall Ian's Hermes voice setup: local Whisper STT, Kokoro TTS, and the voice patches.
+# Idempotent; rerun after every Hermes update.
+set -euo pipefail
+
+here="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+hermes_src="$HOME/.hermes/hermes-agent"
+kokoro_dir="$HOME/.local/share/kokoro"
+
+venv="$(ls -dt "$HOME"/.hermes/installs/*/environments/*/venv | head -1)"
+echo "Hermes venv: $venv"
+# av 18+ dropped the metadata_errors argument faster-whisper passes to av.open.
+uv pip install -q --python "$venv/bin/python" faster-whisper 'av<18'
+
+mkdir -p "$kokoro_dir"
+[[ -x "$kokoro_dir/venv/bin/python" ]] || uv venv -q --python 3.12 "$kokoro_dir/venv"
+uv pip install -q --python "$kokoro_dir/venv/bin/python" kokoro-onnx soundfile
+for f in kokoro-v1.0.onnx voices-v1.0.bin; do
+	[[ -s "$kokoro_dir/$f" ]] || curl -fsSLo "$kokoro_dir/$f" \
+		"https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/$f"
+done
+
+patch="$here/hermes-voice.patch"
+if git -C "$hermes_src" apply --reverse --check "$patch" 2>/dev/null; then
+	echo "Voice patch already applied"
+else
+	git -C "$hermes_src" apply "$patch"
+	echo "Voice patch applied"
+fi
+# The patch touches TypeScript, so rebuild the TUI bundle.
+(cd "$hermes_src/ui-tui" && npm run -s build >/dev/null)
+
+hermes config set --force tts.providers.kokoro.type command >/dev/null
+hermes config set --force tts.providers.kokoro.command 'kokoro-tts {input_path} {output_path} {voice} {speed}' >/dev/null
+hermes config set --force tts.providers.kokoro.voice af_bella >/dev/null
+hermes config set --force tts.providers.kokoro.format wav >/dev/null
+hermes config set --force tts.provider kokoro >/dev/null
+echo "Done; restart Hermes."
