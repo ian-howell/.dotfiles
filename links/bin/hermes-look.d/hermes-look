@@ -23,7 +23,9 @@ is_hermes() { ps -o args= --ppid "$(tmux display -p -t "$1" '#{pane_pid}')" 2>/d
 hermes=
 if is_hermes "$src"; then
 	hermes=$src
-	last=$(awk -v h="$hermes" '$3 != h { p = $3 } END { print p }' "$trail" 2>/dev/null)
+	# Newest trail entry for a pane that still exists (closed panes are skipped).
+	live=" $(tmux list-panes -a -F '#{pane_id}' | tr '\n' ' ')"
+	last=$(tac "$trail" 2>/dev/null | awk -v h="$hermes" -v live="$live" '$3 != h && index(live, " " $3 " ") { print $3; exit }')
 	src=${last:-$hermes}
 fi
 out="$HOME/.hermes/cache/look.md"
@@ -34,6 +36,7 @@ pane_fmt() { tmux display -p -t "$src" "$1"; }
 # Find the nvim server socket for a process tree rooted at the pane's shell.
 nvim_socket() {
 	local pid=$1 child sock
+	[[ -n $pid ]] || return 1
 	sock="${XDG_RUNTIME_DIR:-/tmp}/nvim.$pid.0"
 	[[ -S $sock ]] && { echo "$sock"; return; }
 	for child in $(pgrep -P "$pid"); do
