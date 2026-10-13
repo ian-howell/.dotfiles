@@ -39,3 +39,5 @@ links:
     link: ~/.config/k9s
   - file: ~/.dotfiles/links/agents
     link: ~/.agents
+  - file: ~/.dotfiles/links/hermes/skins
+    link: ~/.hermes/skins
