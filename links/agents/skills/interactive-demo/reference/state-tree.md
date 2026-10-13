@@ -119,6 +119,10 @@ Moving to a child — a new action, or → onto an existing child — plays the 
   that child is lit too, so → is always predictable. ↑/↓ cycle the pick (wrapping) without moving;
   reaching a node by any route makes it its parent's pick, so ← then → returns the way you came.
 - Keys: ←/→ parent/picked child, ↑/↓ cycle branch, H root, F fit, Space focus, plus the action keys.
+- **Edge labels sit in front of edges.** Keep them opaque and dim them with
+  `filter: brightness()`, never opacity, or the beam shows through. Show a new edge's label
+  before its beam draws in. The incoming edge belongs to the current node, so check edge/label
+  highlighting separately from cards; a node-based "hot" set leaves it lit.
 
 ## Minimap
 
@@ -130,8 +134,42 @@ Moving to a child — a new action, or → onto an existing child — plays the 
 - **Drag to pan** (a press that moves more than a few pixels), wheel to scroll, a still click on
   a tile flies there. Manual panning holds until the next selection change.
 
+## Modelling a system
+
+- For a controller or reconciler, model the reconcile in the real code's decision order.
+  World-change ops are what owners, backends, and users do; waiting is "the backend makes
+  progress". Seed `STORY` with the full lifecycle (create → ready → delete, or failure →
+  recovery) and `BRANCHES` for the interesting guards (missing prerequisite, lost resource,
+  pause mid-delete).
+- A card layout that reads well: inputs on the left, the controller in the centre, created
+  resources on the right, the persisted status on top; packets run from the controller to each
+  resource a reconcile touched (record a `touch` list per result to drive this).
+- Explanatory text is precise about what the code checks. When one guard folds several
+  conditions (wiring vs health), name them all.
+
+## Building and porting
+
+- Start a new explorer by copying `examples/circuit-breaker-tree/index.html` and replacing the
+  model, card build/paint, decision chart, minimap state line, and `STORY`/`BRANCHES`. Tree,
+  camera, minimap, and input code are generic. Afterwards grep for leftover example
+  identifiers (`IDS`, `TICK`, `CFG_RANGE`, `'call'`, `OC_COLOR`, `breaker`) and CSS selectors.
+- For large rewrites, write new sections to scratch files and splice by unique markers, asserting
+  each marker exists exactly once; a wrong index silently drops a section. Syntax-check the
+  extracted `<script>` with `node --check`.
+- Explorers share code but drift. Apply a cross-demo change with one loop over every explorer
+  file using exact-count replacements, then `node --check` each one.
+- A transform or animation on a wrapper makes it the containing block for absolutely positioned
+  children. Make animated wrappers fill their panel (`position: absolute; inset: 0; padding:
+  inherit`) so their contents don't jump mid-animation.
+
 ## Verification
 
 Drive it with the browser: run a short chain (change → wait → reconcile), branch from the root,
-fit all, click a minimap tile, drag the minimap. Check the console for errors and look at the
-screenshots for clipping and overlap.
+branch mid-tree, press keys rapidly, fit all, click and drag the minimap. Capture console errors
+(`window.__e`) and look at the screenshots for clipping and overlap.
+
+- Verify fades by sampling `getComputedStyle(el).opacity` at several moments mid-step. A dead
+  selector (a class the code never emits) looks fine statically but leaves a layer solid.
+- Verify layout during animations by sampling child rects mid-step, not just at rest.
+- In browser tests, navigate to the explicit file URL; the page can otherwise stay on
+  `about:blank`.

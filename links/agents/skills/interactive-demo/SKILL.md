@@ -99,3 +99,10 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
 - Long code lines wrap or overflow; choose a shorter excerpt or reflow (and badge it).
 - Changing only the URL hash in Playwright does not reload the page; call `reload()`.
 - Keep work-specific demos out of the dotfiles; only generic engine/skill changes belong here.
+  Draft them in the private work repo (`~/.config/work/notes/demos/<topic>-explorer.html`), not
+  in a feature branch under review: extra files muddy the PR. Move one next to the code only
+  when asked to publish it.
+- Live reload: test it end to end (set `window.__marker`, `touch` the file, wait ~2.5 s, assert
+  the marker is gone). From WSL, check Windows reaches the server with
+  `powershell.exe -c "(Invoke-WebRequest -UseBasicParsing http://localhost:<port>/…).Content"`.
+- Don't ask clarifying questions for "whip together a demo": build it and open it.

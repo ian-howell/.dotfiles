@@ -161,6 +161,11 @@ Do not activate, complete, abandon, or merge a PR without authorization. Do not
 add reviewers unless requested or established repository instructions require
 specific reviewers.
 
+## Recipes
+
+For splitting tangled changes into commits, rebasing a published branch, and recovering from an
+interrupted commit, see `references/recipes.md`.
+
 ## Final verification
 
 After an authorized git or PR workflow, report the relevant final state:
