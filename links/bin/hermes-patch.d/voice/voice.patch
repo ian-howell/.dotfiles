@@ -1,6 +1,28 @@
-diff --git i/tools/voice_mode.py w/tools/voice_mode.py
-index d1d6323aac..aa45012df9 100644
---- i/tools/voice_mode.py
+diff --git c/tools/tts_tool_speaker.py w/tools/tts_tool_speaker.py
+index 2c058e5499..2dea5f9672 100644
+--- c/tools/tts_tool_speaker.py
++++ w/tools/tts_tool_speaker.py
+@@ -22,6 +22,7 @@ import threading
+ from concurrent.futures import Future, ThreadPoolExecutor
+ from typing import Callable, Iterable, Iterator, List, Optional
+ 
++from hermes_platform.host.runtime import is_wsl
+ from tools.tts_text_normalize import _strip_markdown_for_tts
+ from tools.tts_tool_delivery import _origin, _remove_quietly as _unlink_quietly
+ 
+@@ -181,7 +182,8 @@ class _StreamerPlayback:
+     def _create_output_stream(self):
+         sd = _origin()._import_sounddevice()
+         stream = sd.OutputStream(
+-            samplerate=self.streamer.sample_rate, channels=self.streamer.channels, dtype="int16")
++            samplerate=self.streamer.sample_rate, channels=self.streamer.channels, dtype="int16",
++            latency=0.5 if is_wsl() else None)  # WSLg RDP audio stutters on a shallow buffer
+         stream.start()
+         return stream
+ 
+diff --git c/tools/voice_mode.py w/tools/voice_mode.py
+index d1d6323aac..7209d32d51 100644
+--- c/tools/voice_mode.py
 +++ w/tools/voice_mode.py
 @@ -367,10 +367,11 @@ def _get_beep_volume() -> float:
      return volume
@@ -80,9 +102,21 @@ index d1d6323aac..aa45012df9 100644
          return True
      except (ImportError, OSError):
          return False
-diff --git i/tui_gateway/methods_voice.py w/tui_gateway/methods_voice.py
+@@ -1127,6 +1133,11 @@ def _play_audio_file_impl(file_path: str) -> bool:
+     if not os.path.isfile(file_path):
+         logger.warning("Audio file not found: %s", file_path)
+         return False
++    # WSLg's RDP audio stutters and drops out through PortAudio even with a deep buffer;
++    # paplay with a 500 ms PulseAudio buffer plays cleanly, so it goes first on WSL.
++    if is_wsl() and shutil.which("paplay") and _run_system_player(
++            ["paplay", "--latency-msec=500", file_path]):
++        return True
+     # macOS skips sounddevice output (TCC media-library prompt); afplay handles all formats.
+     if file_path.endswith(".wav") and _sounddevice_output_allowed() and _play_wav_via_sounddevice(file_path):
+         return True
+diff --git c/tui_gateway/methods_voice.py w/tui_gateway/methods_voice.py
 index 49803cdb5b..6d5ce6df87 100644
---- i/tui_gateway/methods_voice.py
+--- c/tui_gateway/methods_voice.py
 +++ w/tui_gateway/methods_voice.py
 @@ -778,6 +778,18 @@ def _(rid, params: dict) -> dict:
          return _err(rid, 5025, str(e))
@@ -103,9 +137,9 @@ index 49803cdb5b..6d5ce6df87 100644
  @method("voice.tts")
  def _(rid, params: dict) -> dict:
      text = params.get("text", "")
-diff --git i/tui_gateway/prompt_turn.py w/tui_gateway/prompt_turn.py
+diff --git c/tui_gateway/prompt_turn.py w/tui_gateway/prompt_turn.py
 index 0cc90dee8a..6934d032c6 100644
---- i/tui_gateway/prompt_turn.py
+--- c/tui_gateway/prompt_turn.py
 +++ w/tui_gateway/prompt_turn.py
 @@ -731,6 +731,10 @@ def _prepare_turn_input(sid: str, session: dict, st: _TurnRun, text: Any, images
      run_message = _prepend_note(run_message, _pending_reaction_notes(session))
@@ -118,9 +152,9 @@ index 0cc90dee8a..6934d032c6 100644
      return prompt, _prepend_note(run_message, _hud_surface_note(session)), cols, streamer
  
  
-diff --git i/ui-tui/src/app/useInputHandlers.ts w/ui-tui/src/app/useInputHandlers.ts
+diff --git c/ui-tui/src/app/useInputHandlers.ts w/ui-tui/src/app/useInputHandlers.ts
 index 4a783cc11a..ba4d94b407 100644
---- i/ui-tui/src/app/useInputHandlers.ts
+--- c/ui-tui/src/app/useInputHandlers.ts
 +++ w/ui-tui/src/app/useInputHandlers.ts
 @@ -428,6 +428,11 @@ export function useInputHandlers(ctx: InputHandlerContext): InputHandlerResult {
        if (isVoiceToggleKey(key, ch, voice.recordKey)) {
