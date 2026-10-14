@@ -15,8 +15,16 @@ SOCKET = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or DATA, "kokoro-tts.soc
 
 
 def load():
+    # Synthesis runs while earlier sentences play; cap threads and lower priority so
+    # it cannot starve the audio player (all-core bursts made playback stutter).
+    import onnxruntime as rt
     from kokoro_onnx import Kokoro
-    return Kokoro(f"{DATA}/kokoro-v1.0.onnx", f"{DATA}/voices-v1.0.bin")
+    os.nice(10)
+    opts = rt.SessionOptions()
+    opts.intra_op_num_threads = 4
+    opts.inter_op_num_threads = 1
+    session = rt.InferenceSession(f"{DATA}/kokoro-v1.0.onnx", opts, providers=["CPUExecutionProvider"])
+    return Kokoro.from_session(session, f"{DATA}/voices-v1.0.bin")
 
 
 def synthesize(kokoro, req: dict) -> None:

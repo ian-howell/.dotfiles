@@ -1,8 +1,22 @@
 diff --git i/tools/voice_mode.py w/tools/voice_mode.py
-index d1d6323aac..7c813693a8 100644
+index d1d6323aac..aa45012df9 100644
 --- i/tools/voice_mode.py
 +++ w/tools/voice_mode.py
-@@ -449,18 +449,16 @@ def thinking_sound_enabled() -> bool:
+@@ -367,10 +367,11 @@ def _get_beep_volume() -> float:
+     return volume
+ 
+ 
+-def _sd_play_blocking(sd, audio, sample_rate: int, *, timeout: float, blocksize: int = 0) -> None:
++def _sd_play_blocking(sd, audio, sample_rate: int, *, timeout: float, blocksize: int = 0,
++                      latency: Any = None) -> None:
+     """``sd.play`` then poll until idle or *timeout* (``sd.wait()`` has no timeout and
+     hangs forever if the device stalls)."""
+-    sd.play(audio, samplerate=sample_rate, blocksize=blocksize)
++    sd.play(audio, samplerate=sample_rate, blocksize=blocksize, latency=latency)
+     deadline = time.monotonic() + timeout
+     while sd.get_stream() and sd.get_stream().active and time.monotonic() < deadline:
+         time.sleep(0.01)
+@@ -449,18 +450,16 @@ def thinking_sound_enabled() -> bool:
  
  
  def _synth_thinking_blip(np, frequency: float) -> Any:
@@ -29,7 +43,7 @@ index d1d6323aac..7c813693a8 100644
      return (tone * env * volume * 32767).astype(np.int16)
  
  
-@@ -475,7 +473,7 @@ def _thinking_sound_loop(stop: threading.Event, should_play) -> None:
+@@ -475,7 +474,7 @@ def _thinking_sound_loop(stop: threading.Event, should_play) -> None:
      except (ImportError, OSError):
          return
      import random
@@ -38,6 +52,34 @@ index d1d6323aac..7c813693a8 100644
      i = 0
      while not stop.is_set():
          try:
+@@ -483,8 +482,12 @@ def _thinking_sound_loop(stop: threading.Event, should_play) -> None:
+                 blip = blips[i % len(blips)]
+                 i += 1
+                 sd.play(blip, samplerate=SAMPLE_RATE)
++                ours = sd.get_stream()
+                 stop.wait(len(blip) / SAMPLE_RATE + 0.02)
+-                sd.stop()
++                # sd.play/sd.stop share one global stream: if TTS playback took it over,
++                # stopping here would cut the speech off mid-word.
++                if sd.get_stream() is ours:
++                    sd.stop()
+         except Exception as e:
+             logger.debug("Thinking sound blip failed: %s", e)
+             return
+@@ -1040,8 +1043,11 @@ def _play_wav_via_sounddevice(file_path: str) -> bool:
+                 np.zeros(int(0.1 * sample_rate), dtype=np.int16), audio_float.astype(np.int16),
+                 np.zeros(int(0.05 * sample_rate), dtype=np.int16)])
+             blocksize = 4096
+-        _sd_play_blocking(sd, audio_data, sample_rate,
+-                          timeout=len(audio_data) / sample_rate + 2.0, blocksize=blocksize)
++        # WSLg's RDP audio stalls under CPU load: a deep output buffer rides out the stalls
++        # (stutter), and the generous timeout stops a stalled sentence's tail being cut off.
++        duration = len(audio_data) / sample_rate
++        _sd_play_blocking(sd, audio_data, sample_rate, timeout=duration * 2 + 2.0,
++                          blocksize=blocksize, latency=0.5 if is_wsl() else None)
+         return True
+     except (ImportError, OSError):
+         return False
 diff --git i/tui_gateway/methods_voice.py w/tui_gateway/methods_voice.py
 index 49803cdb5b..6d5ce6df87 100644
 --- i/tui_gateway/methods_voice.py
