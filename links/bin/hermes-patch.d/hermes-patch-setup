@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Reapply Ian's customizations to the Hermes source checkout. Idempotent; rerun after every
+# Hermes update. Each subdirectory is one independent feature: <name>/<name>.patch is a
+# `git diff` against ~/.hermes/hermes-agent, and an optional executable <name>/setup does
+# anything beyond the patch (dependencies, config).
+#
+# Usage: hermes-patch-setup [feature...]   (default: all features)
+set -euo pipefail
+
+here="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+hermes_src="$HOME/.hermes/hermes-agent"
+
+if (($#)); then
+	features=("$@")
+else
+	features=()
+	for dir in "$here"/*/; do features+=("$(basename "$dir")"); done
+fi
+
+for name in "${features[@]}"; do
+	dir="$here/$name"
+	[[ -d $dir ]] || { echo "Unknown feature: $name" >&2; exit 1; }
+	patch="$dir/$name.patch"
+	if [[ -f $patch ]]; then
+		if git -C "$hermes_src" apply --reverse --check "$patch" 2>/dev/null; then
+			echo "$name: patch already applied"
+		else
+			git -C "$hermes_src" apply "$patch"
+			echo "$name: patch applied"
+		fi
+	fi
+	if [[ -x $dir/setup ]]; then
+		echo "$name: running setup"
+		"$dir/setup"
+	fi
+done
+
+# Patches may touch TypeScript, so rebuild the TUI bundle.
+(cd "$hermes_src/ui-tui" && npm run -s build >/dev/null)
+echo "Done; restart Hermes."
