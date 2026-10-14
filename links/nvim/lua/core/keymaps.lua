@@ -82,6 +82,11 @@ end
 vim.keymap.set({ "n", "x" }, "H", smart_home, { expr = true, desc = "First non-blank char / top of screen" })
 vim.keymap.set({ "n", "x" }, "L", smart_end, { expr = true, desc = "Last non-blank char / bottom of screen" })
 
+-- Reflow text one column narrower (g<) or wider (g>), or by [count] columns.
+local reflow = require("core.reflow")
+vim.keymap.set({ "n", "x" }, "g<", reflow.operator(-1), { expr = true, desc = "Reflow narrower" })
+vim.keymap.set({ "n", "x" }, "g>", reflow.operator(1), { expr = true, desc = "Reflow wider" })
+
 local yank = require("core.yank")
 
 vim.keymap.set("n", "<leader>yn", function()
