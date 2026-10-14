@@ -1,0 +1,90 @@
+diff --git i/tui_gateway/server.py w/tui_gateway/server.py
+index 849d42bfda..4013b7cc9a 100644
+--- i/tui_gateway/server.py
++++ w/tui_gateway/server.py
+@@ -2194,6 +2194,50 @@ def _restart_slash_worker(sid: str, session: dict):
+     _attach_worker(sid, session, new_worker)
+ 
+ 
++_LIST_PRICE_PROVIDERS = (("claude", "anthropic"), ("gpt", "openai"), ("o", "openai"), ("gemini", "google"))
++
++
++_COST_TOKEN_FIELDS = ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens")
++
++
++def _session_cost_baseline(agent) -> dict:
++    """Tokens/cost already stored for a resumed session before this agent started counting.
++    Captured once, while the agent's own counters are still zero."""
++    if (base := getattr(agent, "_tui_cost_baseline", None)) is not None:
++        return base
++    if any(getattr(agent, f"session_{f}", 0) for f in _COST_TOKEN_FIELDS):
++        return {}
++    db = getattr(agent, "_session_db", None) or _get_db()
++    row = (db.get_session(getattr(agent, "session_id", None) or "") if db else None) or {}
++    base = {k: row.get(k) or 0 for k in (*_COST_TOKEN_FIELDS, "estimated_cost_usd")}
++    agent._tui_cost_baseline = base
++    return base
++
++
++def _session_cost(agent, usage: dict) -> None:
++    """Set cost_usd/cost_status, including spend from before a resume. Subscription routes
++    (e.g. Copilot) with no per-token pricing are priced at the model vendor's API list rate."""
++    base = _session_cost_baseline(agent)
++    status = getattr(agent, "session_cost_status", "unknown")
++    if status in ("actual", "estimated"):
++        own = float(getattr(agent, "session_estimated_cost_usd", 0) or 0)
++        usage["cost_usd"] = own + float(base.get("estimated_cost_usd") or 0)
++        usage["cost_status"] = status
++        return
++    from agent.usage_pricing import CanonicalUsage, estimate_usage_cost
++    model = (getattr(agent, "model", "") or "").split("/")[-1]
++    vendor = next((p for prefix, p in _LIST_PRICE_PROVIDERS if model.lower().startswith(prefix)), None)
++    if not vendor:
++        return
++    tokens = CanonicalUsage(**{
++        f: int(getattr(agent, f"session_{f}", 0) or 0) + int(base.get(f) or 0) for f in _COST_TOKEN_FIELDS
++    })
++    result = estimate_usage_cost(model, tokens, provider=vendor)
++    if result.amount_usd is not None:
++        usage["cost_usd"] = float(result.amount_usd)
++        usage["cost_status"] = "estimated"
++
++
+ def _get_usage(agent) -> dict:
+     g = lambda k, fb=None: getattr(agent, k, 0) or (getattr(agent, fb, 0) if fb else 0)
+     usage = {
+@@ -2233,6 +2277,8 @@ def _get_usage(agent) -> dict:
+     with contextlib.suppress(Exception):
+         from tools.async_delegation import active_count as _async_active_count
+         usage["active_subagents"] = _async_active_count()
++    with contextlib.suppress(Exception):  # session spend; status-bar readout must never break usage reporting
++        _session_cost(agent, usage)
+     # Dev-only live credits-spent readout, gated on HERMES_DEV_CREDITS so the payload stays clean otherwise.
+     if is_truthy_value(os.environ.get("HERMES_DEV_CREDITS")):
+         with contextlib.suppress(Exception):
+diff --git i/ui-tui/src/components/appChrome.tsx w/ui-tui/src/components/appChrome.tsx
+index 967f269065..cc5acc5e20 100644
+--- i/ui-tui/src/components/appChrome.tsx
++++ w/ui-tui/src/components/appChrome.tsx
+@@ -699,6 +699,8 @@ export function StatusRule({
+   const showResumeHint = !busy && subagentCount > 0 && fits(SEP + stringWidth(resumeHintText))
+   // Dev-gated readout (HERMES_DEV_CREDITS), lowest priority,
+   // so it consumes tail budget LAST and drops first on a narrow terminal.
++  const costText = typeof usage.cost_usd === 'number' ? `$${usage.cost_usd.toFixed(2)}` : ''
++  const showCost = ok('cost') && !!costText && fits(SEP + stringWidth(costText))
+   const showDevCredits = !!devCreditsText && fits(SEP + stringWidth(devCreditsText))
+ 
+   // Focus-view badge. Pinned (not tail-budgeted) on purpose: the whole point of
+@@ -865,6 +867,12 @@ export function StatusRule({
+             {resumeHintText}
+           </Text>
+         ) : null}
++        {showCost ? (
++          <Text color={t.color.muted} wrap="truncate-end">
++            {' │ '}
++            {costText}
++          </Text>
++        ) : null}
+         {showDevCredits ? (
+           <Text color={t.color.accent} wrap="truncate-end">
+             {' │ '}
