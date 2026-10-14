@@ -3,9 +3,10 @@
 -- Textobjects:
 --   `af`/`if` - function definition (treesitter @function.outer/inner)
 --   `aF`/`iF` - function call (mini.ai builtin, Lua-pattern based)
---   `ac`      - comment block: consecutive line comments are merged into one
---               block (a `/* */` block is already a single node)
---   `ic`      - inner content of a single comment node (treesitter @comment.inner)
+--   `ac`/`ic` - comment block: consecutive line comments are merged into one
+--               block (a `/* */` block is already a single node). Both select
+--               the same block, so `ic` works in languages without
+--               @comment.inner (e.g. Go, Bash).
 --
 -- Treesitter captures come from nvim-treesitter-textobjects' query files.
 
@@ -13,20 +14,15 @@ local ai = require("mini.ai")
 local ts = ai.gen_spec.treesitter
 
 -- Reuse the treesitter spec to fetch and normalize comment regions, then merge
--- adjacent ones so `ac` selects a whole run of line comments as one block.
+-- adjacent ones so `ac`/`ic` select a whole run of line comments as one block.
 --
--- The lookup is wrapped in pcall because languages that define `@comment.outer`
--- but not `@comment.inner` (e.g. Go, Bash) make mini.ai fall back to injected
--- child languages (like Go's `printf`) and raise a "Can not get query" error.
--- Degrade that to "no textobject found" instead of erroring.
-local comment_ts = ts({ a = "@comment.outer", i = "@comment.inner" })
-local function comment_block(ai_type, id, opts)
-  local ok, regions = pcall(comment_ts, ai_type, id, opts)
+-- The lookup is wrapped in pcall because a failed query lookup raises a
+-- "Can not get query" error. Degrade that to "no textobject found" instead.
+local comment_ts = ts({ a = "@comment.outer", i = "@comment.outer" })
+local function comment_block(_, id, opts)
+  local ok, regions = pcall(comment_ts, "a", id, opts)
   if not ok or type(regions) ~= "table" then
     return {}
-  end
-  if ai_type ~= "a" then
-    return regions
   end
 
   table.sort(regions, function(a, b)
