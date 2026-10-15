@@ -18,7 +18,7 @@ fi
 here=$(dirname -- "$(readlink -f "${BASH_SOURCE[0]}")")
 
 src="${1:-$(tmux display -p '#{pane_id}')}"
-is_hermes() { ps -o args= --ppid "$(tmux display -p -t "$1" '#{pane_pid}')" 2>/dev/null | grep -q 'hermes_cli.main'; }
+is_hermes() { ps -o args= --ppid "$(tmux display -p -t "$1" '#{pane_pid}')" 2>/dev/null | grep -qE 'hermes_cli\.main|hermes-agent/ui-tui/'; }
 # Pressed from Hermes itself: record here, and show Hermes the previously used pane.
 hermes=
 if is_hermes "$src"; then
@@ -80,6 +80,15 @@ hermes=$(tmux list-panes -a -F '#{window_id} #{pane_id} #{pane_pid} #{window_act
 if [[ -z $hermes ]]; then
 	tmux display-message "hermes-look: no Hermes pane found (context saved to $out)"
 	exit 0
+fi
+
+# WSLg's RDP audio link can die while WSL keeps running; it then records pure
+# zeros. Route audio through Windows instead (see wsl-audio-bridge).
+if [[ -d /mnt/wslg ]] && ! pgrep -f wsl-audio-bridge >/dev/null &&
+	! timeout 0.5 parec -d RDPSource --format=s16le --channels=1 --raw 2>/dev/null |
+	od -An -v -tx1 | grep -qv '^[ 0]*$'; then
+	setsid wsl-audio-bridge >"$HOME/.hermes/cache/wsl-audio-bridge.log" 2>&1 </dev/null &
+	sleep 2
 fi
 
 tmux send-keys -t "$hermes" C-b
