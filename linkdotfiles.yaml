@@ -41,3 +41,5 @@ links:
     link: ~/.agents
   - file: ~/.dotfiles/links/hermes/skins
     link: ~/.hermes/skins
+  - file: ~/.dotfiles/links/hermes/config.yaml
+    link: ~/.hermes/config.yaml
