@@ -1,3 +1,21 @@
+diff --git i/tests/tools/test_tts_streaming.py w/tests/tools/test_tts_streaming.py
+index 80fd266a94..16ddb23bb7 100644
+--- i/tests/tools/test_tts_streaming.py
++++ w/tests/tools/test_tts_streaming.py
+@@ -24,6 +24,13 @@ import tools.tts_streaming as ts
+ pytest.importorskip("numpy")
+ 
+ 
++@pytest.fixture(autouse=True)
++def _not_wsl(monkeypatch):
++    """Exercise the PortAudio path on WSL hosts too, where playback skips sounddevice."""
++    import tools.tts_tool_speaker as sp
++    monkeypatch.setattr(sp, "is_wsl", lambda: False)
++
++
+ # ── SentenceChunker ──────────────────────────────────────────────────────
+ 
+ 
 diff --git i/tests/tools/test_voice_mode.py w/tests/tools/test_voice_mode.py
 index 2e9bfddee4..4cbf2194c0 100644
 --- i/tests/tools/test_voice_mode.py
@@ -31,10 +49,10 @@ index 2e9bfddee4..4cbf2194c0 100644
                     side_effect=lambda x: f"/bin/{x}" if x in ("powershell.exe", "ffmpeg", "ffplay", "sh") else (x if x.startswith("/") else None)), \
 diff --git i/tests/tools/test_voice_wsl_windows_player.py w/tests/tools/test_voice_wsl_windows_player.py
 new file mode 100644
-index 0000000000..e4394034ff
+index 0000000000..4063ec5432
 --- /dev/null
 +++ w/tests/tools/test_voice_wsl_windows_player.py
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,76 @@
 +"""WSL playback goes through a resident Windows PowerShell player, bypassing WSLg audio."""
 +import subprocess
 +
@@ -100,8 +118,19 @@ index 0000000000..e4394034ff
 +    monkeypatch.setattr(voice_mode, "is_wsl", lambda: True)
 +
 +    assert not voice_mode._sounddevice_output_allowed()
++
++
++def test_streamed_tts_skips_sounddevice_on_wsl(monkeypatch):
++    """Streamed reply audio must not reach PortAudio on WSL: the bridge sink lags ~30 s."""
++    import threading
++    from tools import tts_tool_speaker as sp
++
++    monkeypatch.setattr(sp, "is_wsl", lambda: True)
++    monkeypatch.setattr(sp.platform, "system", lambda: "Linux")
++    playback = sp._StreamerPlayback(object(), threading.Event())
++    assert playback._device_usable() is False
 diff --git i/tools/tts_tool_speaker.py w/tools/tts_tool_speaker.py
-index 2c058e5499..2dea5f9672 100644
+index 2c058e5499..a63e1286d1 100644
 --- i/tools/tts_tool_speaker.py
 +++ w/tools/tts_tool_speaker.py
 @@ -22,6 +22,7 @@ import threading
@@ -122,6 +151,17 @@ index 2c058e5499..2dea5f9672 100644
          stream.start()
          return stream
  
+@@ -191,6 +193,10 @@ class _StreamerPlayback:
+         # False routes every sentence through tempfile -> afplay. See PR #62601 / #13291.
+         if platform.system() == "Darwin":
+             return False
++        # WSL: per-sentence WAVs play through the resident Windows player; PortAudio
++        # output lands on the WSLg/bridge sink, which lags by tens of seconds.
++        if is_wsl():
++            return False
+         try:
+             _origin()._import_sounddevice()
+         except (ImportError, OSError) as exc:
 diff --git i/tools/voice_mode.py w/tools/voice_mode.py
 index d1d6323aac..fa695f8a12 100644
 --- i/tools/voice_mode.py
