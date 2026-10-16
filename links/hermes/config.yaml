@@ -2402,4 +2402,8 @@ tts:
       format: wav
 
 voice:
+  # The bridged Jabra mic idles at RMS ~25 and speaks at ~150-350; the
+  # default 200 threshold cut recordings off mid-sentence.
+  silence_threshold: 70
+  silence_duration: 4.0
   thinking_sound: false
