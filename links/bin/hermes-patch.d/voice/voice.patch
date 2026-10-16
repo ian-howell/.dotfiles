@@ -1,3 +1,142 @@
+diff --git i/apps/shared/src/gateway-contract.generated.ts w/apps/shared/src/gateway-contract.generated.ts
+index 09b780c731..51c4c72765 100644
+--- i/apps/shared/src/gateway-contract.generated.ts
++++ w/apps/shared/src/gateway-contract.generated.ts
+@@ -2901,12 +2901,19 @@ export interface VoiceRecordParams {
+   session_id?: string | null
+   profile?: string | null
+ }
+-export type VoiceRecordAction = 'start' | 'stop'
++export type VoiceRecordAction = 'start' | 'stop' | 'toggle'
+ export interface VoiceRecordResult {
+   status: VoiceRecordStatus
+   reason?: string | null
++  action?: VoiceRecordAction | null
+ }
+ export type VoiceRecordStatus = 'recording' | 'stopped' | 'busy'
++export interface VoiceShushParams {
++  profile?: string | null
++}
++export interface VoiceShushResult {
++  status: string
++}
+ export interface VoiceTtsParams {
+   text: string
+   profile?: string | null
+@@ -5494,6 +5501,8 @@ export interface RpcMethods {
+   'verification.status': { params: VerificationStatusParams; result: VerificationStatusResult }
+   /** VAD-bounded push-to-talk; the transcript arrives as a voice.transcript event. */
+   'voice.record': { params: VoiceRecordParams; result: VoiceRecordResult }
++  /** Silence the reply being spoken without leaving voice mode. */
++  'voice.shush': { params: VoiceShushParams; result: VoiceShushResult }
+   /** /voice parity: report, flip voice mode on/off, or toggle speech output. */
+   'voice.toggle': { params: VoiceToggleParams; result: VoiceToggleResult }
+   /** Speak text through the backend TTS engine (barge-in aware). */
+@@ -5762,6 +5771,7 @@ export const RPC_METHODS = [
+   'vault.unlock',
+   'verification.status',
+   'voice.record',
++  'voice.shush',
+   'voice.toggle',
+   'voice.tts',
+   'wake.feed',
+diff --git i/apps/shared/src/gateway-contract.openrpc.json w/apps/shared/src/gateway-contract.openrpc.json
+index caf8fafb4c..49194c12c9 100644
+--- i/apps/shared/src/gateway-contract.openrpc.json
++++ w/apps/shared/src/gateway-contract.openrpc.json
+@@ -4488,6 +4488,24 @@
+         }
+       }
+     },
++    {
++      "name": "voice.shush",
++      "summary": "Silence the reply being spoken without leaving voice mode.",
++      "params": [
++        {
++          "name": "params",
++          "schema": {
++            "$ref": "#/components/schemas/VoiceShushParams"
++          }
++        }
++      ],
++      "result": {
++        "name": "result",
++        "schema": {
++          "$ref": "#/components/schemas/VoiceShushResult"
++        }
++      }
++    },
+     {
+       "name": "voice.toggle",
+       "summary": "/voice parity: report, flip voice mode on/off, or toggle speech output.",
+@@ -38956,7 +38974,8 @@
+       "VoiceRecordAction": {
+         "enum": [
+           "start",
+-          "stop"
++          "stop",
++          "toggle"
+         ],
+         "title": "VoiceRecordAction",
+         "type": "string"
+@@ -39013,6 +39032,17 @@
+             ],
+             "default": null,
+             "title": "Reason"
++          },
++          "action": {
++            "anyOf": [
++              {
++                "$ref": "#/components/schemas/VoiceRecordAction"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
+           }
+         },
+         "required": [
+@@ -39030,6 +39060,39 @@
+         "title": "VoiceRecordStatus",
+         "type": "string"
+       },
++      "VoiceShushParams": {
++        "additionalProperties": false,
++        "properties": {
++          "profile": {
++            "anyOf": [
++              {
++                "type": "string"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null,
++            "title": "Profile"
++          }
++        },
++        "title": "VoiceShushParams",
++        "type": "object"
++      },
++      "VoiceShushResult": {
++        "additionalProperties": false,
++        "properties": {
++          "status": {
++            "title": "Status",
++            "type": "string"
++          }
++        },
++        "required": [
++          "status"
++        ],
++        "title": "VoiceShushResult",
++        "type": "object"
++      },
+       "VoiceStatusPayload": {
+         "additionalProperties": false,
+         "description": "``methods_voice._vr_on_status``; states come from the recorder (idle / listening / transcribing \u2026).",
 diff --git i/tests/tools/test_tts_streaming.py w/tests/tools/test_tts_streaming.py
 index 80fd266a94..16ddb23bb7 100644
 --- i/tests/tools/test_tts_streaming.py
@@ -47,6 +186,80 @@ index 2e9bfddee4..4cbf2194c0 100644
               patch("tools.voice_mode._import_audio", side_effect=ImportError), \
               patch("tools.voice_mode.shutil.which",
                     side_effect=lambda x: f"/bin/{x}" if x in ("powershell.exe", "ffmpeg", "ffplay", "sh") else (x if x.startswith("/") else None)), \
+diff --git i/tests/tools/test_voice_wsl_windows_mic.py w/tests/tools/test_voice_wsl_windows_mic.py
+new file mode 100644
+index 0000000000..0747f4ba98
+--- /dev/null
++++ w/tests/tools/test_voice_wsl_windows_mic.py
+@@ -0,0 +1,68 @@
++"""WSL records the Windows mic through ffmpeg.exe instead of WSLg PulseAudio."""
++
++import io
++import struct
++
++import pytest
++
++from tools import voice_mode
++
++
++class _FakeProc:
++    def __init__(self, pcm: bytes):
++        self.stdout = io.BytesIO(pcm)
++        self.stderr = io.BytesIO(b"")
++
++    def poll(self):
++        return None
++
++    def kill(self):
++        pass
++
++    def wait(self, timeout=None):
++        return 0
++
++
++@pytest.fixture
++def wsl(monkeypatch):
++    monkeypatch.setattr(voice_mode, "is_wsl", lambda: True)
++    monkeypatch.setattr(voice_mode, "_termux_voice_capture_available", lambda: False)
++    monkeypatch.setattr(voice_mode, "_windows_ffmpeg", lambda: "/mnt/c/ffmpeg.exe")
++
++
++def test_wsl_picks_windows_mic_recorder(wsl, monkeypatch):
++    monkeypatch.setattr(voice_mode, "_voice_config", lambda: {})
++    assert isinstance(voice_mode.create_audio_recorder(), voice_mode.WindowsMicRecorder)
++
++
++def test_wsl_mic_pulse_keeps_sounddevice_recorder(wsl, monkeypatch):
++    monkeypatch.setattr(voice_mode, "_voice_config", lambda: {"wsl_mic": "pulse"})
++    recorder = voice_mode.create_audio_recorder()
++    assert type(recorder) is voice_mode.AudioRecorder
++
++
++def test_windows_mic_recorder_writes_captured_audio(wsl, monkeypatch):
++    monkeypatch.setattr(voice_mode, "_voice_config", lambda: {})
++    pcm = struct.pack("<16000h", *([3000, -3000] * 8000))
++    started = []
++
++    def fake_popen(cmd, **kwargs):
++        started.append(cmd)
++        return _FakeProc(pcm)
++
++    monkeypatch.setattr(voice_mode.subprocess, "Popen", fake_popen)
++    recorder = voice_mode.create_audio_recorder()
++    recorder._recording = True  # capture from the first block
++    recorder._start_time = voice_mode.time.monotonic()
++    recorder._ensure_stream()
++    import time
++    deadline = time.monotonic() + 2
++    while sum(len(f) for f in recorder._frames) < 16000 and time.monotonic() < deadline:
++        time.sleep(0.01)
++    path = recorder._stop_capture()
++
++    assert started[0][started[0].index("-f") + 1] == "openal"
++    import wave
++    with wave.open(path) as wf:
++        assert wf.getframerate() == 16000
++        assert wf.getnframes() == 16000
 diff --git i/tests/tools/test_voice_wsl_windows_player.py w/tests/tools/test_voice_wsl_windows_player.py
 new file mode 100644
 index 0000000000..4063ec5432
@@ -129,6 +342,35 @@ index 0000000000..4063ec5432
 +    monkeypatch.setattr(sp.platform, "system", lambda: "Linux")
 +    playback = sp._StreamerPlayback(object(), threading.Event())
 +    assert playback._device_usable() is False
+diff --git i/tests/tui_gateway/test_tui_gateway_server.py w/tests/tui_gateway/test_tui_gateway_server.py
+index f0769f5454..aa09cf2643 100644
+--- i/tests/tui_gateway/test_tui_gateway_server.py
++++ w/tests/tui_gateway/test_tui_gateway_server.py
+@@ -2356,6 +2356,24 @@ def test_voice_record_stop_updates_event_session_id(monkeypatch):
+     assert server._voice_event_sid == "new-session"
+ 
+ 
++def test_voice_record_toggle_stops_active_capture(monkeypatch):
++    stopped = []
++    monkeypatch.setitem(
++        sys.modules,
++        "hermes_cli.voice",
++        types.SimpleNamespace(
++            is_continuous_active=lambda: True,
++            start_continuous=lambda **_kwargs: True,
++            stop_continuous=lambda **kwargs: stopped.append(kwargs),
++        ),
++    )
++
++    resp = _dispatch_sync({"id": "voice-toggle", "method": "voice.record", "params": {"action": "toggle"}})
++
++    assert resp["result"] == {"status": "stopped", "action": "stop"}
++    assert stopped == [{"force_transcribe": True}]
++
++
+ def test_voice_record_start_reports_busy_when_stop_is_in_progress(monkeypatch):
+     monkeypatch.setitem(
+         sys.modules,
 diff --git i/tools/tts_tool_speaker.py w/tools/tts_tool_speaker.py
 index 2c058e5499..a63e1286d1 100644
 --- i/tools/tts_tool_speaker.py
@@ -163,7 +405,7 @@ index 2c058e5499..a63e1286d1 100644
              _origin()._import_sounddevice()
          except (ImportError, OSError) as exc:
 diff --git i/tools/voice_mode.py w/tools/voice_mode.py
-index d1d6323aac..fa695f8a12 100644
+index d1d6323aac..7c4fd4c027 100644
 --- i/tools/voice_mode.py
 +++ w/tools/voice_mode.py
 @@ -70,7 +70,7 @@ def _sounddevice_output_allowed() -> bool:
@@ -239,7 +481,121 @@ index d1d6323aac..fa695f8a12 100644
          except Exception as e:
              logger.debug("Thinking sound blip failed: %s", e)
              return
-@@ -1009,6 +1012,57 @@ def _wsl_powershell_tts_available() -> bool:
+@@ -932,9 +935,112 @@ class AudioRecorder(_RecorderBase):
+         return wav_path
+ 
+ 
++def _windows_ffmpeg() -> Optional[str]:
++    """Windows ffmpeg.exe (winget Gyan.FFmpeg or on PATH) reachable from WSL, else None."""
++    import glob
++    found = sorted(glob.glob("/mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/"
++                             "Gyan.FFmpeg*/*/bin/ffmpeg.exe"))
++    return found[-1] if found else shutil.which("ffmpeg.exe")
++
++
++class WindowsMicRecorder(AudioRecorder):
++    """WSL recorder that reads the Windows default microphone through Windows ``ffmpeg.exe``
++    (OpenAL) over a pipe, bypassing WSLg PulseAudio, PortAudio and any bridge. Each
++    recording starts a fresh capture, so it follows the current Windows default mic."""
++
++    _BLOCK = 1600  # 100 ms at 16 kHz
++
++    def __init__(self, ffmpeg: str) -> None:
++        super().__init__()
++        self._ffmpeg = ffmpeg
++        self._proc: Optional[subprocess.Popen] = None
++        self._sample_rate = SAMPLE_RATE
++
++    def start(self, on_silence_stop=None) -> None:
++        with self._lock:
++            if self._recording:
++                return
++            self._frames = []
++            self._start_time = time.monotonic()
++            self._reset_detection_state()
++            self._peak_rms = 0
++            self._current_rms = 0
++            self._on_silence_stop = on_silence_stop
++        self._close_stream_with_timeout()
++        self._ensure_stream()
++        self._open_live_session(self._sample_rate)
++        with self._lock:
++            self._recording = True
++        logger.info("Voice recording started (Windows mic via ffmpeg.exe, rate=%d)", self._sample_rate)
++
++    def _ensure_stream(self) -> None:
++        if self._proc is not None and self._proc.poll() is None:
++            return
++        self._close_stream_with_timeout()
++        import numpy as np
++        # An empty OpenAL device name is the Windows default capture device.
++        proc = subprocess.Popen(
++            [self._ffmpeg, "-hide_banner", "-loglevel", "error", "-f", "openal",
++             "-channels", "1", "-sample_rate", "48000", "-sample_size", "16", "-i", "",
++             "-ac", "1", "-ar", str(self._sample_rate), "-f", "s16le", "-"],
++            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd="/mnt/c")
++        self._proc = proc
++        nbytes = self._BLOCK * SAMPLE_WIDTH
++
++        def _reader():
++            while True:
++                data = proc.stdout.read(nbytes)
++                if not data:
++                    if self._proc is not proc:
++                        return  # closed on purpose
++                    err = (proc.stderr.read() or b"").decode(errors="replace").strip()
++                    logger.warning("Windows mic capture ended: %s", err or f"exit {proc.poll()}")
++                    return
++                if self._recording:
++                    block = np.frombuffer(data[: len(data) // 2 * 2], dtype=np.int16).reshape(-1, 1)
++                    self._on_audio_block(np, block)
++
++        threading.Thread(target=_reader, daemon=True, name="windows-mic").start()
++        logger.info("Windows mic capture started (default device)")
++
++    def _stop_capture(self) -> Optional[str]:
++        import numpy as np  # base class imports via _import_audio (sounddevice); not needed here
++        with self._lock:
++            if not self._recording:
++                return None
++            self._recording, self._current_rms = False, 0
++            frames, self._frames = self._frames, []
++        self._close_stream_with_timeout()
++        if not frames:
++            return None
++        audio_data = np.concatenate(frames, axis=0)
++        logger.info("Voice recording stopped (%.1fs, %d samples)",
++                    time.monotonic() - self._start_time, len(audio_data))
++        if len(audio_data) < int(self._sample_rate * 0.3):
++            return None
++        if self._peak_rms < self._silence_threshold:
++            logger.info("Recording too quiet (peak RMS=%d < %d), discarding",
++                        self._peak_rms, self._silence_threshold)
++            return None
++        return self._write_wav(audio_data, sample_rate=self._sample_rate)
++
++    def _close_stream_with_timeout(self, timeout: float = 3.0) -> None:
++        proc, self._proc = self._proc, None
++        if proc is not None and proc.poll() is None:
++            proc.kill()
++            with suppress(Exception):
++                proc.wait(timeout=timeout)
++
++
+ def create_audio_recorder() -> AudioRecorder | TermuxAudioRecorder:
+     """Return the best recorder backend for the current environment."""
+-    return TermuxAudioRecorder() if _termux_voice_capture_available() else AudioRecorder()
++    if _termux_voice_capture_available():
++        return TermuxAudioRecorder()
++    if is_wsl() and _voice_config().get("wsl_mic") != "pulse":  # "pulse": WSLg PulseAudio
++        ffmpeg = _windows_ffmpeg()
++        if ffmpeg:
++            return WindowsMicRecorder(ffmpeg)
++    return AudioRecorder()
+ 
+ 
+ # ── STT dispatch ──
+@@ -1009,6 +1115,57 @@ def _wsl_powershell_tts_available() -> bool:
      return bool(is_wsl() and shutil.which("powershell.exe") and shutil.which("ffmpeg"))
  
  
@@ -297,7 +653,7 @@ index d1d6323aac..fa695f8a12 100644
  def play_audio_file(file_path: str) -> bool:
      """Play an audio file; True on success. WAV via ``sounddevice.play()`` when allowed,
      else system players: afplay (macOS), WSL2 PowerShell bridge, ffplay, aplay (Linux).
-@@ -1040,8 +1094,11 @@ def _play_wav_via_sounddevice(file_path: str) -> bool:
+@@ -1040,8 +1197,11 @@ def _play_wav_via_sounddevice(file_path: str) -> bool:
                  np.zeros(int(0.1 * sample_rate), dtype=np.int16), audio_float.astype(np.int16),
                  np.zeros(int(0.05 * sample_rate), dtype=np.int16)])
              blocksize = 4096
@@ -311,7 +667,7 @@ index d1d6323aac..fa695f8a12 100644
          return True
      except (ImportError, OSError):
          return False
-@@ -1127,6 +1184,13 @@ def _play_audio_file_impl(file_path: str) -> bool:
+@@ -1127,6 +1287,13 @@ def _play_audio_file_impl(file_path: str) -> bool:
      if not os.path.isfile(file_path):
          logger.warning("Audio file not found: %s", file_path)
          return False
@@ -325,11 +681,77 @@ index d1d6323aac..fa695f8a12 100644
      # macOS skips sounddevice output (TCC media-library prompt); afplay handles all formats.
      if file_path.endswith(".wav") and _sounddevice_output_allowed() and _play_wav_via_sounddevice(file_path):
          return True
+diff --git i/tui_gateway/contracts/prompt_voice.py w/tui_gateway/contracts/prompt_voice.py
+index 83e4da975d..efbff725f6 100644
+--- i/tui_gateway/contracts/prompt_voice.py
++++ w/tui_gateway/contracts/prompt_voice.py
+@@ -367,6 +367,7 @@ method("voice.toggle", params=VoiceToggleParams, result=VoiceToggleResult,
+ class VoiceRecordAction(WireEnum):
+     start = "start"
+     stop = "stop"
++    toggle = "toggle"  # stop when capturing, else start; resolved from the gateway's live state
+ 
+ 
+ class VoiceRecordParams(Params):
+@@ -384,12 +385,25 @@ class VoiceRecordStatus(WireEnum):
+ class VoiceRecordResult(Result):
+     status: VoiceRecordStatus
+     reason: str | None = None  # "wake_owned" when another surface holds the mic
++    action: VoiceRecordAction | None = None  # the action taken (resolves "toggle")
+ 
+ 
+ method("voice.record", params=VoiceRecordParams, result=VoiceRecordResult,
+        doc="VAD-bounded push-to-talk; the transcript arrives as a voice.transcript event.")
+ 
+ 
++class VoiceShushParams(Params):
++    profile: str | None = None
++
++
++class VoiceShushResult(Result):
++    status: str  # "silenced"
++
++
++method("voice.shush", params=VoiceShushParams, result=VoiceShushResult,
++       doc="Silence the reply being spoken without leaving voice mode.")
++
++
+ class VoiceTtsParams(Params):
+     text: str
+     profile: str | None = None
 diff --git i/tui_gateway/methods_voice.py w/tui_gateway/methods_voice.py
-index 49803cdb5b..6d5ce6df87 100644
+index 49803cdb5b..d6edfe4406 100644
 --- i/tui_gateway/methods_voice.py
 +++ w/tui_gateway/methods_voice.py
-@@ -778,6 +778,18 @@ def _(rid, params: dict) -> dict:
+@@ -717,6 +717,9 @@ def _(rid, params: dict) -> dict:
+     capture; ``stop`` forces transcription. Three silent captures emit ``no_speech_limit``."""
+     action = params.get("action", "start")
+     wake_paused = False
++    if action == "toggle":  # the gateway knows whether it is recording; client state can lag
++        from hermes_cli.voice import is_continuous_active
++        action = "stop" if is_continuous_active() else "start"
+     if action not in {"start", "stop"}:
+         return _err(rid, 4019, f"unknown voice action: {action}")
+     transport = _caller_transport()
+@@ -733,7 +736,7 @@ def _(rid, params: dict) -> dict:
+             from hermes_cli.voice import stop_continuous
+             stop_continuous(force_transcribe=True)
+             _resume_voice_wake()
+-            return _ok(rid, {"status": "stopped"})
++            return _ok(rid, {"status": "stopped", "action": "stop"})
+         # PTT barge-in (#40010): arming the mic cuts in-flight TTS so a stale
+         # reply can't talk over the user — mirrors the CLI record-key handler.
+         # user_barge=True also marks the speech interrupted for the next turn's
+@@ -769,7 +772,7 @@ def _(rid, params: dict) -> dict:
+             on_stop_phrase=_vr_on_stop_phrase, on_partial=lambda t: _voice_emit("voice.partial", {"text": t}))
+         if started is False:
+             _resume_voice_wake()
+-        return _ok(rid, {"status": "busy" if started is False else "recording"})
++        return _ok(rid, {"status": "busy" if started is False else "recording", "action": "start"})
+     except Exception as e:
+         if wake_paused or action == "stop":
+             _resume_voice_wake()
+@@ -778,6 +781,18 @@ def _(rid, params: dict) -> dict:
          return _err(rid, 5025, str(e))
  
  
@@ -364,10 +786,75 @@ index 0cc90dee8a..6934d032c6 100644
  
  
 diff --git i/ui-tui/src/app/useInputHandlers.ts w/ui-tui/src/app/useInputHandlers.ts
-index 4a783cc11a..ba4d94b407 100644
+index 4a783cc11a..39e4ce5af0 100644
 --- i/ui-tui/src/app/useInputHandlers.ts
 +++ w/ui-tui/src/app/useInputHandlers.ts
-@@ -428,6 +428,11 @@ export function useInputHandlers(ctx: InputHandlerContext): InputHandlerResult {
+@@ -382,31 +382,46 @@ export function useInputHandlers(ctx: InputHandlerContext): InputHandlerResult {
+   // createGatewayEventHandler turns into UI badges and composer injection.
+   const voiceRecordToggle = () => {
+     if (!voice.enabled) {
+-      return actions.sys(t('session.input.voiceModeOff'))
++      // The record key turns voice mode on, then starts recording.
++      return gateway
++        .rpc<{ enabled?: boolean; tts?: boolean }>('voice.toggle', { action: 'on' })
++        .then(r => {
++          if (!r?.enabled) {
++            return actions.sys(t('session.input.voiceModeOff'))
++          }
++
++          voice.setVoiceEnabled(true)
++          voice.setVoiceTts(!!r.tts)
++          voice.setRecording(true)
++
++          return gateway
++            .rpc<VoiceRecordResponse>('voice.record', { action: 'start', session_id: getUiState().sid })
++            .then(rec => applyVoiceRecordResponse(rec, true, voice, actions.sys))
++        })
++        .catch((e: Error) => {
++          voice.setRecording(false)
++          actions.sys(t('session.input.voiceError', e.message))
++        })
+     }
+ 
+-    const starting = !voice.recording
+-    const action = starting ? 'start' : 'stop'
+-
+-    // Optimistic UI — flip the REC badge immediately so the user gets
+-    // feedback while the RPC round-trips; the voice.status event is the
+-    // authoritative source and may correct us.
+-    if (starting) {
+-      voice.setRecording(true)
+-    } else {
+-      voice.setRecording(false)
+-      voice.setProcessing(false)
+-    }
++    // The gateway decides start vs stop from its live capture state, so a stale
++    // REC badge can never turn a stop press into a second start.
++    voice.setRecording(!voice.recording)
+ 
+     gateway
+-      .rpc<VoiceRecordResponse>('voice.record', { action, session_id: getUiState().sid })
+-      .then(r => applyVoiceRecordResponse(r, starting, voice, actions.sys))
+-      .catch((e: Error) => {
+-        // Revert optimistic UI on failure.
+-        if (starting) {
++      .rpc<VoiceRecordResponse>('voice.record', { action: 'toggle', session_id: getUiState().sid })
++      .then(r => {
++        const starting = r?.action !== 'stop'
++
++        if (!starting) {
+           voice.setRecording(false)
++          voice.setProcessing(false)
+         }
+ 
++        applyVoiceRecordResponse(r, starting, voice, actions.sys)
++      })
++      .catch((e: Error) => {
++        voice.setRecording(false)
+         actions.sys(t('session.input.voiceError', e.message))
+       })
+   }
+@@ -428,6 +443,11 @@ export function useInputHandlers(ctx: InputHandlerContext): InputHandlerResult {
        if (isVoiceToggleKey(key, ch, voice.recordKey)) {
          lastEscRef.current = 0
        } else {
@@ -379,3 +866,15 @@ index 4a783cc11a..ba4d94b407 100644
          const now = Date.now()
          const isDouble = now - lastEscRef.current <= DOUBLE_ESC_MS
  
+diff --git i/ui-tui/src/gatewayTypes.ts w/ui-tui/src/gatewayTypes.ts
+index e82e83a4f2..0710bd69a5 100644
+--- i/ui-tui/src/gatewayTypes.ts
++++ w/ui-tui/src/gatewayTypes.ts
+@@ -386,6 +386,7 @@ export interface VoiceToggleResponse {
+ }
+ 
+ export interface VoiceRecordResponse {
++  action?: 'start' | 'stop'
+   status?: 'busy' | 'recording' | 'stopped'
+   text?: string
+ }
