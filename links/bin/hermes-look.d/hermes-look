@@ -82,14 +82,13 @@ if [[ -z $hermes ]]; then
 	exit 0
 fi
 
-# WSLg's RDP audio link can die while WSL keeps running; it then records pure
-# zeros. Route audio through Windows instead (see wsl-audio-bridge).
-if [[ -d /mnt/wslg ]] && ! pgrep -f wsl-audio-bridge >/dev/null &&
-	! timeout 1.5 parec -d RDPSource --format=s16le --channels=1 --raw 2>/dev/null |
-	od -An -v -tx1 | grep -qv '^[ 0]*$'; then
-	setsid wsl-audio-bridge >"$HOME/.hermes/cache/wsl-audio-bridge.log" 2>&1 </dev/null &
-	sleep 2
+# The Windows mic capture only runs during a take, so it shows whether this
+# press stops a recording or starts one.
+if pgrep -f '[f]fmpeg\.exe .*-f openal' >/dev/null; then
+	tmux send-keys -t "$hermes" C-b
+	tmux display-message "Hermes stopped listening"
+	exit 0
 fi
 
 tmux send-keys -t "$hermes" C-b
-tmux display-message "Hermes is listening (context from $src)"
+tmux display-message "Hermes is listening ($(pane_fmt "#{E:@pane-program}"))"
