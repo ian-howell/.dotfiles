@@ -1308,7 +1308,7 @@ agent:
   #   reasoning_effort:
   #     enabled: true
   #     effort: thinking
-  reasoning_effort: "medium"
+  reasoning_effort: "ultra"
 
   # Per-model reasoning effort overrides (optional dict)
   # Key: any sensible model spelling works (exact, dots↔dashes interchangeable,
