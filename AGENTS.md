@@ -19,9 +19,10 @@ This repository is the complete, general-purpose, open source base configuration
 layered on top. Choose ownership by what a feature does, not where it was developed,
 which session requested it, or the current value of an environment variable.
 
-- Agent skills shared by every agent tool (OpenCode, Hermes) belong in
-  `links/agents/skills`, linked to `~/.agents/skills`. Hermes creates new skills there
-  (`skills.create_dir`), so review new or changed skills with `git status` before committing.
+- This repository is public. Agent skills, Hermes config/skins and Hermes tooling live in a
+  separate private repository at `~/.config/hermes-private`; `src/link_private.sh` runs its
+  `install` when it is cloned. Never add agent skills, Hermes config, or names of employers,
+  work projects, orgs or labs here. A pre-commit hook from the private repo enforces a denylist.
 - General OpenCode plugins, agents, commands, and themes belong in `links/opencode`,
   linked to `~/.config/opencode`. Tmux integration, retitling,
   explanation agents, theme switching, and general Git policy are base features.
@@ -56,9 +57,3 @@ See `links/bin/theme.d/` and `links/bin/pickers/` for examples.
 
 Forward slashes (/) are valid in tmux session names. Do not suggest that they aren't.
 
-All changes to Hermes's source (`~/.hermes/hermes-agent`) are reapplied by
-`links/bin/hermes-patch.d/hermes-patch-setup`, which is idempotent; rerun it after every
-Hermes update. Each subdirectory is one independent feature (`voice`, `reply-color`,
-`status-cost`, ...) holding `<name>.patch` and an optional executable `setup` for
-dependencies and config. Keep unrelated changes in separate features. To change a
-feature, edit the Hermes checkout and regenerate its patch with `git diff -- <its files>`.

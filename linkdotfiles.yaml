@@ -37,9 +37,3 @@ links:
     link: ~/.config/opencode
   - file: ~/.dotfiles/links/k9s
     link: ~/.config/k9s
-  - file: ~/.dotfiles/links/agents
-    link: ~/.agents
-  - file: ~/.dotfiles/links/hermes/skins
-    link: ~/.hermes/skins
-  - file: ~/.dotfiles/links/hermes/config.yaml
-    link: ~/.hermes/config.yaml

@@ -37,6 +37,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_kubectl.sh"
     "$HOME/.dotfiles/src/install_k9s.sh"
     "$HOME/.dotfiles/src/link_dotfiles.sh"
+    "$HOME/.dotfiles/src/link_private.sh"
     "$HOME/.dotfiles/src/install_calcbill.sh"
   )
 

@@ -109,12 +109,6 @@
 	email = ian.howell0@gmail.com
 	name = Ian Howell
 
-[credential "azrepos:org/REDACTED"]
-	azureAuthority = https://login.microsoftonline.com/REDACTED-86f1-41af-91ab-2d7cd011db47
-	username = ianhowellREDACTED
-[credential "azrepos:org/REDACTED"]
-	azureAuthority = https://login.microsoftonline.com/REDACTED-86f1-41af-91ab-2d7cd011db47
-	username = ianhowellREDACTED
 
 # These are left at the bottom intentionally because they break syntax
 # highlighting for everything below them in vim and that annoys me.

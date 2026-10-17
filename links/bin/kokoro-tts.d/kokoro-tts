@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-exec ~/.local/share/kokoro/venv/bin/python "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/kokoro_tts.py" "$@"

@@ -3,7 +3,6 @@
 # so included host-specific settings take precedence over the defaults below.
 
 Include ~/.ssh/config.local
-Include ~/.config/REDACTED/ssh/*
 Include ~/.config/homelab-ssh-config
 Include ~/.config/work/ssh/config
 
