@@ -180,12 +180,7 @@ Snacks.setup({
       grep = { focus = "input" },
       grep_buffers = { focus = "input" },
       grep_word = { focus = "input" },
-      git_status = {
-        ignored = false,
-        previewers = {
-          diff = { style = "terminal" },
-        },
-      },
+      git_status = { ignored = false },
       git_diff = { ignored = false },
     },
   },
@@ -281,7 +276,7 @@ end, { desc = "Git status" })
 
 vim.keymap.set("n", "<leader>fG", function()
   local base = vim.trim(vim.fn.system("git merge-base origin/main HEAD") or "")
-  local opts = vim.tbl_deep_extend("force", {}, git_side_layout)
+  local opts = vim.tbl_deep_extend("force", { group = true }, git_side_layout)
   if base ~= "" then
     opts.base = base
   end
@@ -297,8 +292,19 @@ vim.keymap.set("n", "<leader>gl", function()
 end, { desc = "Git log" })
 
 vim.keymap.set("n", "<leader>gh", function()
-  Snacks.picker.git_log_file(git_layout)
-end, { desc = "Git log file" })
+  local opts = vim.tbl_deep_extend("force", {}, git_layout)
+  opts.previewers = {
+    diff = {
+      style = "terminal",
+      cmd = { "delta", "--side-by-side", "--width", tostring(vim.o.columns - 2) },
+    },
+  }
+  local file = vim.api.nvim_buf_get_name(0)
+  opts.transform = function(item)
+    return not item.file or Snacks.picker.util.path(item) == file
+  end
+  Snacks.picker.git_diff(opts)
+end, { desc = "Git hunks" })
 
 vim.keymap.set("n", "<leader>fd", function()
   Snacks.picker.diagnostics_buffer()
