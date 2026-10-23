@@ -113,9 +113,29 @@ fyler.setup({
   -- `q` close.
   mappings = {
     n = {
-      -- Hide the sidebar after opening a file, like the CodeDiff explorer.
-      -- Directories still just toggle.
-      ["<CR>"] = { action = "select", args = { pick = true, close = true } },
+      -- Open a file without leaving the sidebar; if it is already shown in
+      -- a window of this tab, jump there instead (like the CodeDiff
+      -- explorer). Directories still just toggle.
+      ["<CR>"] = {
+        action = function(finder)
+          local node = require("fyler.finder").parse_cursor_line(finder)
+          if node and node.type ~= "directory" and node.type ~= "link" then
+            local path = vim.fs.normalize(vim.fs.abspath(node.link or node.path))
+            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+              local name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
+              if name ~= "" and vim.fs.normalize(name) == path then
+                vim.api.nvim_set_current_win(win)
+                return
+              end
+            end
+          end
+          local finder_win = vim.api.nvim_get_current_win()
+          finder:select({ pick = true })
+          if vim.api.nvim_win_is_valid(finder_win) then
+            vim.api.nvim_set_current_win(finder_win)
+          end
+        end,
+      },
       ["<leader>-"] = { action = "select", args = { split = true } },
       ["<leader>\\"] = { action = "select", args = { vsplit = true } },
     },

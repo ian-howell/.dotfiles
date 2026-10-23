@@ -44,7 +44,9 @@ local opts = {
     -- explorer visibly flickers between nested and flat-looking trees.
     flatten_dirs = false,
     file_filter = { ignore = { ".git/**" } },
-    focus_on_select = true,
+    -- Enter keeps focus in the explorer; the wrapper below jumps to the diff
+    -- only when the file is already shown.
+    focus_on_select = false,
     status_right_margin = 1,
     visible_groups = {
       staged = true,
@@ -139,12 +141,6 @@ local panes = require("codediff.ui.view.actions.panes")
 local focus_explorer = panes.focus_explorer
 local return_windows = setmetatable({}, { __mode = "k" })
 
-local function hide_explorer(explorer)
-  if not explorer.is_hidden then
-    require("codediff.ui.explorer").toggle_visibility(explorer)
-  end
-end
-
 panes.focus_explorer = function(ctx)
   local session = lifecycle.get_session(ctx.tabpage)
   local explorer = lifecycle.get_panel_view(ctx.tabpage)
@@ -179,8 +175,10 @@ panes.focus_explorer = function(ctx)
   focus_explorer(ctx)
 end
 
--- Keep the built-in selection/folding behavior, but hide the panel when Enter
--- selects a file. Install through CodeDiff so it still owns keymap cleanup.
+-- Keep the built-in selection/folding behavior. Enter on a file that is not
+-- shown yet opens it and stays in the explorer; Enter on the file already shown
+-- jumps to its modified pane (matching the fyler drawer in fyler.lua). Install
+-- through CodeDiff so it still owns keymap cleanup.
 local explorer_keymaps = require("codediff.ui.explorer.keymaps")
 local setup_explorer_keymaps = explorer_keymaps.setup
 explorer_keymaps.setup = function(explorer)
@@ -195,13 +193,22 @@ explorer_keymaps.setup = function(explorer)
     opts.keymaps.explorer.select,
     function()
       local node = explorer.tree:get_node()
-      local is_file = node and node.data and node.data.type ~= "group" and node.data.type ~= "directory"
-      select()
-      if is_file then
-        hide_explorer(explorer)
+      local data = node and node.data
+      local shown = data
+        and data.type ~= "group"
+        and data.type ~= "directory"
+        and data.path == explorer.current_file_path
+        and data.group == explorer.current_file_group
+      if not shown then
+        select()
+        return
+      end
+      local _, mod_win = lifecycle.get_windows(explorer.tabpage)
+      if mod_win and vim.api.nvim_win_is_valid(mod_win) then
+        vim.api.nvim_set_current_win(mod_win)
       end
     end,
-    { desc = "Select file and hide explorer / toggle folder", silent = true, nowait = true },
+    { desc = "Open file (jump if shown) / toggle folder", silent = true, nowait = true },
     { suspendable = false }
   )
 end
