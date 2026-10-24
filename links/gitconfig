@@ -94,6 +94,12 @@
 [remote.origin]
 	# Only push the current branch
 	push = HEAD
+	# Fetch all tags from the remote and force-update local copies. By default,
+	# git fetch refuses to update a tag that already exists locally, so when a
+	# teammate moves or re-creates a tag upstream (e.g. to fix a bad tag), the
+	# local copy stays stale ("would clobber existing tag"). This adds to each
+	# repo's own branch refspec.
+	fetch = +refs/tags/*:refs/tags/*
 [rerere]
         # REuse REcorded Resolution causes git to "remember" how to address a
         # given conflict. When git encounters a conflict that it has already
