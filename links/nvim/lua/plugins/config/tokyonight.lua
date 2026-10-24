@@ -10,14 +10,6 @@ tokyonight.setup({
 
   style = "moon",
 
-  -- Brighten comments so they stay readable on diff backgrounds (e.g. CodeDiff
-  -- hunks, where whole added/deleted lines get the brighter char highlight).
-  on_colors = function(colors)
-    if vim.o.background == "dark" then
-      colors.comment = "#b4bce4"
-    end
-  end,
-
   on_highlights = function(highlights)
     highlights.ColorColumn = {
       -- Make the colorcolumn the same color as the default background.
