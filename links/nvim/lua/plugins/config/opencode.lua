@@ -1,6 +1,6 @@
 -- opencode.nvim: editor context and controls for the OpenCode TUI.
 
-local opencode_cmd = { "opencode", "--port", "--continue", "--auto" }
+local opencode_cmd = { "opencode", "--continue", "--auto" }
 local terminal_opts = {
   auto_insert = false,
   env = {
@@ -16,19 +16,31 @@ local terminal_opts = {
   },
 }
 
-require("opencode.config").opts.server.start = function()
-  require("snacks.terminal").open(opencode_cmd, terminal_opts)
-end
-
-local opencode_config = require("opencode.config").opts
-opencode_config.events.permissions.enabled = false
-opencode_config.ask.snacks.win.relative = "editor"
-opencode_config.ask.snacks.win.width = 150
-opencode_config.ask.snacks.win.max_width = 150
-opencode_config.ask.snacks.win.height = 8
-opencode_config.ask.snacks.win.wo = {
-  wrap = true,
-  linebreak = false,
+vim.g.opencode_opts = {
+  server = {
+    start = function()
+      require("snacks.terminal").open(opencode_cmd, terminal_opts)
+    end,
+  },
+  ask = {
+    snacks = {
+      win = {
+        relative = "editor",
+        width = 150,
+        max_width = 150,
+        height = 8,
+        wo = {
+          wrap = true,
+          linebreak = false,
+        },
+      },
+    },
+  },
+  events = {
+    permissions = {
+      enabled = false,
+    },
+  },
 }
 
 local opencode = require("opencode")
@@ -53,30 +65,3 @@ end, { desc = "Send a message to OpenCode" })
 vim.keymap.set({ "n", "x" }, "<leader>op", function()
   opencode.select()
 end, { desc = "OpenCode menu" })
-
-local function map_command(key, command, desc)
-  vim.keymap.set("n", key, function()
-    opencode.command(command)
-  end, { desc = desc })
-end
-
-vim.keymap.set("n", "<leader>os", function()
-  require("opencode.server.discovery")
-    .get()
-    :next(function(server)
-      return require("opencode.ui.select_session").select_session(server):next(function(session)
-        return server:select_session(session.id)
-      end)
-    end)
-    :catch(function(err)
-      if err then
-        vim.notify(err, vim.log.levels.ERROR, { title = "opencode" })
-      end
-    end)
-end, { desc = "Select OpenCode session" })
-
-map_command("<leader>ou", "session.undo", "Undo OpenCode action")
-map_command("<leader>or", "session.redo", "Redo OpenCode action")
-map_command("<leader>og", "session.first", "First OpenCode message")
-map_command("<leader>oG", "session.last", "Last OpenCode message")
-map_command("<leader>o<Tab>", "agent.cycle", "Cycle OpenCode agent")

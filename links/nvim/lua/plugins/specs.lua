@@ -94,7 +94,8 @@ return {
   {
     src = "https://github.com/nickjvandyke/opencode.nvim",
     name = "opencode.nvim",
-    version = vim.version.range("*"),
+    -- main supports OpenCode v2; tagged releases only support v1.
+    version = "main",
   },
   {
     src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",

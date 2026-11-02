@@ -62,9 +62,9 @@
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
     },
     "opencode.nvim": {
-      "rev": "4576b372034495b8868e6cbe878e85c717998867",
+      "rev": "4851ae503585dc5142ad66a98e8952a74e1f7b3a",
       "src": "https://github.com/nickjvandyke/opencode.nvim",
-      "version": ">=0.0.0"
+      "version": "'main'"
     },
     "quicker": {
       "rev": "4a6883cb13fe097a20a046eb55f6dffd239276e3",
