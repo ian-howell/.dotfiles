@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Toggle voice dictation into a tmux pane: the first press records the Windows
+# default mic, the second press (or 2 s of silence) stops it, and the
+# transcript is typed into the pane that was focused at the first press.
+#
+# Usage: dictate [pane-id]   (defaults to the active pane)
+set -euo pipefail
+
+here=$(dirname -- "$(readlink -f "${BASH_SOURCE[0]}")")
+state="${XDG_RUNTIME_DIR:-/tmp}/dictate"
+mkdir -p "$state"
+
+ffmpeg=${DICTATE_FFMPEG:-$(compgen -G '/mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_*/*/bin/ffmpeg.exe' | head -1)}
+[[ -x $ffmpeg ]] || ffmpeg=$(command -v ffmpeg.exe || true)
+
+say() { tmux display-message -d 3000 "dictate: $*"; }
+
+pane=${1:-$(tmux display -p '#{pane_id}')}
+
+# The worker holds the lock for its whole life, so a held lock is live state.
+exec 9>"$state/lock"
+if ! flock -n 9; then
+	if [[ -e $state/recording ]]; then
+		touch "$state/stop"
+		say "stopping"
+	else
+		say "still transcribing"
+	fi
+	exit 0
+fi
+
+if [[ -z $ffmpeg ]]; then
+	say "ffmpeg.exe not found (set DICTATE_FFMPEG)"
+	exit 1
+fi
+
+rm -f "$state/stop"
+touch "$state/recording"
+say "listening"
+setsid "$here/beep" start 9>&- </dev/null >/dev/null 2>&1 &
+
+# OpenAL needs explicit channels/rate/size; the empty name is the Windows default mic.
+setsid bash -c '
+	"$1" -hide_banner -loglevel fatal -f openal -channels 1 -sample_rate 48000 -sample_size 16 -i "" \
+		-ac 1 -ar 16000 -f s16le - 9>&- |
+		uv run -q --no-project --with faster-whisper python3 "$2/listen.py" "$3" "$4"
+' dictate "$ffmpeg" "$here" "$pane" "$state" </dev/null >>"$state/log" 2>&1 &

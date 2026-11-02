@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Play the dictation start or stop tone through the Windows default speaker.
+#
+# Usage: beep start|stop
+set -euo pipefail
+
+ffplay=${DICTATE_FFPLAY:-$(compgen -G '/mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_*/*/bin/ffplay.exe' | head -1)}
+[[ -x $ffplay ]] || ffplay=$(command -v ffplay.exe || true)
+[[ -n $ffplay ]] || exit 0
+
+case $1 in
+start) tone='sine=frequency=660:duration=0.08[a];sine=frequency=990:duration=0.1[b];[a][b]concat=n=2:v=0:a=1[out0]' ;;
+stop) tone='sine=frequency=990:duration=0.08[a];sine=frequency=660:duration=0.1[b];[a][b]concat=n=2:v=0:a=1[out0]' ;;
+*) exit 2 ;;
+esac
+
+"$ffplay" -hide_banner -loglevel quiet -nodisp -autoexit -f lavfi -i "$tone" </dev/null >/dev/null 2>&1
