@@ -1,0 +1,35 @@
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "theme": {
+    "name": "dotfiles",
+    "mode": "system"
+  },
+  "animations": true,
+  "diffs": {
+    "wrap": "word"
+  },
+  "prompt": {
+    "editor": true,
+    "paste": "full"
+  },
+  "session": {
+    "sidebar": "hide",
+    "scrollbar": true,
+    "thinking": "show"
+  },
+  "keybinds": {
+    "prompt.editor": "<leader>ctrl+e",
+    "session.new": "<leader>ctrl+n",
+    "session.list": "<leader>ctrl+s",
+    "session.interrupt": "<leader>ctrl+x",
+    "command.palette.show": "<leader>ctrl+p",
+    "messages.copy": "<leader>ctrl+y",
+    "session.message.next": "ctrl+n",
+    "session.message.previous": "ctrl+p",
+    "session.line.up": "ctrl+shift+y",
+    "session.line.down": "ctrl+shift+e",
+    "session.half.page.up": "ctrl+shift+u",
+    "session.half.page.down": "ctrl+shift+d",
+    "session.last": "ctrl+shift+g,end"
+  }
+}

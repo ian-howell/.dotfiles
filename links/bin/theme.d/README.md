@@ -35,7 +35,7 @@ and JSONC editor live with its integration under `src/theme/windows-terminal/`.
 | K9s | `links/k9s/skins/tokyonight-{moon,day}.yaml` |
 | Neovim | Tokyo Night's Moon/Day themes; `links/nvim/lua/core/theme.lua` |
 | Oh My Posh | Dark/Day palettes in `links/ohmyposh/tokyonight.omp.yaml` |
-| OpenCode | Shared TUI plugin and palettes in `links/opencode/tui-plugins/` |
+| OpenCode | `links/opencode/themes/dotfiles.json` (both modes); TUI plugin `links/opencode/plugins/theme-sync/` |
 | Windows Terminal | Day scheme in `src/theme/windows-terminal/light.json`; preserves live dark schemes |
 
 The saved choice and selector symlinks live in `~/.local/state/dotfiles/theme/`,
@@ -80,15 +80,14 @@ Switches preserve JSONC comments and unrelated settings. Terminal's top-level
 `theme` changes its chrome across windows, not Windows' system-wide preference.
 Missing/ambiguous settings on WSL are reported while other apps still refresh.
 
-The OpenCode TUI plugin
-and its palettes live in `links/opencode/tui-plugins/`, exposed by the existing
-`~/.config/opencode` symlink and registered in the base `tui.jsonc`. They load with
-or without a work overlay.
-OpenCode also installs runtime theme copies under `~/.config/opencode/themes/`,
-ignored by Git. Restart OpenCode after changing the plugin or palettes.
+OpenCode's `dotfiles` theme holds the dark and light palettes as one file in
+`links/opencode/themes/`, selected in the base `cli.json`. The `theme-sync` TUI plugin in
+`links/opencode/plugins/` switches its mode without locking it or rewriting `cli.json`.
+Both are exposed by the existing `~/.config/opencode` symlink and load with or without a
+work overlay. Restart OpenCode after changing the plugin or palettes.
 
 The controller needs Python 3's standard library. The OpenCode plugin
-was verified with 1.18.32. `DOTFILES_THEME_STATE` overrides the controller/editor
+was verified with 2.2.5. `DOTFILES_THEME_STATE` overrides the controller/editor
 state location for tests; deployed shell/Git/Kitty/tmux configs use the normal path.
 
 ## Refresh behavior
@@ -116,8 +115,8 @@ Previously printed output and already-open short-lived viewers are not redrawn.
 ## Removal
 
 Select dark first. Remove the tmux binding with `tmux unbind-key -n M-t` and revert
-the repo integration edits. Remove the `theme-sync.mjs` entry from the base TUI
-config and its installed plugin/palettes, then restart OpenCode. Remove the K9s
+the repo integration edits. Remove `links/opencode/plugins/theme-sync/`, then restart
+OpenCode. Remove the K9s
 `skins/dotfiles.yaml` link and unset `K9S_SKIN`.
 
 For Windows Terminal, restore the backup to the settings file used by discovery
