@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Bridge WSLg PulseAudio to Windows audio through Windows ffmpeg, for when
+# WSLg's RDP audio link is dead and WSL can't be restarted:
+#   Windows mic  -> default source "WinMic"
+#   default sink "WinSpk" -> Windows default speakers
+#
+# Usage: wsl-audio-bridge [dshow-mic-name]   (runs until killed)
+set -euo pipefail
+
+mic=${1:-Echo Cancelling Speakerphone (Jabra SPEAK 510 USB)}
+bin=$(dirname "$(ls /mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg*/*/bin/ffmpeg.exe | head -1)")
+fmt=(--format=s16le --rate=44100)
+
+has() { pactl list short "$1" | awk '{print $2}' | grep -qx "$2"; }
+has sinks WinMicSink || pactl load-module module-null-sink sink_name=WinMicSink rate=44100 channels=1 >/dev/null
+has sources WinMic || pactl load-module module-remap-source master=WinMicSink.monitor source_name=WinMic >/dev/null
+has sinks WinSpk || pactl load-module module-null-sink sink_name=WinSpk rate=44100 channels=2 >/dev/null
+pactl set-default-source WinMic
+pactl set-default-sink WinSpk
+# A suspended WinSpk stops the monitor stream and ffplay re-buffers on every
+# sound; keep it running so beeps play immediately.
+pactl unload-module module-suspend-on-idle 2>/dev/null || true
+
+cd /mnt/c
+trap 'kill 0' EXIT
+"$bin/ffmpeg.exe" -hide_banner -loglevel error -f dshow -audio_buffer_size 50 -i audio="$mic" \
+	-ac 1 -ar 44100 -f s16le - |
+	pacat --playback -d WinMicSink "${fmt[@]}" --channels=1 --latency-msec=50 &
+# Start parec only once ffplay.exe is up: anything queued during its slow
+# start-up stays in the pipe as permanent playback delay.
+{ sleep 3; exec parec -d WinSpk.monitor "${fmt[@]}" --channels=2 --latency-msec=20; } |
+	"$bin/ffplay.exe" -hide_banner -loglevel error -nodisp -fflags nobuffer -flags low_delay \
+		-probesize 32 -analyzeduration 0 -f s16le -ar 44100 -ch_layout stereo -i - &
+wait -n
