@@ -1,8 +1,8 @@
 #!/bin/bash
-# Link the optional private config repo, if it's cloned.
-install="$HOME/.config/hermes-private/install"
+# Link the optional work overlay, if it's cloned.
+install="$HOME/.config/work/install"
 if [[ -x $install ]]; then
   "$install"
 else
-  echo "private config not cloned; skipping"
+  echo "work overlay not cloned; skipping"
 fi

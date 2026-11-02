@@ -19,22 +19,22 @@ This repository is the complete, general-purpose, open source base configuration
 layered on top. Choose ownership by what a feature does, not where it was developed,
 which session requested it, or the current value of an environment variable.
 
-- This repository is public. Agent skills, Hermes config/skins and Hermes tooling live in a
-  separate private repository at `~/.config/hermes-private`; `src/link_private.sh` runs its
-  `install` when it is cloned. Never add agent skills, Hermes config, or names of employers,
-  work projects, orgs or labs here. A pre-commit hook from the private repo enforces a denylist.
-- General OpenCode plugins, agents, commands, and themes belong in `links/opencode`,
+- This repository is public. Never add names of employers, work projects, orgs or labs here,
+  including in skills, examples and commit messages. A pre-commit hook kept in the work repo
+  (`~/.config/work/git-hooks/public-repo`) blocks the terms in its private denylist.
+- General OpenCode plugins, agents, commands, themes and skills belong in `links/opencode`,
   linked to `~/.config/opencode`. Tmux integration, retitling,
   explanation agents, theme switching, and general Git policy are base features.
-- Only work-specific OpenCode additions belong in `~/.config/work/opencode`, loaded
-  through `OPENCODE_CONFIG_DIR`. It augments the base; it is not a generic install target.
+- Only work-specific OpenCode additions belong in `~/.config/work/opencode`, which OpenCode
+  loads as its system config through the `/etc/opencode` symlink. It augments the base; it is
+  not a generic install target.
 - Base installers must not copy shared features into or edit the work overlay.
   Do not manage work paths through `linkdotfiles.yaml` or require the work repo for
   the base configuration to function.
 - Split mixed features into shared base functionality and distinct work extensions;
   do not duplicate or shadow the base skill/plugin under the same name.
-- Azure/lab/REDACTED tooling, ADO work-item policy, Teams/work TODO integration, and
-  `repo-catalog` are intentionally work-owned. Keep work inventory and private data there.
+- Azure and lab tooling, ADO workflows and work-item policy, and `repo-catalog` are
+  intentionally work-owned. Keep work inventory and private data there.
 - When a change spans the repositories, identify both scopes before editing and
   preserve unrelated changes in each. Commit/push authorization remains separate
   from implementation authorization.
