@@ -19,6 +19,7 @@
   },
   "keybinds": {
     "prompt.editor": "ctrl+g",
+    "session.first": "home,alt+home",
     "session.new": "<leader>ctrl+n",
     "session.list": "<leader>ctrl+s",
     "command.palette.show": "<leader>ctrl+p",
