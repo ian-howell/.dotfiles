@@ -159,15 +159,6 @@ set_textwidth("markdown", 100)
 set_textwidth("lua", 80)
 set_textwidth("sh", 80)
 
-vim.api.nvim_create_autocmd("FileType", {
-  desc = "Enable spell checking for prose",
-  group = groups.filetype_settings,
-  pattern = { "markdown", "text", "gitcommit" },
-  callback = function()
-    vim.opt_local.spell = true
-  end,
-})
-
 -- ---------------------------------------------------------------------------
 -- On Save
 -- ---------------------------------------------------------------------------
