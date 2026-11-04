@@ -4,6 +4,11 @@
   "autoupdate": true,
   "model": "github-copilot/claude-opus-5.5",
   "plugin": [],
+  "providers": {
+    "github-copilot": {
+      "settings": { "headerTimeout": 30000 }
+    }
+  },
   "permission": {
     "bash": {
       "ssh": "ask",
