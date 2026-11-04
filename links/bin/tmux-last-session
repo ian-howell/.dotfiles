@@ -39,8 +39,7 @@ while read -r id attached; do
 done <<< "$sessions"
 
 if [[ -z "$target" ]]; then
-  # run-shell shows stdout in the pane; stderr would hide the useful error.
-  printf 'No other tmux session.\n'
-  exit 1
+  "${tmux[@]}" display-message -c "$client" 'No other tmux session.'
+  exit 0
 fi
 exec "${tmux[@]}" switch-client -c "$client" -t "$target"
