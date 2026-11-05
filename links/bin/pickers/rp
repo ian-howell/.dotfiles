@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# rp [query] — repositories beneath config/repo-roots.conf and RP_SRC_ROOTS.
+# rp [query] — repositories beneath config/repo-roots.conf and RP_SRC_ROOTS,
+# most recently used first.
 set -euo pipefail
 script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 source "$script_dir/lib/picker.sh"
@@ -9,16 +10,26 @@ picker_init
 picker_float "$@"
 repos=$(python3 "$script_dir/lib/discovery.py" repos "$script_dir/config/repo-roots.conf")
 [[ -n "$repos" ]] || { printf 'rp: no repositories found\n'; exit 0; }
+
+# A repository was last used when it was last picked here or its session was
+# last attached, whichever is later.
+picker_history_load rp
 sessions_load
 rows=""
 while IFS=$'\t' read -r name path label; do
   session_name "$name"
   active=' '
-  if session_find "repo:$path" "$REPLY" "$path"; then active='●'; fi
-  rows+="$path"$'\t'"$active $label"$'\n'
+  used=${PICKED_AT[$path]:-0}
+  if session_find "repo:$path" "$REPLY" "$path"; then
+    active='●'
+    ((SESSION_LAST_ATTACHED[$REPLY] <= used)) || used=${SESSION_LAST_ATTACHED[$REPLY]}
+  fi
+  rows+="$used"$'\t'"$path"$'\t'"$active $label"$'\n'
 done <<<"$repos"
-selected=$(picker_search --query="${1:-}" \
-  --delimiter=$'\t' --with-nth=2 <<<"${rows%$'\n'}")
+rows=$(picker_by_recency <<<"${rows%$'\n'}")
+selected=$(picker_search --query="${1:-}" --tiebreak=index \
+  --delimiter=$'\t' --with-nth=2 <<<"$rows")
 [[ -n "$selected" ]] || exit 0
 path=${selected%%$'\t'*}
+picker_history_record rp "$path"
 exec "$script_dir/tmux-switch" "${path##*/}" --dir "$path" --identity "repo:$path"

@@ -20,6 +20,10 @@ Pickers look and behave like tmux's built-in session switcher (prefix C-s).
   light/dark palette.
 - Picker-specific actions are listed in a footer. Real errors remain errors, and the
   floating pane stays open on failure until a key is pressed.
+- `rp` and `ssh-session` list entries by last use: the later of when each was last
+  picked (`~/.local/state/dotfiles/pickers/<picker>-history`) and when its session was
+  last attached. Matches with equal scores keep that order; unused entries follow in
+  discovery order.
 - `wt`: `Ctrl-X` removes a clean, merged worktree and its branch. Explicit
   `wt -d --force <branch>` permits discarding local changes and unmerged commits.
 - Namespace selection pins the original Kubernetes context throughout the operation.

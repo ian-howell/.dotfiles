@@ -358,6 +358,36 @@ sleep 30
         self.assertIn(f"repo:{source}/team-a/api", identities)
         self.assertIn(f"repo:{source}/team-b/api", identities)
 
+    def test_repository_picker_lists_recently_picked_first(self):
+        source = self.home / "src"
+        for name in ("alpha", "beta", "gamma"):
+            self.run_cmd(["git", "init", "-b", "main", source / name])
+        self.env["TEST_SELECT"] = "gamma"
+        self.run_cmd([BIN / "rp"])
+        self.env["TEST_SELECT"] = "beta"
+        self.run_cmd([BIN / "rp"])
+        self.env["TEST_SELECT"] = ""
+        self.log.write_text("")
+        self.run_cmd([BIN / "rp"])
+        identities = self.tmux("list-sessions", "-F", "#{@picker_identity}").splitlines()
+        self.assertIn(f"repo:{source}/beta", identities)
+        self.assertNotIn(f"repo:{source}/alpha", identities)
+        history = (self.home / ".local/state/dotfiles/pickers/rp-history").read_text().splitlines()
+        self.assertEqual([line.split("\t")[1] for line in history], [str(source / "gamma"), str(source / "beta")])
+
+    def test_ssh_picker_lists_recently_picked_first(self):
+        ssh = self.home / ".ssh"
+        ssh.mkdir()
+        (ssh / "config").write_text("Host alpha\nHost beta\nHost gamma\n")
+        self.script("ssh", "#!/bin/sh\nsleep 120\n")
+        self.env["TEST_SELECT"] = "gamma"
+        self.run_cmd([BIN / "ssh-session"])
+        self.env["TEST_SELECT"] = ""
+        self.run_cmd([BIN / "ssh-session"])
+        history = (self.home / ".local/state/dotfiles/pickers/ssh-session-history").read_text().splitlines()
+        self.assertEqual([line.split("\t")[1] for line in history], ["gamma"])
+        self.assertNotIn("ssh:alpha", self.tmux("list-sessions", "-F", "#{@picker_identity}").splitlines())
+
     def test_ssh_alias_is_an_argument_not_a_shell_command(self):
         ssh = self.home / ".ssh"
         ssh.mkdir()

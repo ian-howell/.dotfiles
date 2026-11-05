@@ -4,22 +4,25 @@
 
 sessions_load() {
   SESSION_IDS=()
-  declare -gA SESSION_IDENTITY=() SESSION_NAME=() SESSION_PATH=()
-  local id ids
+  declare -gA SESSION_IDENTITY=() SESSION_NAME=() SESSION_PATH=() SESSION_LAST_ATTACHED=()
+  local sessions id last_attached identity path name
   # A server without sessions is normal. Other failures should be visible.
-  if ! ids=$(tmux list-sessions -F '#{session_id}' 2>&1); then
-    case "$ids" in
+  if ! sessions=$(tmux list-sessions -F $'#{session_id}\x1f#{session_last_attached}\x1f#{@picker_identity}\x1f#{session_path}\x1f#{session_name}' 2>&1); then
+    case "$sessions" in
       *'no server running'*|*'No such file or directory'*|*'no sessions'*) return 0 ;;
-      *) printf '%s\n' "$ids" >&2; return 1 ;;
+      *) printf '%s\n' "$sessions" >&2; return 1 ;;
     esac
   fi
-  while IFS= read -r id; do
+  # Unit separators keep empty fields; tabs would collapse them.
+  while IFS=$'\x1f' read -r id last_attached identity path name; do
     [[ -n "$id" ]] || continue
     SESSION_IDS+=("$id")
-    SESSION_IDENTITY["$id"]=$(tmux display-message -p -t "$id" '#{@picker_identity}')
-    SESSION_NAME["$id"]=$(tmux display-message -p -t "$id" '#{session_name}')
-    SESSION_PATH["$id"]=$(tmux display-message -p -t "$id" '#{session_path}')
-  done <<<"$ids"
+    # shellcheck disable=SC2034 # read by the calling picker
+    SESSION_LAST_ATTACHED["$id"]=${last_attached:-0}
+    SESSION_IDENTITY["$id"]=$identity
+    SESSION_PATH["$id"]=$path
+    SESSION_NAME["$id"]=$name
+  done <<<"$sessions"
 }
 
 session_name() {
@@ -57,4 +60,40 @@ session_switch() {
   else
     tmux attach-session -t "$1"
   fi
+}
+
+# Recently picked keys for a picker, oldest first, as "epoch<TAB>key" lines.
+picker_history_file() {
+  REPLY=${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/pickers/$1-history
+}
+
+# Fill the PICKED_AT associative array with each key's last pick time.
+picker_history_load() {
+  local time key
+  declare -gA PICKED_AT=()
+  picker_history_file "$1"
+  [[ -r "$REPLY" ]] || return 0
+  while IFS=$'\t' read -r time key; do
+    # shellcheck disable=SC2034 # read by the calling picker
+    PICKED_AT["$key"]=$time
+  done <"$REPLY"
+}
+
+# Record a pick, keeping the latest 200 keys.
+picker_history_record() {
+  local key=$2 file
+  picker_history_file "$1"
+  file=$REPLY
+  mkdir -p "${file%/*}"
+  {
+    [[ ! -r "$file" ]] || awk -F '\t' -v key="$key" '$2 != key' "$file" | tail -n 199
+    printf '%s\t%s\n' "$(date +%s)" "$key"
+  } >"$file.$$"
+  mv "$file.$$" "$file"
+}
+
+# Print rows prefixed by a last-use time, newest first, without the prefix.
+# Equal times keep their input order.
+picker_by_recency() {
+  sort -t $'\t' -k1,1nr -s | cut -f2-
 }

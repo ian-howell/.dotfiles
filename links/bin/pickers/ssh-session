@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# ssh-session [query] — concrete aliases from SSH configuration and includes.
+# ssh-session [query] — concrete aliases from SSH configuration and includes,
+# most recently used first.
 set -euo pipefail
 script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 source "$script_dir/lib/picker.sh"
@@ -9,16 +10,23 @@ picker_init
 hosts=$(python3 "$script_dir/lib/discovery.py" hosts)
 [[ -n "$hosts" ]] || { printf 'ssh-session: no concrete SSH hosts found\n'; exit 0; }
 picker_float "$@"
+picker_history_load ssh-session
 sessions_load
 rows=""
 while IFS= read -r host; do
   session_name "ssh/$host"
   active=' '
-  if session_find "ssh:$host" "$REPLY" "$HOME"; then active='●'; fi
-  rows+="$host"$'\t'"$active $host"$'\n'
+  used=${PICKED_AT[$host]:-0}
+  if session_find "ssh:$host" "$REPLY" "$HOME"; then
+    active='●'
+    ((SESSION_LAST_ATTACHED[$REPLY] <= used)) || used=${SESSION_LAST_ATTACHED[$REPLY]}
+  fi
+  rows+="$used"$'\t'"$host"$'\t'"$active $host"$'\n'
 done <<<"$hosts"
-selected=$(picker_search --query="${1:-}" \
-  --delimiter=$'\t' --with-nth=2 <<<"${rows%$'\n'}")
+rows=$(picker_by_recency <<<"${rows%$'\n'}")
+selected=$(picker_search --query="${1:-}" --tiebreak=index \
+  --delimiter=$'\t' --with-nth=2 <<<"$rows")
 [[ -n "$selected" ]] || exit 0
 host=${selected%%$'\t'*}
+picker_history_record ssh-session "$host"
 exec "$script_dir/tmux-switch" "ssh/$host" --dir "$HOME" --identity "ssh:$host" -- ssh -- "$host"
