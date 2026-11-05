@@ -20,10 +20,11 @@ directly. For changing the tmux config itself, use `tmux-config`.
 
 ### Neovim panes
 - Neovim at code: write the open commands to a vim script and run
-  `tmux split-window -h -d -l 50% -t <your pane> -c <repo> "nvim -S <script>; exec zsh"` — the
+  `tmux split-window -h -d -l 50% -t <your pane> -c <repo> "nvim -S <script>"` — the
   script holds `edit +<line> <abs file>`, `normal zt`, `vsplit +<line> <file2>`, `tabedit ...`,
-  `tabfirst`. Inline `-c 'normal zt'` chains nested inside the tmux command's quotes break and the
-  pane dies on launch; `; exec zsh` keeps the pane alive if nvim exits. Check the pane exists with
+  `tabfirst`. Inline `-c 'normal zt'` chains nested inside the tmux command's quotes break and
+  nvim fails on launch; `remain-on-exit failed-key` keeps a failed pane open with its error until a
+  key is pressed. Check the pane exists with
   `list-panes` afterwards. Open every relevant location at once (vsplit/tabs) rather than one file.
   Default side is right (`-h` without `-b`) unless Ian says left. "N stacked panes" of code means
   one nvim pane with N horizontal windows (`split +<line> <file>` per extra location, then
@@ -43,7 +44,7 @@ directly. For changing the tmux config itself, use `tmux-config`.
 
 ### Reviewing and touring code
 - "Open vim in an N% split" right after editing a worktree means review those edits:
-  `tmux split-window -h -d -l N% -t $TMUX_PANE -c <worktree> "nvim -c CodeDiff; exec zsh"`. CodeDiff
+  `tmux split-window -h -d -l N% -t $TMUX_PANE -c <worktree> "nvim -c CodeDiff"`. CodeDiff
   takes a few seconds to render, so an immediate `capture-pane` shows an empty buffer; wait ~3s and
   recapture before concluding it failed.
 
