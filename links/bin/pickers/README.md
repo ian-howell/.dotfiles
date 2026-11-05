@@ -6,25 +6,27 @@ direct invocation and invocation through `~/.bin` work identically.
 
 ## Interface
 
-- One full-width list, with no previews, counters, or separator lines.
-- tmux popups size to the initial number of entries, up to 90 columns × 20 rows,
-  and shrink to fit smaller terminals. Reloaded lists scroll within that size.
-- Outside tmux, fzf uses at most 20 rows, shrinking for short lists.
-- Rows show names and current/active markers. Repository names gain a short,
-  unique parent suffix only when needed to distinguish duplicates.
-- Pickers start in selector mode: `j`/`k` move down/up and `/` opens the filter.
-  In filter mode, `j`, `k`, and `/` type normally. Escape clears the filter and
-  returns to selector mode; another Escape closes the picker.
-- Nonempty query arguments (for example, `rp something`) start in filter mode.
-- Arrow keys move and Enter selects in either mode. Real errors remain errors.
-- A small footer shows mode controls and any picker-specific actions.
+Pickers look and behave like tmux's built-in session switcher (prefix C-s).
+
+- Inside tmux, a picker opens in a floating pane centred over the invoking pane,
+  75% × 30% of the window. Outside tmux, fzf uses at most 20 rows.
+- One full-width list, with no previews, counters, or separator lines. Rows show
+  names and current/active markers (●). Repository names gain a short, unique
+  parent suffix only when needed to distinguish duplicates.
+- Typing filters immediately, best match first; `(search)` sits at the bottom.
+  A query argument (for example, `rp something`) starts with that filter.
+- Up/Down, C-n/C-p and C-j/C-k move; Enter selects; Escape closes the picker.
+- The selection uses tmux's `mode-style` when it is a hex colour, so it follows the
+  light/dark palette.
+- Picker-specific actions are listed in a footer. Real errors remain errors, and the
+  floating pane stays open on failure until a key is pressed.
 - `wt`: `Ctrl-X` removes a clean, merged worktree and its branch. Explicit
   `wt -d --force <branch>` permits discarding local changes and unmerged commits.
 - Namespace selection pins the original Kubernetes context throughout the operation.
 
 ## Internals
 
-`lib/picker.sh` owns presentation and popup context. `lib/sessions.sh` owns
+`lib/picker.sh` owns presentation and the floating pane's source context. `lib/sessions.sh` owns
 session lookup. Discovery keeps action IDs and paths separate from display labels.
 
 `tmux-switch` stores `@picker_identity` session metadata. Repository and worktree
@@ -48,7 +50,7 @@ Picker records use tabs/newlines as separators; discovery rejects paths containi
 those characters rather than selecting a different path. Spaces and shell
 metacharacters are passed as arguments, not interpolated as commands.
 
-Dependencies: Bash, Python 3, fzf (tested with 0.66), tmux (tested with 3.5a),
+Dependencies: Bash, Python 3, fzf (tested with 0.66), tmux 3.8 or later (floating panes),
 and the selected tool's backend (Git, SSH, or kubectl).
 
 ## Verification

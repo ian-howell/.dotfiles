@@ -23,10 +23,10 @@ case "${1:-}" in
     picker_init
     rows=$(python3 "$script_dir/lib/discovery.py" worktrees "$repo_root")
     [[ -n "$rows" ]] || { printf 'wt: no worktrees (use wt <branch> to create one)\n'; exit 0; }
-    picker_popup "$rows"
+    picker_float "$@"
     picker_command "$script_dir/wt"
     self=$REPLY
-    selected=$(picker_choose --prompt='worktree> ' --delimiter=$'\t' --with-nth=4 \
+    selected=$(picker_search --delimiter=$'\t' --with-nth=4 \
       --footer='Ctrl-X: delete clean, merged worktree' \
       --bind="ctrl-x:execute($self -d {2})+reload-sync($self -l)" <<<"$rows")
     [[ -n "$selected" ]] || exit 0

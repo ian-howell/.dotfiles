@@ -6,9 +6,9 @@ source "$script_dir/lib/picker.sh"
 source "$script_dir/lib/sessions.sh"
 picker_require tmux git python3
 picker_init
+picker_float "$@"
 repos=$(python3 "$script_dir/lib/discovery.py" repos "$script_dir/config/repo-roots.conf")
 [[ -n "$repos" ]] || { printf 'rp: no repositories found\n'; exit 0; }
-picker_popup "$repos" "$@"
 sessions_load
 rows=""
 while IFS=$'\t' read -r name path label; do
@@ -17,7 +17,7 @@ while IFS=$'\t' read -r name path label; do
   if session_find "repo:$path" "$REPLY" "$path"; then active='●'; fi
   rows+="$path"$'\t'"$active $label"$'\n'
 done <<<"$repos"
-selected=$(picker_choose --prompt='repo> ' --query="${1:-}" \
+selected=$(picker_search --query="${1:-}" \
   --delimiter=$'\t' --with-nth=2 <<<"${rows%$'\n'}")
 [[ -n "$selected" ]] || exit 0
 path=${selected%%$'\t'*}

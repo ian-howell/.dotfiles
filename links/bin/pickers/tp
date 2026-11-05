@@ -10,8 +10,8 @@ source_window=$(tmux display-message -p -t "$PICKER_SOURCE_PANE" '#{window_id}')
 target=${1:-}
 if [[ -z "$target" || "$target" == --pick ]]; then
   rows=$("$script_dir/lib/session-list")
-  picker_popup "$rows" "$@"
-  selected=$(picker_choose --prompt='move window> ' --no-sort --delimiter=$'\t' --with-nth=2 <<<"$rows")
+  picker_float "$@"
+  selected=$(picker_search --no-sort --delimiter=$'\t' --with-nth=2 <<<"$rows")
   [[ -n "$selected" ]] || exit 0
   target=${selected%%$'\t'*}
 else

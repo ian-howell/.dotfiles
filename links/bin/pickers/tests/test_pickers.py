@@ -31,7 +31,7 @@ class PickerTests(unittest.TestCase):
         self.log = self.root / "commands.jsonl"
         self.env = dict(os.environ, HOME=str(self.home), PATH=f"{self.commands}:{BIN}:{os.environ['PATH']}",
                         TEST_SOCKET=str(self.socket), TEST_LOG=str(self.log), REAL_TMUX=REAL_TMUX,
-                        PICKER_POPUP="1", PICKER_SOURCE_PANE="", PICKER_SOURCE_SESSION="",
+                        PICKER_FLOATING="1", PICKER_SOURCE_PANE="", PICKER_SOURCE_SESSION="",
                         FZF_DEFAULT_OPTS="", FZF_DEFAULT_OPTS_FILE="/dev/null")
         self.env.pop("TMUX", None)
         self.env.pop("TMUX_PANE", None)
@@ -239,7 +239,7 @@ elif 'namespaces' in args: print('default\\nproduction')
             name = f"repo⋅ianhowell/long-branch-name-{width}"
             command = ["env", f"PATH={self.env['PATH']}", f"TEST_LOG={self.log}",
                        f"TEST_SOCKET={self.socket}", f"REAL_TMUX={REAL_TMUX}",
-                       "PICKER_POPUP=1", "PICKER_SOURCE_PANE=", "PICKER_SOURCE_SESSION=",
+                       "PICKER_FLOATING=1", "PICKER_SOURCE_PANE=", "PICKER_SOURCE_SESSION=",
                        "FZF_DEFAULT_OPTS=--preview='echo UNWANTED_PREVIEW'", "FZF_DEFAULT_OPTS_FILE=/dev/null",
                        "bash", "-c", 'PICKER_SOURCE_PANE=$TMUX_PANE exec "$0" --pick', str(BIN / "tp")]
             pane = self.tmux("new-session", "-d", "-P", "-F", "#{pane_id}", "-s", name,
@@ -248,13 +248,12 @@ elif 'namespaces' in args: print('default\\nproduction')
             screen = ""
             while time.monotonic() < deadline:
                 screen = self.tmux("capture-pane", "-p", "-t", pane)
-                if "j/k: move" in screen and name in screen:
+                if "(search)" in screen and name in screen:
                     break
                 time.sleep(0.05)
             self.assertIn(name, screen)
             self.assertIn("keeper", screen)
-            self.assertNotIn("move window>", screen)
-            self.assertIn("j/k: move", screen)
+            self.assertIn("(search)", screen)
             self.assertNotRegex(screen, r"\b\d+/\d+\b", screen)
             self.assertNotIn("UNWANTED_PREVIEW", screen)
             self.assertNotIn("│", screen)
@@ -262,13 +261,13 @@ elif 'namespaces' in args: print('default\\nproduction')
             self.assertNotIn(str(self.root), screen)
             self.tmux("kill-session", "-t", f"={name}")
 
-    def test_real_fzf_selector_filter_keys_and_escape(self):
+    def test_real_fzf_search_keys_and_escape(self):
         real_fzf = shutil.which("fzf")
         self.script("fzf", f'#!/bin/sh\nexec "{real_fzf}" "$@"\n')
         fixture = self.root / "selector"
         fixture.write_text(f'''#!/bin/bash
 source "{BUNDLE}/lib/picker.sh"
-picker_choose --prompt='filter> ' --no-sort --query="$1" <<<'alpha
+picker_search --no-sort --query="$1" <<<'alpha
 beta
 jk/target' >"{self.root}/selected"
 printf 'DONE\\n'
@@ -278,7 +277,7 @@ sleep 30
 
         def start(query=""):
             return self.tmux("new-window", "-P", "-F", "#{pane_id}", "-t", "keeper:",
-                             "env", f"PATH={self.env['PATH']}", "PICKER_POPUP=1",
+                             "env", f"PATH={self.env['PATH']}", "PICKER_FLOATING=1",
                              "FZF_DEFAULT_OPTS=", "FZF_DEFAULT_OPTS_FILE=/dev/null", str(fixture), query)
 
         def wait(pane, text, absent=None):
@@ -291,29 +290,21 @@ sleep 30
             self.fail(f"Expected {text!r}, absent {absent!r}:\n{screen}")
 
         pane = start()
-        wait(pane, "j/k: move", "filter>")
-        self.tmux("send-keys", "-t", pane, "j", "j", "k", "Enter")
+        wait(pane, "(search)")
+        self.tmux("send-keys", "-t", pane, "C-j", "C-j", "C-k", "Enter")
         wait(pane, "DONE")
         self.assertEqual((self.root / "selected").read_text(), "beta\n")
 
         pane = start()
-        wait(pane, "j/k: move")
-        self.tmux("send-keys", "-t", pane, "/")
-        wait(pane, "filter>")
+        wait(pane, "(search)")
         self.tmux("send-keys", "-t", pane, "-l", "jk/")
-        wait(pane, "filter> jk/", "alpha")
+        wait(pane, "(search) jk/", "alpha")
         self.tmux("send-keys", "-t", pane, "Enter")
         wait(pane, "DONE")
         self.assertEqual((self.root / "selected").read_text(), "jk/target\n")
 
         pane = start("jk/")
-        wait(pane, "filter> jk/", "alpha")
-        self.tmux("send-keys", "-t", pane, "Escape")
-        wait(pane, "alpha", "filter>")
-        self.tmux("send-keys", "-t", pane, "/")
-        wait(pane, "filter>")
-        self.tmux("send-keys", "-t", pane, "Escape")
-        wait(pane, "j/k: move", "filter>")
+        wait(pane, "(search) jk/", "alpha")
         self.tmux("send-keys", "-t", pane, "Escape")
         wait(pane, "DONE")
         self.assertEqual((self.root / "selected").read_text(), "")
@@ -330,45 +321,30 @@ sleep 30
         probe = self.root / "binding-probe"
         probe.write_text(f'#!/bin/bash\n"{BIN}/wt" -l >"{output}" 2>&1\n')
         probe.chmod(0o755)
-        self.tmux("run-shell", "-t", pane, "cd -- #{q:pane_current_path} && " + str(probe))
+        self.tmux("run-shell", "-t", pane, "-c", "#{pane_current_path}", str(probe))
         self.assertIn(str(worktree), output.read_text())
 
-    def test_popup_preserves_source_context_and_fits_small_terminal(self):
-        probe = self.root / "popup-probe"
-        output = self.root / "popup.json"
+    def test_float_preserves_source_context_in_centred_pane(self):
+        probe = self.root / "float-probe"
+        output = self.root / "float.json"
         probe.write_text('#!/usr/bin/env python3\nimport json, os\n'
                          'result = dict(os.environ, size=list(os.get_terminal_size()))\n'
                          f'open({str(output)!r}, "w").write(json.dumps(result))\n')
         probe.chmod(0o755)
-        master, slave = pty.openpty()
-        client = subprocess.Popen([REAL_TMUX, "-S", str(self.socket), "attach-session", "-t", "keeper"],
-                                  stdin=slave, stdout=slave, stderr=slave, env=dict(self.env, TERM="xterm-256color"))
-        try:
-            deadline = time.monotonic() + 3
-            while time.monotonic() < deadline:
-                if self.tmux("list-clients", "-F", "#{client_tty}"):
-                    break
-                time.sleep(0.05)
-            source_pane = self.tmux("display-message", "-p", "-t", "keeper:", "#{pane_id}")
-            source_session = self.tmux("display-message", "-p", "-t", "keeper:", "#{session_id}")
-            env = dict(self.env, TMUX=f"{self.socket},0,0", PICKER_POPUP="",
-                       PICKER_SOURCE_PANE=source_pane, PICKER_SOURCE_SESSION=source_session)
-            self.run_cmd(["bash", "-c", f'source "{BUNDLE}/lib/picker.sh"; picker_popup "$1"', probe,
-                          "one\ntwo"], env=env)
-            environment = json.loads(output.read_text())
-            self.assertEqual(environment["PICKER_SOURCE_PANE"], source_pane)
-            self.assertEqual(environment["PICKER_SOURCE_SESSION"], source_session)
-            self.assertTrue(environment.get("TMUX"))
-            self.assertEqual(environment["size"][1], 7)  # nine rows minus popup border
-            self.run_cmd(["bash", "-c", f'source "{BUNDLE}/lib/picker.sh"; picker_popup "$1"', probe,
-                          "\n".join(str(n) for n in range(100))], env=env)
-            environment = json.loads(output.read_text())
-            self.assertEqual(environment["size"][1], 18)  # capped at twenty rows
-        finally:
-            client.terminate()
-            client.wait(timeout=3)
-            os.close(master)
-            os.close(slave)
+        self.tmux("resize-window", "-t", "keeper:", "-x", "100", "-y", "41")
+        source_pane = self.tmux("display-message", "-p", "-t", "keeper:", "#{pane_id}")
+        source_session = self.tmux("display-message", "-p", "-t", "keeper:", "#{session_id}")
+        env = dict(self.env, TMUX=f"{self.socket},0,0", PICKER_FLOATING="",
+                   PICKER_SOURCE_PANE=source_pane, PICKER_SOURCE_SESSION=source_session)
+        self.run_cmd(["bash", "-c", f'source "{BUNDLE}/lib/picker.sh"; picker_float', probe], env=env)
+        deadline = time.monotonic() + 3
+        while time.monotonic() < deadline and not output.exists():
+            time.sleep(0.05)
+        environment = json.loads(output.read_text())
+        self.assertEqual(environment["PICKER_SOURCE_PANE"], source_pane)
+        self.assertEqual(environment["PICKER_SOURCE_SESSION"], source_session)
+        self.assertEqual(environment["PICKER_FLOATING"], "1")
+        self.assertEqual(environment["size"], [73, 10])  # 75% x 30% of 100x41, inside the border
 
     def test_repository_picker_disambiguates_duplicate_basenames(self):
         source = self.home / "src"

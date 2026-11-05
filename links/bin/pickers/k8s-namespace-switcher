@@ -9,8 +9,8 @@ picker_command kubectl "--context=$context" get namespaces -o 'jsonpath={range .
 list_command=$REPLY
 namespaces=$(kubectl --context="$context" get namespaces -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{end}')
 [[ -n "$namespaces" ]] || { printf 'No namespaces found in %s\n' "$context"; exit 0; }
-picker_popup "$namespaces" "$@"
-selected=$(picker_choose --prompt='namespace> ' \
+picker_float "$@"
+selected=$(picker_search \
   --footer='Ctrl-R: reload namespaces' \
   --bind="ctrl-r:reload($list_command)" <<<"$namespaces")
 [[ -n "$selected" ]] || exit 0
