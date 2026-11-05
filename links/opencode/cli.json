@@ -5,6 +5,9 @@
     "mode": "system"
   },
   "animations": true,
+  "tabs": {
+    "mode": "off"
+  },
   "diffs": {
     "wrap": "word"
   },
