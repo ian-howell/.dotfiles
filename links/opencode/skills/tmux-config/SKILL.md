@@ -13,7 +13,8 @@ sources the fragments in `config/` in order, then the optional work overlay
 - Adding a keybinding: work-tool bindings go in `~/.config/work/tmux.conf` (loaded by the base
   `links/tmux/tmux.conf` via `source -q`, so the base works without the overlay); generic ones go in
   `links/tmux/config/keybindings.conf` under the matching section with `bind -N "custom: ..."`.
-  Popups follow the existing style: `display-popup -w 90% -h 90% -E -b "rounded" "<cmd>"`. Check
+  Full-screen tools open in a centred modal floating pane:
+  `{ new-pane -O -x 90% -y 90% -X 0 -Y 0 <cmd>; move-pane -P centre }`. Check
   `tmux list-keys -T prefix <key>` first and tell Ian what default you override (e.g. `P` was
   `paste-buffer`). Verify on a scratch server (next rule).
 - Testing tmux config changes: never change Ian's live server while working. That means no
