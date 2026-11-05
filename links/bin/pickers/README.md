@@ -18,7 +18,6 @@ direct invocation and invocation through `~/.bin` work identically.
 - Nonempty query arguments (for example, `rp something`) start in filter mode.
 - Arrow keys move and Enter selects in either mode. Real errors remain errors.
 - A small footer shows mode controls and any picker-specific actions.
-- `ts`: `Ctrl-X` kills the selected session, targeting its stable tmux ID.
 - `wt`: `Ctrl-X` removes a clean, merged worktree and its branch. Explicit
   `wt -d --force <branch>` permits discarding local changes and unmerged commits.
 - Namespace selection pins the original Kubernetes context throughout the operation.
@@ -56,7 +55,7 @@ and the selected tool's backend (Git, SSH, or kubectl).
 
 ```sh
 python3 links/bin/pickers/tests/test_pickers.py -v
-shellcheck links/bin/pickers/{rp,ts,ssh-session,wt,tp,tmux-switch,k8s-context-switcher,k8s-namespace-switcher} links/bin/pickers/lib/*.sh links/bin/tmux-insert-window
+shellcheck links/bin/pickers/{rp,ssh-session,wt,tp,tmux-switch,k8s-context-switcher,k8s-namespace-switcher} links/bin/pickers/lib/*.sh links/bin/tmux-insert-window
 ```
 
 Tests use temporary fixtures and a separate tmux socket; they never operate on

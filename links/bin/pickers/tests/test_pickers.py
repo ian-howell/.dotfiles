@@ -84,7 +84,7 @@ if rows: print(next((row for row in rows if os.environ.get('TEST_SELECT', '') in
         return repo
 
     def test_entrypoints_resolve(self):
-        for name in ("rp", "ts", "wt", "tp", "ssh-session", "tmux-switch",
+        for name in ("rp", "wt", "tp", "ssh-session", "tmux-switch",
                      "k8s-context-switcher", "k8s-namespace-switcher"):
             self.assertTrue((BIN / name).is_symlink())
             self.assertEqual((BIN / name).resolve(), BUNDLE / name)
@@ -116,24 +116,11 @@ if rows: print(next((row for row in rows if os.environ.get('TEST_SELECT', '') in
         result = self.run_cmd([BIN / "tmux-switch", "missing", "--dir"], check=False)
         self.assertIn("requires a value", result.stderr)
 
-    def test_ts_uses_ids_for_names_with_spaces_and_has_no_preview(self):
-        self.tmux("new-session", "-d", "-s", "my project", "sleep", "120")
-        self.env["TEST_SELECT"] = "my project"
-        self.run_cmd([BIN / "ts"])
-        calls = self.calls()
-        selection = self.tmux("display-message", "-p", "-t", "=my project:", "#{session_id}")
-        self.assertIn(["attach-session", "-t", selection], calls)
-        options = next(call for call in calls if call[0] == "fzf")
-        self.assertIn("--no-preview", options)
-        self.assertIn("--no-info", options)
-        self.assertIn("--no-separator", options)
-        self.assertFalse(any(call[0] == "capture-pane" for call in calls))
-        self.assertIn("--delimiter=\t", options)
-
     def test_cancel_and_error_have_different_exit_status(self):
+        self.env["PICKER_SOURCE_PANE"] = self.tmux("display-message", "-p", "-t", "=keeper:", "#{pane_id}")
         for status in (1, 130, 2):
             self.env["TEST_FZF_STATUS"] = str(status)
-            result = self.run_cmd([BIN / "ts"], check=False)
+            result = self.run_cmd([BIN / "tp", "--pick"], check=False)
             self.assertEqual(result.returncode, 0 if status in (1, 130) else 2)
         self.assertFalse(any(call[0] in ("attach-session", "switch-client") for call in self.calls()))
 
@@ -253,20 +240,20 @@ elif 'namespaces' in args: print('default\\nproduction')
             command = ["env", f"PATH={self.env['PATH']}", f"TEST_LOG={self.log}",
                        f"TEST_SOCKET={self.socket}", f"REAL_TMUX={REAL_TMUX}",
                        "PICKER_POPUP=1", "PICKER_SOURCE_PANE=", "PICKER_SOURCE_SESSION=",
-                       "FZF_DEFAULT_OPTS=--preview='echo UNWANTED_PREVIEW'", "FZF_DEFAULT_OPTS_FILE=/dev/null", str(BIN / "ts")]
+                       "FZF_DEFAULT_OPTS=--preview='echo UNWANTED_PREVIEW'", "FZF_DEFAULT_OPTS_FILE=/dev/null",
+                       "bash", "-c", 'PICKER_SOURCE_PANE=$TMUX_PANE exec "$0" --pick', str(BIN / "tp")]
             pane = self.tmux("new-session", "-d", "-P", "-F", "#{pane_id}", "-s", name,
                              "-x", str(width), "-y", "9", *command)
             deadline = time.monotonic() + 5
             screen = ""
             while time.monotonic() < deadline:
                 screen = self.tmux("capture-pane", "-p", "-t", pane)
-                if "Ctrl-X: delete session" in screen and name in screen:
+                if "j/k: move" in screen and name in screen:
                     break
                 time.sleep(0.05)
             self.assertIn(name, screen)
-            self.assertIn("Ctrl-X: delete session", screen)
             self.assertIn("keeper", screen)
-            self.assertNotIn("session>", screen)
+            self.assertNotIn("move window>", screen)
             self.assertIn("j/k: move", screen)
             self.assertNotRegex(screen, r"\b\d+/\d+\b", screen)
             self.assertNotIn("UNWANTED_PREVIEW", screen)

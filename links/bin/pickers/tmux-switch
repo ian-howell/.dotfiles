@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # tmux-switch NAME [--dir PATH] [--identity KEY] [--command SHELL-COMMAND]
 # tmux-switch NAME [--dir PATH] [--identity KEY] -- PROGRAM [ARG...]
-# tmux-switch --session-id ID  (switch only; never recreate a vanished session)
 set -euo pipefail
 script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 source "$script_dir/lib/sessions.sh"
@@ -11,11 +10,11 @@ session="" dir="$HOME" identity="" cmd="" id=""
 argv=()
 while (($#)); do
   case "$1" in
-    --dir|--identity|--command|--session-id)
+    --dir|--identity|--command)
       (($# >= 2)) || die "$1 requires a value"
       case "$1" in
         --dir) dir=$2 ;; --identity) identity=$2 ;;
-        --command) cmd=$2 ;; --session-id) id=$2 ;;
+        --command) cmd=$2 ;;
       esac
       shift 2 ;;
     --) shift; argv=("$@"); break ;;
@@ -23,11 +22,6 @@ while (($#)); do
     *) [[ -z "$session" ]] || die "unexpected argument: $1"; session=$1; shift ;;
   esac
 done
-if [[ -n "$id" ]]; then
-  [[ "$id" =~ ^\$[0-9]+$ ]] || die "invalid session ID: $id"
-  session_switch "$id"
-  exit
-fi
 [[ -n "$session" ]] || die 'usage: tmux-switch NAME [--dir PATH] [--identity KEY] [-- PROGRAM ARG...]'
 [[ -d "$dir" ]] || die "directory does not exist: $dir"
 dir=$(readlink -f -- "$dir")
