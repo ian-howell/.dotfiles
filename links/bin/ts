@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Open tmux's session switcher. Outside tmux, attach to the most recent session first.
+set -euo pipefail
+
+main() {
+  tmux has-session 2>/dev/null || { printf 'ts: no tmux sessions\n' >&2; exit 1; }
+  if [[ -n "${TMUX:-}" ]]; then
+    exec tmux session-switcher
+  fi
+  exec tmux attach-session \; session-switcher
+}
+
+main "$@"
