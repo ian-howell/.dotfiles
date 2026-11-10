@@ -1,6 +1,6 @@
 ---
 name: tmux-control
-description: "Use when driving Ian's tmux panes from an agent harness."
+description: "Use when driving Ian's tmux panes from an agent harness or he asks to tp."
 ---
 
 # Driving Ian's tmux session

@@ -27,6 +27,8 @@
 
 ## Working style
 
+- "tp there" / "tp us to the worktree" means move this tmux window into the worktree's session:
+  from the repo: `TMUX_PANE=$TMUX_PANE tp '<session>'`.
 - When you suspect a bug or flake, prove it yourself (reproduce it, test it, compare recent
   runs) before calling it one. Don't ask Ian to check.
 - Do the obvious next step (run the test, read the log, look it up) instead of asking
