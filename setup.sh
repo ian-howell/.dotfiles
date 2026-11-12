@@ -20,6 +20,7 @@ install_components() {
     "$HOME/.dotfiles/src/install_fd.sh"
     "$HOME/.dotfiles/src/remap_capslock.sh"
     "$HOME/.dotfiles/src/install_node.sh"
+    "$HOME/.dotfiles/src/install_uv.sh"
     "$HOME/.dotfiles/src/install_lua_language_server.sh"
     "$HOME/.dotfiles/src/install_bash_language_server.sh"
     "$HOME/.dotfiles/src/install_tree_sitter_cli.sh"
