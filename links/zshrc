@@ -50,6 +50,13 @@ prepend "$HOME/.local/bin"
 prepend "$HOME/.opencode/bin"
 [[ -d "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin" ]] && prepend "/mnt/c/Users/ianhowell/AppData/Local/Programs/Microsoft VS Code/bin"
 
+# A remote host that opted in to remote-bridge opens URLs and uses the clipboard through it.
+if [[ ! -e /proc/sys/fs/binfmt_misc/WSLInterop && -d "${XDG_STATE_HOME:-$HOME/.local/state}/remote-bridge" ]]; then
+    prepend "$HOME/.dotfiles/links/bin/remote-bridge.d/shims"
+    export BROWSER="$HOME/.dotfiles/links/bin/remote-bridge.d/shims/xdg-open"
+    export GH_BROWSER="$BROWSER"
+fi
+
 # Add go to the environment
 export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"

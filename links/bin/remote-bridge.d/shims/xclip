@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# xclip for a remote host: copies and pastes through remote-bridge (text, or PNG with
+# -t image/png).
+set -euo pipefail
+here=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+source "$here/../lib.sh"
+
+main() {
+	local paste= image= files=()
+	while (($#)); do
+		case $1 in
+		-o | -out) paste=1 ;;
+		-selection | -sel | -se | -display | -d | -loops | -l) shift ;;
+		-t | -target)
+			shift
+			[[ $1 == image/* ]] && image=1
+			;;
+		-*) ;;
+		*) files+=("$1") ;;
+		esac
+		shift
+	done
+	if [[ -n $paste ]]; then
+		bridge "http://bridge/clipboard${image:+-image}"
+	else
+		cat "${files[@]}" | "$here/../bridge-copy"
+	fi
+}
+
+main "$@"

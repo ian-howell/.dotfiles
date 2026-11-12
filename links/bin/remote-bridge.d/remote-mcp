@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Runs an MCP server for OpenCode: directly in WSL, or on a remote host through remote-bridge,
+# which runs the desktop's command registered under NAME in its mcp.conf and relays its stdio.
+#   remote-mcp NAME COMMAND [ARGS...]
+set -euo pipefail
+socket=${XDG_STATE_HOME:-$HOME/.local/state}/remote-bridge/mcp.sock
+
+main() {
+	local name=${1:?usage: remote-mcp NAME COMMAND [ARGS...]}
+	shift
+	if [[ -e /proc/sys/fs/binfmt_misc/WSLInterop ]]; then
+		exec "$@"
+	fi
+	{
+		printf '%s\n' "$name"
+		cat
+	} | nc -N -U "$socket"
+}
+
+main "$@"

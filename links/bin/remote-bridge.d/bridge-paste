@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Pastes a desktop clipboard image into a tmux pane as the path of a saved PNG, which OpenCode
+# turns into an attachment. Without an image it sends the pane its own Ctrl+V.
+#   bridge-paste PANE
+set -euo pipefail
+here=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+source "$here/lib.sh"
+images=${XDG_CACHE_HOME:-$HOME/.cache}/remote-bridge/clipboard
+
+main() {
+	local pane=${1:?usage: bridge-paste PANE} image
+	mkdir -p "$images"
+	find "$images" -name '*.png' -mmin +1440 -delete
+	image=$(mktemp "$images/XXXXXX.png")
+	if bridge http://bridge/clipboard-image >"$image" && [[ -s $image ]]; then
+		tmux set-buffer -b bridge-paste "$image"
+		tmux paste-buffer -p -d -b bridge-paste -t "$pane"
+	else
+		rm -f "$image"
+		tmux send-keys -t "$pane" C-v
+	fi
+}
+
+main "$@"

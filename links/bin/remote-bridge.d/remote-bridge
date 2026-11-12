@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+"""Serve browser, clipboard and MCP requests from a remote host over SSH-forwarded unix sockets.
+
+Runs on the WSL desktop; the shims in shims/ call it from the remote host:
+  POST /open                 body is an http(s) URL. Localhost ports in it, including an OAuth
+                             redirect_uri, are forwarded from the remote first.
+  POST /open-file?name=NAME  body is the file, which is saved locally and opened.
+  POST /clipboard            body is UTF-8 text for the clipboard.
+  GET  /clipboard            clipboard text.
+  GET  /clipboard-image      clipboard image as PNG.
+remote-mcp connects to the second socket, mcp-server.sock: its first line names an MCP server
+from mcp.conf ("name command..." per line), which runs here with its stdio relayed back.
+REMOTE_BRIDGE_HOST names the SSH host whose control master carries the port forwards.
+"""
+
+import base64
+import http.server
+import os
+import pathlib
+import shlex
+import shutil
+import socketserver
+import subprocess
+import threading
+import urllib.parse
+import uuid
+
+STATE = pathlib.Path(os.environ.get("XDG_STATE_HOME", pathlib.Path.home() / ".local/state"))
+CONFIG = pathlib.Path(os.environ.get("XDG_CONFIG_HOME", pathlib.Path.home() / ".config"))
+SOCKET = STATE / "remote-bridge/server.sock"
+MCP_SOCKET = STATE / "remote-bridge/mcp-server.sock"
+MCP_CONFIG = CONFIG / "remote-bridge/mcp.conf"
+FILES = pathlib.Path.home() / ".cache/remote-bridge"
+HOST = os.environ.get("REMOTE_BRIDGE_HOST", "home")
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+
+CLIPBOARD_IMAGE = """
+Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+$image = [Windows.Forms.Clipboard]::GetImage()
+if ($image) {
+    $png = New-Object IO.MemoryStream
+    $image.Save($png, [Drawing.Imaging.ImageFormat]::Png)
+    [Convert]::ToBase64String($png.ToArray())
+}
+"""
+
+# Both switch the console to UTF-8; its default code page would mangle non-ASCII text.
+SET_CLIPBOARD = """
+[Console]::InputEncoding = New-Object Text.UTF8Encoding $false
+Set-Clipboard -Value ([Console]::In.ReadToEnd())
+"""
+
+GET_CLIPBOARD = """
+[Console]::OutputEncoding = New-Object Text.UTF8Encoding $false
+[Console]::Out.Write((Get-Clipboard -Raw))
+"""
+
+
+def main():
+    SOCKET.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    mcp = listen(MCP_SOCKET, McpRelay)
+    threading.Thread(target=mcp.serve_forever, daemon=True).start()
+    listen(SOCKET, Handler).serve_forever()
+
+
+def listen(path, handler):
+    path.unlink(missing_ok=True)
+    server = Server(str(path), handler)
+    path.chmod(0o600)
+    return server
+
+
+class Server(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
+    daemon_threads = True
+
+
+class McpRelay(socketserver.StreamRequestHandler):
+    """Run the MCP server the first line names and relay its stdio over the connection."""
+
+    def handle(self):
+        name = self.rfile.readline().decode().strip()
+        command = mcp_commands().get(name)
+        if not command:
+            self.log(f"no MCP server {name!r} in {MCP_CONFIG}")
+            return
+        with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, cwd="/tmp") as server:
+            threading.Thread(target=feed, args=(self.rfile, server.stdin), daemon=True).start()
+            relay(server.stdout, self.wfile)
+            server.terminate()
+
+    def log(self, message):
+        print(f"mcp: {message}", flush=True)
+
+
+def mcp_commands():
+    commands = {}
+    if MCP_CONFIG.exists():
+        for line in MCP_CONFIG.read_text().splitlines():
+            if line.strip() and not line.lstrip().startswith("#"):
+                name, *command = shlex.split(line)
+                commands[name] = command
+    return commands
+
+
+def feed(source, stdin):
+    """Relay the caller's input, then close the MCP server's stdin so it exits."""
+    relay(source, stdin)
+    try:
+        stdin.close()
+    except OSError:
+        pass
+
+
+def relay(source, target):
+    try:
+        while chunk := source.read1(65536):
+            target.write(chunk)
+            target.flush()
+    except OSError:
+        pass
+
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def address_string(self):
+        return HOST
+
+    def do_POST(self):
+        url = urllib.parse.urlsplit(self.path)
+        body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        if url.path == "/open":
+            self.answer(open_url, body.decode().strip())
+        elif url.path == "/open-file":
+            name = urllib.parse.parse_qs(url.query).get("name", ["file"])[0]
+            self.answer(open_file, pathlib.Path(name).name, body)
+        elif url.path == "/clipboard":
+            self.answer(set_clipboard, body)
+        else:
+            self.send_error(404)
+
+    def do_GET(self):
+        if self.path == "/clipboard":
+            self.answer(clipboard_text)
+        elif self.path == "/clipboard-image":
+            self.answer(clipboard_image)
+        else:
+            self.send_error(404)
+
+    def answer(self, action, *args):
+        try:
+            data = action(*args)
+        except Exception as e:  # report every failure to the remote caller
+            detail = getattr(e, "stderr", None) or b""
+            self.log_error("%s %s", e, detail.decode(errors="replace").strip())
+            self.send_error(500, explain=str(e))
+            return
+        self.send_response(200)
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+
+def open_url(url):
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme not in ("http", "https"):
+        raise ValueError(f"refusing to open a {parts.scheme or 'schemeless'} URL")
+    forward(parts)
+    for redirect in urllib.parse.parse_qs(parts.query).get("redirect_uri", []):
+        forward(urllib.parse.urlsplit(redirect))
+    subprocess.run([shutil.which("tabopen") or "wslview", url], check=True, capture_output=True)
+    return b""
+
+
+def forward(parts):
+    """Forward a remote localhost port to the same local port through the control master."""
+    if parts.hostname in LOCAL_HOSTS and parts.port:
+        spec = f"{parts.port}:localhost:{parts.port}"
+        subprocess.run(["ssh", "-O", "forward", "-L", spec, HOST], check=True, capture_output=True)
+
+
+def open_file(name, data):
+    path = FILES / uuid.uuid4().hex / name
+    path.parent.mkdir(parents=True)
+    path.write_bytes(data)
+    subprocess.run(["wslview", str(path)], check=True, capture_output=True)
+    return b""
+
+
+def clipboard_text():
+    return powershell(GET_CLIPBOARD).replace(b"\r\n", b"\n")
+
+
+def clipboard_image():
+    return base64.b64decode(powershell(CLIPBOARD_IMAGE))
+
+
+def set_clipboard(text):
+    powershell(SET_CLIPBOARD, text)
+    return b""
+
+
+def powershell(command, stdin=b""):
+    done = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", command],
+        input=stdin, check=True, capture_output=True, cwd="/mnt/c", timeout=20,
+    )
+    return done.stdout
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Copies stdin to the desktop clipboard through remote-bridge. tmux runs it for its own copies
+# and for every OSC 52 clipboard write from an application.
+set -euo pipefail
+here=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+source "$here/lib.sh"
+
+bridge --data-binary @- http://bridge/clipboard

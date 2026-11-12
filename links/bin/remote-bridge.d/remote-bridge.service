@@ -1,0 +1,13 @@
+[Unit]
+Description=Serve browser and clipboard requests from remote hosts
+
+[Service]
+Environment="PATH=%h/.local/bin:%h/.bin:/usr/local/bin:/usr/bin:/bin"
+Environment=BROWSER=wslview
+Environment=REMOTE_BRIDGE_HOST=home
+ExecStart=%h/.bin/remote-bridge
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

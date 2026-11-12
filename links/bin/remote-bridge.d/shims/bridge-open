@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Opens a URL or a file in the desktop browser through remote-bridge. Installed as wslview,
+# xdg-open and tabopen, so tools and skills that call those work unchanged. When the bridge is
+# unreachable it prints the target instead.
+set -euo pipefail
+here=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+source "$here/../lib.sh"
+
+main() {
+	(($#)) || {
+		echo "usage: $(basename "$0") URL|FILE" >&2
+		exit 2
+	}
+	local target=${!#}
+	if [[ -f $target ]]; then
+		bridge --data-binary "@$target" --url-query "name=$(basename "$target")" http://bridge/open-file || fallback "$target"
+	else
+		bridge --data-binary "$target" http://bridge/open || fallback "$target"
+	fi
+}
+
+fallback() {
+	echo "$1"
+	exit 1
+}
+
+main "$@"
