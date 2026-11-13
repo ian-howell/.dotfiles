@@ -79,10 +79,6 @@ unset _kubeconfig
 # Allow proper substitution in the prompt
 setopt PROMPT_SUBST
 
-# Setup default editor
-export EDITOR='nvim'
-export VISUAL='nvim'
-
 # Set default browser to wslview, which will open links in the default Windows browser
 if [[ -x "/usr/bin/wslview" ]]; then
     export BROWSER="/usr/bin/wslview"
