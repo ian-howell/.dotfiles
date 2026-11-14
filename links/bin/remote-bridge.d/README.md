@@ -7,7 +7,8 @@ desktop clipboard, the way `wslview` and `powershell.exe` do inside WSL.
 `~/.local/state/remote-bridge/server.sock`. SSH forwards that socket to the remote's
 `~/.local/state/remote-bridge/bridge.sock`. On the remote, the commands in `shims/` call it:
 
-- `xdg-open`, `wslview`, `tabopen` (`bridge-open`): open a URL, or upload a file and open it.
+- `xdg-open`, `wslview`, `tabopen` (`bridge-open`): open a URL, or open a file through a local web server
+  (port 8766, `REMOTE_BRIDGE_FILE_PORT`) that serves its directory.
   `localhost` ports in the URL, including an OAuth `redirect_uri`, are forwarded from the
   remote first, so dev servers and `az login` callbacks reach the remote. Only http and https
   URLs are opened. When the bridge is unreachable they print the target instead.

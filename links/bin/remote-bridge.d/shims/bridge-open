@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # Opens a URL or a file in the desktop browser through remote-bridge. Installed as wslview,
-# xdg-open and tabopen, so tools and skills that call those work unchanged. When the bridge is
-# unreachable it prints the target instead.
+# xdg-open and tabopen, so tools and skills that call those work unchanged. A file is served
+# with its directory from a local web server, so relative links resolve, and opened by URL.
+# When the bridge is unreachable it prints the target instead.
 set -euo pipefail
 here=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 source "$here/../lib.sh"
+
+files=${XDG_CACHE_HOME:-$HOME/.cache}/remote-bridge/files
+port=${REMOTE_BRIDGE_FILE_PORT:-8766}
+idle=${REMOTE_BRIDGE_FILE_IDLE:-1800}
 
 main() {
 	(($#)) || {
@@ -13,10 +18,49 @@ main() {
 	}
 	local target=${!#}
 	if [[ -f $target ]]; then
-		bridge --data-binary "@$target" --url-query "name=$(basename "$target")" http://bridge/open-file || fallback "$target"
-	else
-		bridge --data-binary "$target" http://bridge/open || fallback "$target"
+		target=$(file_url "$target")
 	fi
+	bridge --data-binary "$target" http://bridge/open || fallback "$target"
+}
+
+# Links the file's directory under the served root and prints the file's URL.
+file_url() {
+	local path dir key
+	path=$(readlink -f "$1")
+	dir=$(dirname "$path")
+	key=$(printf '%s' "$dir" | sha256sum | cut -c1-12)
+	mkdir -p "$files"
+	ln -sfn "$dir" "$files/$key"
+	serve
+	printf 'http://localhost:%s/%s/%s\n' "$port" "$key" "$(basename "$path" | jq -Rr '@uri')"
+}
+
+serve() {
+	curl -fsS -o /dev/null --max-time 2 "http://localhost:$port/" 2>/dev/null && return
+	setsid python3 - "$port" "$files" "$idle" >/dev/null 2>&1 </dev/null <<-'EOF' &
+		import functools, http.server, sys, time
+		port, root, idle = int(sys.argv[1]), sys.argv[2], float(sys.argv[3])
+
+		class Server(http.server.ThreadingHTTPServer):
+		    last = time.monotonic()
+
+		    def finish_request(self, request, address):
+		        Server.last = time.monotonic()
+		        super().finish_request(request, address)
+
+		handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=root)
+		server = Server(("127.0.0.1", port), handler)
+		server.timeout = 5
+		while time.monotonic() - Server.last < idle:
+		    server.handle_request()
+	EOF
+	local i
+	for i in {1..20}; do
+		curl -fsS -o /dev/null --max-time 1 "http://localhost:$port/" 2>/dev/null && return
+		sleep 0.1
+	done
+	echo "file server did not start on port $port" >&2
+	return 1
 }
 
 fallback() {

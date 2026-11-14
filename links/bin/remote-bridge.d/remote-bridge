@@ -149,9 +149,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         try:
             data = action(*args)
         except Exception as e:  # report every failure to the remote caller
-            detail = getattr(e, "stderr", None) or b""
-            self.log_error("%s %s", e, detail.decode(errors="replace").strip())
-            self.send_error(500, explain=str(e))
+            detail = (getattr(e, "stderr", None) or b"").decode(errors="replace").strip()
+            self.log_error("%s %s", e, detail)
+            self.send_error(500, explain=f"{e} {detail}".strip())
             return
         self.send_response(200)
         self.send_header("Content-Length", str(len(data)))
