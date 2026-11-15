@@ -1,0 +1,16 @@
+[Unit]
+Description=Carry remote-bridge to a remote host over SSH
+After=remote-bridge.service
+Wants=remote-bridge.service
+# Keep retrying through long outages, such as a laptop asleep overnight.
+StartLimitIntervalSec=0
+
+[Service]
+Environment="PATH=%h/.local/bin:%h/.bin:/usr/local/bin:/usr/bin:/bin"
+Environment=REMOTE_BRIDGE_HOST=home
+ExecStart=%h/.bin/remote-bridge.d/remote-bridge-tunnel
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

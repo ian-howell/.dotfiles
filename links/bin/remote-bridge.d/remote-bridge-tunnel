@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Holds the one SSH connection that carries remote-bridge to a remote host: the reverse socket
+# forwards the shims call, the file server's port, and the control socket remote-bridge adds
+# on-demand port forwards through. Runs in WSL under remote-bridge-tunnel.service, which
+# restarts it whenever the connection drops.
+#   REMOTE_BRIDGE_HOST       SSH host to connect to (default home)
+#   REMOTE_BRIDGE_FILE_PORT  port of the remote's file server (default 8766)
+set -euo pipefail
+host=${REMOTE_BRIDGE_HOST:-home}
+port=${REMOTE_BRIDGE_FILE_PORT:-8766}
+state=${XDG_STATE_HOME:-$HOME/.local/state}/remote-bridge
+# The remote account mirrors this one, so its state directory has the same path.
+remote=$state
+
+main() {
+	mkdir -p -m 700 "$state"
+	# BatchMode fails instead of prompting, so systemd retries rather than hanging.
+	# ServerAlive notices a dead connection (sleep, network change) within 45 seconds.
+	# ExitOnForwardFailure turns a forward that did not bind into a restart, not a quiet gap.
+	exec ssh -N \
+		-o BatchMode=yes \
+		-o ControlMaster=yes -o ControlPersist=no -o ControlPath="$state/control-$host" \
+		-o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
+		-o ExitOnForwardFailure=yes \
+		-R "$remote/bridge.sock:$state/server.sock" \
+		-R "$remote/mcp.sock:$state/mcp-server.sock" \
+		-L "$port:localhost:$port" \
+		"$host"
+}
+
+main "$@"

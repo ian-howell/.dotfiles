@@ -1,0 +1,10 @@
+[Unit]
+Description=Serve files that bridge-open opens in the desktop browser
+
+[Service]
+ExecStart=%h/.bin/remote-bridge.d/remote-bridge-files
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""Serve the directories bridge-open links under ~/.cache/remote-bridge/files on localhost.
+
+Runs on the remote host under remote-bridge-files.service; remote-bridge-tunnel forwards its
+port to the desktop, where the browser opens it. REMOTE_BRIDGE_FILE_PORT sets the port (8766).
+"""
+
+import functools
+import http.server
+import os
+import pathlib
+
+PORT = int(os.environ.get("REMOTE_BRIDGE_FILE_PORT", "8766"))
+CACHE = pathlib.Path(os.environ.get("XDG_CACHE_HOME", pathlib.Path.home() / ".cache"))
+ROOT = CACHE / "remote-bridge/files"
+
+
+def main():
+    ROOT.mkdir(parents=True, exist_ok=True)
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT))
+    http.server.ThreadingHTTPServer(("127.0.0.1", PORT), handler).serve_forever()
+
+
+main()

@@ -4,11 +4,17 @@ Lets a remote Linux host reached from WSL open things in the desktop browser and
 desktop clipboard, the way `wslview` and `powershell.exe` do inside WSL.
 
 `remote-bridge` runs in WSL as a systemd user service and listens on
-`~/.local/state/remote-bridge/server.sock`. SSH forwards that socket to the remote's
-`~/.local/state/remote-bridge/bridge.sock`. On the remote, the commands in `shims/` call it:
+`~/.local/state/remote-bridge/server.sock`. `remote-bridge-tunnel`, a second user service, holds
+one SSH connection to the remote that forwards that socket to the remote's
+`~/.local/state/remote-bridge/bridge.sock`. It owns every forward the bridge needs, so an
+interactive session ending or reconnecting never takes them down. It fails fast when a forward
+does not bind, notices a dead connection within 45 seconds, and systemd reconnects it. On the
+remote, the commands in `shims/` call the bridge:
 
-- `xdg-open`, `wslview`, `tabopen` (`bridge-open`): open a URL, or open a file through a local web server
-  (port 8766, `REMOTE_BRIDGE_FILE_PORT`) that serves its directory.
+- `xdg-open`, `wslview`, `tabopen` (`bridge-open`): open a URL, or open a file through
+  `remote-bridge-files`, a web server on the remote (port 8766, `REMOTE_BRIDGE_FILE_PORT`) that
+  serves its directory. The tunnel always forwards that port, so an open page still reloads after
+  a reconnect.
   `localhost` ports in the URL, including an OAuth `redirect_uri`, are forwarded from the
   remote first, so dev servers and `az login` callbacks reach the remote. Only http and https
   URLs are opened. When the bridge is unreachable they print the target instead.
@@ -32,24 +38,23 @@ In WSL:
 
 ```sh
 ln -sfn ~/.dotfiles/links/bin/remote-bridge.d/remote-bridge.service ~/.config/systemd/user/
-systemctl --user enable --now remote-bridge.service
+ln -sfn ~/.dotfiles/links/bin/remote-bridge.d/remote-bridge-tunnel.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now remote-bridge.service remote-bridge-tunnel.service
 ```
 
-`REMOTE_BRIDGE_HOST` in the unit names the SSH host whose control master carries the port
-forwards. That host's SSH config needs one shared connection and the socket forward:
+`REMOTE_BRIDGE_HOST` in both units names the remote's SSH host. The tunnel runs SSH with
+`BatchMode`, so that host must log in without prompting. Its SSH config must not add
+`RemoteForward` lines for these sockets; the tunnel creates them. Check it with
+`systemctl --user status remote-bridge-tunnel` and `journalctl --user -u remote-bridge-tunnel`.
 
-```sshconfig
-ControlMaster auto
-ControlPath ~/.ssh/control-%C
-ControlPersist 10m
-RemoteForward /home/ian/.local/state/remote-bridge/bridge.sock /home/ian/.local/state/remote-bridge/server.sock
-RemoteForward /home/ian/.local/state/remote-bridge/mcp.sock /home/ian/.local/state/remote-bridge/mcp-server.sock
-```
-
-On the remote, opt in and let a new connection replace a stale socket:
+On the remote, opt in, run the file server, and let a new connection replace a stale socket:
 
 ```sh
 install -d -m 700 ~/.local/state/remote-bridge
+ln -sfn ~/.dotfiles/links/bin/remote-bridge.d/remote-bridge-files.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now remote-bridge-files.service
 echo 'StreamLocalBindUnlink yes' | sudo tee /etc/ssh/sshd_config.d/remote-bridge.conf
 sudo sshd -t && sudo systemctl reload ssh
 ```

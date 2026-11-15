@@ -10,7 +10,7 @@ Runs on the WSL desktop; the shims in shims/ call it from the remote host:
   GET  /clipboard-image      clipboard image as PNG.
 remote-mcp connects to the second socket, mcp-server.sock: its first line names an MCP server
 from mcp.conf ("name command..." per line), which runs here with its stdio relayed back.
-REMOTE_BRIDGE_HOST names the SSH host whose control master carries the port forwards.
+REMOTE_BRIDGE_HOST names the SSH host; remote-bridge-tunnel's connection to it carries the port forwards.
 """
 
 import base64
@@ -32,6 +32,7 @@ MCP_SOCKET = STATE / "remote-bridge/mcp-server.sock"
 MCP_CONFIG = CONFIG / "remote-bridge/mcp.conf"
 FILES = pathlib.Path.home() / ".cache/remote-bridge"
 HOST = os.environ.get("REMOTE_BRIDGE_HOST", "home")
+CONTROL = STATE / f"remote-bridge/control-{HOST}"
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
 CLIPBOARD_IMAGE = """
@@ -171,10 +172,10 @@ def open_url(url):
 
 
 def forward(parts):
-    """Forward a remote localhost port to the same local port through the control master."""
+    """Forward a remote localhost port to the same local port through the tunnel's connection."""
     if parts.hostname in LOCAL_HOSTS and parts.port:
         spec = f"{parts.port}:localhost:{parts.port}"
-        subprocess.run(["ssh", "-O", "forward", "-L", spec, HOST], check=True, capture_output=True)
+        subprocess.run(["ssh", "-S", str(CONTROL), "-O", "forward", "-L", spec, HOST], check=True, capture_output=True)
 
 
 def open_file(name, data):
