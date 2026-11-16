@@ -173,6 +173,6 @@ customCommands:
     description: "Force push"
     loadingText: "Force pushing"
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --paging=never --side-by-side --line-numbers
+      command: delta --paging=never --side-by-side --line-numbers
