@@ -1,6 +1,6 @@
 ---
 name: interactive-demo
-description: Build polished, click-driven, animated browser demos that explain how a system, algorithm, or design works — Tokyo Night look, continuous morphing motion, code excerpts that fly in and magic-move, and a playground for edge cases. Use when the user asks for an interactive demo, animated explainer, visual walkthrough, or presentation of how something behaves; also for choosing a visual style for such a demo.
+description: Build polished, click-driven, animated browser demos that explain how a system, algorithm, or design works — dark palette with a swappable ambient scene (night city, alien desert…), continuous morphing motion, code excerpts that fly in and magic-move, and a playground for edge cases. Use when the user asks for an interactive demo, animated explainer, visual walkthrough, or presentation of how something behaves; also for choosing a visual style for such a demo.
 ---
 
 # Interactive demo
@@ -23,7 +23,9 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
 ## Layout of this skill
 
 - `assets/engine.js`, `assets/engine.css` — the engine (motion primitives, morphing, effects,
-  night sky, code card, story/playground runner). API is documented at the top of `engine.js`.
+  night sky, code card, story/playground runner).
+- `assets/scenes/` — backdrops (`city` default, `desert`); catalog and contract in
+  `references/scenes.md`. API is documented at the top of `engine.js`.
 - `assets/template.html`, `assets/demo.js` — a blank demo: page contract + model/scenes/render stub.
 - `examples/circuit-breaker/` — reference demo built only on the engine.
 - `reference/state-tree.md` — rules for the state-tree explorer format.
@@ -41,7 +43,9 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
    default to a repo: unrequested demos piling up as
    untracked files there annoy the user. Copy one into a repo only when asked to keep it.
    Run `scripts/new-demo.sh <dir>` (or `--example circuit-breaker` to start from the example).
-   Each demo owns its copy of the engine.
+   Add `--scene <name>` when the user names a backdrop (default `city`); a look that no scene
+   matches gets a new scene file, per `references/scenes.md`, not a one-off inside the demo.
+   Each demo owns its copy of the engine and scene.
 3. **Serve once, keep the URL stable:** `scripts/serve.sh <dir>` (default port 8765; pass a
    second port for another root) and open `http://localhost:8765/<file-or-dir>/` in the user's
    browser **once**. The server injects a live-reload snippet into served HTML, so every save
@@ -57,8 +61,8 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
 4. **Style check (optional, when the user wants to choose a look or the subject is new
    territory):** before building interactions, render 2–3 static mockups of the *same* key scene
    in one HTML file with `?style=` variants, screenshot them, inspect the screenshots yourself,
-   and present the options. Tokyo Night is the default and the user's strong preference;
-   variations are usually about layout, density, and visual metaphor, not palette.
+   and present the options. Tokyo Night with the `city` scene is the default;
+   variations are usually about layout, density, visual metaphor, and scene.
 5. **Build in layers** inside `demo.js`:
    - **Model:** `initial()` and pure `step(state, event)`; set `state.last = { kind, code, text }`
      so the playground can narrate and show the matching code excerpt.
@@ -245,5 +249,6 @@ motion vocabulary. Study `examples/circuit-breaker/` for a complete, working dem
   rebuild into one command and say so, so a timed-out approval doesn't leave the change unverified.
 - 3D camera/mouse controls: always the `free-camera` skill's scheme and asset; never invent or
   swap bindings per demo.
+- Backdrop choice or a new scene: `references/scenes.md`.
 - Restyle/rebrand requests (OS skin, era look, real photos): `references/retheming-and-real-images.md`.
 - 3D/WebGL scenes: `references/webgl-3d.md`; generated sound and music: `references/web-audio.md`.

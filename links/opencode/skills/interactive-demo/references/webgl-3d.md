@@ -1,7 +1,7 @@
 # 3D / WebGL format (three.js)
 
 Use when the user wants a navigable 3D space (fly around, click to explode, title cards) rather
-than scenes. The 2D engine does not apply; the look (Tokyo Night palette, fluid motion, honest
+than scenes. The 2D engine does not apply; the look (palette tokens, fluid motion, honest
 notes dialog) still does.
 
 ## Build: bundle, then inline into one HTML file

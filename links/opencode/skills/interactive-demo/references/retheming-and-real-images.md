@@ -1,7 +1,8 @@
 # Re-theming a demo and using real images
 
-Use when the user asks for a demo in a non–Tokyo Night look (e.g. an OS/era skin such as
-Windows 7) or asks for real photos instead of custom SVG.
+Use when the user asks for a full re-skin (e.g. an OS/era skin such as Windows 7) or asks for
+real photos instead of custom SVG. For a different backdrop only, pick or write a scene
+(`references/scenes.md`); for different colours only, redefine the palette tokens.
 
 ## Re-theme without touching the engine
 
@@ -11,7 +12,7 @@ Windows 7) or asks for real photos instead of custom SVG.
    then restyle the engine's page contract (`#code`, `.code-head`, `#codeBody`, `.fcard`,
    `.whisper`, `.flash`, `footer`, `#dots`, `.nav`, `#playDock`, `#tape`, `dialog`). Keep
    every contract id; the runner looks them up.
-3. Drop `#sky`/`#skyline` when a photo background replaces them (the engine no-ops without
+3. Drop `#sky`/`#horizon` and `scene.js` when a photo background replaces them (the engine no-ops without
    them); remove `sky.timelapse` calls and show passing time some other way (e.g. a clock).
 4. Theme the OS chrome as page furniture:
    - **footer -> taskbar**: keep `#storyBar`/`#playBar` inside it; put `#modeStory/#modePlay`

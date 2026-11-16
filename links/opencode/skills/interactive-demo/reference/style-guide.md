@@ -5,14 +5,17 @@ when the user asks or the subject clearly demands it, and say so.
 
 ## Look
 
-- **Tokyo Night, always.** Palette and syntax colors live in `engine.css` custom properties. Use
+- **Palette tokens.** Palette and syntax colors live in `engine.css` custom properties; the
+  default values are Tokyo Night. Another palette is fine when the user asks for one: redefine the
+  tokens, keep their meanings. Use
   the tokens (`--blue`, `--magenta`, `--green`…) instead of new colors. Semantics: blue = flow and
   structure, magenta = persisted intent / the system's own state, cyan = instances and data,
   green = success and health, yellow/amber = waiting and warnings, red = failure, orange = numbers
   and constants.
 - A fixed **1600×900 world** scaled to fit the window (letterboxed). Lay everything out in those
   coordinates; never fight responsive layout inside the stage.
-- **Ambient night sky** (stars, rare meteor, city skyline) stays subtle. It earns its place by
+- **Ambient backdrop** (stars, rare meteor, and the chosen scene: city skyline by default; see
+  `references/scenes.md`) stays subtle. It earns its place by
   showing time: call `Demo.sky.timelapse(amount)` whenever time passes in the story.
 - Generous space. One focal object per scene, highlighted with the spotlight; everything else is
   context.

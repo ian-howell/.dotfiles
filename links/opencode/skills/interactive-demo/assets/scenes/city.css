@@ -1,0 +1,7 @@
+/* interactive-demo scene: night city. */
+body {
+  background:
+    radial-gradient(1100px 650px at 72% 4%, #2a2f4a66, transparent 62%),
+    radial-gradient(900px 600px at 6% 96%, #bb9af70c, transparent 60%),
+    var(--bg);
+}

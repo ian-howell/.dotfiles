@@ -1,0 +1,7 @@
+/* interactive-demo scene: alien desert at dusk. The sky warms toward the horizon, which desert.js puts at 81.5% of the height. */
+body {
+  background: linear-gradient(180deg, #16171f, #1a1b26 30%, #1d1c2a 42%, #221e30 53%, #2b2138 64%, #382441 72%, #46273f 77%, #54293f 81.5%, #241a2c 87%, #120e16);
+}
+/* A slow light on the settlement's tallest tower; desert.js places it. */
+.beacon { position: fixed; left: 0; top: 0; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: #f7768e; box-shadow: 0 0 7px 2px #f7768e77; opacity: .5; pointer-events: none; animation: beacon 3.6s ease-in-out infinite; }
+@keyframes beacon { 0%, 100% { opacity: .1; } 40% { opacity: .85; } }

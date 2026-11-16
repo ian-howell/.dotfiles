@@ -1,9 +1,9 @@
-// interactive-demo engine — Tokyo Night motion toolkit for click-driven, state-driven explainers.
+// interactive-demo engine — motion toolkit for click-driven, state-driven explainers.
 //
 // Each demo gets its OWN COPY of this file. Tweak it freely for the demo at hand; if a change is
 // generally useful, port it back to the skill's assets/engine.js.
 //
-// Page contract (see template.html): #sky, #skyline, #stage > #world > (#camera > #wires(#comets),
+// Page contract (see template.html): #sky, #horizon, #stage > #world > (#camera > #wires(#comets),
 // #spot, #fxCam) + #hud(#kicker, #headline, #subline, #code, .fcard*, #finaleCtas, #hint);
 // footer #storyBar(#back, #dots, #count, #next) and #playBar with two rows:
 // .play-actions(#playDock, #preset), .history-row(#tape; runner adds Undo/Redo);
@@ -375,35 +375,12 @@
     requestAnimationFrame(tick);
   }
 
-  // ───────────── Ambient: night sky & city ─────────────
-  const City = (() => {
-    const svg = $('#skyline'), lit = [];
-    if (!svg) return { flicker() {} };
-    let x = -40;
-    const add = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.append(e); return e; };
-    const fog = add('linearGradient', { id: 'fog', x1: 0, y1: 0, x2: 0, y2: 1 });
-    fog.innerHTML = '<stop offset="0" stop-color="#1a1b26" stop-opacity="0"/><stop offset="1" stop-color="#16161e" stop-opacity=".9"/>';
-    while (x < 1640) {
-      const bw = 34 + Math.random() * 78, bh = 30 + Math.random() ** 1.6 * 140;
-      add('rect', { x, y: 200 - bh, width: bw, height: bh, fill: Math.random() < .5 ? '#14151e' : '#181926' });
-      if (bh > 120 && Math.random() < .5) add('rect', { x: x + bw / 2 - 1, y: 200 - bh - 18, width: 2, height: 18, fill: '#181926' });
-      for (let wy = 200 - bh + 9; wy < 194; wy += 11) {
-        for (let wx = x + 6; wx < x + bw - 6; wx += 9) {
-          lit.push(add('rect', { x: wx, y: wy, width: 3, height: 4, fill: Math.random() < .12 ? '#7dcfff' : '#e0af68', opacity: Math.random() < .16 ? .55 : 0 }));
-        }
-      }
-      x += bw + Math.random() * 6;
-    }
-    add('rect', { x: 0, y: 0, width: 1600, height: 200, fill: 'url(#fog)', opacity: .55 });
-    return {
-      flicker(d) {
-        for (let i = 0; i < 70; i += 1) {
-          const r = lit[(Math.random() * lit.length) | 0];
-          setTimeout(() => r.setAttribute('opacity', r.getAttribute('opacity') === '0' ? '.55' : '0'), Math.random() * d);
-        }
-      },
-    };
-  })();
+  // ───────────── Ambient: night sky & scene ─────────────
+  // The backdrop in front of the stars comes from the scene file loaded before this one
+  // (window.DemoScene, see the skill's assets/scenes/). Without a scene or #horizon, only stars.
+  const SCENE = window.DemoScene;
+  const Scene = (SCENE && $('#horizon') && SCENE.mount($('#horizon'))) || { flicker() {} };
+  const starsShown = SCENE?.stars || (() => 1);
 
   // Stars wheel around a pole above the screen. timelapse(amount) sweeps them into trails;
   // amount 1 ≈ a 0.55 rad sweep. Use it whenever time passes in the story.
@@ -443,7 +420,9 @@
       for (const s of stars) {
         const a = s.a + theta, x = pole.x + s.r * Math.cos(a), y = pole.y + s.r * Math.sin(a);
         if (x < -3 || x > w + 3 || y < -3 || y > h + 3) continue;
-        g.globalAlpha = s.b * (.72 + .28 * Math.sin(now * .001 * s.f + s.p)) * (y > h * .78 ? .5 : 1);
+        const v = starsShown(x, y, w, h);
+        if (!v) continue;
+        g.globalAlpha = s.b * (.72 + .28 * Math.sin(now * .001 * s.f + s.p)) * v;
         g.fillStyle = s.c;
         g.beginPath(); g.arc(x, y, s.z, 0, 6.2832); g.fill();
       }
@@ -469,7 +448,7 @@
         if (calm()) return;
         const d = 2600, total = .55 * Math.min(Math.max(amount, 0), 1.4);
         lapse = { t0: performance.now(), d, peak: total * Math.PI / (2 * d) };
-        City.flicker(d);
+        Scene.flicker(d);
       },
     };
   })();
@@ -840,6 +819,6 @@
     $, $$, calm, EASE, SVGNS, W, H,
     later, keep, drop, tween, localPoint, arc, lcs, morph, words, codeTokens, codeLines,
     pulse, badge, fly, particles, whisper, flash, breatheIn, breatheOut, countTo,
-    sky: Sky, city: City, fit, camera, spot, text, code, finale, story,
+    sky: Sky, scene: Scene, fit, camera, spot, text, code, finale, story,
   };
 })();

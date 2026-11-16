@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Circuit breaker · interactive demo</title>
 <link rel="stylesheet" href="engine.css">
+<link rel="stylesheet" href="scene.css">
 <style>
 /* Client */
 #client { position: absolute; left: 262px; top: 452px; width: 136px; height: 136px; border-radius: 50%; display: grid; place-items: center; opacity: 0; }
@@ -53,7 +54,7 @@
 </head>
 <body>
 <canvas id="sky" aria-hidden="true"></canvas>
-<svg id="skyline" aria-hidden="true" viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax slice"></svg>
+<canvas id="horizon" aria-hidden="true"></canvas>
 
 <header class="top">
   <div class="brand"><span class="logo">⏻</span>Circuit breaker<small>an interactive-demo example</small></div>
@@ -137,6 +138,7 @@
   </ul>
 </dialog>
 
+<script src="scene.js"></script>
 <script src="engine.js"></script>
 <script src="demo.js"></script>
 </body>

@@ -10,7 +10,8 @@ explorer by copying it and replacing the model, the card renderer, the decision 
 minimap state line. The tree, camera, minimap, and input sections are generic.
 
 It is one self-contained HTML file (inline CSS and JS, DOM plus SVG plus a few 2D canvases; no
-WebGL, no engine copy). The look follows `style-guide.md`: Tokyo Night, night sky, things move
+WebGL, no engine copy). The look follows `style-guide.md`: palette tokens, night sky (a scene file from
+`assets/scenes/` can be inlined for the backdrop), things move
 and transform rather than pop.
 
 ## Model

@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 # Scaffold a demo directory with its own copy of the engine.
-# Usage: new-demo.sh <target-dir> [--example <name>] [--force]
+# Usage: new-demo.sh <target-dir> [--example <name>] [--scene <name>] [--force]
 #   --example <name>  start from examples/<name> instead of the blank template
+#   --scene <name>    backdrop from assets/scenes/<name>.{js,css} (default: city)
 #   --force           overwrite existing files (the engine copy may hold demo-specific tweaks!)
 set -euo pipefail
 skill="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-target="" example="" force=0
+target="" example="" scene=city force=0
 while (($#)); do
   case "$1" in
     --example) example="${2:?--example needs a name}"; shift 2 ;;
+    --scene) scene="${2:?--scene needs a name}"; shift 2 ;;
     --force) force=1; shift ;;
     -*) echo "unknown option: $1" >&2; exit 2 ;;
     *) target="$1"; shift ;;
   esac
 done
-[[ -n "$target" ]] || { echo "usage: new-demo.sh <target-dir> [--example <name>] [--force]" >&2; exit 2; }
+[[ -n "$target" ]] || { echo "usage: new-demo.sh <target-dir> [--example <name>] [--scene <name>] [--force]" >&2; exit 2; }
+[[ -f "$skill/assets/scenes/$scene.js" ]] || { echo "no scene named '$scene' (see assets/scenes/)" >&2; exit 2; }
 mkdir -p "$target"
 
 put() { # put <source> <dest-name>
@@ -24,6 +27,8 @@ put() { # put <source> <dest-name>
 }
 put "$skill/assets/engine.js" engine.js
 put "$skill/assets/engine.css" engine.css
+put "$skill/assets/scenes/$scene.js" scene.js
+put "$skill/assets/scenes/$scene.css" scene.css
 if [[ -n "$example" ]]; then
   [[ -d "$skill/examples/$example" ]] || { echo "no example named '$example'" >&2; exit 2; }
   put "$skill/examples/$example/index.html" index.html
