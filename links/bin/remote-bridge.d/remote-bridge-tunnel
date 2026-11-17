@@ -2,30 +2,82 @@
 # Holds the one SSH connection that carries remote-bridge to a remote host: the reverse socket
 # forwards the shims call, the file server's port, and the control socket remote-bridge adds
 # on-demand port forwards through. Runs in WSL under remote-bridge-tunnel.service, which
-# restarts it whenever the connection drops.
+# restarts it whenever the connection drops or its control socket does not answer.
 #   REMOTE_BRIDGE_HOST       SSH host to connect to (default home)
 #   REMOTE_BRIDGE_FILE_PORT  port of the remote's file server (default 8766)
 set -euo pipefail
 host=${REMOTE_BRIDGE_HOST:-home}
 port=${REMOTE_BRIDGE_FILE_PORT:-8766}
 state=${XDG_STATE_HOME:-$HOME/.local/state}/remote-bridge
+ctl=$state/control-$host
+# Ports remote-bridge forwarded, one "port last-requested-epoch" per line.
+forwards=$state/forwards
+# Forwards not requested again within this many seconds are dropped.
+expiry=$((7 * 24 * 3600))
+master_wait=40
 # The remote account mirrors this one, so its state directory has the same path.
 remote=$state
 
 main() {
 	mkdir -p -m 700 "$state"
+	# This unit owns the socket; one no master answers was left by an ssh that died, and
+	# would make the new ssh run without multiplexing.
+	if [[ -e $ctl ]] && ! master_up; then
+		rm -f "$ctl"
+	fi
 	# BatchMode fails instead of prompting, so systemd retries rather than hanging.
 	# ServerAlive notices a dead connection (sleep, network change) within 45 seconds.
 	# ExitOnForwardFailure turns a forward that did not bind into a restart, not a quiet gap.
-	exec ssh -N \
-		-o BatchMode=yes \
-		-o ControlMaster=yes -o ControlPersist=no -o ControlPath="$state/control-$host" \
+	ssh -N \
+		-o BatchMode=yes -o ConnectTimeout=20 \
+		-o ControlMaster=yes -o ControlPersist=no -o ControlPath="$ctl" \
 		-o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
 		-o ExitOnForwardFailure=yes \
 		-R "$remote/bridge.sock:$state/server.sock" \
 		-R "$remote/mcp.sock:$state/mcp-server.sock" \
 		-L "$port:localhost:$port" \
-		"$host"
+		"$host" &
+	ssh_pid=$!
+	trap 'kill "$ssh_pid" 2>/dev/null' EXIT
+	wait_for_master
+	restore_forwards
+	wait "$ssh_pid"
+}
+
+master_up() {
+	ssh -S "$ctl" -O check "$host" 2>/dev/null
+}
+
+# ConnectTimeout bounds the connection, so a master missing after master_wait seconds means
+# ssh is running without one; failing makes systemd restart it.
+wait_for_master() {
+	local i
+	for ((i = 0; i < master_wait; i++)); do
+		master_up && return
+		kill -0 "$ssh_pid" 2>/dev/null || wait "$ssh_pid"
+		sleep 1
+	done
+	echo "no control master answers on $ctl" >&2
+	exit 1
+}
+
+# Re-adds the ports remote-bridge forwarded, so pages open in the browser survive a reconnect.
+# Drops expired ports and ones the master rejects.
+restore_forwards() {
+	[[ -f $forwards ]] || return 0
+	local now kept p t
+	now=$(date +%s)
+	kept=$(mktemp "$forwards.XXXXXX")
+	while read -r p t; do
+		[[ $p =~ ^[0-9]+$ && $t =~ ^[0-9]+$ ]] || continue
+		((now - t < expiry)) || continue
+		if ssh -S "$ctl" -O forward -L "$p:localhost:$p" "$host" 2>/dev/null; then
+			echo "$p $t" >>"$kept"
+		else
+			echo "dropping forward of port $p" >&2
+		fi
+	done <"$forwards"
+	mv "$kept" "$forwards"
 }
 
 main "$@"

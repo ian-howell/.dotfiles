@@ -8,8 +8,17 @@ desktop clipboard, the way `wslview` and `powershell.exe` do inside WSL.
 one SSH connection to the remote that forwards that socket to the remote's
 `~/.local/state/remote-bridge/bridge.sock`. It owns every forward the bridge needs, so an
 interactive session ending or reconnecting never takes them down. It fails fast when a forward
-does not bind, notices a dead connection within 45 seconds, and systemd reconnects it. On the
-remote, the commands in `shims/` call the bridge:
+does not bind, notices a dead connection within 45 seconds, and systemd reconnects it.
+
+The tunnel's SSH is the control master for `~/.local/state/remote-bridge/control-HOST`, through
+which the bridge adds on-demand port forwards. Before connecting, the tunnel removes a control
+socket no master answers, left by an SSH that died; it exits, and systemd retries, when no
+master answers within 40 seconds of starting. The bridge records each port it forwards in
+`~/.local/state/remote-bridge/forwards`, and the tunnel re-adds them on every connect, so a page
+open in the browser keeps working after a reconnect. Ports not requested for a week are dropped.
+When a forward fails because no master answers, the bridge restarts the tunnel and retries once.
+
+On the remote, the commands in `shims/` call the bridge:
 
 - `xdg-open`, `wslview`, `tabopen` (`bridge-open`): open a URL, or open a file through
   `remote-bridge-files`, a web server on the remote (port 8766, `REMOTE_BRIDGE_FILE_PORT`) that
