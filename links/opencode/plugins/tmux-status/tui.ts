@@ -4,6 +4,7 @@ import { promisify } from "node:util"
 const exec = promisify(execFile)
 const option = "@opencode-status"
 const titleOption = "@opencode-title"
+const sessionOption = "@opencode-session"
 
 // Runs in the TUI so each client updates its own pane, including attached clients.
 // A plain object, because OpenCode does not resolve @opencode/plugin for local plugin files.
@@ -18,16 +19,16 @@ export default {
     const marks = new Map<string, string>()
     // Open permission and question requests, by request ID.
     const requests = new Map<string, string>()
-    let previous: { mark: string; title: string } | undefined
+    let previous: { mark: string; title: string; id: string } | undefined
     let disposed = false
     let reported = false
     let pending = Promise.resolve()
 
     const isRoot = (id: string) => !session.get(id)?.parentID
 
-    function publish(mark: string, title: string) {
-      if (disposed || (mark === previous?.mark && title === previous?.title)) return
-      previous = { mark, title }
+    function publish(mark: string, title: string, id: string) {
+      if (disposed || (mark === previous?.mark && title === previous?.title && id === previous?.id)) return
+      previous = { mark, title, id }
       // Serialize writes so a fast busy -> idle transition cannot land backwards.
       pending = pending.then(async () => {
         if (disposed) return
@@ -35,6 +36,7 @@ export default {
           await exec("tmux", [
             "set-option", "-p", "-t", pane, option, mark,
             ";", "set-option", "-p", "-t", pane, titleOption, title,
+            ";", "set-option", "-p", "-t", pane, sessionOption, id,
           ], { timeout: 2000 })
           reported = false
         } catch (error) {
@@ -50,14 +52,14 @@ export default {
     function refresh() {
       if (disposed) return
       const route = context.ui.router.current()
-      if (route.type !== "session") return publish("", "")
-      // The title follows the displayed session; status rolls up to its root.
+      if (route.type !== "session") return publish("", "", "")
+      // The title follows the displayed session; status and the resumable session roll up to its root.
       const root = session.root(route.sessionID)
       const family = session.family(root)
       const waiting = [...requests.values()].some((id) => family.includes(id)) ||
         family.some((id: string) => session.permission.list(id)?.length || session.form.list(id)?.length)
       const mark = waiting ? "?" : session.status(root) === "running" ? "…" : marks.get(root) ?? ""
-      publish(mark, session.get(route.sessionID)?.title ?? "")
+      publish(mark, session.get(route.sessionID)?.title ?? "", root)
     }
 
     const ended = (id: string, mark: string) => {
@@ -100,6 +102,7 @@ export default {
       await exec("tmux", [
         "set-option", "-pu", "-t", pane, option,
         ";", "set-option", "-pu", "-t", pane, titleOption,
+        ";", "set-option", "-pu", "-t", pane, sessionOption,
       ], { timeout: 2000 }).catch(() => {})
     }
   },

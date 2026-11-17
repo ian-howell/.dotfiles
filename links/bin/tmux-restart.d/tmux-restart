@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+# Restart the tmux server without losing work: snapshot sessions, windows, panes, layouts and
+# working directories, then rebuild them and relaunch what was running:
+#   opencode       resumed on its session (@opencode-session, else a unique title match)
+#   nvim           from a :mksession snapshot (files, splits, tabs, cursors; no terminals)
+#   k9s, lazygit   with their original arguments
+# Other panes come back as a shell in the same directory.
+#
+# Usage:
+#   tmux-restart            save, then replace the server from a systemd transient unit
+#   tmux-restart save       snapshot only; prints the snapshot directory
+#   tmux-restart restore [DIR]   rebuild from DIR (default: latest), skipping existing sessions
+#   tmux-restart list       list snapshots
+#
+# Env: TMUX_RESTART_SOCKET selects a tmux socket (-L) for testing.
+# Snapshots live in ${XDG_STATE_HOME:-~/.local/state}/tmux-restart and are never removed.
+set -euo pipefail
+
+state=${XDG_STATE_HOME:-$HOME/.local/state}/tmux-restart
+self=$(readlink -f "${BASH_SOURCE[0]}")
+sep=$'\x1f'
+
+main() {
+  case ${1:-restart} in
+    restart) restart ;;
+    save) save ;;
+    restore) restore "${2:-$(latest)}" ;;
+    list) ls -1 "$state" 2>/dev/null ;;
+    _replace) replace "$2" ;;
+    *) echo "usage: tmux-restart [save | restore [DIR] | list]" >&2; exit 2 ;;
+  esac
+}
+
+tmux() { command tmux ${TMUX_RESTART_SOCKET:+-L "$TMUX_RESTART_SOCKET"} "$@"; }
+
+latest() { ls -1d "$state"/*/ 2>/dev/null | tail -1 | sed 's:/$::'; }
+
+# The replacement runs in its own systemd unit so killing the server cannot take it down
+# with the panes' processes. KillMode=process leaves the new server running when the unit ends.
+restart() {
+  local dir unit
+  command -v systemd-run >/dev/null || { echo "systemd-run is required" >&2; exit 1; }
+  echo "Server: $(tmux display -p '#{version}'); binary: $(command tmux -V)"
+  read -rp "Snapshot, kill the tmux server and rebuild? [y/N] " ans
+  [[ $ans == [yY] ]] || exit 1
+  dir=$(save)
+  (umask 077 && env -0 >"$dir/env")
+  unit=tmux-restart-$(basename "$dir")
+  systemd-run --user --quiet --collect --unit "$unit" --property=KillMode=process \
+    ${TMUX_RESTART_SOCKET:+--setenv=TMUX_RESTART_SOCKET="$TMUX_RESTART_SOCKET"} \
+    "$self" _replace "$dir"
+  echo "Replacing the server (log: journalctl --user -u $unit)." >&2
+  echo "Reattach with: tmux attach. If anything is missing: tmux-restart restore $dir" >&2
+}
+
+# The new server and its panes start with the caller's environment, not systemd's.
+replace() {
+  local var
+  while IFS= read -r -d '' var; do
+    [[ $var == TMUX=* || $var == TMUX_PANE=* ]] || export "$var"
+  done <"$1/env"
+  rm "$1/env"
+  sleep 1
+  tmux kill-server || true
+  while tmux has-session 2>/dev/null; do sleep 0.2; done
+  restore "$1"
+}
+
+# Prints the snapshot directory on stdout; everything else goes to stderr.
+save() {
+  local dir raw
+  dir=$state/$(date +%Y%m%d-%H%M%S)
+  mkdir -p "$dir"
+  raw=$(tmux list-panes -a -F "$(fields '#{session_name}' '#{window_index}' '#{window_name}' \
+    '#{window_layout}' '#{pane_id}' '#{pane_current_path}' '#{window_active}' '#{pane_active}' \
+    '#{pane_pid}' '#{pane_current_command}' '#{@opencode-session}' '#{@opencode-title}')")
+  check_nvim_buffers <<<"$raw"
+  local s w name layout pane path wact pact pid cmd sid title
+  while IFS=$sep read -r s w name layout pane path wact pact pid cmd sid title; do
+    fields "$s" "$w" "$name" "$layout" "$path" "$wact" "$pact" "$cmd" \
+      "$(relaunch_cmd "$pane" "$pid" "$cmd" "$path" "$sid" "$title" "$dir")"
+  done <<<"$raw" >"$dir/panes"
+  report "$dir"
+  echo "$dir"
+}
+
+fields() { local IFS=$sep; echo "$*"; }
+
+check_nvim_buffers() {
+  local pane pid cmd sock mods blocked=0
+  while IFS=$sep read -r _ _ _ _ pane _ _ _ pid cmd _; do
+    [[ $cmd == nvim ]] || continue
+    sock=$(nvim_socket "$pid")
+    [[ -n $sock ]] || { echo "warning: $pane nvim has no RPC socket; it reopens empty" >&2; continue; }
+    mods=$(nvim_expr "$sock" 'join(map(filter(getbufinfo({"bufmodified":1}), {_,b -> getbufvar(b.bufnr, "&buftype") ==# ""}), {_,b -> b.name ==# "" ? "[No Name]" : b.name}), ", ")')
+    [[ -z $mods ]] || { echo "$pane nvim has unsaved buffers: $mods" >&2; blocked=1; }
+  done
+  ((blocked == 0)) || { echo "Save or discard those buffers, then rerun." >&2; exit 1; }
+}
+
+report() {
+  echo "Snapshot: $1" >&2
+  echo "Relaunching:" >&2
+  awk -F"$sep" '$9 != "" {printf "  %s:%s  %s\n", $1, $2, $9}' "$1/panes" >&2
+  echo "Coming back as a shell:" >&2
+  awk -F"$sep" '$9 == "" && $8 !~ /^-?(zsh|bash|sh)$/ {printf "  %s:%s  %s (%s)\n", $1, $2, $8, $5}' "$1/panes" >&2
+}
+
+# Shell-quoted command that relaunches a pane's program, or nothing.
+relaunch_cmd() {
+  local pane=$1 pid=$2 cmd=$3 path=$4 sid=$5 title=$6 dir=$7 fg
+  local -a argv=()
+  fg=$(ps -o tpgid= -p "$pid" | tr -d ' ')
+  [[ -r /proc/$fg/cmdline ]] || fg=$pid
+  [[ -r /proc/$fg/cmdline ]] && mapfile -d '' -t argv <"/proc/$fg/cmdline"
+  case $cmd in
+    opencode) opencode_cmd "${sid:-$(session_by_title "$path" "$title")}" "${argv[@]}" ;;
+    nvim) nvim_cmd "$pid" "$dir/nvim-${pane#%}.vim" ;;
+    k9s | lazygit) printf '%q ' "${argv[@]}" ;;
+  esac
+}
+
+# Original flags, minus any session selection, plus --session ID when known.
+opencode_cmd() {
+  local id=$1 i
+  shift
+  local -a out=(opencode)
+  for ((i = 2; i <= $#; i++)); do
+    case ${!i} in
+      -c | --continue) ;;
+      -s | --session) ((i++)) ;;
+      *) out+=("${!i}") ;;
+    esac
+  done
+  [[ -n $id ]] && out+=(--session "$id")
+  printf '%q ' "${out[@]}"
+}
+
+session_by_title() {
+  [[ -n $2 ]] || return 0
+  (cd "$1" && opencode session list -n 500 --format json 2>/dev/null </dev/null) |
+    jq -r --arg t "$2" '[.[] | select(.title == $t) | .id] | if length == 1 then .[0] else empty end'
+}
+
+nvim_cmd() {
+  local sock file=$2
+  sock=$(nvim_socket "$1")
+  [[ -n $sock ]] || return 0
+  nvim_expr "$sock" "execute('let g:tmux_restart_so = &sessionoptions | set sessionoptions-=terminal sessionoptions-=blank | mksession! ' .. fnameescape('$file') .. ' | let &sessionoptions = g:tmux_restart_so | unlet g:tmux_restart_so')" >/dev/null
+  [[ -s $file ]] && printf 'nvim -S %q' "$file"
+  return 0
+}
+
+# The pane runs nvim directly or under a shell; the RPC server is the TUI's --embed child.
+nvim_socket() {
+  local run=${XDG_RUNTIME_DIR:-/run/user/$UID} p
+  for p in "$1" $(pgrep -P "$1") $(pgrep -P "$1" | xargs -r -n1 pgrep -P); do
+    [[ -S $run/nvim.$p.0 ]] && { echo "$run/nvim.$p.0"; return 0; }
+  done
+  return 0
+}
+
+nvim_expr() { nvim --headless --server "$1" --remote-expr "$2" 2>/dev/null </dev/null; }
+
+restore() {
+  local snap=$1/panes
+  [[ -r $snap ]] || { echo "no snapshot at $1" >&2; exit 1; }
+  local -A made=() windows=() layouts=()
+  local -a active_windows=() active_panes=() relaunch=()
+  local s w name layout path wact pact cmd rc id i
+  while IFS=$sep read -r s w name layout path wact pact cmd rc; do
+    [[ -d $path ]] || path=$HOME
+    if [[ -z ${made[$s]:-} ]]; then
+      if tmux has-session -t "=$s" 2>/dev/null; then
+        echo "skipping existing session $s" >&2
+        made[$s]=skip
+        continue
+      fi
+      id=$(tmux new-session -dP -F '#{pane_id}' -s "$s" -n "$name" -c "$path")
+      tmux move-window -s "=$s:" -t "=$s:$w" 2>/dev/null || true
+      made[$s]=1 windows[$s:$w]=1
+    elif [[ ${made[$s]} == skip ]]; then
+      continue
+    elif [[ -z ${windows[$s:$w]:-} ]]; then
+      id=$(tmux new-window -dP -F '#{pane_id}' -t "=$s:$w" -n "$name" -c "$path")
+      windows[$s:$w]=1
+    else
+      id=$(tmux split-window -dP -F '#{pane_id}' -t "=$s:$w" -c "$path")
+      tmux select-layout -t "=$s:$w" tiled >/dev/null
+    fi
+    layouts[$s:$w]=$layout
+    [[ -z $rc ]] || relaunch+=("$id" "$rc")
+    [[ $wact == 1 ]] && active_windows+=("$s:$w")
+    [[ $pact == 1 ]] && active_panes+=("$id")
+  done <"$snap"
+
+  for i in "${!layouts[@]}"; do tmux select-layout -t "=$i" "${layouts[$i]}" >/dev/null 2>&1 || true; done
+  for i in "${active_panes[@]}"; do tmux select-pane -t "$i" 2>/dev/null || true; done
+  for i in "${active_windows[@]}"; do tmux select-window -t "=$i" 2>/dev/null || true; done
+  # Typed into the pane's shell so quitting the program leaves a shell with history.
+  for ((i = 0; i < ${#relaunch[@]}; i += 2)); do
+    tmux send-keys -t "${relaunch[i]}" -l "${relaunch[i + 1]}"
+    tmux send-keys -t "${relaunch[i]}" Enter
+  done
+  echo "Restored $1 on tmux $(tmux display -p '#{version}')" >&2
+}
+
+main "$@"
