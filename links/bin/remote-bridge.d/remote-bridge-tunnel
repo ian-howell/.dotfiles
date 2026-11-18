@@ -19,7 +19,8 @@ master_wait=40
 remote=$state
 
 main() {
-	mkdir -p -m 700 "$state"
+	mkdir -p "$state"
+	chmod 700 "$state"
 	# This unit owns the socket; one no master answers was left by an ssh that died, and
 	# would make the new ssh run without multiplexing.
 	if [[ -e $ctl ]] && ! master_up; then
@@ -62,7 +63,7 @@ wait_for_master() {
 }
 
 # Re-adds the ports remote-bridge forwarded, so pages open in the browser survive a reconnect.
-# Drops expired ports and ones the master rejects.
+# Drops expired ports, ones another WSL program now listens on, and ones the master rejects.
 restore_forwards() {
 	[[ -f $forwards ]] || return 0
 	local now kept p t
@@ -71,7 +72,9 @@ restore_forwards() {
 	while read -r p t; do
 		[[ $p =~ ^[0-9]+$ && $t =~ ^[0-9]+$ ]] || continue
 		((now - t < expiry)) || continue
-		if ssh -S "$ctl" -O forward -L "$p:localhost:$p" "$host" 2>/dev/null; then
+		if ss -ltnpH "sport = :$p" | grep -qv "pid=$ssh_pid,"; then
+			echo "dropping forward of port $p: another program listens on it" >&2
+		elif ssh -n -S "$ctl" -O forward -L "$p:localhost:$p" "$host" 2>/dev/null; then
 			echo "$p $t" >>"$kept"
 		else
 			echo "dropping forward of port $p" >&2

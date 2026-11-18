@@ -15,7 +15,9 @@ which the bridge adds on-demand port forwards. Before connecting, the tunnel rem
 socket no master answers, left by an SSH that died; it exits, and systemd retries, when no
 master answers within 40 seconds of starting. The bridge records each port it forwards in
 `~/.local/state/remote-bridge/forwards`, and the tunnel re-adds them on every connect, so a page
-open in the browser keeps working after a reconnect. Ports not requested for a week are dropped.
+open in the browser keeps working after a reconnect. Ports not requested for a week are dropped,
+as are ports another WSL program has started listening on; the bridge refuses to forward such a
+port, since the browser would reach that program instead.
 When a forward fails because no master answers, the bridge restarts the tunnel and retries once.
 
 On the remote, the commands in `shims/` call the bridge:
@@ -23,7 +25,8 @@ On the remote, the commands in `shims/` call the bridge:
 - `xdg-open`, `wslview`, `tabopen` (`bridge-open`): open a URL, or open a file through
   `remote-bridge-files`, a web server on the remote (port 8766, `REMOTE_BRIDGE_FILE_PORT`) that
   serves its directory. The tunnel always forwards that port, so an open page still reloads after
-  a reconnect.
+  a reconnect. Anything that can reach the port can read the directory, so a directory stays
+  served for a day after its last open, and files directly in `$HOME` or `/` are refused.
   `localhost` ports in the URL, including an OAuth `redirect_uri`, are forwarded from the
   remote first, so dev servers and `az login` callbacks reach the remote. Only http and https
   URLs are opened. When the bridge is unreachable they print the target instead.

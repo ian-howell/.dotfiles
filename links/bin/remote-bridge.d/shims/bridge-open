@@ -22,13 +22,19 @@ main() {
 	bridge --data-binary "$target" http://bridge/open || fallback "$target"
 }
 
-# Links the file's directory under the served root and prints the file's URL.
+# Links the file's directory under the served root and prints the file's URL. Links not used
+# for a day are removed, so only recently opened directories stay readable on the port.
 file_url() {
 	local path dir key
 	path=$(readlink -f "$1")
 	dir=$(dirname "$path")
+	if [[ $dir == "$HOME" || $dir == / ]]; then
+		echo "refusing to serve $dir; open the file from a subdirectory" >&2
+		return 1
+	fi
 	key=$(printf '%s' "$dir" | sha256sum | cut -c1-12)
 	mkdir -p "$files"
+	find "$files" -mindepth 1 -maxdepth 1 -type l -mmin +1440 -delete
 	ln -sfn "$dir" "$files/$key"
 	systemctl --user start remote-bridge-files.service
 	printf 'http://localhost:%s/%s/%s\n' "$port" "$key" "$(basename "$path" | jq -Rr '@uri')"

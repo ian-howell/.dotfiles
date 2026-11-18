@@ -6,7 +6,7 @@ here=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 source "$here/../lib.sh"
 
 main() {
-	local paste= image= files=()
+	local paste='' image='' files=()
 	while (($#)); do
 		case $1 in
 		-o | -out) paste=1 ;;
