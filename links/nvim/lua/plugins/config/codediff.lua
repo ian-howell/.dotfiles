@@ -78,10 +78,14 @@ local opts = {
       hunk_textobject = "ih",
       align_move = "gm",
       toggle_layout = "<leader>gt",
-      stage_hunk = nil,
-      unstage_hunk = nil,
-      discard_hunk = nil,
-      toggle_stage = "<leader>gs",
+      -- <leader>gs stages the hunk under the cursor, or unstages it in the
+      -- staged view (see the stage_hunk wrapper below).
+      stage_hunk = "<leader>gs",
+      unstage_hunk = false,
+      discard_hunk = false,
+      -- Despite the name, toggle_stage stages/unstages the entire file,
+      -- overwriting any partial staging.
+      toggle_stage = "<leader>gS",
     },
     explorer = {
       select = "<CR>",
@@ -175,6 +179,18 @@ panes.focus_explorer = function(ctx)
   focus_explorer(ctx)
 end
 
+-- In the staged view, stage_hunk's key unstages the hunk instead.
+local hunk = require("codediff.ui.view.actions.hunk")
+local stage_hunk = hunk.stage_hunk
+hunk.stage_hunk = function(ctx)
+  local session = lifecycle.get_session(ctx.tabpage)
+  if session and session.modified_revision == ":0" then
+    hunk.unstage_hunk(ctx)
+    return
+  end
+  stage_hunk(ctx)
+end
+
 -- Keep the built-in selection/folding behavior. Enter on a file that is not
 -- shown yet opens it and stays in the explorer; Enter on the file already shown
 -- jumps to its modified pane (matching the fyler drawer in fyler.lua). Install
@@ -186,31 +202,23 @@ explorer_keymaps.setup = function(explorer)
   local select = vim.api.nvim_buf_call(explorer.bufnr, function()
     return vim.fn.maparg(opts.keymaps.explorer.select, "n", false, true).callback
   end)
-  lifecycle.set_buf_keymap(
-    explorer.tabpage,
-    explorer.bufnr,
-    "n",
-    opts.keymaps.explorer.select,
-    function()
-      local node = explorer.tree:get_node()
-      local data = node and node.data
-      local shown = data
-        and data.type ~= "group"
-        and data.type ~= "directory"
-        and data.path == explorer.current_file_path
-        and data.group == explorer.current_file_group
-      if not shown then
-        select()
-        return
-      end
-      local _, mod_win = lifecycle.get_windows(explorer.tabpage)
-      if mod_win and vim.api.nvim_win_is_valid(mod_win) then
-        vim.api.nvim_set_current_win(mod_win)
-      end
-    end,
-    { desc = "Open file (jump if shown) / toggle folder", silent = true, nowait = true },
-    { suspendable = false }
-  )
+  lifecycle.set_buf_keymap(explorer.tabpage, explorer.bufnr, "n", opts.keymaps.explorer.select, function()
+    local node = explorer.tree:get_node()
+    local data = node and node.data
+    local shown = data
+      and data.type ~= "group"
+      and data.type ~= "directory"
+      and data.path == explorer.current_file_path
+      and data.group == explorer.current_file_group
+    if not shown then
+      select()
+      return
+    end
+    local _, mod_win = lifecycle.get_windows(explorer.tabpage)
+    if mod_win and vim.api.nvim_win_is_valid(mod_win) then
+      vim.api.nvim_set_current_win(mod_win)
+    end
+  end, { desc = "Open file (jump if shown) / toggle folder", silent = true, nowait = true }, { suspendable = false })
 end
 
 vim.keymap.set("n", "<leader>gd", "<cmd>CodeDiff<CR>", { desc = "Git diff" })
