@@ -46,6 +46,10 @@
 - Prefer `map[string]struct{ ... }` over `[]struct{ ... }` for table-driven
   tests. Use descriptive map keys as subtest names with `t.Run`. Cases must
   be independent and must not rely on map iteration order.
+- For tests of a single function, prefer one `TestFuncName` with a `t.Run` subtest per
+  scenario over top-level functions with suffixed names such as `TestFuncNameWithoutID`.
+  Name subtests as short sentences that state the behavior, e.g. "a node without a
+  machine fails".
 - Test cases hold only data (inputs and expected outputs), never functions or mock setup.
   Cases whose assertions differ, such as error paths, go in separate subtests or tables
   instead of branching on a `wantErr` field.
