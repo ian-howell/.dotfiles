@@ -21,7 +21,8 @@ which session requested it, or the current value of an environment variable.
 
 - This repository is public. Never add names of employers, work projects, orgs or labs here,
   including in skills, examples and commit messages. A pre-commit hook kept in the work repo
-  (`~/.config/work/git-hooks/public-repo`) blocks the terms in its private denylist.
+  (`~/.config/work/git-hooks/public-repo`) blocks the terms in its private denylist; add new
+  sensitive terms there, never in a public file.
 - General OpenCode plugins, agents, commands, themes and skills belong in `links/opencode`,
   linked to `~/.config/opencode`. Tmux integration, retitling,
   explanation agents, theme switching, and general Git policy are base features.
