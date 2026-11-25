@@ -222,14 +222,39 @@ explorer_keymaps.setup = function(explorer)
 end
 
 vim.keymap.set("n", "<leader>gd", "<cmd>CodeDiff<CR>", { desc = "Git diff" })
-vim.keymap.set("n", "<leader>gD", function()
-  local merge_base = vim.fn.system("git merge-base origin/main HEAD"):gsub("%s+", "")
-  if vim.v.shell_error == 0 and merge_base ~= "" then
-    vim.cmd("CodeDiff main...HEAD")
-  else
-    vim.notify("Could not find merge-base with origin/main", vim.log.levels.WARN)
+
+-- The branch HEAD is stacked on: the nearest local branch whose tip is an ancestor of HEAD, or
+-- origin/main if none is closer. A base that has moved past HEAD's fork point falls back to
+-- origin/main, so the diff shows too much rather than too little; restack to fix it.
+local function review_base()
+  local function git(args)
+    local out = vim.fn.system(vim.list_extend({ "git" }, args))
+    return vim.v.shell_error == 0 and vim.trim(out) or nil
   end
-end, { desc = "Git diff against merge-base" })
+  local best, best_count = nil, math.huge
+  local main_base = git({ "merge-base", "origin/main", "HEAD" })
+  if main_base then
+    best, best_count = "origin/main", tonumber(git({ "rev-list", "--count", main_base .. "..HEAD" }))
+  end
+  local refs = git({ "for-each-ref", "--merged=HEAD", "--no-contains=HEAD", "--format=%(refname:short)", "refs/heads" })
+  for _, ref in ipairs(vim.split(refs or "", "\n", { trimempty = true })) do
+    local count = tonumber(git({ "rev-list", "--count", ref .. "..HEAD" }))
+    if count and count < best_count then
+      best, best_count = ref, count
+    end
+  end
+  return best
+end
+
+vim.keymap.set("n", "<leader>gD", function()
+  local base = review_base()
+  if not base then
+    vim.notify("Could not find a base branch for HEAD", vim.log.levels.WARN)
+    return
+  end
+  vim.notify("CodeDiff against " .. base)
+  vim.cmd("CodeDiff " .. base .. "...HEAD")
+end, { desc = "Git diff against the branch HEAD is stacked on" })
 
 vim.api.nvim_create_autocmd("User", {
   pattern = { "CodeDiffOpen", "CodeDiffFileSelect" },
